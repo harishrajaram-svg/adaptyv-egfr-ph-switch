@@ -193,7 +193,27 @@ It scores one of the tightest complexes known **identically to random shuffles**
 
 **Rule: validate every arm independently before ensembling. An arm that produces numbers is not an arm that produces signal.**
 
-To use Boltz at all, it needs real MSAs (staged per target, not `--use_msa_server` at scale).
+### MSA staging built — and Boltz STILL fails
+
+MSA staging works and is reusable: generate a target's alignment once with `--use_msa_server`, save the `msa/*_0.csv` Boltz emits, then pass `--msa-file` (patched in) to upload it to `/tmp/staged_msa.csv` and reference it from the YAML. **Verified: 0 server calls across 4 runs**, 970 KB alignment reused. Production shape is target MSA + `msa: empty` on the binder, since a de novo binder has no homologs.
+
+Full gate with a staged target MSA:
+
+| Complex | Boltz + MSA | ESMFold2 (both) |
+|---|---|---|
+| **barnase + barstar** | 0.6463 | 0.8887 / 0.8888 |
+| shuffled 1 | 0.3883 | 0.0000 |
+| shuffled 2 | **0.7326** | 0.0000 |
+| shuffled 3 | 0.0000 | 0.0000 |
+| shuffled 4 | 0.0000 | 0.0000 |
+
+**One negative outscores the true binder.** Two negatives are clean, two are badly wrong.
+
+**The failure mode is VARIANCE, not bias** — and that distinction needs the full set, not two samples. A uniformly inflated arm could be rescued with a threshold; negatives scattered from 0.00 to 0.73 cannot be. No cut separates 0.6463 from 0.7326 correctly.
+
+**The MSA genuinely helped** (positive 0.0000 -> 0.6463), so alignments were part of the problem. They just lifted some negatives further. Likely remaining cause: the **single-sequence binder chain**. Boltz appears to need alignment context on *both* sides to judge an interface — which de novo binder design can never supply.
+
+**Verdict: exclude Boltz.** The staging machinery stays; it is reusable for any model that needs alignments.
 
 ⚠️ **Latent conflict:** a later layer upgrades numpy to 2.4.6, breaking ColabFold's `numpy<2.0` pin. Harmless for us — we never invoke ColabFold — but it would matter if target MSAs are ever staged through it.
 

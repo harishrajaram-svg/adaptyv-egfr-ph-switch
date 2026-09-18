@@ -1,5 +1,5 @@
 --- modal_boltz.py.orig	2026-09-18 16:36:35
-+++ modal_boltz.py	2026-09-18 19:02:18
++++ modal_boltz.py	2026-09-18 19:24:50
 @@ -78,10 +78,28 @@
  
  image = (
@@ -32,3 +32,45 @@
      .pip_install(
          "colabfold[alphafold-minus-jax]@git+https://github.com/sokrypton/ColabFold@acc0bf772f22feb7f887ad132b7313ff415c8a9f"
      )
+@@ -185,7 +203,7 @@
+     gpu=GPU,
+     volumes={f"/{BOLTZ_VOLUME_NAME}": BOLTZ_MODEL_VOLUME},
+ )
+-def boltz(input_str: str, params_str: str | None = None) -> list:
++def boltz(input_str: str, params_str: str | None = None, msa_bytes: bytes | None = None) -> list:
+     """Runs Boltz on a YAML or FASTA input string.
+ 
+     The input can describe proteins, DNA, RNA, SMILES strings, or CCD identifiers.
+@@ -211,6 +229,14 @@
+     if params_str is None:
+         params_str = DEFAULT_PARAMS
+ 
++    # PATCHED 2026-09-18: a staged MSA is written to a FIXED container path so the
++    # YAML can reference it as `msa: /tmp/staged_msa.csv`. Generate a target's MSA
++    # ONCE with --use_msa_server, then reuse the file for every design against that
++    # target -- one server query per target instead of one per design.
++    if msa_bytes:
++        Path("/tmp/staged_msa.csv").write_bytes(msa_bytes)
++        print(f"[boltz] staged MSA written: {len(msa_bytes)} bytes -> /tmp/staged_msa.csv")
++
+     with TemporaryDirectory() as in_dir, TemporaryDirectory() as out_dir:
+         if input_str[0] == ">":
+             open(in_faa := Path(in_dir) / "in.faa", "w").write(input_str)
+@@ -240,6 +266,7 @@
+     input_faa: str | None = None,
+     input_yaml: str | None = None,
+     params_str: str | None = None,
++    msa_file: str | None = None,   # PATCHED: pre-computed MSA, uploaded to /tmp/staged_msa.csv
+     run_name: str | None = None,
+     out_dir: str = "./out/boltz",
+ ):
+@@ -265,7 +292,8 @@
+ 
+     input_str = open(input_yaml or input_faa).read()
+ 
+-    outputs = boltz.remote(input_str, params_str=params_str)
++    msa_bytes = Path(msa_file).read_bytes() if msa_file else None
++    outputs = boltz.remote(input_str, params_str=params_str, msa_bytes=msa_bytes)
+ 
+     today = datetime.now().strftime("%Y%m%d%H%M")[2:]
+     out_dir_full = Path(out_dir) / (run_name or today)
