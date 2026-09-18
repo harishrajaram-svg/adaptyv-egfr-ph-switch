@@ -1,0 +1,11 @@
+--- modal_boltzgen.py.orig	2026-09-18 15:50:48
++++ modal_boltzgen.py	2026-09-18 15:50:48
+@@ -51,7 +51,7 @@
+ 
+ 
+ image = (
+-    Image.debian_slim()
++    Image.debian_slim(python_version="3.12")  # PATCHED: boltzgen dep numba requires <3.14; Modal default is now 3.14
+     .apt_install("git", "wget", "build-essential")
+     .uv_pip_install("torch>=2.4.1")
+     .run_commands(

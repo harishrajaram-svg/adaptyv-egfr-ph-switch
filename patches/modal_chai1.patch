@@ -1,0 +1,11 @@
+--- modal_chai1.py.orig	2026-09-18 15:51:17
++++ modal_chai1.py	2026-09-18 15:51:17
+@@ -61,7 +61,7 @@
+ 
+ 
+ image = (
+-    Image.debian_slim()
++    Image.debian_slim(python_version="3.12")  # PATCHED: Modal default is now 3.14, too new for common deps
+     .apt_install("wget")
+     .uv_pip_install("chai_lab==0.6.1")
+     .run_function(download_models, gpu="a100")

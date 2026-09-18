@@ -1,0 +1,65 @@
+--- modal_esmfold2.py.orig	2026-09-18 16:04:05
++++ modal_esmfold2.py	2026-09-18 16:18:18
+@@ -33,9 +33,16 @@
+ GPU = os.environ.get("MODAL_GPU", "A100-40GB")
+ TIMEOUT = int(os.environ.get("MODAL_TIMEOUT", 30))
+ 
+-ESMFOLD2_HF_REPO = "biohub/ESMFold2"
+-ESMFOLD2_HF_REVISION = "1afea82e432079d9af2ebd71d1e4c339ecca2ff0"
+-ESMFOLD2_GIT_REF = "c94ed8d"
++# PATCHED 2026-09-18: made selectable so the protocol's Full + Fast arms can both run.
++#   Full (default): ESMFOLD2_HF_REPO=biohub/ESMFold2
++#   Fast:           ESMFOLD2_HF_REPO=biohub/ESMFold2-Fast ESMFOLD2_HF_REVISION=main
++# The revision hash below is valid ONLY for the Full repo -- override it when switching.
++# Weights are baked at build time, so each repo produces its own image (expect a rebuild).
++ESMFOLD2_HF_REPO = os.environ.get("ESMFOLD2_HF_REPO", "biohub/ESMFold2")
++ESMFOLD2_HF_REVISION = os.environ.get(
++    "ESMFOLD2_HF_REVISION", "1afea82e432079d9af2ebd71d1e4c339ecca2ff0"
++) or None
++ESMFOLD2_GIT_REF = "43b4548b86762edfa747b07d5f440aad3c33acee"  # PATCHED 2026-09-18: c94ed8d depended on github.com/Biohub/transformers (private/deleted, 404) and could not build. Upstream replaced it with PyPI transformers>=4.57.6. This is esm 3.4.1.post1 (2026-09-16).
+ ESMFOLD2_CACHE_DIR = "/root/.cache/huggingface"
+ 
+ 
+@@ -129,7 +136,10 @@
+     import time
+ 
+     from esm.models.esmfold2 import ESMFold2InputBuilder
+-    from transformers.models.esmfold2.modeling_esmfold2 import ESMFold2Model
++    # PATCHED 2026-09-18: transformers.models.esmfold2 exists only in the (deleted)
++    # Biohub transformers fork and upstream 5.16.0.dev0+. With mainline transformers 4.x
++    # the model class lives in the esm package itself, as EsmFold2Model (not ESMFold2Model).
++    from esm.models.esmfold2 import EsmFold2Model as ESMFold2Model
+ 
+     t0 = time.time()
+     model = ESMFold2Model.from_pretrained(
+@@ -185,6 +195,30 @@
+         outputs.append((Path(f"{fasta_name}_sample_{idx}_scores.json"),
+                         json.dumps(scores, indent=2).encode()))
+ 
++        # PATCHED: emit an ipSAE-compatible sidecar.
++        # ipsae.py reads data['pae'] (or 'predicted_aligned_error'), and expects
++        # data['plddt'] to be the PER-TOKEN array, not a scalar mean.
++        pae = None
++        for _obj in (sample, complex_obj):
++            for _attr in ("pae", "predicted_aligned_error", "aligned_error", "pae_matrix"):
++                _v = getattr(_obj, _attr, None)
++                if _v is not None:
++                    pae = _to_py(_v)
++                    break
++            if pae is not None:
++                break
++        if pae is None:
++            print(f"[esmfold2] WARNING: no PAE matrix exposed on sample {idx}; "
++                  f"ipSAE cannot score this output. Attrs: {sorted(a for a in dir(sample) if not a.startswith('_'))}")
++        ipsae_scores = {
++            "pae": pae,
++            "plddt": plddt_list,
++            "ptm": scores["ptm"],
++            "iptm": scores["iptm"],
++        }
++        outputs.append((Path(f"{fasta_name}_sample_{idx}_ipsae.json"),
++                        json.dumps(ipsae_scores).encode()))
++
+     return outputs
+ 
+ 
