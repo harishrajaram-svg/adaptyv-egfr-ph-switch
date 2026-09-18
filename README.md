@@ -25,25 +25,21 @@ runs/          Output from design runs
 | Modal CLI | ✅ v1.5.5 via `uv tool install modal` |
 | Anthropic protocol prompt | ✅ `reference/`, 111 KB |
 | Test target 1ALU | ✅ `targets/` |
-| **Modal authentication** | ❌ **needs you — browser login** |
+| Modal authentication | ✅ workspace `harishrajaram-svg`, verified, $0.00 spent |
 | **Proteinbase account** | ❌ **needs you — the only hard Track 3 prerequisite** |
-| Compute cap | ❌ decide before spending |
+| **Compute cap** | ❌ **dashboard only — modal.com → Settings → Usage & Billing** |
 
-## The two things only you can do
+## Still needed from you
 
-**1. Authenticate Modal.** Opens a browser, click Authorize.
-
-```
-modal setup
-```
-
-Before that, create the account at https://modal.com. The Starter tier is $30/month and covers every dry run below.
+**1. Set the spend cap.** There is no CLI for this — modal.com, Settings, Usage and Billing. `modal billing summary` reads current spend, `modal billing rates` reads pricing, but neither sets a limit.
 
 **2. Create a Proteinbase account** at https://proteinbase.com/login. Google or GitHub sign-in. This is the only thing standing between you and being able to submit.
 
 ## Set the spend cap first
 
 Track 3 is self-funded. Set a limit in the Modal dashboard under workspace settings before running anything real.
+
+Rates confirmed live on 2026-09-18: L40S $1.95/hr, A10G $1.10, A100-80 $2.50, H100 $3.95, L4 $0.80, T4 $0.59, CPU $0.047/core/hr.
 
 Defaults worth knowing: `modal_boltzgen.py` runs on an L40S at $1.95/hr with a 120-minute timeout, so one unattended run that hangs costs about $3.90. Both are overridable:
 
