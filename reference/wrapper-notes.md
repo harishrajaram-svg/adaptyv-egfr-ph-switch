@@ -174,7 +174,26 @@ Every symptom traced to this: pip ran from `/opt/conda/lib/python3.14/`, whose s
 
 **Runtime config, separate issue:** Boltz refuses to run without alignments. The wrapper's FASTA→YAML converter sets no MSA field, so pass a YAML with `msa: empty` per chain for single-sequence mode. That is the correct setting anyway — binders are scored single-sequence, and it avoids `--use_msa_server` and its IP-ban risk entirely.
 
-**Verified:** Boltz-2 emits `pae_*.npz`, which **ipSAE reads natively** (no patch needed). Scored our IL-6 design at 0.0000, agreeing with both ESMFold2 arms.
+**Verified mechanically:** Boltz-2 emits `pae_*.npz`, which **ipSAE reads natively** (no patch needed).
+
+### ⛔ But it FAILS the validation gate — do not ensemble it
+
+| Complex | ESM2-Full | ESM2-Fast | **Boltz-2** |
+|---|---|---|---|
+| barnase + barstar | 0.8887 | 0.8888 | **0.0000** |
+| four shuffles | 0.0000 | 0.0000 | 0.0000 |
+
+It scores one of the tightest complexes known **identically to random shuffles**.
+
+**Cause: `msa: empty`.** Boltz-2 is a co-folding model that depends on alignments. ESMFold2 is a language-model folder built for single sequences (the Fast checkpoint has no MSA encoder at all). The single-sequence setting that is correct for ESMFold2 is **crippling** for Boltz.
+
+**Cost of including it:** the 3-arm mean drags the true binder to **0.5925 — below the 0.61 "worth ordering" threshold**. Worse than either ESMFold2 arm alone.
+
+**Every mechanical signal was green** — build, run, PAE file, ipSAE parse, number returned. Only a known answer exposed it.
+
+**Rule: validate every arm independently before ensembling. An arm that produces numbers is not an arm that produces signal.**
+
+To use Boltz at all, it needs real MSAs (staged per target, not `--use_msa_server` at scale).
 
 ⚠️ **Latent conflict:** a later layer upgrades numpy to 2.4.6, breaking ColabFold's `numpy<2.0` pin. Harmless for us — we never invoke ColabFold — but it would matter if target MSAs are ever staged through it.
 
