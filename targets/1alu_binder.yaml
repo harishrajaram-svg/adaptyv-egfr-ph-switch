@@ -1,0 +1,12 @@
+# Toolchain smoke test — de novo binder vs human IL-6 (PDB 1ALU, chain A)
+# No binding site specified: let the model choose the epitope.
+entities:
+  - protein:
+      id: B
+      sequence: 60..100
+
+  - file:
+      path: 1ALU.cif
+      include:
+        - chain:
+            id: A

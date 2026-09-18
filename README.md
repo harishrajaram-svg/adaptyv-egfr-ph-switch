@@ -26,7 +26,7 @@ runs/          Output from design runs
 | Anthropic protocol prompt | ✅ `reference/`, 111 KB |
 | Test target 1ALU | ✅ `targets/` |
 | Modal authentication | ✅ workspace `harishrajaram-svg`, verified, $0.00 spent |
-| **Proteinbase account** | ❌ **needs you — the only hard Track 3 prerequisite** |
+| **Proteinbase account** | 🚫 **BLOCKED ON ADAPTYV, 2026-09-18.** Both Google and GitHub return "Signups not allowed for this instance" — signups are disabled at their project level. Support email drafted to proteinbase@adaptyvbio.com. Not urgent: the account is only needed to submit, and problem 1 closes Oct 4. |
 | **Compute cap** | ❌ **dashboard only — modal.com → Settings → Usage & Billing** |
 
 ## Still needed from you
