@@ -156,3 +156,28 @@ The config key `configs.need_atom_confidence` is real (`runner/dumper.py`), but 
 - MIT, open weights, already pinned to Python 3.11, so none of today's other defects apply.
 
 The protocol's requirement is a multi-arm ensemble of *independent co-folders*, not those three specific models. Boltz preserves that. Protenix stays available as a fourth arm if the v2 identifier is ever resolved — its image builds and runs fine.
+
+## Boltz-2 does not build — root cause found, fix NOT applied (timeboxed)
+
+`modal_boltz.py` fails during image build, inside the **ColabFold** install:
+
+```
+ModuleNotFoundError: No module named 'pkg_resources'
+ERROR: Failed to build 'pandas' when getting requirements to build wheel
+```
+
+**The real cause is Modal's Python 3.14 default again, one layer deeper than it looks.** The traceback path is:
+
+```
+/tmp/pip-build-env-ekk729pc/overlay/lib/python3.14/site-packages/setuptools/build_meta.py
+```
+
+Note **python3.14**, even though the image pins `python_version="3.11"`. pip's **build-isolation overlay** is built independently of the image environment, and its setuptools is new enough to have dropped `pkg_resources`, which pandas' legacy `setup.py` imports.
+
+So adding `setuptools<81` to the image does **not** fix it — the overlay never sees the image's packages. That patch is kept (harmless, likely still necessary) but is **not sufficient on its own**.
+
+**Candidate fix, untested:** pass `--no-build-isolation` to that specific `pip_install` so it uses the image's pinned setuptools, or pin a pandas version with a PEP 517 build backend. Either needs verification.
+
+**Decision:** stopped here on a stated timebox. Two arms (ESMFold2 Full + Fast) are verified and sufficient to run the validation gate, which is the higher-value work. Boltz stays a known-diagnosed, unfixed third arm.
+
+Note this is the **third distinct failure** traceable to Modal's 3.14 default (BoltzGen, Chai pre-emptively, Boltz). Any new wrapper should be assumed guilty until checked.
