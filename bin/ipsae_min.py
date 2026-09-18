@@ -19,10 +19,15 @@ PY = ROOT / ".venv" / "bin" / "python"
 
 def score(pae_file: Path, struct: Path, pae_cut=10, dist_cut=10):
     """Run ipsae.py and return (ipsae_min, per_direction dict) or None."""
-    subprocess.run([str(PY), str(IPSAE), str(pae_file), str(struct),
-                    str(pae_cut), str(dist_cut)],
-                   capture_output=True, cwd=struct.parent)
+    # BUGFIX: resolve to absolute paths -- ipsae.py is run with cwd=struct.parent,
+    # so relative paths from the caller's cwd would not resolve and it exits silently.
+    pae_file, struct = pae_file.resolve(), struct.resolve()
+    r = subprocess.run([str(PY), str(IPSAE), str(pae_file), str(struct),
+                        str(pae_cut), str(dist_cut)],
+                       capture_output=True, text=True, cwd=struct.parent)
     out = struct.with_name(f"{struct.stem}_{pae_cut}_{dist_cut}.txt")
+    if not out.exists() and r.stderr:
+        print(f"  ipsae stderr: {r.stderr.strip()[:300]}")
     if not out.exists():
         return None
     rows = [l.split() for l in out.read_text().splitlines()

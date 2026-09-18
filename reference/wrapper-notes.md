@@ -99,3 +99,32 @@ Patched to also emit `<name>_sample_<i>_ipsae.json` containing `pae`, per-token 
 ipSAE is pure NumPy and runs locally on CPU. Cloned to `ipsae/`, driven by `bin/ipsae_min.py`.
 
 **`bin/ipsae_min.py` takes the MINIMUM over both alignment directions**, then the **max over seeds**. ipsae.py also prints a row labelled `max` — that is *not* the metric. On the bundled example the directions are 0.449 and 0.866; ipSAE_min is **0.449**. Using the `max` row would systematically overrate every design.
+
+## Fix #3: the model import also pointed at the dead fork
+
+Bumping the `esm` ref was **not sufficient**. The wrapper also did:
+
+```python
+from transformers.models.esmfold2.modeling_esmfold2 import ESMFold2Model
+```
+
+That module exists only in the deleted Biohub transformers fork and in upstream transformers 5.16.0.dev0+. With mainline 4.x it raises `ModuleNotFoundError`. The `esm` package says so in its own `hf_adapter.py`.
+
+Correct path, per the package's own docstring — note the capitalisation:
+
+```python
+from esm.models.esmfold2 import EsmFold2Model   # NOT ESMFold2Model
+model = EsmFold2Model.from_pretrained("biohub/ESMFold2")
+```
+
+**ESMFold2 needed three separate patches to run at all**: the dependency ref, the model import, and the PAE sidecar.
+
+## Verified working, 2026-09-18
+
+ESMFold2 → PAE → ipSAE → ipSAE_min runs end to end.
+
+- PAE matrix emitted: **247 × 247**, per-token pLDDT 247 values. The patch works.
+- Model load **116s** per cold container, fold **15.9s** for a 247-residue complex. **Batch many designs per run**; the load dominates.
+- ipSAE consumed the sidecar directly in AF3 mode (`.cif` + `.json`). The missing AF3 summary file is only a warning, not a failure.
+
+**Gotcha in `bin/ipsae_min.py`, fixed:** ipsae.py is invoked with `cwd=struct.parent`, so paths must be resolved to absolute first or it exits silently with no output and no error.
