@@ -1,0 +1,8 @@
+biomodals/
+runs/
+*.pdb
+!targets/*.pdb
+__pycache__/
+.venv/
+*.pt
+*.npz
