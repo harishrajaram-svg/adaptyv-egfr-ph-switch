@@ -216,3 +216,37 @@ Tighter than the ~0.07 discrepancy Adaptyv reported between entrant and organise
 **Interpretation.** 0.01 is negligible against the binder/non-binder gap (0.89 vs 0.00), so one-seed screening is defensible for a bulk pool. It is **not** negligible between candidates near a threshold: two designs at 0.62 and 0.61 are indistinguishable at one seed. Five seeds is what makes a shortlist ranking mean anything.
 
 Measured on one strong complex. **Re-measure on a marginal design in week 1** -- spread may be wider exactly where it matters most.
+
+
+## Batching: one complex per container was the real bottleneck
+
+The wrapper folded **one complex per container**. Scoring 100 designs meant 100 model loads at ~137s each -- about **4 GPU-hours of pure loading** before any useful work. That dwarfs the seed question.
+
+**Patched: `--input-faa` now accepts a DIRECTORY** and folds every `.faa` in it inside one container, reusing the loaded model. Outputs go to per-complex subdirectories.
+
+Measured, 5 complexes, 1 seed, one container: **load 115.8s once**, then folds at 5.5 / 4.0 / 4.0 / 4.0 / 4.0s.
+
+| 100 designs, 1 seed | GPU time | Cost |
+|---|---|---|
+| One container per design | ~3.9 h | ~$7.60 |
+| Batched | ~9 min | ~$0.29 |
+
+**~20x.** This also reframes the seed question: once batched, seeds are the marginal cost, so 5 seeds really is ~4-5x the *folding* -- but folding is now cheap in absolute terms.
+
+## Two-tier scoring — `bin/two_tier.py`
+
+Screen the pool at 1 seed, confirm the shortlist at 5. Verified end to end 2026-09-18:
+
+| | Screen (1 seed) | Confirm (5 seeds) | delta | moved |
+|---|---|---|---|---|
+| barnase/barstar | 0.8883 | 0.8903 | +0.0020 | 0 |
+| shuffles x2 | 0.0000 | 0.0000 | 0.0000 | 0 |
+
+**The delta is expected POSITIVE.** Max-over-seeds is a *biased* estimator -- more draws means a higher max -- so a 5-seed score is systematically above a 1-seed score for the same design. Consequences:
+
+- **Never compare raw scores across seed counts.** Compare ranks. The script says so in its output.
+- **Freeze the seed count** alongside the rest of the instrument, for the same reason the instrument itself is frozen.
+
+The `moved` column is the diagnostic: large rank movement between tiers means the 1-seed screen was noisy *at that score range*, which tells you empirically whether screening is safe on a given problem instead of assuming.
+
+**Standing rule, in the script's docstring:** scoring never eats the optimization rounds. If a run is behind, cut seeds or sampling breadth before predict-then-redesign cycles -- those are the cheapest hit-rate gain in the literature.

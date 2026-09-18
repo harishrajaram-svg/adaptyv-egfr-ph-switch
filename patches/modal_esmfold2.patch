@@ -1,5 +1,5 @@
 --- modal_esmfold2.py.orig	2026-09-18 16:04:05
-+++ modal_esmfold2.py	2026-09-18 18:41:17
++++ modal_esmfold2.py	2026-09-18 18:49:03
 @@ -33,9 +33,16 @@
  GPU = os.environ.get("MODAL_GPU", "A100-40GB")
  TIMEOUT = int(os.environ.get("MODAL_TIMEOUT", 30))
@@ -20,16 +20,19 @@
  ESMFOLD2_CACHE_DIR = "/root/.cache/huggingface"
  
  
-@@ -119,7 +126,7 @@
+@@ -117,9 +124,8 @@
+ 
+ @app.function(timeout=TIMEOUT * 60, gpu=GPU)
  def esmfold2(
-     fasta_name: str,
-     fasta_str: str,
+-    fasta_name: str,
+-    fasta_str: str,
 -    seed: int = 42,
++    complexes: list,        # PATCHED: [(name, fasta_str), ...] -- ALL folded in ONE container
 +    seed: int | str = 42,   # PATCHED: accepts "1,2,3,4,5" -- loops seeds in ONE container
      num_diffusion_samples: int = 1,
      num_sampling_steps: int = 50,
      num_loops: int = 3,
-@@ -129,7 +136,10 @@
+@@ -129,7 +135,10 @@
      import time
  
      from esm.models.esmfold2 import ESMFold2InputBuilder
@@ -41,9 +44,13 @@
  
      t0 = time.time()
      model = ESMFold2Model.from_pretrained(
-@@ -142,19 +152,29 @@
-     spi = _fasta_to_input(fasta_str)
-     print(f"[esmfold2] {len(spi.sequences)} entities, samples={num_diffusion_samples}, steps={num_sampling_steps}")
+@@ -139,22 +148,34 @@
+     ).cuda().eval()
+     print(f"[esmfold2] Model loaded in {time.time() - t0:.1f}s")
+ 
+-    spi = _fasta_to_input(fasta_str)
+-    print(f"[esmfold2] {len(spi.sequences)} entities, samples={num_diffusion_samples}, steps={num_sampling_steps}")
++    print(f"[esmfold2] {len(complexes)} complex(es), samples={num_diffusion_samples}, steps={num_sampling_steps}")
  
 -    t0 = time.time()
 -    result = ESMFold2InputBuilder().fold(
@@ -62,44 +69,48 @@
 +    seed_list = ([int(x) for x in str(seed).split(",") if x.strip() != ""]
 +                 if isinstance(seed, str) else [int(seed)])
 +    builder = ESMFold2InputBuilder()
-+    samples, sample_seeds = [], []
-+    for sd in seed_list:
-+        t0 = time.time()
-+        result = builder.fold(
-+            model, spi,
-+            num_loops=num_loops,
-+            num_sampling_steps=num_sampling_steps,
-+            num_diffusion_samples=num_diffusion_samples,
-+            seed=sd,
-+            complex_id=fasta_name,
-+        )
-+        print(f"[esmfold2] seed {sd}: fold() done in {time.time() - t0:.1f}s")
-+        got = result if isinstance(result, list) else [result]
-+        samples.extend(got)
-+        sample_seeds.extend([sd] * len(got))
++    samples, sample_seeds, sample_names = [], [], []
++    for cname, cfasta in complexes:
++        spi = _fasta_to_input(cfasta)
++        for sd in seed_list:
++            t0 = time.time()
++            result = builder.fold(
++                model, spi,
++                num_loops=num_loops,
++                num_sampling_steps=num_sampling_steps,
++                num_diffusion_samples=num_diffusion_samples,
++                seed=sd,
++                complex_id=cname,
++            )
++            print(f"[esmfold2] {cname} seed {sd}: fold() done in {time.time() - t0:.1f}s")
++            got = result if isinstance(result, list) else [result]
++            samples.extend(got)
++            sample_seeds.extend([sd] * len(got))
++            sample_names.extend([cname] * len(got))
  
 -    samples = result if isinstance(result, list) else [result]
 -
      def _to_py(v):
          if v is None:
              return None
-@@ -168,6 +188,8 @@
+@@ -168,6 +189,9 @@
  
      outputs: list[tuple[Path, bytes]] = []
      for idx, sample in enumerate(samples):
 +        # PATCHED: tag with seed so seeds don't collide in the output dir
 +        _sd = sample_seeds[idx]
++        fasta_name = sample_names[idx]
          complex_obj = getattr(sample, "complex", sample)
          cif_str = complex_obj.to_mmcif()
          plddt_list = _to_py(complex_obj.plddt) or []
-@@ -181,17 +203,41 @@
+@@ -181,17 +205,41 @@
              "iptm": _to_py(getattr(sample, "iptm", None)),
              "chain_pair_iptm": _to_py(getattr(sample, "pair_chains_iptm", None)),
          }
 -        outputs.append((Path(f"{fasta_name}_sample_{idx}.cif"), cif_str.encode()))
 -        outputs.append((Path(f"{fasta_name}_sample_{idx}_scores.json"),
-+        outputs.append((Path(f"{fasta_name}_seed{_sd}_sample_{idx}.cif"), cif_str.encode()))
-+        outputs.append((Path(f"{fasta_name}_seed{_sd}_sample_{idx}_scores.json"),
++        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}.cif"), cif_str.encode()))
++        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}_scores.json"),
                          json.dumps(scores, indent=2).encode()))
  
 +        # PATCHED: emit an ipSAE-compatible sidecar.
@@ -123,7 +134,7 @@
 +            "ptm": scores["ptm"],
 +            "iptm": scores["iptm"],
 +        }
-+        outputs.append((Path(f"{fasta_name}_seed{_sd}_sample_{idx}_ipsae.json"),
++        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}_ipsae.json"),
 +                        json.dumps(ipsae_scores).encode()))
 +
      return outputs
@@ -137,3 +148,29 @@
      num_diffusion_samples: int = 1,
      num_sampling_steps: int = 50,
      num_loops: int = 3,
+@@ -200,12 +248,21 @@
+ ):
+     from datetime import datetime
+ 
+-    fasta_str = Path(input_faa).read_text()
+-    fasta_name = Path(input_faa).stem
++    # PATCHED: input_faa may be a FILE or a DIRECTORY of .faa files. A directory
++    # folds every complex in ONE container, so the ~137s model load is paid once
++    # instead of once per design. At 100 designs that is ~4 GPU-hours saved.
++    _p = Path(input_faa)
++    if _p.is_dir():
++        files = sorted(_p.glob("*.faa"))
++        if not files:
++            raise SystemExit(f"no .faa files in {input_faa}")
++    else:
++        files = [_p]
++    complexes = [(f.stem, f.read_text()) for f in files]
++    print(f"[esmfold2] batching {len(complexes)} complex(es) into one container")
+ 
+     outputs = esmfold2.remote(
+-        fasta_name=fasta_name,
+-        fasta_str=fasta_str,
++        complexes=complexes,
+         seed=seed,
+         num_diffusion_samples=num_diffusion_samples,
+         num_sampling_steps=num_sampling_steps,
