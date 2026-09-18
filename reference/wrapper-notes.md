@@ -29,7 +29,7 @@ Running the wrapper as shipped gives a **weaker instrument than the published on
 ## Protenix
 
 - `seeds` takes a comma-separated list, which is how to satisfy the five-seed requirement in one call.
-- `use_msa` defaults to **true**. **Verify what MSA backend it uses before any scaled run.** If it reaches a public MMseqs2 server, heavy use risks an IP ban. Stage target MSAs once per target; the binder is single-sequence regardless.
+- `use_msa` defaults to **true**. Partially resolved 2026-09-18: **the wrapper itself contains no hardcoded MSA endpoint** and simply passes `--use_msa` through to the Protenix CLI, so any server call happens inside the upstream package, not here. Still worth confirming against Protenix's own docs before a scaled run, since a public MMseqs2 backend would risk an IP ban under heavy use. Safest default either way: stage target MSAs once per target and reuse them. The binder chain is single-sequence regardless.
 - First call JIT-compiles a CUDA kernel, 4–6 minutes on an H100. Point `TORCH_EXTENSIONS_DIR` at a persistent Modal Volume or every container pays it again.
 
 ## Logging
