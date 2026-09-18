@@ -35,3 +35,27 @@ Running the wrapper as shipped gives a **weaker instrument than the published on
 ## Logging
 
 **Do not pipe `modal run` through `tail`.** It buffers until the process exits, so the log stays empty for the whole run and any monitor watching it is blind. Stream `modal app logs <app-id>` instead, and note that stream can drop on its own without the job failing.
+
+## Modal's default Python is now 3.14, and it breaks builds
+
+**This killed the first 1ALU run.** `Image.debian_slim()` with no `python_version` gets whatever Modal currently defaults to, which is **3.14.2**. BoltzGen depends on `numba`, which supports `>=3.10,<3.14`, so the image build failed with:
+
+```
+RuntimeError: Cannot install on Python version 3.14.2; only versions >=3.10,<3.14 are supported.
+ERROR: Failed to build 'numba' when getting requirements to build wheel
+```
+
+Audit of all 24 wrappers as of 2026-09-18:
+
+| Status | Scripts |
+|---|---|
+| **Was unpinned, in our critical path** | `modal_boltzgen.py`, `modal_chai1.py` — **both patched locally to 3.12** |
+| Unpinned, not needed | `faspr`, `minimap2`, `nextflow_example`, `rso`, `sasa` |
+| Already pinned | alphafold 3.11, bindcraft 3.11, boltz 3.11, diffdock 3.10, esm2 3.10, ligandmpnn 3.11, germinal 3.10, mber 3.11, pdb2png 3.11, iggm 3.10, tmol 3.12, usalign 3.11, esmfold2_binder_design 3.12 |
+| Immune, fixed registry base | `modal_esmfold2.py`, `modal_protenix.py`, `modal_esmfold2_binder_design.py` |
+
+Originals kept as `*.py.orig`. These patches are local to our clone, so **a `git pull` in `biomodals/` will revert them.** Re-apply after any update, and check for newly unpinned scripts.
+
+## `modal run` exit codes lie when piped
+
+`modal run ... | tail` reported **exit code 0 on a failed build**, because the shell reports the pipe's status. Never pipe it, or set `pipefail`. This is how a hard failure gets mistaken for success.
