@@ -1,14 +1,34 @@
 --- modal_boltz.py.orig	2026-09-18 16:36:35
-+++ modal_boltz.py	2026-09-18 16:36:35
-@@ -80,6 +80,11 @@
++++ modal_boltz.py	2026-09-18 19:02:18
+@@ -78,10 +78,28 @@
+ 
+ image = (
      Image.debian_slim(python_version="3.11")
-     .micromamba()
+-    .micromamba()
++    # PATCHED 2026-09-18: `.micromamba()` with no args builds the conda env with
++    # Modal's CURRENT DEFAULT Python -- now 3.14 -- silently overriding the 3.11 pin
++    # on the line above. That is why pip ran from /opt/conda/lib/python3.14/ and why
++    # pandas' setup.py could not find pkg_resources (setuptools >=81 dropped it).
++    # Pin it here or the line above is decorative.
++    .micromamba(python_version="3.11")
      .apt_install("wget", "git", "gcc", "g++")
+-    # NB: keep this as pip_install — uv's strict build isolation breaks pandas'
+-    # legacy pkg_resources dependency when building via colabfold's git source.
 +    # PATCHED 2026-09-18: pandas' legacy setup.py needs pkg_resources, which newer
 +    # Python images no longer ship. Without this the colabfold install dies with
 +    # ModuleNotFoundError: No module named 'pkg_resources'. Pin <81 -- setuptools 81
 +    # removes pkg_resources outright.
-+    .pip_install("setuptools<81", "wheel")
-     # NB: keep this as pip_install — uv's strict build isolation breaks pandas'
-     # legacy pkg_resources dependency when building via colabfold's git source.
++    # Build deps must be present in the IMAGE because the install below runs with
++    # --no-build-isolation. setuptools pinned <81 (81 removes pkg_resources, which
++    # pandas' legacy setup.py imports). numpy + Cython are pandas' build requirements.
++    .pip_install("setuptools<81", "wheel", "numpy<2.0", "Cython")
++    # PATCHED 2026-09-18: --no-build-isolation.
++    # Root cause: pip builds sdists in an isolated overlay env that Modal creates with
++    # Python 3.14 REGARDLESS of the image's python_version=3.11 pin. That overlay's
++    # setuptools is new enough to have dropped pkg_resources, so pandas' setup.py dies:
++    #     ModuleNotFoundError: No module named 'pkg_resources'
++    # Adding setuptools to the image does not help -- the overlay never sees it.
++    # Disabling isolation makes the build use the image env, which we pin above.
      .pip_install(
+         "colabfold[alphafold-minus-jax]@git+https://github.com/sokrypton/ColabFold@acc0bf772f22feb7f887ad132b7313ff415c8a9f"
+     )

@@ -157,7 +157,28 @@ The config key `configs.need_atom_confidence` is real (`runner/dumper.py`), but 
 
 The protocol's requirement is a multi-arm ensemble of *independent co-folders*, not those three specific models. Boltz preserves that. Protenix stays available as a fourth arm if the v2 identifier is ever resolved — its image builds and runs fine.
 
-## Boltz-2 does not build — root cause found, fix NOT applied (timeboxed)
+## Boltz-2 — FIXED 2026-09-18. Root cause was one missing argument.
+
+**`.micromamba()` called with no args builds its conda env with Modal's CURRENT DEFAULT Python — now 3.14 — silently overriding the `python_version="3.11"` on the line directly above it.**
+
+```python
+Image.debian_slim(python_version="3.11")   # decorative
+.micromamba()                              # <-- actually installs Python 3.14
+```
+
+Fix: `.micromamba(python_version="3.11")`.
+
+Every symptom traced to this: pip ran from `/opt/conda/lib/python3.14/`, whose setuptools >=81 has dropped `pkg_resources`, which pandas' legacy `setup.py` imports. Once the interpreter was actually 3.11, the conda env shipped setuptools **80.9.0** and the original build path worked unmodified.
+
+**Two of my earlier patches were treating symptoms.** Adding `setuptools<81` to the image did nothing (the overlay never saw it) and `--no-build-isolation` did not fix it either — it only produced a traceback that exposed the real interpreter path. An error message disappearing is not the same as a cause being found.
+
+**Runtime config, separate issue:** Boltz refuses to run without alignments. The wrapper's FASTA→YAML converter sets no MSA field, so pass a YAML with `msa: empty` per chain for single-sequence mode. That is the correct setting anyway — binders are scored single-sequence, and it avoids `--use_msa_server` and its IP-ban risk entirely.
+
+**Verified:** Boltz-2 emits `pae_*.npz`, which **ipSAE reads natively** (no patch needed). Scored our IL-6 design at 0.0000, agreeing with both ESMFold2 arms.
+
+⚠️ **Latent conflict:** a later layer upgrades numpy to 2.4.6, breaking ColabFold's `numpy<2.0` pin. Harmless for us — we never invoke ColabFold — but it would matter if target MSAs are ever staged through it.
+
+### (superseded) original diagnosis
 
 `modal_boltz.py` fails during image build, inside the **ColabFold** install:
 
