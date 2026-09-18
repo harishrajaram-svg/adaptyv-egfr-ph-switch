@@ -128,3 +128,31 @@ ESMFold2 → PAE → ipSAE → ipSAE_min runs end to end.
 - ipSAE consumed the sidecar directly in AF3 mode (`.cif` + `.json`). The missing AF3 summary file is only a warning, not a failure.
 
 **Gotcha in `bin/ipsae_min.py`, fixed:** ipsae.py is invoked with `cwd=struct.parent`, so paths must be resolved to absolute first or it exits silently with no output and no error.
+
+## Protenix: the wrapper defaults to v1, not the v2 the protocol specifies
+
+`DEFAULT_MODEL = "protenix_base_20250630_v1.0.0"`.
+
+Anthropic's three-arm ensemble — the one that reached **0.66 macro-AP** against AlphaFold3's 0.55 — used ESMFold2-Full, ESMFold2-Fast and **Protenix v2**. Running the shipped default silently substitutes a different, older model for the third arm, and nothing warns you.
+
+`model_name` is exposed as a CLI flag, so override it: `--model-name <v2 name>`. Confirm the exact identifier against Protenix's model registry before trusting it — a wrong name may fall back rather than error.
+
+### Protenix cannot feed ipSAE without v2 — third arm switched to Boltz-2
+
+The wrapper's Protenix run succeeds but writes **only** `*_summary_confidence_*.json` (pTM, ipTM, per-chain scalars). **No PAE matrix**, so ipSAE cannot score it.
+
+The protocol's fix is `--need_atom_confidence true`. **That option does not exist in v1**:
+
+```
+Error: No such option '--need_atom_confidence'
+```
+
+The config key `configs.need_atom_confidence` is real (`runner/dumper.py`), but v1's `pred` subcommand does not expose it. It is a v2 flag, consistent with the protocol having been written for v2. Patch reverted; the wrapper is back to stock.
+
+**Decision 2026-09-18: use Boltz-2 as the third arm instead.**
+
+- `modal_boltz.py` passes arbitrary params straight through, so `--write_full_pae` needs **no patch**.
+- **ipSAE supports Boltz natively** — `ipsae.py pae_*.npz model_0.cif 10 10` is one of its three documented input formats.
+- MIT, open weights, already pinned to Python 3.11, so none of today's other defects apply.
+
+The protocol's requirement is a multi-arm ensemble of *independent co-folders*, not those three specific models. Boltz preserves that. Protenix stays available as a fourth arm if the v2 identifier is ever resolved — its image builds and runs fine.
