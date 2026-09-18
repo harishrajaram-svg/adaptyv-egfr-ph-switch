@@ -59,3 +59,43 @@ Originals kept as `*.py.orig`. These patches are local to our clone, so **a `git
 ## `modal run` exit codes lie when piped
 
 `modal run ... | tail` reported **exit code 0 on a failed build**, because the shell reports the pipe's status. Never pipe it, or set `pipefail`. This is how a hard failure gets mistaken for success.
+
+## ESMFold2: two defects, both patched
+
+### 1. The pinned `esm` commit cannot build (fixed)
+
+`ESMFOLD2_GIT_REF = "c94ed8d"` fails at image build:
+
+```
+failed to fetch commit 3a8956fb4d4ea16b0ec8e71deef2c2909b6a5cbf
+Terminating task due to error: failed to run builder command
+  uv pip install 'esm @ git+https://github.com/Biohub/esm.git@c94ed8d' ...
+```
+
+Traced it: `esm` at that commit declares
+`transformers @ git+https://github.com/Biohub/transformers.git@3a8956fb...`,
+and **`github.com/Biohub/transformers` returns 404** — private or deleted. No retry fixes this.
+
+Upstream already solved it. The current `esm` main branch uses plain `transformers>=4.57.6,<5.0.0`. **Patched the ref to `43b4548b86762edfa747b07d5f440aad3c33acee`** (esm 3.4.1.post1, 2026-09-16).
+
+The HF weights repo `biohub/ESMFold2` is fine and always was — only the code package was broken.
+
+### 2. It emits no PAE, so ipSAE cannot score it (patched)
+
+The wrapper hand-builds its scores JSON with only `plddt` (a scalar mean), `ptm`, `iptm`, `chain_pair_iptm`. **ipSAE needs the full PAE matrix**, and it reads `plddt` as a per-token array.
+
+So out of the box, the wrapper cannot feed the best-known ranking method — and it fails *silently*, leaving you to fall back on ipTM, which the post-mortems put barely above chance.
+
+Patched to also emit `<name>_sample_<i>_ipsae.json` containing `pae`, per-token `plddt`, `ptm`, `iptm`. It probes four attribute names for the matrix and, if none exist, prints the sample object's full attribute list so the gap is obvious rather than silent.
+
+**If ESMFold2 genuinely exposes no PAE, swap that arm** for Chai-1 or Boltz-2, both of which emit one.
+
+## Only the Full model is reachable
+
+`ESMFOLD2_HF_REPO` is hardcoded to `biohub/ESMFold2`. The protocol's three-arm ensemble also wants **ESMFold2-Fast** (`biohub/ESMFold2-Fast`), which needs either a second patched copy of the script or an env var. Not done yet.
+
+## Scoring is free
+
+ipSAE is pure NumPy and runs locally on CPU. Cloned to `ipsae/`, driven by `bin/ipsae_min.py`.
+
+**`bin/ipsae_min.py` takes the MINIMUM over both alignment directions**, then the **max over seeds**. ipsae.py also prints a row labelled `max` — that is *not* the metric. On the bundled example the directions are 0.449 and 0.866; ipSAE_min is **0.449**. Using the `max` row would systematically overrate every design.
