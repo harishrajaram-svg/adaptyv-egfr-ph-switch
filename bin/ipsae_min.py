@@ -58,16 +58,18 @@ def main():
             print(f"FAILED  {cif.name}  (no ipSAE output -- is the PAE matrix present?)")
             continue
         m, asym = r
-        # strip trailing _sample_N so seeds of one design group together
-        design = cif.stem.rsplit("_sample_", 1)[0]
+        # strip trailing _seed<N>_sample_<N> so all seeds of one design group together
+        import re as _re
+        design = _re.sub(r"(_seed\d+)?_sample_\d+$", "", cif.stem)
         results.setdefault(design, []).append(m)
         print(f"{cif.name}: ipSAE_min={m:.4f}  ({', '.join(f'{k}={v:.3f}' for k, v in asym.items())})")
 
     if results:
         print("\n=== per design, MAX over seeds (the protocol aggregation) ===")
         for d, vals in sorted(results.items(), key=lambda kv: -max(kv[1])):
-            print(f"  {d}: ipSAE_min={max(vals):.4f}  (n={len(vals)}"
-                  f"{', spread=%.4f' % (max(vals) - min(vals)) if len(vals) > 1 else ''})")
+            spread = max(vals) - min(vals)
+            extra = (f", spread={spread:.4f}, min={min(vals):.4f}" if len(vals) > 1 else "")
+            print(f"  {d}: ipSAE_min={max(vals):.4f}  (n={len(vals)}{extra})")
 
 
 if __name__ == "__main__":

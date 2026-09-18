@@ -1,5 +1,5 @@
 --- modal_esmfold2.py.orig	2026-09-18 16:04:05
-+++ modal_esmfold2.py	2026-09-18 16:18:18
++++ modal_esmfold2.py	2026-09-18 18:41:17
 @@ -33,9 +33,16 @@
  GPU = os.environ.get("MODAL_GPU", "A100-40GB")
  TIMEOUT = int(os.environ.get("MODAL_TIMEOUT", 30))
@@ -20,6 +20,15 @@
  ESMFOLD2_CACHE_DIR = "/root/.cache/huggingface"
  
  
+@@ -119,7 +126,7 @@
+ def esmfold2(
+     fasta_name: str,
+     fasta_str: str,
+-    seed: int = 42,
++    seed: int | str = 42,   # PATCHED: accepts "1,2,3,4,5" -- loops seeds in ONE container
+     num_diffusion_samples: int = 1,
+     num_sampling_steps: int = 50,
+     num_loops: int = 3,
 @@ -129,7 +136,10 @@
      import time
  
@@ -32,8 +41,65 @@
  
      t0 = time.time()
      model = ESMFold2Model.from_pretrained(
-@@ -185,6 +195,30 @@
-         outputs.append((Path(f"{fasta_name}_sample_{idx}_scores.json"),
+@@ -142,19 +152,29 @@
+     spi = _fasta_to_input(fasta_str)
+     print(f"[esmfold2] {len(spi.sequences)} entities, samples={num_diffusion_samples}, steps={num_sampling_steps}")
+ 
+-    t0 = time.time()
+-    result = ESMFold2InputBuilder().fold(
+-        model, spi,
+-        num_loops=num_loops,
+-        num_sampling_steps=num_sampling_steps,
+-        num_diffusion_samples=num_diffusion_samples,
+-        seed=seed,
+-        complex_id=fasta_name,
+-    )
+-    print(f"[esmfold2] fold() done in {time.time() - t0:.1f}s")
++    # PATCHED 2026-09-18: fold once per seed, reusing the loaded model.
++    # The protocol requires ipSAE_min max-over->=5 distinct seeds. Model load is ~116s
++    # and a fold ~16s, so looping here costs ~1.5x for 5 seeds instead of ~5x for
++    # five separate containers.
++    seed_list = ([int(x) for x in str(seed).split(",") if x.strip() != ""]
++                 if isinstance(seed, str) else [int(seed)])
++    builder = ESMFold2InputBuilder()
++    samples, sample_seeds = [], []
++    for sd in seed_list:
++        t0 = time.time()
++        result = builder.fold(
++            model, spi,
++            num_loops=num_loops,
++            num_sampling_steps=num_sampling_steps,
++            num_diffusion_samples=num_diffusion_samples,
++            seed=sd,
++            complex_id=fasta_name,
++        )
++        print(f"[esmfold2] seed {sd}: fold() done in {time.time() - t0:.1f}s")
++        got = result if isinstance(result, list) else [result]
++        samples.extend(got)
++        sample_seeds.extend([sd] * len(got))
+ 
+-    samples = result if isinstance(result, list) else [result]
+-
+     def _to_py(v):
+         if v is None:
+             return None
+@@ -168,6 +188,8 @@
+ 
+     outputs: list[tuple[Path, bytes]] = []
+     for idx, sample in enumerate(samples):
++        # PATCHED: tag with seed so seeds don't collide in the output dir
++        _sd = sample_seeds[idx]
+         complex_obj = getattr(sample, "complex", sample)
+         cif_str = complex_obj.to_mmcif()
+         plddt_list = _to_py(complex_obj.plddt) or []
+@@ -181,17 +203,41 @@
+             "iptm": _to_py(getattr(sample, "iptm", None)),
+             "chain_pair_iptm": _to_py(getattr(sample, "pair_chains_iptm", None)),
+         }
+-        outputs.append((Path(f"{fasta_name}_sample_{idx}.cif"), cif_str.encode()))
+-        outputs.append((Path(f"{fasta_name}_sample_{idx}_scores.json"),
++        outputs.append((Path(f"{fasta_name}_seed{_sd}_sample_{idx}.cif"), cif_str.encode()))
++        outputs.append((Path(f"{fasta_name}_seed{_sd}_sample_{idx}_scores.json"),
                          json.dumps(scores, indent=2).encode()))
  
 +        # PATCHED: emit an ipSAE-compatible sidecar.
@@ -57,9 +123,17 @@
 +            "ptm": scores["ptm"],
 +            "iptm": scores["iptm"],
 +        }
-+        outputs.append((Path(f"{fasta_name}_sample_{idx}_ipsae.json"),
++        outputs.append((Path(f"{fasta_name}_seed{_sd}_sample_{idx}_ipsae.json"),
 +                        json.dumps(ipsae_scores).encode()))
 +
      return outputs
  
  
+ @app.local_entrypoint()
+ def main(
+     input_faa: str,
+-    seed: int = 42,
++    seed: str = "42",   # PATCHED: comma-separated for multi-seed, e.g. "1,2,3,4,5"
+     num_diffusion_samples: int = 1,
+     num_sampling_steps: int = 50,
+     num_loops: int = 3,

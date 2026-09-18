@@ -181,3 +181,38 @@ So adding `setuptools<81` to the image does **not** fix it — the overlay never
 **Decision:** stopped here on a stated timebox. Two arms (ESMFold2 Full + Fast) are verified and sufficient to run the validation gate, which is the higher-value work. Boltz stays a known-diagnosed, unfixed third arm.
 
 Note this is the **third distinct failure** traceable to Modal's 3.14 default (BoltzGen, Chai pre-emptively, Boltz). Any new wrapper should be assumed guilty until checked.
+
+
+## Multi-seed: patched, and measured
+
+The wrapper took **one seed per call**, so the protocol's "max over >=5 distinct seeds" meant five containers and five model loads -- a real 5x.
+
+**Patched to accept `--seed "1,2,3,4,5"` and loop inside one container**, reusing the loaded model. Outputs are tagged `_seed<N>_` so they don't collide; `bin/ipsae_min.py` groups them and reports max, min and spread.
+
+Measured on barnase/barstar, 2026-09-18:
+
+| | |
+|---|---|
+| Model load | 137s (paid once) |
+| Fold, seed 1 | 5.5s |
+| Folds, seeds 2-5 | 4.0s each |
+
+**5 seeds costs ~1.16x one seed**, not 5x. There is little reason to screen at one seed except on very large pools.
+
+### Seed noise, measured
+
+| Seed | ipSAE_min |
+|---|---|
+| 1 | 0.8860 |
+| 2 | 0.8848 |
+| 3 | 0.8859 |
+| 4 | 0.8800 |
+| 5 | 0.8899 |
+
+**Max 0.8899, min 0.8800, spread 0.0099.**
+
+Tighter than the ~0.07 discrepancy Adaptyv reported between entrant and organiser runs -- so most of that gap was likely hardware/software, not seed choice.
+
+**Interpretation.** 0.01 is negligible against the binder/non-binder gap (0.89 vs 0.00), so one-seed screening is defensible for a bulk pool. It is **not** negligible between candidates near a threshold: two designs at 0.62 and 0.61 are indistinguishable at one seed. Five seeds is what makes a shortlist ranking mean anything.
+
+Measured on one strong complex. **Re-measure on a marginal design in week 1** -- spread may be wider exactly where it matters most.
