@@ -1,0 +1,14 @@
+--- modal_boltz.py.orig	2026-09-18 16:36:35
++++ modal_boltz.py	2026-09-18 16:36:35
+@@ -80,6 +80,11 @@
+     Image.debian_slim(python_version="3.11")
+     .micromamba()
+     .apt_install("wget", "git", "gcc", "g++")
++    # PATCHED 2026-09-18: pandas' legacy setup.py needs pkg_resources, which newer
++    # Python images no longer ship. Without this the colabfold install dies with
++    # ModuleNotFoundError: No module named 'pkg_resources'. Pin <81 -- setuptools 81
++    # removes pkg_resources outright.
++    .pip_install("setuptools<81", "wheel")
+     # NB: keep this as pip_install — uv's strict build isolation breaks pandas'
+     # legacy pkg_resources dependency when building via colabfold's git source.
+     .pip_install(
