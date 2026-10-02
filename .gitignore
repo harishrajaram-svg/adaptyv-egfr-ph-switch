@@ -2,8 +2,13 @@ biomodals/
 runs/
 *.pdb
 !targets/*.pdb
+!targets/**/*.pdb
 __pycache__/
 .venv/
 *.pt
 *.npz
 ipsae/
+
+# FoldSeek binary + databases (large, re-downloadable)
+tools/foldseek/
+tools/fsdb/

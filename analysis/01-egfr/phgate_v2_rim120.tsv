@@ -1,0 +1,121 @@
+design	pka_free	pka_bound	delta	ratio_6.5_over_7.4	contacts	passes	verdict
+analysis/01-egfr/rim-all/complex/rimA01_r01_boltzgen_egfr_d3_rimA_18.pdb	6.22	6.37	+0.15	1.114	32	False	weak - ratio below 1.20
+analysis/01-egfr/rim-all/complex/rimA01_r02_boltzgen_egfr_d3_rimA_26.pdb	6.22	7.03	+0.81	2.151	47	True	PASS - real switch
+analysis/01-egfr/rim-all/complex/rimA01_r03_boltzgen_egfr_d3_rimA_05.pdb	6.22	5.84	-0.38	0.829	42	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r04_boltzgen_egfr_d3_rimA_03.pdb	6.22	2.24	-3.98	0.699	73	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r05_boltzgen_egfr_d3_rimA_11.pdb	6.22	5.63	-0.59	0.780	43	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r06_boltzgen_egfr_d3_rimA_21.pdb	6.22	5.17	-1.05	0.728	43	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r07_boltzgen_egfr_d3_rimA_00.pdb	6.22	5.93	-0.29	0.858	55	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r08_boltzgen_egfr_d3_rimA_25.pdb	6.22	5.52	-0.70	0.762	55	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r09_boltzgen_egfr_d3_rimA_49.pdb	6.22	5.00	-1.22	0.718	68	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r10_boltzgen_egfr_d3_rimA_52.pdb	6.22	3.95	-2.27	0.701	85	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r11_boltzgen_egfr_d3_rimA_12.pdb	6.22	4.72	-1.50	0.709	52	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r12_boltzgen_egfr_d3_rimA_53.pdb	6.22	4.36	-1.86	0.704	72	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r13_boltzgen_egfr_d3_rimA_39.pdb	6.22	3.13	-3.09	0.699	63	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r14_boltzgen_egfr_d3_rimA_54.pdb	6.22	4.89	-1.33	0.714	49	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r15_boltzgen_egfr_d3_rimA_20.pdb	6.22	7.71	+1.49	3.958	15	True	PASS - real switch
+analysis/01-egfr/rim-all/complex/rimA01_r16_boltzgen_egfr_d3_rimA_16.pdb	6.22	4.94	-1.28	0.716	13	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r17_boltzgen_egfr_d3_rimA_04.pdb	6.22	5.69	-0.53	0.792	34	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r18_boltzgen_egfr_d3_rimA_07.pdb	6.22	5.92	-0.30	0.855	31	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r19_boltzgen_egfr_d3_rimA_28.pdb	6.22	4.28	-1.94	0.703	34	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r20_boltzgen_egfr_d3_rimA_23.pdb	6.22	6.72	+0.50	1.538	83	True	PASS - real switch
+analysis/01-egfr/rim-all/complex/rimA01_r21_boltzgen_egfr_d3_rimA_27.pdb	6.22	4.41	-1.81	0.704	62	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r22_boltzgen_egfr_d3_rimA_10.pdb	6.22	5.92	-0.30	0.855	14	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r23_boltzgen_egfr_d3_rimA_45.pdb	6.22	6.28	+0.06	1.041	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimA01_r24_boltzgen_egfr_d3_rimA_15.pdb	6.22	3.96	-2.26	0.701	55	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r25_boltzgen_egfr_d3_rimA_22.pdb	6.22	5.89	-0.33	0.845	24	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r26_boltzgen_egfr_d3_rimA_41.pdb	6.22	5.76	-0.46	0.808	17	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r27_boltzgen_egfr_d3_rimA_31.pdb	6.22	3.96	-2.26	0.701	43	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r28_boltzgen_egfr_d3_rimA_46.pdb	6.22	4.69	-1.53	0.709	83	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r29_boltzgen_egfr_d3_rimA_06.pdb	6.22	4.87	-1.35	0.713	15	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA01_r30_boltzgen_egfr_d3_rimA_19.pdb	6.22	3.26	-2.96	0.700	73	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r01_boltzgen_egfr_d3_rimA_07.pdb	6.22	4.42	-1.80	0.704	35	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r02_boltzgen_egfr_d3_rimA_08.pdb	6.22	4.46	-1.76	0.705	29	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r03_boltzgen_egfr_d3_rimA_05.pdb	6.22	3.96	-2.26	0.701	73	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r04_boltzgen_egfr_d3_rimA_42.pdb	6.22	4.37	-1.85	0.704	62	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r05_boltzgen_egfr_d3_rimA_19.pdb	6.22	7.23	+1.01	2.657	59	True	PASS - real switch
+analysis/01-egfr/rim-all/complex/rimA02_r06_boltzgen_egfr_d3_rimA_45.pdb	6.22	3.57	-2.65	0.700	53	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r07_boltzgen_egfr_d3_rimA_00.pdb	6.22	5.79	-0.43	0.815	19	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r08_boltzgen_egfr_d3_rimA_09.pdb	6.22	3.25	-2.97	0.699	80	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r09_boltzgen_egfr_d3_rimA_27.pdb	6.22	5.54	-0.68	0.765	21	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r10_boltzgen_egfr_d3_rimA_12.pdb	6.22	4.85	-1.37	0.713	42	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r11_boltzgen_egfr_d3_rimA_59.pdb	6.22	6.90	+0.68	1.865	66	True	PASS - real switch
+analysis/01-egfr/rim-all/complex/rimA02_r12_boltzgen_egfr_d3_rimA_25.pdb	6.22	6.26	+0.04	1.027	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimA02_r13_boltzgen_egfr_d3_rimA_33.pdb	6.22	5.44	-0.78	0.752	51	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r14_boltzgen_egfr_d3_rimA_21.pdb	6.22	4.86	-1.36	0.713	43	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r15_boltzgen_egfr_d3_rimA_14.pdb	6.22	6.27	+0.05	1.034	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimA02_r16_boltzgen_egfr_d3_rimA_13.pdb	6.22	4.14	-2.08	0.702	40	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r17_boltzgen_egfr_d3_rimA_17.pdb	6.22	3.43	-2.79	0.700	80	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r18_boltzgen_egfr_d3_rimA_32.pdb	6.22	4.12	-2.10	0.702	88	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r19_boltzgen_egfr_d3_rimA_22.pdb	6.22	5.72	-0.50	0.798	21	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r20_boltzgen_egfr_d3_rimA_46.pdb	6.22	3.09	-3.13	0.699	120	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r21_boltzgen_egfr_d3_rimA_04.pdb	6.22	5.27	-0.95	0.735	31	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r22_boltzgen_egfr_d3_rimA_36.pdb	6.22	6.16	-0.06	0.963	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimA02_r23_boltzgen_egfr_d3_rimA_50.pdb	6.22	5.37	-0.85	0.744	26	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r24_boltzgen_egfr_d3_rimA_28.pdb	6.22	5.84	-0.38	0.829	35	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r25_boltzgen_egfr_d3_rimA_51.pdb	6.22	3.85	-2.37	0.701	125	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r26_boltzgen_egfr_d3_rimA_58.pdb	6.22	5.49	-0.73	0.758	30	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r27_boltzgen_egfr_d3_rimA_11.pdb	6.22	4.30	-1.92	0.703	48	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r28_boltzgen_egfr_d3_rimA_47.pdb	6.22	6.21	-0.01	0.994	27	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r29_boltzgen_egfr_d3_rimA_23.pdb	6.22	4.18	-2.04	0.702	36	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimA02_r30_boltzgen_egfr_d3_rimA_52.pdb	6.22	5.92	-0.30	0.855	8	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r01_boltzgen_egfr_d3_rimB_27.pdb	6.22	5.12	-1.10	0.724	36	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r02_boltzgen_egfr_d3_rimB_38.pdb	6.22	3.30	-2.92	0.700	84	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r03_boltzgen_egfr_d3_rimB_21.pdb	6.22	3.26	-2.96	0.700	57	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r04_boltzgen_egfr_d3_rimB_20.pdb	6.22	3.39	-2.83	0.700	94	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r05_boltzgen_egfr_d3_rimB_19.pdb	6.22	5.89	-0.33	0.845	42	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r06_boltzgen_egfr_d3_rimB_13.pdb	6.22	3.71	-2.51	0.700	47	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r07_boltzgen_egfr_d3_rimB_32.pdb	6.22	4.54	-1.68	0.706	49	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r08_boltzgen_egfr_d3_rimB_28.pdb	6.22	2.83	-3.39	0.699	63	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r09_boltzgen_egfr_d3_rimB_07.pdb	6.22	6.38	+0.16	1.122	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimB01_r10_boltzgen_egfr_d3_rimB_23.pdb	6.22	5.16	-1.06	0.727	20	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r11_boltzgen_egfr_d3_rimB_26.pdb	6.22	4.06	-2.16	0.701	63	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r12_boltzgen_egfr_d3_rimB_11.pdb	6.22	5.62	-0.60	0.778	70	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r13_boltzgen_egfr_d3_rimB_04.pdb	6.22	5.42	-0.80	0.749	9	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r14_boltzgen_egfr_d3_rimB_39.pdb	6.22	5.85	-0.37	0.832	58	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r15_boltzgen_egfr_d3_rimB_42.pdb	6.22	4.87	-1.35	0.713	26	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r16_boltzgen_egfr_d3_rimB_48.pdb	6.22	4.85	-1.37	0.713	45	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r17_boltzgen_egfr_d3_rimB_24.pdb	6.22	5.38	-0.84	0.745	24	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r18_boltzgen_egfr_d3_rimB_40.pdb	6.22	6.26	+0.04	1.027	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimB01_r19_boltzgen_egfr_d3_rimB_05.pdb	6.22	4.64	-1.58	0.708	24	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r20_boltzgen_egfr_d3_rimB_29.pdb	6.22	5.77	-0.45	0.810	35	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r21_boltzgen_egfr_d3_rimB_00.pdb	6.22	4.70	-1.52	0.709	34	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r22_boltzgen_egfr_d3_rimB_09.pdb	6.22	5.78	-0.44	0.813	31	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r23_boltzgen_egfr_d3_rimB_35.pdb	6.22	4.71	-1.51	0.709	61	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r24_boltzgen_egfr_d3_rimB_46.pdb	6.22	6.30	+0.08	1.056	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimB01_r25_boltzgen_egfr_d3_rimB_59.pdb	6.22	5.70	-0.52	0.794	1	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r26_boltzgen_egfr_d3_rimB_12.pdb	6.22	6.20	-0.02	0.987	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimB01_r27_boltzgen_egfr_d3_rimB_10.pdb	6.22	3.38	-2.84	0.700	101	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r28_boltzgen_egfr_d3_rimB_18.pdb	6.22	4.98	-1.24	0.718	60	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r29_boltzgen_egfr_d3_rimB_34.pdb	6.22	4.67	-1.55	0.708	42	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB01_r30_boltzgen_egfr_d3_rimB_06.pdb	6.22	5.41	-0.81	0.748	59	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r01_boltzgen_egfr_d3_rimB_12.pdb	6.22	4.01	-2.21	0.701	50	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r02_boltzgen_egfr_d3_rimB_27.pdb	6.22	3.95	-2.27	0.701	33	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r03_boltzgen_egfr_d3_rimB_07.pdb	6.22	5.59	-0.63	0.773	26	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r04_boltzgen_egfr_d3_rimB_18.pdb	6.22	4.10	-2.12	0.702	50	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r05_boltzgen_egfr_d3_rimB_30.pdb	6.22	5.85	-0.37	0.832	18	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r06_boltzgen_egfr_d3_rimB_28.pdb	6.22	6.16	-0.06	0.963	18	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r07_boltzgen_egfr_d3_rimB_19.pdb	6.22	6.23	+0.01	1.007	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimB02_r08_boltzgen_egfr_d3_rimB_50.pdb	6.22	4.80	-1.42	0.711	35	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r09_boltzgen_egfr_d3_rimB_13.pdb	6.22	4.59	-1.63	0.707	65	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r10_boltzgen_egfr_d3_rimB_02.pdb	6.22	3.22	-3.00	0.699	78	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r11_boltzgen_egfr_d3_rimB_53.pdb	6.22	4.02	-2.20	0.701	88	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r12_boltzgen_egfr_d3_rimB_22.pdb	6.22	5.47	-0.75	0.756	49	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r13_boltzgen_egfr_d3_rimB_09.pdb	6.22	6.07	-0.15	0.916	13	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r14_boltzgen_egfr_d3_rimB_26.pdb	6.22	7.43	+1.21	3.210	16	True	PASS - real switch
+analysis/01-egfr/rim-all/complex/rimB02_r15_boltzgen_egfr_d3_rimB_48.pdb	6.22	3.12	-3.10	0.699	85	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r16_boltzgen_egfr_d3_rimB_57.pdb	6.22	3.93	-2.29	0.701	71	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r17_boltzgen_egfr_d3_rimB_15.pdb	6.22	6.26	+0.04	1.027	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimB02_r18_boltzgen_egfr_d3_rimB_24.pdb	6.22	5.56	-0.66	0.768	27	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r19_boltzgen_egfr_d3_rimB_37.pdb	6.22	4.97	-1.25	0.717	34	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r20_boltzgen_egfr_d3_rimB_29.pdb	6.22	4.89	-1.33	0.714	75	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r21_boltzgen_egfr_d3_rimB_23.pdb	6.22	6.25	+0.03	1.020	0	False	trivial - H433 never contacted
+analysis/01-egfr/rim-all/complex/rimB02_r22_boltzgen_egfr_d3_rimB_44.pdb	6.22	4.26	-1.96	0.703	44	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r23_boltzgen_egfr_d3_rimB_03.pdb	6.22	6.10	-0.12	0.931	2	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r24_boltzgen_egfr_d3_rimB_05.pdb	6.22	6.32	+0.10	1.072	24	False	weak - ratio below 1.20
+analysis/01-egfr/rim-all/complex/rimB02_r25_boltzgen_egfr_d3_rimB_06.pdb	6.22	4.58	-1.64	0.706	28	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r26_boltzgen_egfr_d3_rimB_39.pdb	6.22	4.40	-1.82	0.704	63	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r27_boltzgen_egfr_d3_rimB_20.pdb	6.22	5.44	-0.78	0.752	43	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r28_boltzgen_egfr_d3_rimB_00.pdb	6.22	7.61	+1.39	3.702	30	True	PASS - real switch
+analysis/01-egfr/rim-all/complex/rimB02_r29_boltzgen_egfr_d3_rimB_49.pdb	6.22	5.32	-0.90	0.739	63	False	FAIL - acid weakens
+analysis/01-egfr/rim-all/complex/rimB02_r30_boltzgen_egfr_d3_rimB_08.pdb	6.22	3.00	-3.22	0.699	89	False	FAIL - acid weakens

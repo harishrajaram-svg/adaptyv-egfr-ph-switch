@@ -1,0 +1,18 @@
+# EGFR domain III binder, 120-160 aa, BoltzGen protein-anything
+# Target renumbered 1-170 so author numbering == sequential index (no label_seq_id ambiguity).
+# Hotspots: 99=H433, 101=Q435, 102=F436 in canonical UniProt numbering (new + 334).
+entities:
+  - protein:
+      id: B
+      sequence: 120..160
+
+  - file:
+      path: egfr_d3_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 99,101,102
+      structure_groups: "all"

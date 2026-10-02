@@ -1,0 +1,94 @@
+diff --git a/modal_germinal.py b/modal_germinal.py
+index 021b7bf..70b7d58 100644
+--- a/modal_germinal.py
++++ b/modal_germinal.py
+@@ -233,7 +233,7 @@ image = (
+         "pip install 'jax[cuda12_pip]==0.5.3' -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
+     )
+     .uv_pip_install(
+-        "https://west.rosettacommons.org/pyrosetta/release/release/PyRosetta4.Release.python310.ubuntu.wheel/pyrosetta-2026.21+release.36f0c659eb-cp310-cp310-linux_x86_64.whl"
++        "https://west.rosettacommons.org/pyrosetta/release/release/PyRosetta4.Release.python310.ubuntu.wheel/pyrosetta-2026.39+release.0c38201cdc-cp310-cp310-linux_x86_64.whl"
+     )
+     .run_commands(
+         "ln -s /usr/local/lib/python3.*/dist-packages/colabdesign colabdesign"
+@@ -254,6 +254,14 @@ image = (
+     .run_commands(
+         "pip install 'jax[cuda12_pip]==0.5.3' -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
+     )
++    # PATCHED: Germinal (or a dependency) imports `pkg_resources`, which ships with
++    # setuptools and is absent from a bare modern Python env -- the run died with
++    # ModuleNotFoundError AFTER the image built and after the scfv filters copied.
++    # Added as the LAST layer before download_models so earlier cached layers survive.
++    # mdtraj 1.9.9 does `from pkg_resources import parse_version`, and setuptools >=81
++    # removed pkg_resources — so installing plain `setuptools` provided nothing and the run
++    # failed identically. Pin below the removal.
++    .uv_pip_install("setuptools<81")
+     .run_function(
+         download_models,
+         gpu="A100",
+@@ -394,14 +402,19 @@ def run_germinal_design(
+ 
+         target_name = "pdl1"
+ 
+-        # Copy filter configs from Germinal and remove @package annotations
+-        initial_filter_src = germinal_configs_path / "filter" / "initial" / "vhh.yaml"
+-        initial_filter_dst = temp_path / "configs" / "filter" / "initial" / "vhh.yaml"
+-        shutil.copy2(initial_filter_src, initial_filter_dst)
+-
+-        final_filter_src = germinal_configs_path / "filter" / "final" / "vhh.yaml"
+-        final_filter_dst = temp_path / "configs" / "filter" / "final" / "vhh.yaml"
+-        shutil.copy2(final_filter_src, final_filter_dst)
++        # Copy filter configs from Germinal and remove @package annotations.
++        # PATCHED: these were hardcoded to vhh.yaml regardless of --run-type, so an scfv
++        # run would look for filter/{initial,final}/scfv.yaml and find nothing. Copy the
++        # filters for the requested run_type, and always copy vhh as well so the vhh path
++        # keeps working unchanged.
++        for stage in ("initial", "final"):
++            for name in {run_type.lower(), "vhh"}:
++                src = germinal_configs_path / "filter" / stage / f"{name}.yaml"
++                if src.exists():
++                    shutil.copy2(src, temp_path / "configs" / "filter" / stage / f"{name}.yaml")
++                    print(f"  copied filter/{stage}/{name}.yaml")
++                else:
++                    print(f"  WARNING: no filter/{stage}/{name}.yaml in Germinal configs")
+ 
+         # Run Germinal using subprocess (the proper way)
+         try:
+@@ -593,7 +606,6 @@ def main(
+         out_dir: Output directory base path
+     """
+     import json
+-    import yaml
+     from pathlib import Path
+     from datetime import datetime
+ 
+@@ -602,9 +614,27 @@ def main(
+     if not target_yaml_path.exists():
+         raise FileNotFoundError(f"Target YAML file not found: {target_yaml}")
+ 
+-    # Read YAML content and parse it
++    # Read YAML content and parse it.
++    # PATCHED: this runs LOCALLY, not in the container. `modal` is commonly installed as an
++    # isolated uv tool whose environment has no PyYAML, and `uv run --with PyYAML modal ...`
++    # does not reach it because the shim uses the tool's own env -- so this line crashed the
++    # run AFTER a ~20 min image build. Target configs are flat `key: value`, so parse them
++    # directly and keep PyYAML as an optional fast path.
+     target_yaml_content = target_yaml_path.read_text()
+-    target_data = yaml.safe_load(target_yaml_content)
++    try:
++        import yaml
++        target_data = yaml.safe_load(target_yaml_content)
++    except ModuleNotFoundError:
++        target_data = {}
++        for line in target_yaml_content.splitlines():
++            line = line.split("#", 1)[0].strip()
++            if not line or ":" not in line:
++                continue
++            k, v = line.split(":", 1)
++            v = v.strip().strip('"').strip("'")
++            if v.lstrip("-").isdigit():
++                v = int(v)
++            target_data[k.strip()] = v
+ 
+     # Validate required fields
+     missing_fields = [

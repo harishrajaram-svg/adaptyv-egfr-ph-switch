@@ -1,0 +1,13 @@
+design	his	pka_free	pka_bound	delta	ratio	passes
+d2d_101_l133_s154858_mpnn9_model1	103	5.79	5.79	0.0	1.0	False
+d2d_101_l120_s869126_mpnn5_model2	112	6.57	6.56	-0.01	0.991	False
+d2d_101_l120_s869126_mpnn1_model1	78	7.47	7.41	-0.06	0.95	False
+d2d_101_l120_s869126_mpnn5_model2	84	6.36	6.27	-0.09	0.936	False
+d2d_101_l120_s869126_mpnn5_model2	57	6.06	5.91	-0.15	0.934	False
+d2d_101_l120_s869126_mpnn1_model1	57	6.89	6.69	-0.2	0.808	False
+d2d_101_l120_s869126_mpnn5_model2	78	7.23	6.93	-0.3	0.725	False
+d2b_101_l116_s170000_mpnn2_model2	51	6.21	3.23	-2.98	0.704	False
+d2d_101_l120_s869126_mpnn1_model1	84	6.33	5.4	-0.93	0.692	False
+d2d_101_l120_s869126_mpnn5_model2	71	6.28	3.67	-2.61	0.672	False
+d2b_101_l116_s170000_mpnn4_model2	51	6.3	3.8	-2.5	0.663	False
+d2d_101_l120_s869126_mpnn1_model1	71	6.35	3.84	-2.51	0.639	False

@@ -1,0 +1,6 @@
+design	pka_free	pka_bound	delta	ratio_6.5_over_7.4	contacts	passes	verdict
+analysis/01-egfr/bc-designs/complex/d2b_101_l116_s170000_mpnn2_model2.pdb	6.22	4.23	-1.99	0.702	61	False	FAIL - acid weakens
+analysis/01-egfr/bc-designs/complex/d2b_101_l116_s170000_mpnn4_model2.pdb	6.22	4.14	-2.08	0.702	48	False	FAIL - acid weakens
+analysis/01-egfr/bc-designs/complex/d2d_101_l120_s869126_mpnn1_model1.pdb	6.22	4.81	-1.41	0.712	46	False	FAIL - acid weakens
+analysis/01-egfr/bc-designs/complex/d2d_101_l120_s869126_mpnn5_model2.pdb	6.22	4.78	-1.44	0.711	32	False	FAIL - acid weakens
+analysis/01-egfr/bc-designs/complex/d2d_101_l133_s154858_mpnn9_model1.pdb	6.22	3.80	-2.42	0.700	102	False	FAIL - acid weakens

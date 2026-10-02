@@ -1,0 +1,36 @@
+# MECHANISM A (domain IV) -- binder-side histidine paired with a TARGET carboxylate pair.
+#
+# Site: E543/E545 canonical (renumbered 516/518). Their carboxylates sit 10.9 A apart, so one
+# binder face reaches both. D510/E521/E534 add acidity within 15 A but are deliberately NOT
+# hotspots: they fail the conserved + exposed + glycan-clear filter, and steering onto them
+# would put objective 2 (mouse cross-reactivity) at risk.
+#
+# Why not domain III: scanning all 65 acidic residues on the full ECD for conserved + exposed
+# + glycan-clear (2026-10-02) leaves domain III with no usable acidic surface. The domain II
+# cluster E319/E320/D321 is the other qualifying site and has its own spec file.
+#
+# Why the WHOLE ECD and not a domain IV trim: same reason as the domain II spec -- a trim
+# would invent a surface that does not exist in the intact receptor. Designing against all
+# 609 residues also makes the full-ECD revalidation step redundant for these designs.
+#
+# Numbering: file renumbered 1..609 so author numbering == label_seq_id (BoltzGen indexes by
+# label_seq_id). canonical = renumbered + 27; 516/518 verified as GLU/GLU.
+# H433 is renumbered 406, i.e. ~90 A away -- Mechanism B is deliberately NOT in play here.
+#
+# Measured outcome of arms mechAd4_01/02 (2026-10-02): 1 real switch in 49 binder histidines
+# (mechAd4_02_r02, His122, pKa 7.25 -> 7.68, 1.43x) -- the project's only Mechanism A hit.
+entities:
+  - protein:
+      id: B
+      sequence: 120..160
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 516,518
+      structure_groups: "all"

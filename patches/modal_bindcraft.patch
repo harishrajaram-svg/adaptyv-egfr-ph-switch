@@ -1,0 +1,39 @@
+diff --git a/modal_bindcraft.py b/modal_bindcraft.py
+index c39a196..e648980 100644
+--- a/modal_bindcraft.py
++++ b/modal_bindcraft.py
+@@ -912,6 +912,16 @@ def bindcraft(
+                             )
+                             if filter_conditions is True:
+                                 print(mpnn_design_name + " passed all filters")
++                                # Stream the accepted sequence to stdout so a container
++                                # timeout cannot destroy it: the return value at line ~1090
++                                # is the ONLY other path out, and it never runs on a kill.
++                                print(
++                                    "ACCEPTED_SEQ\t"
++                                    + mpnn_design_name
++                                    + "\t"
++                                    + mpnn_sequence["seq"],
++                                    flush=True,
++                                )
+                                 accepted_mpnn += 1
+                                 accepted_designs += 1
+ 
+@@ -1102,6 +1112,8 @@ def main(
+     lengths: str = "50,130",
+     number_of_final_designs: int = 1,
+     max_trajectories: int | None = None,
++    design_protocol: str = "Default",
++    filter_option: str = "Default",
+     binder_name: str | None = None,
+     out_dir: str = "./out/bindcraft",
+     run_name: str | None = None,
+@@ -1148,6 +1160,8 @@ def main(
+         lengths=lengths_list,
+         number_of_final_designs=number_of_final_designs,
+         max_trajectories=max_trajectories,
++        design_protocol=design_protocol,
++        filter_option=filter_option,
+     )
+ 
+     for out_file, out_content in outputs:

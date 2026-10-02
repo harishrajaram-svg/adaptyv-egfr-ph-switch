@@ -1,0 +1,6 @@
+target_name: "egfr_d3"
+target_pdb_path: "egfr_d3_6aru.pdb"
+target_chain: "A"
+binder_chain: "B"
+target_hotspots: "A409,A411,A440,A465"
+length: 170

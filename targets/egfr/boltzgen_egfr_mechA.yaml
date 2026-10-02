@@ -1,0 +1,32 @@
+# MECHANISM A — binder-side histidine paired with a TARGET carboxylate cluster.
+#
+# Why here and not domain III: scanning all 65 acidic residues on the full ECD for
+# conserved + exposed + glycan-clear (2026-10-02) leaves domain III with no usable acidic
+# surface, while domain II yields E319/E320/D321 -- three CONTIGUOUS acidic residues,
+# conserved human<->mouse, exposed, nearest modelled glycan 22-28 A. That is the "suitable
+# local acidic surface" PK made Mechanism A conditional on.
+#
+# Why the WHOLE ECD and not a domain II trim: the cluster sits in a groove whose 25 A
+# neighbourhood draws residues from mature 253-338, 554-579 and 587-607 -- it is a
+# multi-domain crevice, so any trim would invent a surface that does not exist in the
+# intact receptor. Designing against all 609 residues also makes the full-ECD
+# revalidation step redundant for these designs.
+#
+# Numbering: file renumbered 1..609 so author numbering == label_seq_id. BoltzGen indexes
+# by label_seq_id. 292/293/294 = E319/E320/D321 canonical, verified residue-by-residue.
+# H433 is renumbered 406, i.e. 39 A away -- Mechanism B is deliberately NOT in play here.
+entities:
+  - protein:
+      id: B
+      sequence: 120..160
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 292,293,294
+      structure_groups: "all"

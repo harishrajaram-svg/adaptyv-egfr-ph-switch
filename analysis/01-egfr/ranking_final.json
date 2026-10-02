@@ -1,0 +1,212 @@
+[
+ {
+  "name": "bg01_r02_boltzgen_egfr_d3_22",
+  "src": "bg-domIII",
+  "ratio": 0.701,
+  "real": false,
+  "sim": 27.7,
+  "ips": 0.1888,
+  "n": 5,
+  "spread": 0.1888
+ },
+ {
+  "name": "bg02_r01_boltzgen_egfr_d3_11",
+  "src": "bg-domIII",
+  "ratio": 1.041,
+  "real": false,
+  "sim": 23.7,
+  "ips": 0.3254,
+  "n": 5,
+  "spread": 0.3254
+ },
+ {
+  "name": "bg03_r04_boltzgen_egfr_d3_17",
+  "src": "bg-domIII",
+  "ratio": 0.699,
+  "real": false,
+  "sim": 27.6,
+  "ips": 0.0,
+  "n": 5,
+  "spread": 0.0
+ },
+ {
+  "name": "bg04_r01_boltzgen_egfr_d3_21",
+  "src": "bg-domIII",
+  "ratio": 0.74,
+  "real": false,
+  "sim": 25.2,
+  "ips": 0.0,
+  "n": 5,
+  "spread": 0.0
+ },
+ {
+  "name": "bg04_r03_boltzgen_egfr_d3_00",
+  "src": "bg-domIII",
+  "ratio": 2.472,
+  "real": true,
+  "sim": 25.2,
+  "ips": 0.0,
+  "n": 5,
+  "spread": 0.0
+ },
+ {
+  "name": "bg04_r05_boltzgen_egfr_d3_08",
+  "src": "bg-domIII",
+  "ratio": 1.786,
+  "real": true,
+  "sim": 19.3,
+  "ips": 0.2141,
+  "n": 5,
+  "spread": 0.2141
+ },
+ {
+  "name": "rimA01_r01_boltzgen_egfr_d3_rimA_18",
+  "src": "bg-rim",
+  "ratio": 1.114,
+  "real": false,
+  "sim": 20.1,
+  "ips": 0.0,
+  "n": 5,
+  "spread": 0.0
+ },
+ {
+  "name": "rimA01_r02_boltzgen_egfr_d3_rimA_26",
+  "src": "bg-rim",
+  "ratio": 2.151,
+  "real": true,
+  "sim": 21.2,
+  "ips": 0.519,
+  "n": 5,
+  "spread": 0.1324
+ },
+ {
+  "name": "rimA01_r05_boltzgen_egfr_d3_rimA_11",
+  "src": "bg-rim",
+  "ratio": 0.78,
+  "real": false,
+  "sim": 22.6,
+  "ips": 0.3243,
+  "n": 5,
+  "spread": 0.0711
+ },
+ {
+  "name": "rimA02_r01_boltzgen_egfr_d3_rimA_07",
+  "src": "bg-rim",
+  "ratio": 0.704,
+  "real": false,
+  "sim": 25.8,
+  "ips": 0.1434,
+  "n": 5,
+  "spread": 0.1434
+ },
+ {
+  "name": "rimB01_r01_boltzgen_egfr_d3_rimB_27",
+  "src": "bg-rim",
+  "ratio": 0.724,
+  "real": false,
+  "sim": 23.5,
+  "ips": 0.0113,
+  "n": 5,
+  "spread": 0.0113
+ },
+ {
+  "name": "rimB02_r01_boltzgen_egfr_d3_rimB_12",
+  "src": "bg-rim",
+  "ratio": 0.701,
+  "real": false,
+  "sim": 24.2,
+  "ips": 0.3672,
+  "n": 5,
+  "spread": 0.3356
+ },
+ {
+  "name": "rimB02_r02_boltzgen_egfr_d3_rimB_27",
+  "src": "bg-rim",
+  "ratio": 0.701,
+  "real": false,
+  "sim": 22.2,
+  "ips": 0.0,
+  "n": 5,
+  "spread": 0.0
+ },
+ {
+  "name": "mechAd4_01_r01_boltzgen_egfr_mechA_d4_04",
+  "src": "mechA-domIV",
+  "ratio": 0.0,
+  "real": false,
+  "sim": 14.7,
+  "ips": 0.0,
+  "n": 5,
+  "spread": 0.0
+ },
+ {
+  "name": "mechA01_r01_boltzgen_egfr_mechA_05",
+  "src": "mechA-domII",
+  "ratio": 0.0,
+  "real": false,
+  "sim": 20.3,
+  "ips": 0.0,
+  "n": 5,
+  "spread": 0.0
+ },
+ {
+  "name": "mechA01_r02_boltzgen_egfr_mechA_03",
+  "src": "mechA-domII",
+  "ratio": 0.0,
+  "real": false,
+  "sim": 17.1,
+  "ips": 0.0,
+  "n": 5,
+  "spread": 0.0
+ },
+ {
+  "name": "d2c_101_l147_s144898_mpnn13",
+  "src": "bindcraft",
+  "ratio": 0.0,
+  "real": false,
+  "sim": 25.9,
+  "ips": 0.6428,
+  "n": 5,
+  "spread": 0.0292
+ },
+ {
+  "name": "d2d_101_l133_s154858_mpnn9",
+  "src": "bindcraft",
+  "ratio": 0.0,
+  "real": false,
+  "sim": 29.3,
+  "ips": 0.7888,
+  "n": 5,
+  "spread": 0.0169
+ },
+ {
+  "name": "d2d_101_l120_s869126_mpnn1",
+  "src": "bindcraft",
+  "ratio": 0.0,
+  "real": false,
+  "sim": 29.2,
+  "ips": 0.3417,
+  "n": 5,
+  "spread": 0.3293
+ },
+ {
+  "name": "d2d_101_l120_s869126_mpnn5",
+  "src": "bindcraft",
+  "ratio": 0.0,
+  "real": false,
+  "sim": 28.3,
+  "ips": 0.0922,
+  "n": 5,
+  "spread": 0.0922
+ },
+ {
+  "name": "mechAd4_02_r02_boltzgen_egfr_mechA_d4_03",
+  "src": "mechA-domIV",
+  "ratio": 1.432,
+  "real": true,
+  "sim": 32.9,
+  "ips": 0.3676,
+  "n": 5,
+  "spread": 0.3676
+ }
+]

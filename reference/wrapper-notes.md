@@ -90,9 +90,22 @@ Patched to also emit `<name>_sample_<i>_ipsae.json` containing `pae`, per-token 
 
 **If ESMFold2 genuinely exposes no PAE, swap that arm** for Chai-1 or Boltz-2, both of which emit one.
 
-## Only the Full model is reachable
+## Both checkpoints are reachable (fixed; this note was stale and cost time on 2026-10-02)
 
-`ESMFOLD2_HF_REPO` is hardcoded to `biohub/ESMFold2`. The protocol's three-arm ensemble also wants **ESMFold2-Fast** (`biohub/ESMFold2-Fast`), which needs either a second patched copy of the script or an env var. Not done yet.
+`ESMFOLD2_HF_REPO` is an **env var**, defaulting to `biohub/ESMFold2` (Full). The Fast arm is a
+launch, not a patch:
+
+```
+ESMFOLD2_HF_REPO=biohub/ESMFold2-Fast ESMFOLD2_HF_REVISION=main
+```
+
+⚠️ **`ESMFOLD2_HF_REVISION` must be overridden too.** It defaults to a commit SHA pinned to the
+*Full* repo, which is not a valid revision of the Fast repo. Pass `main`.
+
+⚠️ Weights are baked in at image build time (`.run_function(_download_models)`), so each repo
+produces **its own image** — expect a one-time rebuild and weight download on the first Fast run.
+Launch one job first and let the image build, rather than firing a dozen batches that all queue
+behind the same build.
 
 ## Scoring is free
 

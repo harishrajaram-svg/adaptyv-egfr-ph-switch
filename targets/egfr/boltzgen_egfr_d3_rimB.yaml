@@ -1,0 +1,20 @@
+# RIM SET B — far rim. H433 (renumbered 99) deliberately EXCLUDED from the hotspots.
+# Measured 2026-10-02: binder atom contacts to H433 vs bound pKa r = -0.519; designs with
+# <=10 contacts pass the pH gate at 40% vs a 17% base rate. Burial kills the switch, so the
+# binder is aimed at H433's neighbours and the histidine is left at the interface edge.
+# 130=S464 (12.2 A from H433), 155=K489 (11.3 A), 157=I491 (13.2 A) -- all cetuximab-epitope residues.
+entities:
+  - protein:
+      id: B
+      sequence: 120..160
+
+  - file:
+      path: egfr_d3_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 130,155,157
+      structure_groups: "all"
