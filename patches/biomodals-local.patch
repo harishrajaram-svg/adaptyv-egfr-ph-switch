@@ -1,0 +1,445 @@
+diff --git a/modal_bindcraft.py b/modal_bindcraft.py
+index c39a196..2384edb 100644
+--- a/modal_bindcraft.py
++++ b/modal_bindcraft.py
+@@ -912,6 +912,16 @@ def bindcraft(
+                             )
+                             if filter_conditions is True:
+                                 print(mpnn_design_name + " passed all filters")
++                                # Stream the accepted sequence to stdout so a container
++                                # timeout cannot destroy it: the return value at line ~1090
++                                # is the ONLY other path out, and it never runs on a kill.
++                                print(
++                                    "ACCEPTED_SEQ\t"
++                                    + mpnn_design_name
++                                    + "\t"
++                                    + mpnn_sequence["seq"],
++                                    flush=True,
++                                )
+                                 accepted_mpnn += 1
+                                 accepted_designs += 1
+ 
+@@ -1087,6 +1097,13 @@ def bindcraft(
+     # save the final_df to final_csv
+     final_df.to_csv(final_csv, index=False)
+ 
++    # ALL-OR-NOTHING OUTPUT: this return ships the entire design tree at once,
++    # only after every trajectory finishes. On 2026-10-02 a BindCraft campaign
++    # burned 27.3 H100-hours / $111.10 and produced no output directory at all --
++    # the work was done, the return never landed. Anything that ends the function
++    # early (timeout, OOM, local disconnect) discards 100% of it.
++    # Fix when there is time to test it: mount a modal.Volume and commit each
++    # accepted design as it is written, instead of returning bytes.
+     out_dir = design_path
+     return [
+         (out_file.relative_to(out_dir), open(out_file, "rb").read())
+@@ -1102,6 +1119,8 @@ def main(
+     lengths: str = "50,130",
+     number_of_final_designs: int = 1,
+     max_trajectories: int | None = None,
++    design_protocol: str = "Default",
++    filter_option: str = "Default",
+     binder_name: str | None = None,
+     out_dir: str = "./out/bindcraft",
+     run_name: str | None = None,
+@@ -1148,6 +1167,8 @@ def main(
+         lengths=lengths_list,
+         number_of_final_designs=number_of_final_designs,
+         max_trajectories=max_trajectories,
++        design_protocol=design_protocol,
++        filter_option=filter_option,
+     )
+ 
+     for out_file, out_content in outputs:
+diff --git a/modal_boltz.py b/modal_boltz.py
+index 67949c9..d133b28 100644
+--- a/modal_boltz.py
++++ b/modal_boltz.py
+@@ -78,10 +78,28 @@ def download_model():
+ 
+ image = (
+     Image.debian_slim(python_version="3.11")
+-    .micromamba()
++    # PATCHED 2026-09-18: `.micromamba()` with no args builds the conda env with
++    # Modal's CURRENT DEFAULT Python -- now 3.14 -- silently overriding the 3.11 pin
++    # on the line above. That is why pip ran from /opt/conda/lib/python3.14/ and why
++    # pandas' setup.py could not find pkg_resources (setuptools >=81 dropped it).
++    # Pin it here or the line above is decorative.
++    .micromamba(python_version="3.11")
+     .apt_install("wget", "git", "gcc", "g++")
+-    # NB: keep this as pip_install — uv's strict build isolation breaks pandas'
+-    # legacy pkg_resources dependency when building via colabfold's git source.
++    # PATCHED 2026-09-18: pandas' legacy setup.py needs pkg_resources, which newer
++    # Python images no longer ship. Without this the colabfold install dies with
++    # ModuleNotFoundError: No module named 'pkg_resources'. Pin <81 -- setuptools 81
++    # removes pkg_resources outright.
++    # Build deps must be present in the IMAGE because the install below runs with
++    # --no-build-isolation. setuptools pinned <81 (81 removes pkg_resources, which
++    # pandas' legacy setup.py imports). numpy + Cython are pandas' build requirements.
++    .pip_install("setuptools<81", "wheel", "numpy<2.0", "Cython")
++    # PATCHED 2026-09-18: --no-build-isolation.
++    # Root cause: pip builds sdists in an isolated overlay env that Modal creates with
++    # Python 3.14 REGARDLESS of the image's python_version=3.11 pin. That overlay's
++    # setuptools is new enough to have dropped pkg_resources, so pandas' setup.py dies:
++    #     ModuleNotFoundError: No module named 'pkg_resources'
++    # Adding setuptools to the image does not help -- the overlay never sees it.
++    # Disabling isolation makes the build use the image env, which we pin above.
+     .pip_install(
+         "colabfold[alphafold-minus-jax]@git+https://github.com/sokrypton/ColabFold@acc0bf772f22feb7f887ad132b7313ff415c8a9f"
+     )
+@@ -185,7 +203,7 @@ def _fasta_to_yaml(input_faa: str) -> str:
+     gpu=GPU,
+     volumes={f"/{BOLTZ_VOLUME_NAME}": BOLTZ_MODEL_VOLUME},
+ )
+-def boltz(input_str: str, params_str: str | None = None) -> list:
++def boltz(input_str: str, params_str: str | None = None, msa_bytes: bytes | None = None) -> list:
+     """Runs Boltz on a YAML or FASTA input string.
+ 
+     The input can describe proteins, DNA, RNA, SMILES strings, or CCD identifiers.
+@@ -211,6 +229,14 @@ def boltz(input_str: str, params_str: str | None = None) -> list:
+     if params_str is None:
+         params_str = DEFAULT_PARAMS
+ 
++    # PATCHED 2026-09-18: a staged MSA is written to a FIXED container path so the
++    # YAML can reference it as `msa: /tmp/staged_msa.csv`. Generate a target's MSA
++    # ONCE with --use_msa_server, then reuse the file for every design against that
++    # target -- one server query per target instead of one per design.
++    if msa_bytes:
++        Path("/tmp/staged_msa.csv").write_bytes(msa_bytes)
++        print(f"[boltz] staged MSA written: {len(msa_bytes)} bytes -> /tmp/staged_msa.csv")
++
+     with TemporaryDirectory() as in_dir, TemporaryDirectory() as out_dir:
+         if input_str[0] == ">":
+             open(in_faa := Path(in_dir) / "in.faa", "w").write(input_str)
+@@ -240,6 +266,7 @@ def main(
+     input_faa: str | None = None,
+     input_yaml: str | None = None,
+     params_str: str | None = None,
++    msa_file: str | None = None,   # PATCHED: pre-computed MSA, uploaded to /tmp/staged_msa.csv
+     run_name: str | None = None,
+     out_dir: str = "./out/boltz",
+ ):
+@@ -265,7 +292,8 @@ def main(
+ 
+     input_str = open(input_yaml or input_faa).read()
+ 
+-    outputs = boltz.remote(input_str, params_str=params_str)
++    msa_bytes = Path(msa_file).read_bytes() if msa_file else None
++    outputs = boltz.remote(input_str, params_str=params_str, msa_bytes=msa_bytes)
+ 
+     today = datetime.now().strftime("%Y%m%d%H%M")[2:]
+     out_dir_full = Path(out_dir) / (run_name or today)
+diff --git a/modal_boltzgen.py b/modal_boltzgen.py
+index 635eca6..d211294 100644
+--- a/modal_boltzgen.py
++++ b/modal_boltzgen.py
+@@ -51,7 +51,7 @@ def download_boltzgen_models():
+ 
+ 
+ image = (
+-    Image.debian_slim()
++    Image.debian_slim(python_version="3.12")  # PATCHED: boltzgen dep numba requires <3.14; Modal default is now 3.14
+     .apt_install("git", "wget", "build-essential")
+     .uv_pip_install("torch>=2.4.1")
+     .run_commands(
+diff --git a/modal_chai1.py b/modal_chai1.py
+index 6d1d50e..c0d0527 100644
+--- a/modal_chai1.py
++++ b/modal_chai1.py
+@@ -61,7 +61,7 @@ def download_models():
+ 
+ 
+ image = (
+-    Image.debian_slim()
++    Image.debian_slim(python_version="3.12")  # PATCHED: Modal default is now 3.14, too new for common deps
+     .apt_install("wget")
+     .uv_pip_install("chai_lab==0.6.1")
+     .run_function(download_models, gpu="a100")
+diff --git a/modal_esmfold2.py b/modal_esmfold2.py
+index e3ea6da..8f82771 100644
+--- a/modal_esmfold2.py
++++ b/modal_esmfold2.py
+@@ -33,9 +33,16 @@ from modal import App, Image
+ GPU = os.environ.get("MODAL_GPU", "A100-40GB")
+ TIMEOUT = int(os.environ.get("MODAL_TIMEOUT", 30))
+ 
+-ESMFOLD2_HF_REPO = "biohub/ESMFold2"
+-ESMFOLD2_HF_REVISION = "1afea82e432079d9af2ebd71d1e4c339ecca2ff0"
+-ESMFOLD2_GIT_REF = "c94ed8d"
++# PATCHED 2026-09-18: made selectable so the protocol's Full + Fast arms can both run.
++#   Full (default): ESMFOLD2_HF_REPO=biohub/ESMFold2
++#   Fast:           ESMFOLD2_HF_REPO=biohub/ESMFold2-Fast ESMFOLD2_HF_REVISION=main
++# The revision hash below is valid ONLY for the Full repo -- override it when switching.
++# Weights are baked at build time, so each repo produces its own image (expect a rebuild).
++ESMFOLD2_HF_REPO = os.environ.get("ESMFOLD2_HF_REPO", "biohub/ESMFold2")
++ESMFOLD2_HF_REVISION = os.environ.get(
++    "ESMFOLD2_HF_REVISION", "1afea82e432079d9af2ebd71d1e4c339ecca2ff0"
++) or None
++ESMFOLD2_GIT_REF = "43b4548b86762edfa747b07d5f440aad3c33acee"  # PATCHED 2026-09-18: c94ed8d depended on github.com/Biohub/transformers (private/deleted, 404) and could not build. Upstream replaced it with PyPI transformers>=4.57.6. This is esm 3.4.1.post1 (2026-09-16).
+ ESMFOLD2_CACHE_DIR = "/root/.cache/huggingface"
+ 
+ 
+@@ -117,9 +124,8 @@ def _fasta_to_input(fasta_str: str):
+ 
+ @app.function(timeout=TIMEOUT * 60, gpu=GPU)
+ def esmfold2(
+-    fasta_name: str,
+-    fasta_str: str,
+-    seed: int = 42,
++    complexes: list,        # PATCHED: [(name, fasta_str), ...] -- ALL folded in ONE container
++    seed: int | str = 42,   # PATCHED: accepts "1,2,3,4,5" -- loops seeds in ONE container
+     num_diffusion_samples: int = 1,
+     num_sampling_steps: int = 50,
+     num_loops: int = 3,
+@@ -129,7 +135,10 @@ def esmfold2(
+     import time
+ 
+     from esm.models.esmfold2 import ESMFold2InputBuilder
+-    from transformers.models.esmfold2.modeling_esmfold2 import ESMFold2Model
++    # PATCHED 2026-09-18: transformers.models.esmfold2 exists only in the (deleted)
++    # Biohub transformers fork and upstream 5.16.0.dev0+. With mainline transformers 4.x
++    # the model class lives in the esm package itself, as EsmFold2Model (not ESMFold2Model).
++    from esm.models.esmfold2 import EsmFold2Model as ESMFold2Model
+ 
+     t0 = time.time()
+     model = ESMFold2Model.from_pretrained(
+@@ -139,21 +148,33 @@ def esmfold2(
+     ).cuda().eval()
+     print(f"[esmfold2] Model loaded in {time.time() - t0:.1f}s")
+ 
+-    spi = _fasta_to_input(fasta_str)
+-    print(f"[esmfold2] {len(spi.sequences)} entities, samples={num_diffusion_samples}, steps={num_sampling_steps}")
+-
+-    t0 = time.time()
+-    result = ESMFold2InputBuilder().fold(
+-        model, spi,
+-        num_loops=num_loops,
+-        num_sampling_steps=num_sampling_steps,
+-        num_diffusion_samples=num_diffusion_samples,
+-        seed=seed,
+-        complex_id=fasta_name,
+-    )
+-    print(f"[esmfold2] fold() done in {time.time() - t0:.1f}s")
+-
+-    samples = result if isinstance(result, list) else [result]
++    print(f"[esmfold2] {len(complexes)} complex(es), samples={num_diffusion_samples}, steps={num_sampling_steps}")
++
++    # PATCHED 2026-09-18: fold once per seed, reusing the loaded model.
++    # The protocol requires ipSAE_min max-over->=5 distinct seeds. Model load is ~116s
++    # and a fold ~16s, so looping here costs ~1.5x for 5 seeds instead of ~5x for
++    # five separate containers.
++    seed_list = ([int(x) for x in str(seed).split(",") if x.strip() != ""]
++                 if isinstance(seed, str) else [int(seed)])
++    builder = ESMFold2InputBuilder()
++    samples, sample_seeds, sample_names = [], [], []
++    for cname, cfasta in complexes:
++        spi = _fasta_to_input(cfasta)
++        for sd in seed_list:
++            t0 = time.time()
++            result = builder.fold(
++                model, spi,
++                num_loops=num_loops,
++                num_sampling_steps=num_sampling_steps,
++                num_diffusion_samples=num_diffusion_samples,
++                seed=sd,
++                complex_id=cname,
++            )
++            print(f"[esmfold2] {cname} seed {sd}: fold() done in {time.time() - t0:.1f}s")
++            got = result if isinstance(result, list) else [result]
++            samples.extend(got)
++            sample_seeds.extend([sd] * len(got))
++            sample_names.extend([cname] * len(got))
+ 
+     def _to_py(v):
+         if v is None:
+@@ -168,6 +189,9 @@ def esmfold2(
+ 
+     outputs: list[tuple[Path, bytes]] = []
+     for idx, sample in enumerate(samples):
++        # PATCHED: tag with seed so seeds don't collide in the output dir
++        _sd = sample_seeds[idx]
++        fasta_name = sample_names[idx]
+         complex_obj = getattr(sample, "complex", sample)
+         cif_str = complex_obj.to_mmcif()
+         plddt_list = _to_py(complex_obj.plddt) or []
+@@ -181,17 +205,41 @@ def esmfold2(
+             "iptm": _to_py(getattr(sample, "iptm", None)),
+             "chain_pair_iptm": _to_py(getattr(sample, "pair_chains_iptm", None)),
+         }
+-        outputs.append((Path(f"{fasta_name}_sample_{idx}.cif"), cif_str.encode()))
+-        outputs.append((Path(f"{fasta_name}_sample_{idx}_scores.json"),
++        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}.cif"), cif_str.encode()))
++        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}_scores.json"),
+                         json.dumps(scores, indent=2).encode()))
+ 
++        # PATCHED: emit an ipSAE-compatible sidecar.
++        # ipsae.py reads data['pae'] (or 'predicted_aligned_error'), and expects
++        # data['plddt'] to be the PER-TOKEN array, not a scalar mean.
++        pae = None
++        for _obj in (sample, complex_obj):
++            for _attr in ("pae", "predicted_aligned_error", "aligned_error", "pae_matrix"):
++                _v = getattr(_obj, _attr, None)
++                if _v is not None:
++                    pae = _to_py(_v)
++                    break
++            if pae is not None:
++                break
++        if pae is None:
++            print(f"[esmfold2] WARNING: no PAE matrix exposed on sample {idx}; "
++                  f"ipSAE cannot score this output. Attrs: {sorted(a for a in dir(sample) if not a.startswith('_'))}")
++        ipsae_scores = {
++            "pae": pae,
++            "plddt": plddt_list,
++            "ptm": scores["ptm"],
++            "iptm": scores["iptm"],
++        }
++        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}_ipsae.json"),
++                        json.dumps(ipsae_scores).encode()))
++
+     return outputs
+ 
+ 
+ @app.local_entrypoint()
+ def main(
+     input_faa: str,
+-    seed: int = 42,
++    seed: str = "42",   # PATCHED: comma-separated for multi-seed, e.g. "1,2,3,4,5"
+     num_diffusion_samples: int = 1,
+     num_sampling_steps: int = 50,
+     num_loops: int = 3,
+@@ -200,12 +248,21 @@ def main(
+ ):
+     from datetime import datetime
+ 
+-    fasta_str = Path(input_faa).read_text()
+-    fasta_name = Path(input_faa).stem
++    # PATCHED: input_faa may be a FILE or a DIRECTORY of .faa files. A directory
++    # folds every complex in ONE container, so the ~137s model load is paid once
++    # instead of once per design. At 100 designs that is ~4 GPU-hours saved.
++    _p = Path(input_faa)
++    if _p.is_dir():
++        files = sorted(_p.glob("*.faa"))
++        if not files:
++            raise SystemExit(f"no .faa files in {input_faa}")
++    else:
++        files = [_p]
++    complexes = [(f.stem, f.read_text()) for f in files]
++    print(f"[esmfold2] batching {len(complexes)} complex(es) into one container")
+ 
+     outputs = esmfold2.remote(
+-        fasta_name=fasta_name,
+-        fasta_str=fasta_str,
++        complexes=complexes,
+         seed=seed,
+         num_diffusion_samples=num_diffusion_samples,
+         num_sampling_steps=num_sampling_steps,
+@@ -213,6 +270,15 @@ def main(
+     )
+ 
+     today = datetime.now().strftime("%Y%m%d%H%M")[2:]
++    # ALL-OR-NOTHING OUTPUT (cost real money 2026-10-02): every file is shipped
++    # back as one return value AFTER the last fold. A function timeout, a crash,
++    # or a dead local process writes NOTHING -- 13 of 20 completed folds were lost
++    # this way and billed in full. bin/score-esmfold2.sh now sizes the timeout from
++    # the workload and refuses to launch under its own estimate, which prevents the
++    # trigger. The durable fix is a modal.Volume written per-fold inside the remote
++    # function, so partial work survives; not done yet because it cannot be tested
++    # without a paid GPU run. Until then: do not grow a batch without raising
++    # MODAL_TIMEOUT to match.
+     out_dir_full = Path(out_dir) / (run_name or today)
+     for out_file, out_content in outputs:
+         target = out_dir_full / out_file
+diff --git a/modal_germinal.py b/modal_germinal.py
+index 021b7bf..70b7d58 100644
+--- a/modal_germinal.py
++++ b/modal_germinal.py
+@@ -233,7 +233,7 @@ image = (
+         "pip install 'jax[cuda12_pip]==0.5.3' -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
+     )
+     .uv_pip_install(
+-        "https://west.rosettacommons.org/pyrosetta/release/release/PyRosetta4.Release.python310.ubuntu.wheel/pyrosetta-2026.21+release.36f0c659eb-cp310-cp310-linux_x86_64.whl"
++        "https://west.rosettacommons.org/pyrosetta/release/release/PyRosetta4.Release.python310.ubuntu.wheel/pyrosetta-2026.39+release.0c38201cdc-cp310-cp310-linux_x86_64.whl"
+     )
+     .run_commands(
+         "ln -s /usr/local/lib/python3.*/dist-packages/colabdesign colabdesign"
+@@ -254,6 +254,14 @@ image = (
+     .run_commands(
+         "pip install 'jax[cuda12_pip]==0.5.3' -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
+     )
++    # PATCHED: Germinal (or a dependency) imports `pkg_resources`, which ships with
++    # setuptools and is absent from a bare modern Python env -- the run died with
++    # ModuleNotFoundError AFTER the image built and after the scfv filters copied.
++    # Added as the LAST layer before download_models so earlier cached layers survive.
++    # mdtraj 1.9.9 does `from pkg_resources import parse_version`, and setuptools >=81
++    # removed pkg_resources — so installing plain `setuptools` provided nothing and the run
++    # failed identically. Pin below the removal.
++    .uv_pip_install("setuptools<81")
+     .run_function(
+         download_models,
+         gpu="A100",
+@@ -394,14 +402,19 @@ def run_germinal_design(
+ 
+         target_name = "pdl1"
+ 
+-        # Copy filter configs from Germinal and remove @package annotations
+-        initial_filter_src = germinal_configs_path / "filter" / "initial" / "vhh.yaml"
+-        initial_filter_dst = temp_path / "configs" / "filter" / "initial" / "vhh.yaml"
+-        shutil.copy2(initial_filter_src, initial_filter_dst)
+-
+-        final_filter_src = germinal_configs_path / "filter" / "final" / "vhh.yaml"
+-        final_filter_dst = temp_path / "configs" / "filter" / "final" / "vhh.yaml"
+-        shutil.copy2(final_filter_src, final_filter_dst)
++        # Copy filter configs from Germinal and remove @package annotations.
++        # PATCHED: these were hardcoded to vhh.yaml regardless of --run-type, so an scfv
++        # run would look for filter/{initial,final}/scfv.yaml and find nothing. Copy the
++        # filters for the requested run_type, and always copy vhh as well so the vhh path
++        # keeps working unchanged.
++        for stage in ("initial", "final"):
++            for name in {run_type.lower(), "vhh"}:
++                src = germinal_configs_path / "filter" / stage / f"{name}.yaml"
++                if src.exists():
++                    shutil.copy2(src, temp_path / "configs" / "filter" / stage / f"{name}.yaml")
++                    print(f"  copied filter/{stage}/{name}.yaml")
++                else:
++                    print(f"  WARNING: no filter/{stage}/{name}.yaml in Germinal configs")
+ 
+         # Run Germinal using subprocess (the proper way)
+         try:
+@@ -593,7 +606,6 @@ def main(
+         out_dir: Output directory base path
+     """
+     import json
+-    import yaml
+     from pathlib import Path
+     from datetime import datetime
+ 
+@@ -602,9 +614,27 @@ def main(
+     if not target_yaml_path.exists():
+         raise FileNotFoundError(f"Target YAML file not found: {target_yaml}")
+ 
+-    # Read YAML content and parse it
++    # Read YAML content and parse it.
++    # PATCHED: this runs LOCALLY, not in the container. `modal` is commonly installed as an
++    # isolated uv tool whose environment has no PyYAML, and `uv run --with PyYAML modal ...`
++    # does not reach it because the shim uses the tool's own env -- so this line crashed the
++    # run AFTER a ~20 min image build. Target configs are flat `key: value`, so parse them
++    # directly and keep PyYAML as an optional fast path.
+     target_yaml_content = target_yaml_path.read_text()
+-    target_data = yaml.safe_load(target_yaml_content)
++    try:
++        import yaml
++        target_data = yaml.safe_load(target_yaml_content)
++    except ModuleNotFoundError:
++        target_data = {}
++        for line in target_yaml_content.splitlines():
++            line = line.split("#", 1)[0].strip()
++            if not line or ":" not in line:
++                continue
++            k, v = line.split(":", 1)
++            v = v.strip().strip('"').strip("'")
++            if v.lstrip("-").isdigit():
++                v = int(v)
++            target_data[k.strip()] = v
+ 
+     # Validate required fields
+     missing_fields = [

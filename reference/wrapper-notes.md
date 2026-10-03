@@ -16,6 +16,60 @@ Verified by reading the scripts on 2026-09-18. These are the things that cost mo
 
 `modal_esmfold2_binder_design.py` defaults to an **H100 at $3.95/hr with a 60-minute ceiling**, so one hung job is about $4.
 
+## The timeouts are in MINUTES, and a timeout destroys the whole run
+
+Added 2026-10-02 after it cost a run. Every wrapper returns its output as a **single
+return value after the last unit of work finishes**. There is no Volume and no
+incremental write. So a function timeout does not give you partial results — it
+gives you nothing, and you are billed for everything that completed.
+
+Two confirmed losses:
+
+| What | Spend | Produced |
+|---|---|---|
+| BindCraft campaign | $111.10 / 27.3 H100-hours | no output directory at all |
+| ESMFold2 wave 4 (20 folds) | ~$1 / 30 min L40S | 0 of 13 completed folds |
+
+The ESMFold2 number is the instructive one. `MODAL_TIMEOUT` defaults to **30
+minutes**. Every wave up to then ran 2 complexes × 5 seeds = 10 folds ≈ 28 min —
+**clearing the cap by about two minutes.** The first 4-complex batch needed ~42 min,
+hit the 1800s wall at fold 14, and lost all 13 finished folds. The default had been
+a loaded gun for the whole project; nothing surfaced it because every earlier batch
+happened to be just small enough.
+
+`bin/score-esmfold2.sh` now sizes the timeout from the workload
+(`complexes × seeds × 160s + 140s load`, doubled for headroom), prints the estimate,
+and **refuses to launch** if `MODAL_TIMEOUT` is below its own estimate. Rule of thumb
+if you invoke `modal run` directly: **~2.5 min per fold, plus 2.5 min of model load.**
+
+The durable fix is a `modal.Volume` committed per unit of work so partial results
+survive. Not done — it cannot be verified without a paid GPU run. Until it is,
+**never grow a batch without raising the timeout to match.**
+
+## Every local wrapper patch is one `git checkout` from gone
+
+Found 2026-10-02. `biomodals/` is a clone of https://github.com/hgbrian/biomodals
+and is **line 1 of our .gitignore**. Six wrappers carry uncommitted local
+modifications inside that nested clone, invisible to this repo:
+
+    modal_bindcraft.py  modal_boltz.py  modal_boltzgen.py
+    modal_chai1.py      modal_esmfold2.py  modal_germinal.py
+
+These are not cosmetic. The ESMFold2 patch is what loops seeds inside one
+container, making 5 seeds cost ~1.16x a single seed instead of 5x — the economics
+of the whole scoring protocol depend on it. A `git checkout .` in that directory,
+or a fresh clone on a new machine, silently reverts it and every run afterwards
+costs ~4x more for the same answer.
+
+Exported to **`patches/biomodals-local.patch`** (verified to apply cleanly against
+pristine upstream). Re-apply after any clone or reset:
+
+    git -C biomodals apply ../patches/biomodals-local.patch
+
+Re-export after changing any wrapper, or the patch goes stale:
+
+    git -C biomodals diff > patches/biomodals-local.patch
+
 ## ESMFold2 defaults do not match Anthropic's protocol
 
 | Parameter | Wrapper default | Anthropic's protocol |

@@ -1,0 +1,2 @@
+design	source_structure	pH_pKa_bound	pH_delta	pH_ratio	H433_contacts	pH_verdict	novelty_TM	novelty_best_target	novelty_fident	novelty_struct	novelty_seq	ipsae_hu	ipsae_mo
+d2c_101_l147_s144898_mpnn13	ESMFold2 w2_hr11 hu seed1 (predicted; no generator structure exists)	2.85	-3.37	0.70	101	FAIL - acid weakens	0.601	2vpw-assembly1_G	0.126	FAIL	PASS	0.641	0.591
