@@ -708,9 +708,20 @@ PROPKA's own error, so the table's ordering among them is noise. The CSV has to 
 history. Ranks 11–20 of it did not stand on a measurement: eight read **below 1.0×** — no
 switch at all — sitting on the 0.702× steric floor of §6, which is what *any* design that
 touches a histidine with no carboxylate near it returns. Those rows reported the method back to
-itself. The weakest, `bg04_r03`, was 1.94× with **0.0000 on both species** and three
-expression-QC flags including an unpaired cysteine. Filling the allocation would have bought
-ten more wet-lab wells and no more evidence, so we did not.
+itself.
+
+`bg04_r03` was described in an earlier version as "the weakest, 1.94× with **0.0000 on both
+species**." **Both halves were wrong.** It is 1.94× over 15 poses with **human 0.0000 and mouse
+0.4406** — it binds one species, not neither — and it was the **strongest** of the ten cut rows,
+not the weakest. The 0.0000/0.0000 reading came from the run-name-keyed affinity path corrected
+below; the "weakest" label was simply not checked. It remains out of the submission, because one
+species plus three expression-QC flags including an unpaired cysteine is not a candidate, but the
+reason we gave for cutting it was wrong twice over.
+
+Also note the 0.702× floor cited above is the single-site model's own analytic minimum of 0.699×
+(§1), so "sitting on the floor" means "indistinguishable from no linkage at all", which is the
+stronger statement. Filling the allocation would have bought ten more wet-lab wells and no more
+evidence, so we did not.
 
 **Rank 9 is a control, deliberately.** `bc_s831683_mpnn9_WT` is the matched wild-type of rank 3,
 one residue apart. It costs a slot and buys the one thing predictions cannot: if the four S15D
