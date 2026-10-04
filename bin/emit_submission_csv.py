@@ -96,6 +96,13 @@ def pooled_affinity():
     return out
 
 
+# `iptm_generator` DROPPED from the CSV, 2026-10-04. It was a leftover of the retired
+# ipTM-descending order. Measured state before removal: blank for 8 of the 10 shipped rows,
+# `0.23313` for one, and **`0.0` for `d2c_mpnn13_S88D_serasp`** — which to an outside reader
+# says "the generator scored this design zero" when it means "no value was recorded". That is
+# this project's signature failure (a 0.0 meaning ABSENT read as MEASURED) sitting in the one
+# file Adaptyv grades, on a row carrying a real causal result. A column that is empty 80% of
+# the time and misleading the rest is worse than no column.
 MIN_N = 5          # poses required before a ratio may put a design in tier 1
 
 # AFFINITY PRECONDITION — RETIRED AS A HARD GATE on PK's review, 2026-10-04.
@@ -170,7 +177,7 @@ def main():
                            # uncertainty column silently collapses to one default string.
                            # Same class of bug as ratio_n, which emptied tier 1 earlier today.
                            assessment=x.get("assessment", "computational candidate"),
-                           iptm_generator=x.get("iptm", ""), rmsd=x.get("rmsd", "")))
+                           rmsd=x.get("rmsd", "")))
 
     for r in scored:
         n = len(r["sequence"])
@@ -210,13 +217,13 @@ def main():
     # than shipping neither, so it is dropped and the finding goes in the methods doc.
     cols = ["name", "sequence", "molecule_class",
             "ph_ratio_6p5_over_7p4", "ipsae_min_human", "ipsae_min_mouse",
-            "iptm_generator", "ph_poses_n", "affinity_above_null", "assessment"]
+            "ph_poses_n", "affinity_above_null", "assessment"]
     with open(OUT, "w", newline="") as fh:
         w = csv.writer(fh); w.writerow(cols)
         for r in scored:
             w.writerow([r["name"], r["sequence"], r["molecule_class"],
                         f"{r['ratio']:.3f}", f"{r['hu']:.4f}", f"{r['mo']:.4f}",
-                        r["iptm_generator"], r.get("ratio_n", 0),
+                        r.get("ratio_n", 0),
                         # PK: separate columns for binding evidence, pH hypothesis and uncertainty
                         "yes" if max(r["hu"], r["mo"]) >= AFFINITY_FLAG else "no",
                         r.get("assessment", "computational candidate")])

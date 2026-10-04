@@ -1,8 +1,42 @@
 # HANDOFF — Adaptyv challenge 1 (EGFR pH-switch)
 # Written 2026-10-04 ~3:40 PM EDT. Supersedes the 2:00 PM / 3:10 PM revisions entirely.
 
-**Deadline: Mon Oct 6, 23:59 AoE = Tue Oct 7, 07:59 EDT.** ~64 h left at writing.
-Adaptyv extended it; the original Oct 4 date is wrong everywhere it still appears.
+**Deadline: Mon Oct 6, 23:59 AoE = Tue Oct 7, 07:59 EDT.** Confirmed from an organiser
+message, not from our own notes. Adaptyv extended it; the original Oct 4 date is wrong
+everywhere it still appears.
+
+## ⚠️ READ THIS FIRST — THE RULES LIVE IN A CHANNEL WE ARE NOT IN
+
+**`#anthropic_adaptyv_competition` (`C0C4VEG57HU`) on the Proteinbase Slack.** Harish is **not a
+member**; it is public and searchable. **Every organiser clarification since 2026-09-28 is
+there**, and neither repo referenced it until now — which is why the facts below were missing
+from this file for a week. Organisers: Tudor-Stefan Cotet, Simon Dürr, Amir Shanehsazzadeh.
+`#design-methods` is dead for this challenge; `#feedback` carries a few answers.
+
+**Submission mechanics, from organiser messages:**
+  * **One submission per 24 hours.** Submissions are **retained, not replaced** — you nominate
+    which one counts, or the most recent is designated by default. So an early upload costs
+    nothing. **The last upload that still permits a second attempt is Mon Oct 6, 07:59 EDT.**
+  * Novelty runs **at upload**, in 3–5 minutes, and a **self-service novelty pipeline ships
+    Oct 5** so designs can be checked before committing. A competitor has reproduced our exact
+    VHH failure mode on the live platform and Adaptyv have said the antibody threshold is being
+    re-tested, so **the bar our two VHH rows sit near may move before the deadline.**
+  * Track 3 needs nothing beyond the CSV on Proteinbase; track is assigned by account email.
+    The cap is 20 designs per account per collection. We ship 10.
+  * **Iterating on any previously submitted design is explicitly disallowed** — stricter than
+    the challenge page's "existing binder" wording. Our submission is clean on it, verified.
+
+**Measurement spec, which retires a decision recorded below:**
+  * human EGFR at **pH 6.5 and 7.4**; mouse EGFR at **pH 6.5 only**. Mouse is NOT 7.4-only, and
+    the cross-reactivity/pH tension that premise created does not exist.
+  * Targets are the **full ectodomains, tethered**: human **Met1–Ser645**, mouse **Met1–Ser647**,
+    Sino Biological 10001-H08H and 51091-M08H. Met1–Ser645 minus the 24-residue signal peptide
+    is **621 residues** — which is the construct we folded against.
+  * You do **not** prepend the initiator Met; they add it when building constructs.
+  * The assayed target carries a **His tag**, and the organisers have said a binder engaging it
+    "might look pH-selective but would bind to anything with a His tag", and that in-silico
+    evidence will be weighted more heavily to catch it. **All 10 of our designs switch on the
+    target's native H433** (48 of 50 pool-wide; zero tag). Say so.
 
 **The two blockers from the last handoff are CLOSED.** The methods document is finished and
 the git remote exists. What is left is upload.

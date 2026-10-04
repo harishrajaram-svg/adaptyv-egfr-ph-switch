@@ -104,8 +104,11 @@ Two choices are worth stating.
 
 **The free leg is computed per design, from the design's own coordinates.** Our first pass
 took pKa_free from a single apo structure on the reasoning that the target is rigid. It is
-not: the generator repacks the target per design, and H370's own suppressor ASP344 sits
-2.4–3.8 Å from its ring. A rotamer shift in ASP344 then appears as a "switch" in designs
+not: the generator repacks the target per design, and H370's own neighbouring aspartate —
+**ASP344 in PDB numbering, D368 canonical**, the convention H370 itself is quoted in — sits a
+few Å from its ring. (The two numbering systems were mixed inside one sentence here, and the
+2.4–3.8 Å range quoted previously does not reproduce from the apo structure; the per-design
+range is what the gate actually uses, and it varies because the generator repacks the target.) A rotamer shift in ASP344 then appears as a "switch" in designs
 whose binder is 27 Å away. That artifact turned 10 apparent switches into 1. Deleting the
 binder from the *same file* holds every other coordinate fixed, so the difference is the
 binder and nothing else.
@@ -116,9 +119,10 @@ binder and nothing else.
 
 ## 3. What we measured
 
-### 3.1 Cropping the target fixes epitope selection. Confirmed four times.
-Against the full 609-residue ectodomain, 4/30 designs touched the declared patch. Against a
-170-residue domain III crop, **27/30 and 29/30** did. The generator was not ignoring the
+### 3.1 Cropping the target fixes epitope selection. Three arms.
+Against the full ectodomain, 4/30 designs touched the declared patch. Against a 170-residue
+domain III crop, **27/30 and 29/30** did. (The header previously said "Confirmed four times"
+while the body reports three arms. Three.) The generator was not ignoring the
 binding-site declaration; it was taking a better offer, because much of the time another
 domain was more designable. Remove the alternative and it complies.
 
@@ -269,9 +273,13 @@ Our ranking metric is **ipSAE_min** on ESMFold2, the minimum over both alignment
 of one interface. Two findings about its calibration matter more than any design result.
 
 ### 4.1 The negative control is EGF-derived, and its activity is unknown.
-`NEG_nonbinder`, the molecule that set our "does it bind" floor, is **81% mature human EGF**:
-43 of 53 residues verbatim, all six cysteines in correct linear order, two insertions in the
-loops. Human EGF's high-affinity contacts are on domain III — the surface every design
+`NEG_nonbinder`, the molecule that set our "does it bind" floor, carries **43 of the 53 residues
+of mature human EGF verbatim**, all six cysteines in correct linear order. Stated precisely,
+because an earlier version said "81% mature human EGF" and that is the percentage **of EGF**, not
+of the molecule: `NEG_nonbinder` is **134 residues**, so 43 are EGF-derived and **91 are not** —
+32% of the molecule, not 81%. "Two insertions in the loops" also undersold 81 extra residues.
+What matters is unchanged and does not depend on the denominator: the EGF epitope is present and
+intact. Human EGF's high-affinity contacts are on domain III — the surface every design
 targets — and on this assay platform EGF's own measured KD is **55 nM** (median of 15 runs,
 range 27–795 nM; §4.4). An earlier version of this document said ~2 nM, which was quoted from
 memory rather than from the assay and is corrected here. The conclusion does not change: EGF
@@ -309,6 +317,13 @@ Bars must come from controls folded against the *same* target construct:
 | construct | nonbinder | weakest real binder |
 |---|---|---|
 | full ECD (621 aa) | 0.1493 | 0.6224 |
+
+*(This project writes the full ectodomain as 609 residues in some places and 621 in others —
+including §3.1 above, against this section's own argument that a bar must come from the matching
+construct. **621 is correct** for what was actually folded, and it is also what the organisers
+assay: their construct is Met1–Ser645, and with EGFR's 24-residue signal peptide removed that is
+621 residues of mature protein. The 609 figure is a stale earlier crop and appears nowhere in the
+scoring path.)*
 | domain III crop (170 aa) | **0.2218** | **0.4005** |
 
 The strict ECD bar of 0.6224 is unreachable on the crop, where a construct-matched 1 nM
@@ -449,7 +464,17 @@ meaningful** threshold — the sign of ΔΔG, i.e. does protonation favour the c
 | PROPKA switch (n=182) | 86 | 96 |
 | PROPKA no-switch (n=1,475) | 183 | 1,292 |
 
-**odds ratio 6.32, 95% CI [4.55, 8.79].**
+**odds ratio 6.32, 95% CI [4.55, 8.79]** — Woolf's log-normal interval, which is what that
+figure is and was not previously named. **Note the 2×2 totals 1,657, not the 1,693 quoted in the
+sentence above it:** 36 complexes have a Potts score and no PROPKA refold verdict, so they enter
+the paragraph's denominator and not the table's. Both numbers are right about different things
+and the mismatch was unflagged.
+
+**Woolf's interval assumes independent observations, and the next paragraph says they are not.**
+That is the one assumption the method makes and the one this data violates — the 1,657 complexes
+include repeated backbones, sequence families and poses. The interval is therefore **narrower
+than the truth**, and we report it as the arithmetic of the 2×2 rather than as an inference about
+designs. A family-clustered interval would be the correct object and we have not computed one.
 
 An important correction to our own earlier reading. Median ΔΔG is +0.11 for PROPKA-called
 switches against +3.20 for non-switches — **both positive**. That is a lower relative penalty,
@@ -516,7 +541,7 @@ Listed because they bound the confidence of everything above.
 | an ROC-AUC reported from a control panel with **one** positive | removed; §4.4 reports ranks. The weakness was already recorded weeks earlier as "the gate is n=1 positive" and shipped anyway |
 | a rank among 132 rankable molecules quoted against a denominator of 2,009 | overstated by ~15× (§4.4) |
 | "the four highest-affinity **and** four highest-switching designs" | false on both halves, and it was the justification for 6 of 10 slots on one backbone (§3.7) |
-| a measured pH-calibration ladder folded and never scored | the G532 series, the only molecules here with a published pH ratio, is absent from every analysis file (§12) |
+| a measured pH-calibration ladder folded and never scored | the G532 series, the only molecules here with a published pH ratio, is absent from every analysis file (§13) |
 
 We also retracted two published-in-log claims on re-measurement: a length effect that
 disappeared at n=260, and a "pinning is 15× worse" conclusion that reverses on a like-for-like
@@ -590,7 +615,15 @@ paper, is what capped this project at a single site — and G532 shows the cap i
 ## 9. Novelty
 
 The organisers reject at upload on their own novelty levels, so this is a hard gate on the
-submission and not a scoring preference. Our implementation of the general-protein rule had one
+submission and not a scoring preference. **Sourcing, stated because an earlier version asserted
+the Level ≥ 3 bar as established policy without one:** the rule itself is published
+(`adaptyvbio.com/blog/novelty`); the **specific gate level** comes from organiser messages in the
+competition Slack channel `#anthropic_adaptyv_competition`, not from any fetchable page, and
+Adaptyv confirmed on 2026-10-04 that a **self-service novelty pipeline ships 2026-10-05** so
+submitters can check before uploading. A competitor independently reported on 2026-10-03 that the
+live platform flags lightly modified VHH frameworks, and Adaptyv have said the antibody threshold
+is being re-tested — **so the bar our two VHH rows sit near may move before this deadline.** We
+treat Level ≥ 3 as the working gate and will verify against their pipeline before upload. Our implementation of the general-protein rule had one
 clause missing — **high structural similarity alone (TM ≥ 0.80) is Level 2, with no sequence
 condition attached** — and in its place we tested a single TM < 0.50 bar and called everything
 above it a failure. That is where the "0 of 120 pass novelty" result recorded earlier in this
@@ -622,18 +655,38 @@ different TM or identity values between FoldSeek runs (`bg01_r02` at fid 0.127 v
 `bg04_r03` at TM 0.7169 vs 0.7114) — **no design's level differs between rows**, so the
 levelling is stable even where the underlying search is not.
 
-Two limits we state rather than hide. Adaptyv run MMseqs2 against SwissProt, PDB, patent
+Three limits we state rather than hide. Adaptyv run MMseqs2 against SwissProt, PDB, patent
 sequences, the therapeutic-antibody database and PLAbDab; we search **PDB only**, via FoldSeek,
 so our sequence identities are lower bounds and a design clean here may still hit a patent or a
-SwissProt entry. And the antibody branch needs CDRH3 identity from ANARCI numbering, which we
+SwissProt entry.
+
+**And our levels are computed whole-chain, while the published rule is domain-wise and
+coverage-weighted.** We implement the level thresholds correctly but not the segmentation:
+Adaptyv split a protein into domains and consider structural similarity together with sequence
+coverage, and **splitting can only raise TM**, never lower it. So our TM values are lower bounds
+on theirs, and a design we place at Level 3 on a whole-chain TM just under 0.80 could be Level 2
+domain-wise. Six of our designs are 65 aa single-domain miniproteins where a split cannot move
+anything; the exposure is on the longer rows. We did not implement segmentation and the gap runs
+against us, not for us. And the antibody branch needs CDRH3 identity from ANARCI numbering, which we
 do not run; we implement it from conserved framework anchors instead
 (`bin/antibody_novelty.py`, self-tested).
 
-**The two nanobody rows carry upload risk, and we are stating it rather than discovering it.**
-`h370_020_vhh` clears at antibody-rule Level **4** — the only de novo design in the set — but
-under the general-protein rule it is Level 2 (TM 0.914) and would be auto-rejected.
-`rimA02_d3_rimA_14_vhh` is general-rule Level 1. Both depend on Adaptyv's ANARCI calling them
-antibodies. If it does not, those two rows fail at the gate.
+**The two nanobody rows carry upload risk, but not equally — an earlier version of this section
+treated them as the same case and they are not.**
+
+`rimA02_d3_rimA_14_vhh` is a **canonical 129 aa VHH**: it carries the standard framework and will
+almost certainly be annotated as an antibody by any ANARCI-class tool. Its exposure is the
+*threshold*, not the classification — CDRH3 13.6% clears comfortably, global identity 84.8%.
+
+`h370_020_vhh` is the row actually at risk. It is **98 aa with a non-canonical FR2**, which is
+precisely the shape a framework-anchored annotator can fail to call. It clears at antibody-rule
+Level 4 — the only Level 4 in the project — but under the general-protein rule it is Level 2
+(TM 0.914) and would be auto-rejected. **If it is not classified as an antibody, it fails.**
+
+A second mechanism may rescue both: the published novelty page describes classification running
+on **structural** similarity as well as sequence, and on that route both rows are safe. Our
+earlier framing pinned their survival on ANARCI alone, which is the more pessimistic of the two
+readings and was stated as though it were the only one.
 
 ---
 
@@ -657,6 +710,11 @@ at scales of 14 and 337 designs. It **passes**: every design outranking a submit
 pH ratio was also scored on the instrument. It then warns on **45 run names — 38 distinct
 molecules — that were measured and still rejected**, and requires the reason be recorded. Here it
 is.
+
+One housekeeping note on the underlying file: `ph_refold_regate.json` merges rather than
+overwrites, so it carries **20 entries at n=1 whose pose directories no longer exist on disk**.
+All 20 read below 1.60× on the refold, so none is a lost candidate, but the file is larger than
+the evidence behind it and should not be counted as 2,154 measurements.
 
 All 45 ratios in that list are **generator-pose** readings. Joined back to the pooled refold
 table by binder sequence:
@@ -776,7 +834,42 @@ gate at submission time.
 
 ---
 
-## 12. Limitations
+## 12. Declarations
+
+Stated because the organisers ask for them and an earlier version of this document made none.
+
+**AI assistance.** This submission was produced by one person working with Claude (Anthropic)
+throughout: design generation, scoring, analysis code, and the drafting of this document. Every
+number here was computed by code in the published repository, and the code was written in that
+collaboration. The errors in §7 were found the same way.
+
+**Human review.** The submitting researcher has reviewed all ten submitted sequences, their
+molecule_class labels, their lengths, and the claims made about them in this document and in the
+CSV. The sequences are de novo designs from this project's own generation runs; none is a
+modification of a previously submitted design or of an existing characterised binder. The two
+published binders that appear anywhere in this project — G532 and cetuximab-derived controls —
+were used for calibration only and are not ancestors of any submitted sequence.
+
+**Tools and licences.** BoltzGen and BindCraft for generation; ESMFold2 (via Modal) for structure
+prediction; the Dunbrack `ipsae.py` v4 reference, MIT, commit `6174cf9e` for interface scoring;
+PROPKA 3.5.1 for pKa; Proton-PottsMPNN (`potts_v6_afdb_edge_his0.3_acid0.06`) for the protonation
+model; FoldSeek against PDB for novelty; HBPLUS v3.06. All open-source and used within their
+licences. The vendored reference implementation in `outbox/ipsae-fixtures/vendor/` carries its
+MIT licence file.
+
+**Structures.** Predicted complexes for all ten designs are published at
+`submissions/structures/`, one median-ipSAE pose each — not the best pose, which would be
+selection on the outcome.
+
+**Funding and compute.** Self-funded. $503 of personal Modal spend on this target. No
+institutional affiliation, no grant, no commercial interest in the outcome.
+
+**Prior work by others that this rests on.** The G532 result (§8.1) and the two histidine sites
+it implicates were supplied by a collaborator reviewing this work, not discovered here.
+
+---
+
+## 13. Limitations
 
 1. **Every number here is a prediction of ours except the 11 in §4.4.** Nothing in this
    submission has been validated experimentally.
@@ -826,3 +919,12 @@ gate at submission time.
     overstates n by up to six-fold on the arm carrying our only causal claim.
 12. **The reproducibility claim has a boundary** — see the Repository note above. The pose cache
     is not published, and the documented emit command returns zeroed affinity columns without it.
+13. **The design family with the best measured prior is the one we scored least.** 60 of the 71
+    recovered BindCraft sequences sit at **n = 1 pose**, below the n ≥ 5 floor §6 requires, so
+    they are structurally ineligible for tier 1 regardless of merit. 22 of those read ≥ 2.0× at
+    n = 1. BindCraft also beat BoltzGen on every axis we measured, on 11 invocations against
+    1,944 designs. We did not resolve them, and the submission is poorer for it.
+14. **The organisers rank outcomes partly on affinity at pH 6.5, and two of our ten rows have no
+    usable affinity reading at all** (§4.5). We submitted them anyway, because excluding them
+    would mean scoring them at 0.0000, which is the error §4.2 documents — but it means a fifth
+    of the submission cannot compete on one of the stated criteria.
