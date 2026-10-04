@@ -27,6 +27,8 @@ for p in ../patches/modal_*.patch; do patch -p0 < "$p"; done
 3. **ipSAE sidecar emitted.** The wrapper writes only a scalar mean pLDDT, pTM and ipTM, and discards the PAE matrix that ipSAE requires. Adds `<name>_sample_<i>_ipsae.json` with the full PAE and per-token pLDDT. Falls back to printing the sample object's attributes if no PAE is found.
 4. Also makes `ESMFOLD2_HF_REPO` / `ESMFOLD2_HF_REVISION` env-selectable so the protocol's **Fast** arm can run, not just Full.
 
+**`modal_mosaic.patch`** — not a fix, a **whole new wrapper**: Mosaic (escalante-bio) on Modal, steps 1–3 environment probes plus step 4 gradient design. It is the only file here that upstream does not have, and it was invisible to version control until 2026-10-03: `git -C biomodals diff` skips untracked files, so the re-export command in `reference/wrapper-notes.md` silently dropped it and a `git clone` would have lost the whole wrapper. Fixed by `git -C biomodals add -N modal_mosaic.py`, which makes it show up in `diff` as a new file, so the usual re-export now captures it. **If you ever reclone `biomodals`, re-run that `add -N`** or the same hole reopens. Step 4's non-GPU logic has a free self-test: `python3 bin/mosaic_selftest.py`.
+
 ## Upstreaming
 
 All five are genuine bugs in `biomodals` or stale pins, not local preferences. Worth filing upstream — the Python 3.14 default will break these for everyone.

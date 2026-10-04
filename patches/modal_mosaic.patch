@@ -1,0 +1,710 @@
+diff --git a/modal_mosaic.py b/modal_mosaic.py
+new file mode 100644
+index 0000000..6dbe9be
+--- /dev/null
++++ b/modal_mosaic.py
+@@ -0,0 +1,704 @@
++# /// script
++# requires-python = ">=3.12"
++# dependencies = ["modal>=1.0"]
++# ///
++"""Mosaic (escalante-bio) on Modal. Steps 1-3 probe the environment; step 4 designs.
++
++Why a bespoke wrapper: Mosaic has no CLI. It is driven by its Python API, so the Modal
++function must EMBED the design script rather than shell out, unlike every other wrapper
++in biomodals/.
++
++  step 1  probe          JAX sees a CUDA GPU                          PASSED 2026-10-02
++  step 2  probe_mosaic   mosaic imports, loss terms compose           PASSED 2026-10-02
++  step 3  fetch_weights  8.03 GB of Boltz-2 cached on the Volume      PASSED 2026-10-02
++  step 4  design         gradient design against the H433 patch       <- written 2026-10-03
++
++Step 4's non-GPU logic (target prep, the numbering arithmetic, the geometry check) has a
++local self-test that needs no GPU and no Modal account: bin/mosaic_selftest.py. Run it
++before paying for a GPU; a wrong index here is a wasted run.
++
++Scope and constraints: projects/anthropic-adaptyv-2026/mosaic-wrapper-scope.md
++C1 (BLOCKING): the design loss may NOT contain ipSAE and may NOT run on ESMFold2 — that is
++our frozen ranking instrument, and designing against it makes December's analysis
++unanswerable. Design on Boltz-2 or Protenix. ESMFold2 is permitted for plumbing smoke
++tests only, and those designs are discarded, never submitted.
++
++Run:  GPU=L40S modal run modal_mosaic.py
++"""
++import os
++
++from modal import App, Image, Volume
++
++GPU = os.environ.get("GPU", "L40S")          # 48 GB; scope says 24 GB min, 48 GB+ recommended
++TIMEOUT = int(os.environ.get("TIMEOUT", 30))
++
++# Weights live in a Volume, not the image: they are large, shared across runs, and change
++# independently of the code. Same pattern as modal_germinal.py.
++weights = Volume.from_name("mosaic-weights", create_if_missing=True)
++
++image = (
++    Image.debian_slim(python_version="3.12")   # Mosaic needs >=3.11
++    .apt_install("git")
++    # Germinal's image proved jax[cuda12] installs cleanly on Modal this morning; this is the
++    # modern spelling of the same thing. If it ever fails, Germinal's fallback is
++    # pip install 'jax[cuda12_pip]==0.5.3' -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
++    .uv_pip_install("jax[cuda12]")
++    # STEP 2: Mosaic itself. It has no release on PyPI, so install from the repo. Its own
++    # README warns it "may require substantial hand-holding (tuning learning rates, etc)"
++    # and "often produces proteins that fail simple in-silico tests" -- downstream
++    # protein-qc filtering is mandatory, not optional (constraint C4).
++    .uv_pip_install("git+https://github.com/escalante-bio/mosaic")
++)
++
++app = App("mosaic", image=image)
++
++
++@app.function(image=image, gpu=GPU, timeout=TIMEOUT * 60,
++              volumes={"/weights": weights})
++def probe():
++    """Step 1 success criterion: jax.devices() lists a GPU and a real matmul runs on it."""
++    import jax
++    import jax.numpy as jnp
++
++    print(f"[mosaic] jax {jax.__version__}")
++    print(f"[mosaic] backend: {jax.default_backend()}")
++    devs = jax.devices()
++    print(f"[mosaic] jax.devices(): {devs}")
++    gpus = [d for d in devs if d.platform == "gpu"]
++    if not gpus:
++        raise SystemExit("STEP 1 FAILED: no GPU in jax.devices()")
++    x = jnp.ones((2048, 2048))
++    y = float((x @ x).sum())
++    print(f"[mosaic] matmul on {gpus[0]}: sum={y:.0f} (expect 8589934592)")
++    print(f"[mosaic] weights volume writable: {os.access('/weights', os.W_OK)}")
++    print("[mosaic] STEP 1 PASSED")
++    return {"jax": jax.__version__, "devices": [str(d) for d in devs]}
++
++
++@app.function(image=image, gpu=GPU, timeout=TIMEOUT * 60,
++              volumes={"/weights": weights})
++def probe_mosaic():
++    """Step 2 success criterion: mosaic imports and a composable loss can be constructed.
++
++    Deliberately does NOT build the published Nipah loss. That loss contains ipSAE and runs
++    on ESMFold2, which is our frozen ranking instrument (constraint C1) -- using it would
++    make December's question "did our ranking predict binding?" unanswerable. This only
++    checks that the loss algebra works; the real objective gets composed on Boltz-2.
++    """
++    import jax
++    print(f"[mosaic] jax {jax.__version__}  devices {jax.devices()}")
++    import mosaic
++    print(f"[mosaic] mosaic imported from {mosaic.__file__}")
++    import mosaic.losses.structure_prediction as sp
++    print("[mosaic] structure_prediction loss terms available:")
++    terms = [n for n in dir(sp) if n[0].isupper()]
++    print("   " + ", ".join(terms))
++    # the loss algebra: terms compose with + and scale with *
++    loss = sp.BinderTargetContact() + sp.WithinBinderContact() + 0.1 * sp.PLDDTLoss()
++    print(f"[mosaic] composed a 3-term loss OK: {type(loss).__name__}")
++    print("[mosaic] STEP 2 PASSED")
++    return {"terms": terms}
++
++
++@app.function(image=image, gpu=GPU, timeout=TIMEOUT * 60,
++              volumes={"/weights": weights})
++def fetch_weights():
++    """Step 3: pull the design-model weights into the Volume so runs do not re-download.
++
++    Boltz-2, not ESMFold2: constraint C1 reserves ESMFold2 for ranking. Caching matters
++    because JIT plus a cold weight fetch dominates the first call, and Mosaic needs many
++    calls while a learning rate is being tuned.
++    """
++    # Env vars must be set BEFORE importing anything that reads them at import time.
++    import os
++    os.environ["HF_HOME"] = "/weights/hf"
++    os.environ["HUGGINGFACE_HUB_CACHE"] = "/weights/hf/hub"
++    os.environ["TORCH_HOME"] = "/weights/torch"
++    os.environ["XDG_CACHE_HOME"] = "/weights/xdg"
++    for d in ("/weights/hf/hub", "/weights/torch", "/weights/xdg", "/weights/mosaic"):
++        os.makedirs(d, exist_ok=True)
++    # Mosaic ignores HF_HOME/TORCH_HOME: it keeps its OWN cache at ~/.cache/mosaic and the
++    # only documented override is a --cache CLI flag, which does not exist when driving the
++    # Python API. Symlink the path it actually uses onto the Volume instead.
++    import shutil
++    real = "/root/.cache/mosaic"
++    os.makedirs("/root/.cache", exist_ok=True)
++    if os.path.islink(real):
++        pass
++    elif os.path.isdir(real):
++        shutil.rmtree(real)
++    if not os.path.islink(real):
++        os.symlink("/weights/mosaic", real)
++    print(f"[mosaic] {real} -> {os.path.realpath(real)}")
++    import jax
++    print(f"[mosaic] jax {jax.__version__} devices {jax.devices()}")
++    import mosaic, mosaic.models
++    print("[mosaic] mosaic.models exposes:", [n for n in dir(mosaic.models) if not n.startswith("_")])
++    got = []
++    try:
++        from mosaic.models.boltz2 import Boltz2
++        print("[mosaic] Boltz2 class imported; instantiating (this pulls weights)...")
++        m = Boltz2()
++        print("[mosaic] Boltz2 constructed; forcing weight download...")
++        for attr in ("load", "load_weights", "_load", "download", "params", "model"):
++            if hasattr(m, attr):
++                a = getattr(m, attr)
++                try:
++                    a() if callable(a) else repr(a)
++                    print(f"[mosaic]   touched .{attr}")
++                except Exception as e:
++                    print(f"[mosaic]   .{attr} raised {type(e).__name__}: {str(e)[:120]}")
++        print("[mosaic] Boltz2 attributes:", [x for x in dir(m) if not x.startswith("_")][:25])
++        got.append("boltz2")
++    except Exception as e:
++        print(f"[mosaic] Boltz2 unavailable: {type(e).__name__}: {str(e)[:300]}")
++    total = 0
++    for sub in ("hf", "torch", "xdg", "mosaic"):
++        d = f"/weights/{sub}"
++        n = sum(len(f) for _, _, f in os.walk(d)) if os.path.isdir(d) else 0
++        sz = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(d) for f in fs) if os.path.isdir(d) else 0
++        total += sz
++        print(f"[mosaic] /weights/{sub}: {n} files, {sz/1e9:.2f} GB")
++    weights.commit()
++    # Success is BYTES ON THE VOLUME, not "the class constructed". Constructing Boltz2 is
++    # lazy and downloads nothing, so the previous criterion passed against an empty Volume.
++    ok = total > 1e8
++    print(f"[mosaic] total cached: {total/1e9:.2f} GB")
++    print("[mosaic] STEP 3 " + ("PASSED" if ok else f"FAILED - only {total/1e9:.2f} GB on the Volume"))
++    return {"cached": got, "bytes": total}
++
++
++# ----------------------------------------------------------------- STEP 4: design
++#
++# WHY MOSAIC IS THE RIGHT TOOL HERE (the reversal, recorded in methods-stack.md):
++# two different problems were being conflated.
++#   supply    -- is a carboxylate present at all?  BoltzGen `sequence:` pinning, 80/80.
++#   placement -- is it within 4.0 A of H433 ND1/NE2 WHILE the binder folds and binds?
++#                2/160 by sampling, and the single hit does not fold.
++# Placement is irreducibly a continuous multi-objective problem, so it belongs in a
++# written objective rather than a post-hoc filter. Each of the week's three failure
++# modes has a loss term: ipSAE_min 0.0000 -> IPTM/PAE, binder pLDDT 37 -> PLDDTLoss +
++# globularity, salt-bridge geometry 2/160 -> BinderTargetContact + the custom
++# AcidNearHis term below.
++#
++# NUMBERING -- READ THIS BEFORE CHANGING AN INDEX.
++# Four schemes are live in this project and mixing them has cost real money. Everything
++# below speaks exactly one: POSITIONAL in egfr_ecd_6aru_renum.pdb, contiguous 1..609,
++# where positional = canonical - 27. So canonical H433 -> 406, and the declared patch
++# 403..409 == canonical 430..436 == motif TKQHGQF (bin/make_tight_specs.py carries the
++# same patch and the same independent motif check). BoltzGen's OUTPUT files use yet
++# another offset -- H433 -> 409, which is what bin/ph_gate_target_his.py CANON encodes --
++# so for the files THIS function writes that gate needs CANON = {406: "H433"}. Every run
++# ships a numbering.json saying so, so nobody re-derives it.
++#
++# C1 (BLOCKING, frozen-decisions.md): no ipSAE term and no ESMFold2 anywhere in the
++# design loss -- that is the frozen ranking instrument. Design runs on Boltz-2 and
++# ipSAE_min is held back for ranking. ESMFoldGlobularity is NOT an ESMFold2 model: it is
++# a model-agnostic radius-of-gyration term on whatever distogram it is handed (see
++# mosaic/losses/structure_prediction.py), here Boltz-2's. Permitted.
++#
++# WHAT MOSAIC STILL CANNOT DO: there is no pKa term and PROPKA is not differentiable.
++# The pH switch stays a post-hoc selector. Division of labour: Mosaic holds fold + bind +
++# contact geometry, then bin/ph_gate_target_his.py gates, then bin/knockout_control.py.
++
++TOKENS = "ARNDCQEGHILKMFPSTWYV"              # mosaic.common.TOKENS, mirrored for local use
++A37 = {"CA": 1, "ND1": 14, "NE2": 25,         # mosaic.losses.atom37.ATOM37_NAMES order
++       "OD1": 16, "OD2": 17, "OE1": 26, "OE2": 27}
++DEFAULT_CROP = (284, 453)                     # domain III, positional (== canonical 311..480)
++DEFAULT_EPITOPE = "403,404,405,406,407,408,409"
++ANCHOR = 406                                  # H433, positional
++
++
++def _cache_env():
++    """Point every cache mosaic uses at the Volume. Must run before importing mosaic.
++
++    Same trick as fetch_weights(): mosaic ignores HF_HOME/TORCH_HOME and keeps its own
++    cache at ~/.cache/mosaic, whose only documented override is a --cache CLI flag that
++    does not exist when driving the Python API. Symlink instead. 8.03 GB is already on
++    the Volume, so this is the difference between a 30-second start and a 10-minute one.
++    """
++    import os
++    import shutil
++
++    os.environ["HF_HOME"] = "/weights/hf"
++    os.environ["HUGGINGFACE_HUB_CACHE"] = "/weights/hf/hub"
++    os.environ["TORCH_HOME"] = "/weights/torch"
++    os.environ["XDG_CACHE_HOME"] = "/weights/xdg"
++    for d in ("/weights/hf/hub", "/weights/torch", "/weights/xdg", "/weights/mosaic"):
++        os.makedirs(d, exist_ok=True)
++    real = "/root/.cache/mosaic"
++    os.makedirs("/root/.cache", exist_ok=True)
++    if os.path.isdir(real) and not os.path.islink(real):
++        shutil.rmtree(real)
++    if not os.path.islink(real):
++        os.symlink("/weights/mosaic", real)
++
++
++def _prepare_target(pdb_path, chain_id: str, crop):
++    """Polymer chain + sequence + positional residue numbers, from a PDB on disk.
++
++    Boltz "wants perfect cifs" (mosaic/models/boltz2.py:build_template_yaml), and the
++    template's declared full_sequence is read straight off the chain's residue names, so
++    waters, ligands, altlocs and hydrogens have to go or the template silently mismatches
++    the sequence we pass alongside it.
++    """
++    import gemmi
++
++    st = gemmi.read_structure(str(pdb_path))
++    st.setup_entities()
++    st.remove_alternative_conformations()
++    st.remove_hydrogens()
++    st.remove_ligands_and_waters()
++    residues = [
++        r for r in st[0][chain_id]
++        if (info := gemmi.find_tabulated_residue(r.name)) and info.is_amino_acid()
++    ]
++    if crop is not None:
++        lo, hi = crop
++        residues = [r for r in residues if lo <= r.seqid.num <= hi]
++    chain = gemmi.Chain(chain_id)
++    for r in residues:
++        chain.add_residue(r)
++    resnums = [r.seqid.num for r in residues]
++    sequence = gemmi.one_letter_code([r.name for r in residues]).upper()
++    if len(sequence) != len(resnums) or "X" in sequence:
++        raise SystemExit(f"STEP 4 FAILED: non-standard residue in target: {sequence}")
++    return chain, sequence, resnums
++
++
++def _geometry(st, anchor_resnum: int):
++    """Shortest binder-carboxylate-O to anchor-His-N distance in a written complex.
++
++    This is verification step 1 and it runs BEFORE any pKa: >4.0 A cannot be a switch
++    whatever PROPKA says. The check that caught a 3.59x "switch" whose binder sat 27 A
++    from the histidine was exactly this one.
++    """
++    binder, target = st[0][0], st[0][1]
++    his = next((r for r in target if r.seqid.num == anchor_resnum), None)
++    if his is None:
++        return {}
++    ring = [a.pos for a in his if a.name in ("ND1", "NE2")]
++    if not ring:
++        return {}
++    best_o, best_ca, best_res = 1e9, 1e9, None
++    for r in binder:
++        if r.name not in ("ASP", "GLU"):
++            continue
++        for a in r:
++            if a.name not in ("OD1", "OD2", "OE1", "OE2", "CA"):
++                continue
++            d = min(a.pos.dist(p) for p in ring)
++            if a.name == "CA":
++                best_ca = min(best_ca, d)
++            elif d < best_o:
++                best_o, best_res = d, f"{r.name}{r.seqid.num}"
++    return {
++        "acid_O_to_his_N": None if best_o > 1e8 else round(best_o, 2),
++        "acid_CA_to_his_N": None if best_ca > 1e8 else round(best_ca, 2),
++        "closest_acid": best_res,
++        "geometry_pass": None if best_o > 1e8 else bool(best_o <= 4.0),
++    }
++
++
++@app.function(image=image, gpu=GPU, timeout=TIMEOUT * 60,
++              volumes={"/weights": weights})
++def design(
++    target_pdb: bytes,
++    run_name: str,
++    target_chain: str = "A",
++    crop: str = "284:453",
++    epitope: str = DEFAULT_EPITOPE,
++    anchor: int = ANCHOR,
++    lengths: str = "76",
++    n_seeds: int = 2,
++    seed0: int = 0,
++    steps_soft: int = 60,
++    steps_sharp: int = 40,
++    recycling_steps: int = 1,
++    sampling_steps: int = 10,
++    stepsize: float = 0.0,
++    sharpen: float = 1.3,
++    use_mpnn: bool = True,
++    w_iptm: float = 1.0,
++    w_pae: float = 0.05,
++    w_contact: float = 1.0,
++    w_within: float = 1.0,
++    w_plddt: float = 1.0,
++    w_glob: float = 0.3,
++    w_acid: float = 2.0,
++    w_mpnn: float = 3.0,
++    w_comp: float = 10.0,
++    cap_val: float = 0.12,
++    cap_gly: float = 0.08,
++    acid_d0: float = 8.0,
++    acid_width: float = 1.5,
++    smoke: bool = False,
++):
++    """Step 4: gradient design of an acid-presenting binder against the H433 patch.
++
++    Returns [(relative_path, bytes)] like modal_boltzgen.py, AND writes the same tree to
++    /weights/runs/<run_name>/ before returning -- a detached run whose local client dies
++    on a DNS blip (four times on 2026-10-03) otherwise produces nothing recoverable.
++
++    Defaults chosen from what has actually been measured, not from taste:
++      crop 284:453  Domain III only, 170 residues. H433 is in domain III and every prior
++                    BoltzGen d3 arm already targeted it alone, so this is not a new
++                    choice -- but it IS a deviation from "chain A, contiguous 1..609" in
++                    the spec, made because 609 target tokens plus a binder is ~700 tokens
++                    of Boltz-2 WITH a backward pass, which will not fit 48 GB. Pass
++                    --crop none to run the full ECD and find out. The crop is expressed in
++                    the same positional numbering as everything else, and epitope indices
++                    are recomputed from it, so no second numbering scheme appears.
++      lengths 76    One length per run by default: each distinct binder length is a fresh
++                    JAX compile (minutes, not seconds). 56..90 is the only band that ever
++                    produced a switch -- 123..160 and 31..49 both produced zero.
++      stepsize 0    means 0.1*sqrt(L), mosaic's own recommended first guess.
++      no Cys        The 2026-10-03 winner was 24% Val / 12 Gly / 5 Cys and ESMFold2 could
++                    not fold it. Cys is removed from the alphabet outright (NoCys), Val
++                    and Gly are capped by a hinge penalty. This is what killed the winner.
++    """
++    import json
++    import os
++    from pathlib import Path
++    from tempfile import TemporaryDirectory
++
++    _cache_env()
++
++    import gemmi
++    import jax
++    import jax.numpy as jnp
++    import numpy as np
++
++    import mosaic.losses.structure_prediction as sp
++    from mosaic.common import LossTerm
++    from mosaic.losses.transformations import NoCys
++    from mosaic.models.boltz2 import Boltz2
++    from mosaic.optimizers import simplex_APGM
++    from mosaic.structure_prediction import TargetChain
++
++    print(f"[mosaic] jax {jax.__version__} devices {jax.devices()}")
++    if smoke:
++        steps_soft, steps_sharp, n_seeds = 3, 2, 1
++        print("[mosaic] SMOKE MODE: 3+2 steps, 1 seed -- proves the path, not the design")
++
++    crop_t = None if crop.lower() in ("none", "", "full") else tuple(
++        int(v) for v in crop.split(":")
++    )
++    epitope_pos = [int(v) for v in epitope.split(",")]
++    length_list = [int(v) for v in lengths.split(",")]
++    for L in length_list:
++        if not 56 <= L <= 90:
++            raise SystemExit(f"STEP 4 FAILED: length {L} outside the 56..90 band")
++
++    tmp = TemporaryDirectory()
++    target_path = Path(tmp.name) / "target.pdb"
++    target_path.write_bytes(target_pdb)
++    chain, target_seq, resnums = _prepare_target(target_path, target_chain, crop_t)
++    index_of = {num: i for i, num in enumerate(resnums)}
++    missing = [p for p in epitope_pos + [anchor] if p not in index_of]
++    if missing:
++        raise SystemExit(f"STEP 4 FAILED: positions {missing} are not in the crop {crop_t}")
++    epitope_idx = [index_of[p] for p in epitope_pos]       # 0-based into the TARGET chain
++    anchor_local = index_of[anchor]
++    anchor_aa = target_seq[anchor_local]
++    print(f"[mosaic] target {target_chain} crop={crop_t} len={len(target_seq)}")
++    print(f"[mosaic] epitope positional {epitope_pos} -> target idx {epitope_idx}")
++    print(f"[mosaic] anchor positional {anchor} -> target idx {anchor_local} = {anchor_aa}")
++    if anchor_aa != "H":
++        raise SystemExit(f"STEP 4 FAILED: anchor {anchor} is {anchor_aa}, not H -- numbering is wrong")
++
++    # --- the one loss term the whole programme has failed to control -----------------
++    class AcidNearHis(LossTerm):
++        """Pull a binder carboxylate to within d0 of the anchor histidine's ring N.
++
++        Measured on CA, not on OD1/OD2: design features give the binder UNK/G reference
++        atoms, so the binder has NO SIDECHAINS during optimization (mosaic README). CA to
++        ring-N is the honest differentiable proxy -- an Asp CA can sit at most ~3.9 A from
++        its own carboxylate O, so d0=8.0 is the CA distance consistent with O within 4.0 A.
++        The real all-atom distance is measured after design by _geometry() on a
++        re-prediction, and that is the number the gate sees.
++
++        Shape is (acid probability at i) x sigmoid((d0 - d_i)/width), summed over i and
++        logged: smooth, rewards one well-placed carboxylate, and does not care which
++        position wins.
++        """
++        his_token: int
++        d_idx: int
++        e_idx: int
++        d0: float = 8.0
++        width: float = 1.5
++
++        def __call__(self, sequence, output, key):
++            L = sequence.shape[0]
++            ca = output.atom37_coords[:L, A37["CA"]]
++            nd1 = output.atom37_coords[self.his_token, A37["ND1"]]
++            ne2 = output.atom37_coords[self.his_token, A37["NE2"]]
++            d = jnp.minimum(
++                jnp.linalg.norm(ca - nd1, axis=-1), jnp.linalg.norm(ca - ne2, axis=-1)
++            )
++            acid = sequence[:, self.d_idx] + sequence[:, self.e_idx]
++            score = acid * jax.nn.sigmoid((self.d0 - d) / self.width)
++            total = score.sum()
++            loss = -jnp.log(total + 1e-3)
++            return loss, {
++                "acid_his": loss,
++                "acid_best": score.max(),
++                "acid_dmin_CA": jnp.min(d + (1.0 - acid) * 100.0),
++            }
++
++    class CompositionCap(LossTerm):
++        """Hinge penalty on over-represented residues. Zero until the cap is crossed."""
++        caps: tuple
++        name: str = "comp"
++
++        def __call__(self, seq, *, key):
++            total, aux = 0.0, {}
++            for token_idx, cap, label in self.caps:
++                frac = seq[:, token_idx].mean()
++                total = total + jax.nn.relu(frac - cap)
++                aux[f"f_{label}"] = frac
++            return total, {self.name: total, **aux}
++
++    model = Boltz2()
++    mpnn = None
++    if use_mpnn:
++        # The published Nipah-winning recipe is Boltz-2 + SOLUBLE ProteinMPNN +
++        # simplex_APGM, and InverseFoldingSequenceRecovery is the term mosaic credits with
++        # raising filter pass rates. Optional and non-fatal: if the weights will not load
++        # the run continues without it rather than dying 20 minutes in.
++        try:
++            from mosaic.losses.protein_mpnn import InverseFoldingSequenceRecovery
++            from mosaic.proteinmpnn.mpnn import load_mpnn_sol
++            mpnn = load_mpnn_sol(0.0)
++            print("[mosaic] soluble ProteinMPNN loaded")
++        except Exception as e:
++            print(f"[mosaic] WARNING: ProteinMPNN unavailable ({type(e).__name__}: {e}); "
++                  "continuing without InverseFoldingSequenceRecovery")
++            mpnn = None
++
++    target_chain_spec = TargetChain(
++        sequence=target_seq, use_msa=False, template_chain=chain
++    )
++    # use_msa=False -> `msa: empty`, so nothing reaches an MSA server from inside Modal.
++    # The crystal chain goes in as a TEMPLATE instead, which is the stronger constraint
++    # here anyway: the whole design depends on H433's ring sitting where 6ARU puts it.
++
++    caps = tuple(
++        (TOKENS.index(aa), cap, aa)
++        for aa, cap in (("V", cap_val), ("G", cap_gly)) if cap < 1.0
++    )
++    rows, files = [], {}
++
++    for L in length_list:
++        features, writer = model.binder_features(
++            binder_length=L, chains=[target_chain_spec]
++        )
++        inner = (
++            w_iptm * sp.BinderTargetIPTM()
++            + w_pae * sp.BinderTargetPAE()
++            + w_contact * sp.BinderTargetContact(
++                epitope_idx=epitope_idx, contact_distance=14.0, paratope_size=8
++            )
++            + w_within * sp.WithinBinderContact()
++            + w_plddt * sp.PLDDTLoss()
++            + w_glob * sp.ESMFoldGlobularity()
++            + w_acid * AcidNearHis(
++                his_token=L + anchor_local,
++                d_idx=TOKENS.index("D"),
++                e_idx=TOKENS.index("E"),
++                d0=acid_d0,
++                width=acid_width,
++            )
++        )
++        if mpnn is not None:
++            inner = inner + w_mpnn * InverseFoldingSequenceRecovery(
++                mpnn, temp=jnp.array(0.01)
++            )
++        total_loss = model.build_loss(
++            loss=inner, features=features,
++            recycling_steps=recycling_steps, sampling_steps=sampling_steps,
++        )
++        if caps:
++            total_loss = total_loss + w_comp * CompositionCap(caps=caps)
++        loss_fn = NoCys(loss=total_loss)      # Cys removed from the alphabet entirely
++        step = stepsize if stepsize > 0 else 0.1 * float(np.sqrt(L))
++        print(f"[mosaic] L={L} stepsize={step:.3f} epitope={len(epitope_idx)} "
++              f"terms={'+mpnn' if mpnn else 'no-mpnn'}")
++
++        for s in range(n_seeds):
++            seed = seed0 + s
++            tag = f"{run_name}_L{L}_s{seed}"
++            key = jax.random.key(seed)
++            x = jax.nn.softmax(
++                0.5 * jax.random.gumbel(key=key, shape=(L, len(TOKENS) - 1))
++            )
++            # Two stages: soft to find a basin, then scale>1 to drive it discrete. One
++            # stage at scale>1 commits to a bad basin early; one at scale=1 never
++            # discretizes and the argmax then has little to do with what was optimized.
++            _, x = simplex_APGM(loss_function=loss_fn, x=x, n_steps=steps_soft,
++                                stepsize=step, momentum=0.9, scale=1.0,
++                                key=jax.random.fold_in(key, 1))
++            _, x = simplex_APGM(loss_function=loss_fn, x=x, n_steps=steps_sharp,
++                                stepsize=step, momentum=0.5, scale=sharpen,
++                                key=jax.random.fold_in(key, 2))
++            pssm = NoCys.sequence(x)                     # reinsert the zeroed Cys column
++            tokens = np.asarray(pssm).argmax(-1)
++            seq = "".join(TOKENS[int(i)] for i in tokens)
++            comp = {aa: seq.count(aa) / L for aa in set(seq)}
++            print(f"[mosaic] {tag} {seq}")
++
++            onehot = jax.nn.one_hot(jnp.array(tokens), len(TOKENS))
++            pred = model.predict(
++                PSSM=onehot, features=features, writer=writer,
++                recycling_steps=max(recycling_steps, 3), sampling_steps=25,
++                key=jax.random.key(seed),
++            )
++            # Re-predict with target-only features for BOTH chains: design features give
++            # the binder no sidechains, so the real carboxylate-O geometry and anything
++            # PROPKA touches can only be measured on an all-atom re-prediction.
++            re_features, re_writer = model.target_only_features(
++                [TargetChain(sequence=seq, use_msa=False), target_chain_spec]
++            )
++            repred = model.predict(
++                features=re_features, writer=re_writer,
++                recycling_steps=3, sampling_steps=25, key=jax.random.key(seed),
++            )
++            # repred was predicted WITHOUT a PSSM, so mosaic's predict() hands IPTMLoss a
++            # zero-length sequence: asym_id becomes all-ones, every pair is masked out, and
++            # `repred.iptm` is exactly 0.0 for ANY design. That is an artifact of the call,
++            # not a property of the binder -- the same class of error as reading a pH switch
++            # off an apo reference. Read the interface off chain_pair_iptm() instead, which
++            # takes asym_id from the output and needs no binder sequence passed in.
++            pair_iptm = repred.model_output.chain_pair_iptm()
++            iptm_repred = float(pair_iptm.get((0, 1), float("nan")))
++            st = repred.model_output.to_structure()
++            # Renumber into POSITIONAL so the gates and the pose-check motif line up:
++            # binder chain A 1..L, target chain B carrying its positional numbers.
++            m = st[0]
++            if len(m[0]) != L or len(m[1]) != len(resnums):
++                raise SystemExit(
++                    f"STEP 4 FAILED: re-prediction chains are {len(m[0])}/{len(m[1])}, "
++                    f"expected {L}/{len(resnums)} -- do not renumber blind"
++                )
++            m[0].name = "A"
++            m[1].name = "B"
++            for i, r in enumerate(m[0]):
++                r.seqid = gemmi.SeqId(i + 1, " ")
++            for r, num in zip(m[1], resnums):
++                r.seqid = gemmi.SeqId(num, " ")
++            st.setup_entities()
++            geom = _geometry(st, anchor)
++            row = {
++                "design": tag, "length": L, "seed": seed, "sequence": seq,
++                "iptm_design": round(float(pred.iptm), 4),
++                "plddt_binder_design": round(float(np.asarray(pred.plddt)[:L].mean()), 4),
++                "iptm_repred": round(iptm_repred, 4),
++                "plddt_binder_repred": round(float(np.asarray(repred.plddt)[:L].mean()), 4),
++                "frac_V": round(comp.get("V", 0.0), 3),
++                "frac_G": round(comp.get("G", 0.0), 3),
++                "n_C": seq.count("C"),
++                **geom,
++            }
++            rows.append(row)
++            print(f"[mosaic] {tag} {json.dumps(geom)} iptm={row['iptm_repred']}")
++            files[f"complex/{tag}.pdb"] = st.make_pdb_string().encode()
++            files[f"pssm/{tag}.npy"] = np.asarray(pssm).astype(np.float32).tobytes()
++
++    files["designs.faa"] = "".join(
++        f">{r['design']}\n{r['sequence']}\n" for r in rows
++    ).encode()
++    cols = list(rows[0].keys()) if rows else []
++    files["designs.tsv"] = (
++        "\t".join(cols) + "\n"
++        + "".join("\t".join("" if r[c] is None else str(r[c]) for c in cols) + "\n" for r in rows)
++    ).encode()
++    files["numbering.json"] = json.dumps({
++        "scheme": "positional in egfr_ecd_6aru_renum.pdb, contiguous 1..609, "
++                  "positional = canonical - 27",
++        "written_pdbs": "binder = chain A, 1..L; target = chain B, positional numbering",
++        "anchor": {"positional": anchor, "canonical": anchor + 27, "label": "H433"},
++        "epitope_positional": epitope_pos,
++        "crop": list(crop_t) if crop_t else None,
++        "ph_gate_note": "bin/ph_gate_target_his.py CANON is BoltzGen-output numbering "
++                        f"(H433 -> 409). For these files it must be {{{anchor}: 'H433'}}.",
++    }, indent=2).encode()
++    files["config.json"] = json.dumps({
++        "crop": crop, "epitope": epitope, "anchor": anchor, "lengths": lengths,
++        "n_seeds": n_seeds, "seed0": seed0, "steps_soft": steps_soft,
++        "steps_sharp": steps_sharp, "recycling_steps": recycling_steps,
++        "sampling_steps": sampling_steps, "stepsize": stepsize, "sharpen": sharpen,
++        "use_mpnn": mpnn is not None, "smoke": smoke,
++        "weights": {"iptm": w_iptm, "pae": w_pae, "contact": w_contact,
++                    "within": w_within, "plddt": w_plddt, "glob": w_glob,
++                    "acid": w_acid, "mpnn": w_mpnn, "comp": w_comp},
++        "caps": {"V": cap_val, "G": cap_gly}, "acid_d0": acid_d0,
++        "acid_width": acid_width, "no_ipsae_no_esmfold2": True,
++    }, indent=2).encode()
++
++    out = Path("/weights/runs") / run_name
++    for rel, content in files.items():
++        p = out / rel
++        p.parent.mkdir(parents=True, exist_ok=True)
++        p.write_bytes(content)
++    weights.commit()
++    print(f"[mosaic] {len(rows)} designs; also written to {out} on the Volume")
++    passed = [r for r in rows if r.get("geometry_pass")]
++    print(f"[mosaic] STEP 4 {'PASSED' if rows else 'FAILED - no designs'}: "
++          f"{len(passed)}/{len(rows)} within 4.0 A of H433")
++    return [(rel, content) for rel, content in files.items()]
++
++
++@app.local_entrypoint()
++def main(
++    step: int = 1,
++    target: str = "../targets/egfr/egfr_ecd_6aru_renum.pdb",
++    run_name: str = "",
++    out_dir: str = "../runs/mosaic",
++    crop: str = "284:453",
++    epitope: str = DEFAULT_EPITOPE,
++    anchor: int = ANCHOR,
++    lengths: str = "76",
++    n_seeds: int = 2,
++    seed0: int = 0,
++    steps_soft: int = 60,
++    steps_sharp: int = 40,
++    recycling_steps: int = 1,
++    sampling_steps: int = 10,
++    stepsize: float = 0.0,
++    sharpen: float = 1.3,
++    use_mpnn: bool = True,
++    w_acid: float = 2.0,
++    cap_val: float = 0.12,
++    cap_gly: float = 0.08,
++    acid_d0: float = 8.0,
++    smoke: bool = False,
++):
++    """Steps 1-3 are probes and take no arguments. Step 4 designs.
++
++    GPU=L40S modal run --detach modal_mosaic.py --step 4 --smoke --run-name smoke01
++    """
++    from datetime import datetime
++    from pathlib import Path
++
++    if step != 4:
++        print({1: probe, 2: probe_mosaic, 3: fetch_weights}[step].remote())
++        return
++
++    pdb = Path(target)
++    if not pdb.is_file():
++        raise SystemExit(f"target not found: {pdb.resolve()}  (paths resolve from biomodals/)")
++    run = run_name or datetime.now().strftime("%y%m%d%H%M")
++    results = design.remote(
++        target_pdb=pdb.read_bytes(), run_name=run, crop=crop, epitope=epitope,
++        anchor=anchor, lengths=lengths, n_seeds=n_seeds, seed0=seed0,
++        steps_soft=steps_soft, steps_sharp=steps_sharp,
++        recycling_steps=recycling_steps, sampling_steps=sampling_steps,
++        stepsize=stepsize, sharpen=sharpen, use_mpnn=use_mpnn, w_acid=w_acid,
++        cap_val=cap_val, cap_gly=cap_gly, acid_d0=acid_d0, smoke=smoke,
++    )
++    dest = Path(out_dir) / run
++    for rel, content in results:
++        p = dest / rel
++        p.parent.mkdir(parents=True, exist_ok=True)
++        p.write_bytes(content)
++    print(f"\nResults saved to: {dest}")
