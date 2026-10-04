@@ -1,8 +1,66 @@
 diff --git a/modal_bindcraft.py b/modal_bindcraft.py
-index c39a196..2384edb 100644
+index c39a196..3b1221a 100644
 --- a/modal_bindcraft.py
 +++ b/modal_bindcraft.py
-@@ -912,6 +912,16 @@ def bindcraft(
+@@ -18,7 +18,15 @@ Approximate cost for 3 designs, PDL1.pdb only:
+ import os
+ from pathlib import Path
+ 
+-from modal import App, Image
++from modal import App, Image, Volume
++
++# BindCraft writes every output under design_path (/tmp/BindCraft/<name>/), including
++# Accepted/ AND Rejected/. Mounting a Volume there makes those writes survive a crash,
++# a timeout or an expired auth token -- the failure that cost $111.10 / 27.3 H100-hours
++# on 2026-10-02 and produced no output directory at all, and that silently discarded a
++# 29-trajectory pilot. The existing return path is untouched: on success nothing changes.
++OUT_VOLUME = Volume.from_name("bindcraft-out", create_if_missing=True)
++VOLUME_MOUNT = "/tmp/BindCraft"
+ 
+ # It is harder to provision GPUs if you set the timeout too high
+ GPU = os.environ.get("GPU", "L40S")
+@@ -68,7 +76,8 @@ image = (
+ app = App("bindcraft", image=image)
+ 
+ 
+-@app.function(image=image, gpu=GPU, timeout=TIMEOUT * 60)
++@app.function(image=image, gpu=GPU, timeout=TIMEOUT * 60,
++               volumes={VOLUME_MOUNT: OUT_VOLUME})
+ def bindcraft(
+     design_path,
+     binder_name,
+@@ -106,6 +115,7 @@ def bindcraft(
+     import json
+     import os
+     import shutil
++    import threading
+     import time
+     from datetime import datetime
+ 
+@@ -254,6 +264,22 @@ def bindcraft(
+     )
+ 
+     ### generate directories, design path names can be found within the function
++    # Flush the Volume every 90s. Without this, writes stay buffered in the container
++    # and a kill loses them -- which is the whole failure this mount exists to prevent.
++    _stop_commit = threading.Event()
++
++    def _commit_loop():
++        while not _stop_commit.wait(90):
++            try:
++                OUT_VOLUME.commit()
++            except Exception as e:
++                print(f"[bindcraft] volume commit failed (continuing): {e}")
++
++    _committer = threading.Thread(target=_commit_loop, daemon=True)
++    _committer.start()
++    print(f"[bindcraft] output volume 'bindcraft-out' mounted at {VOLUME_MOUNT}; "
++          f"committing every 90s")
++
+     design_paths = generate_directories(target_settings["design_path"])
+ 
+     ### generate dataframes
+@@ -912,6 +938,16 @@ def bindcraft(
                              )
                              if filter_conditions is True:
                                  print(mpnn_design_name + " passed all filters")
@@ -19,21 +77,30 @@ index c39a196..2384edb 100644
                                  accepted_mpnn += 1
                                  accepted_designs += 1
  
-@@ -1087,6 +1097,13 @@ def bindcraft(
+@@ -1087,6 +1123,22 @@ def bindcraft(
      # save the final_df to final_csv
      final_df.to_csv(final_csv, index=False)
  
-+    # ALL-OR-NOTHING OUTPUT: this return ships the entire design tree at once,
-+    # only after every trajectory finishes. On 2026-10-02 a BindCraft campaign
-+    # burned 27.3 H100-hours / $111.10 and produced no output directory at all --
-+    # the work was done, the return never landed. Anything that ends the function
-+    # early (timeout, OOM, local disconnect) discards 100% of it.
-+    # Fix when there is time to test it: mount a modal.Volume and commit each
-+    # accepted design as it is written, instead of returning bytes.
++    # This return still ships the entire design tree at once, only after every
++    # trajectory finishes -- so anything that ends the function early (timeout, OOM,
++    # expired auth token, local disconnect) discards the whole return value. That is
++    # what burned 27.3 H100-hours / $111.10 on 2026-10-02 with no output directory
++    # produced. The Volume mounted at VOLUME_MOUNT is the safety net: BindCraft's own
++    # writes land there and are committed every 90s, so partial work is recoverable
++    # even when this return never happens. Recover with:
++    #   modal volume ls   bindcraft-out
++    #   modal volume get  bindcraft-out <path> <local-dest>
++    _stop_commit.set()
++    try:
++        OUT_VOLUME.commit()
++        print("[bindcraft] final volume commit done")
++    except Exception as e:
++        print(f"[bindcraft] final volume commit failed: {e}")
++
      out_dir = design_path
      return [
          (out_file.relative_to(out_dir), open(out_file, "rb").read())
-@@ -1102,6 +1119,8 @@ def main(
+@@ -1102,6 +1154,8 @@ def main(
      lengths: str = "50,130",
      number_of_final_designs: int = 1,
      max_trajectories: int | None = None,
@@ -42,7 +109,7 @@ index c39a196..2384edb 100644
      binder_name: str | None = None,
      out_dir: str = "./out/bindcraft",
      run_name: str | None = None,
-@@ -1148,6 +1167,8 @@ def main(
+@@ -1148,6 +1202,8 @@ def main(
          lengths=lengths_list,
          number_of_final_designs=number_of_final_designs,
          max_trajectories=max_trajectories,

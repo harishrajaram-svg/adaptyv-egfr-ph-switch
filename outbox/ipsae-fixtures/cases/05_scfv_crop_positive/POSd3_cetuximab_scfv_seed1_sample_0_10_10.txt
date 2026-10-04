@@ -1,0 +1,6 @@
+
+Chn1 Chn2  PAE Dist  Type   ipSAE    ipSAE_d0chn ipSAE_d0dom  ipTM_af  ipTM_d0chn     pDockQ     pDockQ2    LIS       n0res  n0chn  n0dom   d0res   d0chn   d0dom  nres1   nres2   dist1   dist2  Model
+A    B     10   10   asym  0.400501    0.525796    0.518006    0.000    0.512009      0.0183     0.0073     0.2609     230    411    396    5.63    7.31    7.19    166     230      44      38   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/05_scfv_crop_positive/POSd3_cetuximab_scfv_seed1_sample_0
+B    A     10   10   asym  0.405269    0.595405    0.581381    0.000    0.595405      0.0183     0.0073     0.3629     170    411    383    4.86    7.31    7.09    213     170      37      41   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/05_scfv_crop_positive/POSd3_cetuximab_scfv_seed1_sample_0
+A    B     10   10   max   0.405269    0.595405    0.581381    0.000    0.595405      0.0183     0.0073     0.3119     170    411    383    4.86    7.31    7.09    170     230      44      38   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/05_scfv_crop_positive/POSd3_cetuximab_scfv_seed1_sample_0
+

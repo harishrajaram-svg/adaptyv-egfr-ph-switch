@@ -187,9 +187,13 @@ def main():
         with open(a.tsv, "w") as fh:
             fh.write("design\tchain\tnres\tbest_qtm\tbest_target\tbest_fident\tcov\tpasses_struct\tpasses_struct_tmonly\tpasses_seq\tpasses\n")
             for r in rows:
+                # The header declares 11 columns. Emit all 11: `cov` and
+                # passes_struct_tmonly were missing, which silently SHIFTED every
+                # column after best_fident and made the TSV read as its own reversal.
                 fh.write(f"{r['pdb']}\t{r['chain']}\t{r['nres']}\t{r['best_qtm']:.4f}\t"
-                         f"{r['best_target']}\t{r['best_fident']:.4f}\t"
-                         f"{r['passes_struct']}\t{r['passes_seq']}\t{r['passes']}\n")
+                         f"{r['best_target']}\t{r['best_fident']:.4f}\t{r['cov']:.4f}\t"
+                         f"{r['passes_struct']}\t{r['passes_struct_tmonly']}\t"
+                         f"{r['passes_seq']}\t{r['passes']}\n")
         print(f"wrote {a.tsv}")
 
 if __name__ == "__main__":

@@ -1,0 +1,368 @@
+{
+ "sw_rimA01__boltzgen_egfr_d3_rimA_50": {
+  "best": 6.056,
+  "prod": 9.102,
+  "site": "H370",
+  "len": 129
+ },
+ "sw_bg01__boltzgen_egfr_d3_01": {
+  "best": 5.463,
+  "prod": 5.463,
+  "site": "H370",
+  "len": 153
+ },
+ "sw_bg01__boltzgen_egfr_d3_21": {
+  "best": 4.779,
+  "prod": 4.779,
+  "site": "H370",
+  "len": 155
+ },
+ "sw_rimA01__boltzgen_egfr_d3_rimA_09": {
+  "best": 4.247,
+  "prod": 4.247,
+  "site": "H433",
+  "len": 125
+ },
+ "sw_rimB01__boltzgen_egfr_d3_rimB_15": {
+  "best": 4.077,
+  "prod": 4.077,
+  "site": "H433",
+  "len": 131
+ },
+ "sw_bg03__boltzgen_egfr_d3_20": {
+  "best": 3.958,
+  "prod": 3.958,
+  "site": "H433",
+  "len": 152
+ },
+ "sw_bg01__boltzgen_egfr_d3_52": {
+  "best": 3.781,
+  "prod": 3.781,
+  "site": "H433",
+  "len": 128
+ },
+ "sw_rimA01__boltzgen_egfr_d3_rimA_20": {
+  "best": 3.746,
+  "prod": 3.746,
+  "site": "H433",
+  "len": 127
+ },
+ "sw_bg01__boltzgen_egfr_d3_44": {
+  "best": 3.678,
+  "prod": 3.678,
+  "site": "H433",
+  "len": 154
+ },
+ "sw_bg03__boltzgen_egfr_d3_07": {
+  "best": 3.58,
+  "prod": 3.58,
+  "site": "H433",
+  "len": 128
+ },
+ "sw_rimB01__boltzgen_egfr_d3_rimB_22": {
+  "best": 3.575,
+  "prod": 3.575,
+  "site": "H433",
+  "len": 125
+ },
+ "sw_rimA01__boltzgen_egfr_d3_rimA_58": {
+  "best": 2.907,
+  "prod": 2.907,
+  "site": "H433",
+  "len": 139
+ },
+ "sw_tg_tight_h433_EE__boltzgen_egfr_tight_h433_EE_12": {
+  "best": 2.863,
+  "prod": 2.863,
+  "site": "H358",
+  "len": 65
+ },
+ "sw_bg01__boltzgen_egfr_d3_24": {
+  "best": 2.857,
+  "prod": 2.857,
+  "site": "H433",
+  "len": 147
+ },
+ "sw_bg03__boltzgen_egfr_d3_46": {
+  "best": 2.8,
+  "prod": 2.8,
+  "site": "H433",
+  "len": 130
+ },
+ "sw_bg01__boltzgen_egfr_d3_53": {
+  "best": 2.781,
+  "prod": 2.781,
+  "site": "H433",
+  "len": 141
+ },
+ "sw_c2_2site__boltzgen_egfr_crop_2site_35": {
+  "best": 2.76,
+  "prod": 2.76,
+  "site": "H433",
+  "len": 127
+ },
+ "sw_rimA01__boltzgen_egfr_d3_rimA_02": {
+  "best": 2.703,
+  "prod": 2.703,
+  "site": "H370",
+  "len": 140
+ },
+ "sw_tg_resequence60__winner14_r15": {
+  "best": 2.668,
+  "prod": 2.668,
+  "site": "H433",
+  "len": 83
+ },
+ "sw_mechAd4_02__boltzgen_egfr_mechA_d4_06": {
+  "best": 2.644,
+  "prod": 2.644,
+  "site": "H433",
+  "len": 120
+ },
+ "sw_hf_domII_1Gln__boltzgen_egfr_hf_domII_1Gln_18": {
+  "best": 2.636,
+  "prod": 2.636,
+  "site": "H590",
+  "len": 124
+ },
+ "sw_hf_domIII_1His_ctrl__boltzgen_egfr_hf_domIII_1His_ctrl_17": {
+  "best": 2.519,
+  "prod": 2.519,
+  "site": "H358",
+  "len": 124
+ },
+ "sw_hf_domII_2His__boltzgen_egfr_hf_domII_2His_07": {
+  "best": 2.419,
+  "prod": 2.419,
+  "site": "H590",
+  "len": 136
+ },
+ "sw_mechAd4_03__boltzgen_egfr_mechA_d4_02": {
+  "best": 2.412,
+  "prod": 2.412,
+  "site": "H590",
+  "len": 139
+ },
+ "sw_gm_g532mimic_tiny__boltzgen_egfr_g532mimic_tiny_15": {
+  "best": 2.375,
+  "prod": 2.375,
+  "site": "H304",
+  "len": 48
+ },
+ "sw_mechAd4_03__boltzgen_egfr_mechA_d4_07": {
+  "best": 2.364,
+  "prod": 2.364,
+  "site": "H590",
+  "len": 132
+ },
+ "sw_hf_domIII_1His__boltzgen_egfr_hf_domIII_1His_05": {
+  "best": 2.363,
+  "prod": 2.363,
+  "site": "H590",
+  "len": 120
+ },
+ "sw_tg_dom4_pair__boltzgen_egfr_dom4_pair_28": {
+  "best": 2.273,
+  "prod": 2.273,
+  "site": "H383",
+  "len": 86
+ },
+ "sw_cf_short__boltzgen_egfr_cropfree_short_26": {
+  "best": 2.259,
+  "prod": 2.259,
+  "site": "H433",
+  "len": 60
+ },
+ "sw_tg_tight_h433_DD__boltzgen_egfr_tight_h433_DD_16": {
+  "best": 2.244,
+  "prod": 2.244,
+  "site": "H358",
+  "len": 89
+ },
+ "sw_hf_domII_2His__boltzgen_egfr_hf_domII_2His_13": {
+  "best": 2.213,
+  "prod": 2.213,
+  "site": "H383",
+  "len": 154
+ },
+ "sw_hf_domIV_1His__boltzgen_egfr_hisfix_domIV_1His_09": {
+  "best": 2.212,
+  "prod": 2.212,
+  "site": "H370",
+  "len": 149
+ },
+ "sw_tg_dom4_pair__boltzgen_egfr_dom4_pair_12": {
+  "best": 2.144,
+  "prod": 2.189,
+  "site": "H590",
+  "len": 64
+ },
+ "sw_tg_tight_h433__boltzgen_egfr_tight_h433_09": {
+  "best": 2.165,
+  "prod": 2.165,
+  "site": "H433",
+  "len": 56
+ },
+ "sw_rimA01__boltzgen_egfr_d3_rimA_26": {
+  "best": 2.123,
+  "prod": 2.123,
+  "site": "H433",
+  "len": 157
+ },
+ "sw_hf_domII_1His__boltzgen_egfr_hf_domII_1His_13": {
+  "best": 2.075,
+  "prod": 2.075,
+  "site": "H358",
+  "len": 133
+ },
+ "sw_hf_domII_2His__boltzgen_egfr_hf_domII_2His_08": {
+  "best": 1.937,
+  "prod": 2.063,
+  "site": "H145",
+  "len": 128
+ },
+ "sw_hf_domII_1Gln__boltzgen_egfr_hf_domII_1Gln_19": {
+  "best": 2.043,
+  "prod": 2.043,
+  "site": "H304",
+  "len": 131
+ },
+ "sw_hf_neutral_1His__boltzgen_egfr_hf_neutral_1His_04": {
+  "best": 2.013,
+  "prod": 2.013,
+  "site": "H358",
+  "len": 149
+ },
+ "sw_mechA03__boltzgen_egfr_mechA_10": {
+  "best": 1.879,
+  "prod": 1.962,
+  "site": "H358",
+  "len": 149
+ },
+ "sw_rimB02__boltzgen_egfr_d3_rimB_16": {
+  "best": 1.898,
+  "prod": 1.898,
+  "site": "H433",
+  "len": 158
+ },
+ "sw_cf_short120__boltzgen_egfr_cropfree_short_112": {
+  "best": 1.795,
+  "prod": 1.795,
+  "site": "H433",
+  "len": 85
+ },
+ "sw_mechAd4_04__boltzgen_egfr_mechA_d4_08": {
+  "best": 1.732,
+  "prod": 1.734,
+  "site": "H590",
+  "len": 155
+ },
+ "sw_cf_short120__boltzgen_egfr_cropfree_short_014": {
+  "best": 1.732,
+  "prod": 1.732,
+  "site": "H433",
+  "len": 67
+ },
+ "sw_tg_tight_h433_EE__boltzgen_egfr_tight_h433_EE_04": {
+  "best": 1.694,
+  "prod": 1.694,
+  "site": "H370",
+  "len": 66
+ },
+ "sw_rimA01__boltzgen_egfr_d3_rimA_23": {
+  "best": 1.508,
+  "prod": 1.508,
+  "site": "H433",
+  "len": 157
+ },
+ "sw_cf_short__boltzgen_egfr_cropfree_short_03": {
+  "best": 1.437,
+  "prod": 1.437,
+  "site": "H433",
+  "len": 81
+ },
+ "sw_bg02__boltzgen_egfr_d3_58": {
+  "best": 1.409,
+  "prod": 1.409,
+  "site": "H433",
+  "len": 140
+ },
+ "sw_hf_domIV_1His__boltzgen_egfr_hisfix_domIV_1His_19": {
+  "best": 1.398,
+  "prod": 1.398,
+  "site": "H383",
+  "len": 141
+ },
+ "sw_bg01__boltzgen_egfr_d3_51": {
+  "best": 1.367,
+  "prod": 1.367,
+  "site": "H433",
+  "len": 132
+ },
+ "sw_hf_domIII_1Gln__boltzgen_egfr_hf_domIII_1Gln_11": {
+  "best": 1.356,
+  "prod": 1.356,
+  "site": "H383",
+  "len": 123
+ },
+ "sw_cf_cropfree__boltzgen_egfr_cropfree_57": {
+  "best": 1.349,
+  "prod": 1.349,
+  "site": "H433",
+  "len": 84
+ },
+ "sw_bg03__boltzgen_egfr_d3_50": {
+  "best": 1.225,
+  "prod": 1.34,
+  "site": "H433",
+  "len": 142
+ },
+ "sw_hf_domII_2His__boltzgen_egfr_hf_domII_2His_19": {
+  "best": 1.328,
+  "prod": 1.328,
+  "site": "H358",
+  "len": 122
+ },
+ "sw_cr_crop_patch__boltzgen_egfr_crop_patch_24": {
+  "best": 1.32,
+  "prod": 1.32,
+  "site": "H433",
+  "len": 70
+ },
+ "sw_hf_domIII_2His__boltzgen_egfr_hf_domIII_2His_10": {
+  "best": 1.297,
+  "prod": 1.298,
+  "site": "H304",
+  "len": 139
+ },
+ "sw_bg02__boltzgen_egfr_d3_22": {
+  "best": 1.272,
+  "prod": 1.272,
+  "site": "H433",
+  "len": 145
+ },
+ "sw_cf_short__boltzgen_egfr_cropfree_short_35": {
+  "best": 1.255,
+  "prod": 1.255,
+  "site": "H433",
+  "len": 63
+ },
+ "sw_rimB02__boltzgen_egfr_d3_rimB_01": {
+  "best": 1.244,
+  "prod": 1.244,
+  "site": "H433",
+  "len": 142
+ },
+ "sw_mechAd4_03__boltzgen_egfr_mechA_d4_01": {
+  "best": 1.232,
+  "prod": 1.232,
+  "site": "H383",
+  "len": 141
+ },
+ "sw_mechA03__boltzgen_egfr_mechA_19": {
+  "best": 1.224,
+  "prod": 1.224,
+  "site": "H433",
+  "len": 138
+ }
+}

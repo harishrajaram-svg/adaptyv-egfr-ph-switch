@@ -1,0 +1,110 @@
+[
+ {
+  "design": "gap_h370_2site__boltzgen_egfr_2site_029",
+  "ph": 4.891,
+  "site": "H433",
+  "hu": 0.222311,
+  "mo": 0.529116,
+  "pool": "h370_2site",
+  "len": 68
+ },
+ {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_09_05",
+  "ph": 4.387,
+  "site": "H433",
+  "hu": 0.0,
+  "mo": 0.405652,
+  "pool": "rs_crop6",
+  "len": 113
+ },
+ {
+  "design": "gap_h370_2site__boltzgen_egfr_2site_009",
+  "ph": 4.374,
+  "site": "H433",
+  "hu": 0.209592,
+  "mo": 0.204881,
+  "pool": "h370_2site",
+  "len": 110
+ },
+ {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_short_031_15",
+  "ph": 4.077,
+  "site": "H433",
+  "hu": 0.251283,
+  "mo": 0.066101,
+  "pool": "rs_crop6",
+  "len": 86
+ },
+ {
+  "design": "gap_h370_only__boltzgen_egfr_h370_018",
+  "ph": 3.354,
+  "site": "H433",
+  "hu": 0.457058,
+  "mo": 0.215016,
+  "pool": "h370_only",
+  "len": 90
+ },
+ {
+  "design": "gap_h370_2site__boltzgen_egfr_2site_027",
+  "ph": 3.113,
+  "site": "H433",
+  "hu": 0.0,
+  "mo": 0.543587,
+  "pool": "h370_2site",
+  "len": 94
+ },
+ {
+  "design": "gap_h370_only__boltzgen_egfr_h370_020",
+  "ph": 3.104,
+  "site": "H433",
+  "hu": 0.345538,
+  "mo": 0.715166,
+  "pool": "h370_only",
+  "len": 98
+ },
+ {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_21_11",
+  "ph": 1.869,
+  "site": "H433",
+  "hu": 0.438208,
+  "mo": 0.155729,
+  "pool": "rs_crop6",
+  "len": 150
+ },
+ {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_21_01",
+  "ph": 1.746,
+  "site": "H433",
+  "hu": 0.630279,
+  "mo": 0.417425,
+  "pool": "rs_crop6",
+  "len": 150
+ },
+ {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_09_19",
+  "ph": 1.56,
+  "site": "H433",
+  "hu": 0.167913,
+  "mo": 0.341704,
+  "pool": "rs_crop6",
+  "len": 113
+ },
+ {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_short_008_08",
+  "ph": 1.456,
+  "site": "H433",
+  "hu": 0.334083,
+  "mo": 0.0,
+  "pool": "rs_crop6",
+  "len": 86
+ },
+ {
+  "design": "gap_h370_2site__boltzgen_egfr_2site_102",
+  "ph": 1.363,
+  "site": "H433",
+  "hu": 0.50495,
+  "mo": 0.0,
+  "pool": "h370_2site",
+  "len": 103
+ }
+]

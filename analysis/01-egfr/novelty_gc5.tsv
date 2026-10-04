@@ -1,0 +1,6 @@
+design	chain	nres	best_qtm	best_target	best_fident	cov	passes_struct	passes_struct_tmonly	passes_seq	passes
+/tmp/nov5/boltzgen_egfr_2site_009.pdb	A	110	0.9701	4tqe-assembly1_L	0.7450	1.0000	False	False	False	False
+/tmp/nov5/boltzgen_egfr_2site_029.pdb	A	68	0.8010	4ifg-assembly1_A	0.2150	1.0000	False	False	True	False
+/tmp/nov5/boltzgen_egfr_cropfree_short_031_15.pdb	A	86	0.8063	3afg-assembly2_B	0.2090	1.0000	False	False	True	False
+/tmp/nov5/boltzgen_egfr_h370_018.pdb	A	90	0.7395	4c4w-assembly2_F	0.2410	1.0000	False	False	True	False
+/tmp/nov5/boltzgen_egfr_h370_020.pdb	A	98	0.9143	7a4t-assembly1_A	0.4130	1.0000	False	False	False	False

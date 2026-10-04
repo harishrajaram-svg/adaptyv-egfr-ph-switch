@@ -1,0 +1,84 @@
+{
+ "EXPPOS_Human_EGF": {
+  "class": "EXPPOS",
+  "len": 53,
+  "kds": [
+   7.94905837385523e-07,
+   7.25357123734121e-07,
+   7.57378723902541e-07,
+   3.84701783054509e-08,
+   4.01137696365105e-08,
+   5.83553026917382e-08,
+   5.53421227850142e-08,
+   3.7708821794364e-08,
+   2.74521069173607e-08,
+   3.65118400583689e-08,
+   3.95081769723886e-08,
+   4.41731512561483e-08,
+   7.39916013002593e-08,
+   9.59821745799102e-08,
+   1.08459492144492e-07
+  ],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_deepsatflow-design7_n0_mpnn1.320_p": {
+  "class": "EXPNEG",
+  "len": 48,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo10": {
+  "class": "EXPNEG",
+  "len": 164,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo2": {
+  "class": "EXPNEG",
+  "len": 200,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo3": {
+  "class": "EXPNEG",
+  "len": 176,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo4": {
+  "class": "EXPNEG",
+  "len": 159,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo5": {
+  "class": "EXPNEG",
+  "len": 150,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo6": {
+  "class": "EXPNEG",
+  "len": 200,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo7": {
+  "class": "EXPNEG",
+  "len": 166,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo8": {
+  "class": "EXPNEG",
+  "len": 183,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ },
+ "EXPNEG_gitter-yolo9": {
+  "class": "EXPNEG",
+  "len": 162,
+  "kds": [],
+  "source": "proteinbase egfr-round1-second-submission"
+ }
+}

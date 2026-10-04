@@ -1,0 +1,38 @@
+# crop_2site -- BOTH H358 (pos 48) and H433 (pos 123), 23.5 A apart, both mouse-CONSERVED
+#
+# PAIRED EXPERIMENT. crop_long and crop_2site are identical except for the declared
+# target site. Same crop, same 120..160 band, both unpinned. One site vs two.
+#
+# WHY 120..160: rank 1 (rimA01_r15) is 150 aa, and uncropped 120-160 designs already
+# reach a carboxylate <2.8 A of H433 at 6/120 = 5.0%. Cropping lifts epitope compliance
+# 4/30 -> 27/30, so this band cropped should beat 5.0%. It is also the "large protein"
+# category we actually compete in.
+#
+# WHY TWO SITES: H433 alone is capped at 5.41x (its apo pKa is 6.26; the absolute
+# single-site ceiling over 0.9 pH units is 10^0.9 = 7.94x). The measured best is 4.57x,
+# i.e. 85% of that cap -- there is almost nothing left on this site. Two sites multiply:
+# H433 (5.41x) x H358 (5.22x) = ~28x ceiling, which is the only route to G532-like
+# numbers (13x with two histidines).
+#   H358 = canonical 358 = renum 331 = crop positional 48, verified HIS.
+#   H433 = canonical 433 = renum 406 = crop positional 123, verified HIS.
+#   Closest-atom separation 23.5 A -- reachable by a 120-160 aa binder, NOT by a 56-90.
+#   BOTH are conserved human/mouse (unlike H383, which is Arg in mouse, and H615, Asn).
+#   Neither is buried (0% both) and H433 has 19.4 A glycan clearance.
+#
+# UNPINNED, per the measured 19.2% vs 1.3% reversal. Gate the output at the canonical
+# H-bond band 2.6-3.2 A (62% switch rate there; 15% at 3.2-4.0; 0% beyond 4.0).
+entities:
+  - protein:
+      id: B
+      sequence: 120..160
+
+  - file:
+      path: egfr_d3_crop_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 45,46,47,48,49,50,51,120,121,122,123,124,125,126
+      structure_groups: "all"

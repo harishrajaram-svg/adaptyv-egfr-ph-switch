@@ -1,0 +1,80 @@
+# H370-ONLY arm: switch the PRIMARY site from H433 to H370.
+#
+# The two-site arm chases 43x. This arm takes the cheaper, better-evidenced win:
+# H370's own ceiling is 7.76x against H433's 5.55x, because its free pKa is 4.93
+# rather than 6.22. Designs already hit 6.06x, 5.95x, 5.77x, 5.46x and 5.41x on
+# H370 alone -- four of those exceed the 5.55x that H433 can never pass, and all
+# of them exceed rank 1's measured 4.57x. H370 is conserved in mouse (H/H).
+#
+# Rate to beat: 23/1584 = 1.5% incidental H370 engagement, with 10/23 of those
+# producing an H370 ratio >= 3.0x once gated. Declaring the patch and cropping
+# should lift 1.5% the way declaring H433 lifted it to 5.4%.
+#
+# CAVEAT, stated because it is the real risk: H370's low free pKa comes partly from
+# native ASP344 sitting 2.4-3.8 A from its ring -- the same aspartate whose rotamer
+# produced the apo-reference artifact on 2026-10-03. A binder carboxylate has to add
+# on top of an existing one rather than acting alone, so the achievable pKa_bound
+# shift may be smaller here than on H433, where nothing competes. H370 is also more
+# occluded (153 heavy atoms within 10 A of the ring vs 57 for H433). Both are reasons
+# to MEASURE this arm rather than assume the ceiling is reachable.
+# rather than at the switch rate.
+#
+# WHY THIS PAIR, AND WHY THE LAST TWO-SITE ATTEMPT FAILED (measured 2026-10-04).
+# A single histidine cannot beat 10^(7.4-6.5) = 7.94x, and for H433 (pKa_free 6.22)
+# the cap is 5.55x. Rank 1 is at 4.57x -- 82% of its own ceiling. Squeezing H433
+# harder is worth at most another 1.2x. Two sites MULTIPLY; nothing else does.
+#
+# Full histidine census of the EGFR ECD (PROPKA on 6ARU apo, 17 sites):
+#     site   pKa_free   own ceiling   ring-N distance to H433   mouse
+#     H433     6.22        5.55x               --                 H
+#     H370     4.93        7.76x             8.52 A               H     <-- this arm
+#     H418     4.89        7.78x            25.2  A               H
+#     H383     6.38        4.95x            26.1  A               R  (breaks mouse)
+#     H358     6.26        5.41x            26.2  A               H
+# Two-site ceiling for H433+H370 = 5.55 x 7.76 = 43.1x.
+#
+# crop_long and crop_2site spent 60 designs targeting H358 and engaged it 0/60,
+# closest approach 13.6 A. That was not a method failure -- H358 is 26 A from H433
+# and no binder of this size bridges it. H370 is 8.5 A away, which two carboxylates
+# one helix turn apart span natively. The two-site route was declared dead on the
+# wrong site.
+#
+# H370 IS REACHABLE, AND THE EVIDENCE WAS ALREADY IN HAND. Across all 46 arms the
+# project has run (1,584 complexes), designs put a carboxylate within 4.0 A of:
+#     H433   85/1584 = 5.4%
+#     H370   23/1584 = 1.5%     (vs 0/60 for H358 when explicitly targeted)
+#     BOTH    3/1584 = 0.19%    <-- the rate this arm must beat
+# The three incidental dual-engagers place their acids at i/i+1, i/i+6 and i/i+7.
+#
+# AND H370 ALREADY MEASURES AS THE BETTER SINGLE SITE. Running the paired pKa gate
+# on all 23 H370 engagers (free leg from each design's own coordinates):
+#     best H370-alone ratios: 6.06x, 5.95x, 5.77x, 5.46x, 5.41x
+#     best two-site product:  6.59x  (cf_short120 short_008, H370 5.41 x H433 1.22)
+# 6.59x already exceeds H433's entire single-site ceiling of 5.55x. No design yet
+# multiplies BOTH sites -- in every case one works and the other is flat or negative.
+# That is the gap this arm exists to close.
+#
+# Strategy carried over unchanged, both confirmed 4x: CROP the target (epitope
+# compliance 27-29/30 vs 4/30 on the full ECD) and PIN NOTHING (unpinned reaches the
+# histidine ~15x more often; rank 1's ASP67 and GLU92 were both chosen by inverse
+# folding, not specified).
+#
+# NUMBERING. egfr_d3_crop_renum.pdb, positional indices: H370 = 60, H433 = 123
+# (file resnums 343 and 406; UniProt = file + 27). Verified residue by residue.
+# Both patches are declared so the generator is told to span them; whether it
+# complies is then MEASURED on H370 and H433 independently, not assumed.
+entities:
+  - protein:
+      id: B
+      sequence: 56..160
+
+  - file:
+      path: egfr_d3_crop_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 57,58,59,60,61,62,63
+      structure_groups: "all"

@@ -1,0 +1,24 @@
+# g532mimic_short -- mechanism B (binder carboxylate titrates a TARGET histidine)
+# Length 56..90. Pinned at sampled index/indices 21,36, which is deterministic because
+# every a..b range sits after them.
+# Target hotspots (renum): 343,406  [canonical H370+H433]
+# Run with EXTRA_ARGS="--diffusion_batch_size 1".
+entities:
+  - protein:
+      id: B
+      sequence: 20, D, 14, E, 20..54
+      binding_types:
+        binding: 21,36
+      secondary_structure:
+        loop: 16..20,22..26,31..35,37..41
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 343,406
+      structure_groups: "all"

@@ -1,0 +1,3 @@
+design	chain	nres	best_qtm	best_target	best_fident	cov	passes_struct	passes_struct_tmonly	passes_seq	passes
+/tmp/nov/cf_short120_r031.pdb	A	86	0.8108	3afg-assembly2_B	0.1970	1.0000	False	False	True	False
+/tmp/nov/cf_short_r059.pdb	A	69	0.6401	4ywq-assembly1_B	0.1800	1.0000	False	False	True	False

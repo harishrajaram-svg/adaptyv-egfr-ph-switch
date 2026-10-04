@@ -1,0 +1,12 @@
+{
+ "rimA02__d3_rimA_14": {
+  "len": 129,
+  "cys": 2,
+  "path": "runs/egfr-d3-rimA/rimA02/intermediate_designs_inverse_folded/refold_cif/boltzgen_egfr_d3_rimA_14.cif"
+ },
+ "bg01__d3_27": {
+  "len": 158,
+  "cys": 1,
+  "path": "runs/egfr-d3-boltzgen/bg01/intermediate_designs_inverse_folded/refold_cif/boltzgen_egfr_d3_27.cif"
+ }
+}

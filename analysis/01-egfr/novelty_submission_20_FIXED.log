@@ -1,0 +1,26 @@
+design                                ch  res  best_TM  best_id  verdict
+--------------------------------------------------------------------------------------
+bg04_r03_boltzgen_egfr_d3_00.pdb       A  159    0.717    0.173  FAIL structure  <- 9glb-assembly1_C
+rimA01_r02_boltzgen_egfr_d3_rimA_26.pdb   A  160    0.689    0.155  FAIL structure  <- 8aul-assembly1_A
+bg04_r05_boltzgen_egfr_d3_08.pdb       A  150    0.667    0.121  FAIL structure  <- 5yhu-assembly1_A
+bg02_r01_boltzgen_egfr_d3_11.pdb       A  156    0.616    0.122  FAIL structure  <- 3la6-assembly1_H
+d2d_101_l133_s154858_mpnn9_model1.pdb   B  133    0.787    0.176  FAIL structure  <- 6u1s-assembly1_A
+rimA02_r01_boltzgen_egfr_d3_rimA_07.pdb   A  159    0.674    0.135  FAIL structure  <- 6s59-assembly1_A
+d2d_101_l120_s869126_mpnn1_model1.pdb   B  120    0.783    0.148  FAIL structure  <- 5w93-assembly2_B
+rimB02_r01_boltzgen_egfr_d3_rimB_12.pdb   A  157    0.644    0.161  FAIL structure  <- 7bvb-assembly2_B
+d2d_101_l120_s869126_mpnn5_model2.pdb   B  120    0.784    0.173  FAIL structure  <- 3t6g-assembly2_D
+mechAd4_01_r01_boltzgen_egfr_mechA_d4_04.pdb   A  156    0.596    0.160  FAIL structure  <- 6yro-assembly5_E
+rimB01_r01_boltzgen_egfr_d3_rimB_27.pdb   A  149    0.644    0.129  FAIL structure  <- 5of1-assembly1_A
+mechA01_r02_boltzgen_egfr_mechA_03.pdb   A  152    0.873    0.142  FAIL structure  <- 3mbr-assembly1_X
+bg04_r01_boltzgen_egfr_d3_21.pdb       A  155    0.685    0.143  FAIL structure  <- 1wky-assembly1_A
+rimB02_r02_boltzgen_egfr_d3_rimB_27.pdb   A  153    0.702    0.142  FAIL structure  <- 7tmq-assembly1_B
+rimA01_r01_boltzgen_egfr_d3_rimA_18.pdb   A  159    0.770    0.181  FAIL structure  <- 7wjl-assembly1_A-2
+bg03_r04_boltzgen_egfr_d3_17.pdb       A  156    0.701    0.120  FAIL structure  <- 4do7-assembly2_B
+mechA01_r01_boltzgen_egfr_mechA_05.pdb   A  158    0.524    0.105  FAIL structure  <- 3aeh-assembly2_B
+bg01_r02_boltzgen_egfr_d3_22.pdb       A  155    0.672    0.127  FAIL structure  <- 3sn6-assembly1_A
+rimA01_r05_boltzgen_egfr_d3_rimA_11.pdb   A  159    0.671    0.111  FAIL structure  <- 4h3w-assembly2_B
+--------------------------------------------------------------------------------------
+structural (TM < 0.5):      0/19 = 0.0%
+BOTH halves (Level 4):       0/19 = 0.0%
+round-2 baseline for comparison: 3.6% structural, 2.8% full Level 4
+wrote analysis/01-egfr/novelty_submission_20_FIXED.tsv

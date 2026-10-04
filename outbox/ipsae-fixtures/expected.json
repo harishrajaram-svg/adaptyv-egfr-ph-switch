@@ -1,0 +1,142 @@
+{
+ "02_vhh_ecd_targetA_scores_zero": {
+  "structure": "POS_nano2_5nM_seed1_sample_5.cif",
+  "chains": {
+   "A": 621,
+   "B": 127
+  },
+  "asym": {
+   "A->B": 0.0,
+   "B->A": 0.0
+  },
+  "n_interface_residues": {
+   "A->B": "0",
+   "B->A": "0"
+  },
+  "n_chainpair_residues": {
+   "A->B": "748",
+   "B->A": "748"
+  },
+  "ipsae_min": 0.0
+ },
+ "03_vhh_crop_directional_asymmetry": {
+  "structure": "POSd3_nanobody_5nM_seed1_sample_5.cif",
+  "chains": {
+   "A": 170,
+   "B": 127
+  },
+  "asym": {
+   "A->B": 0.014687,
+   "B->A": 0.0
+  },
+  "n_interface_residues": {
+   "A->B": "14",
+   "B->A": "0"
+  },
+  "n_chainpair_residues": {
+   "A->B": "297",
+   "B->A": "297"
+  },
+  "ipsae_min": 0.0
+ },
+ "04_scfv_ecd_positive": {
+  "structure": "POS_cetuximab_scfv_seed1_sample_0.cif",
+  "chains": {
+   "A": 621,
+   "B": 241
+  },
+  "asym": {
+   "A->B": 0.672907,
+   "B->A": 0.639298
+  },
+  "n_interface_residues": {
+   "A->B": "233",
+   "B->A": "260"
+  },
+  "n_chainpair_residues": {
+   "A->B": "862",
+   "B->A": "862"
+  },
+  "ipsae_min": 0.639298
+ },
+ "05_scfv_crop_positive": {
+  "structure": "POSd3_cetuximab_scfv_seed1_sample_0.cif",
+  "chains": {
+   "A": 170,
+   "B": 241
+  },
+  "asym": {
+   "A->B": 0.400501,
+   "B->A": 0.405269
+  },
+  "n_interface_residues": {
+   "A->B": "230",
+   "B->A": "170"
+  },
+  "n_chainpair_residues": {
+   "A->B": "411",
+   "B->A": "411"
+  },
+  "ipsae_min": 0.400501
+ },
+ "06_binderA_chain_order_swap": {
+  "structure": "bg01__boltzgen_egfr_d3_52_hu_seed42_sample_0.cif",
+  "chains": {
+   "A": 131,
+   "B": 170
+  },
+  "asym": {
+   "A->B": 0.0,
+   "B->A": 0.012568
+  },
+  "n_interface_residues": {
+   "A->B": "0",
+   "B->A": "5"
+  },
+  "n_chainpair_residues": {
+   "A->B": "301",
+   "B->A": "301"
+  },
+  "ipsae_min": 0.0
+ },
+ "07_EGF_derived_control_activity_unknown": {
+  "structure": "NEG_nonbinder_seed1_sample_0.cif",
+  "chains": {
+   "A": 621,
+   "B": 134
+  },
+  "asym": {
+   "A->B": 0.14024,
+   "B->A": 0.314965
+  },
+  "n_interface_residues": {
+   "A->B": "59",
+   "B->A": "190"
+  },
+  "n_chainpair_residues": {
+   "A->B": "755",
+   "B->A": "755"
+  },
+  "ipsae_min": 0.14024
+ },
+ "08_rank1_rimA01_r15": {
+  "structure": "rimA01_r15_boltzgen_egfr_d3__hu_seed1_sample_0.cif",
+  "chains": {
+   "A": 150,
+   "B": 170
+  },
+  "asym": {
+   "A->B": 0.616326,
+   "B->A": 0.576505
+  },
+  "n_interface_residues": {
+   "A->B": "169",
+   "B->A": "150"
+  },
+  "n_chainpair_residues": {
+   "A->B": "320",
+   "B->A": "320"
+  },
+  "ipsae_min": 0.576505
+ }
+}

@@ -1,0 +1,37 @@
+# MECHANISM A, HISTIDINE PINNED AT GENERATION -- neutral site, 1His, labels ON.
+#
+# Across 140 Mechanism A designs on two sites, 106 (76%) contained NO binder histidine at
+# the interface and exactly ONE was a real switch. The limiting factor was never the site or
+# the mechanism: nothing told the generator to supply a titratable group. This spec does.
+#
+# Site: F287/K294/R297 canonical (renum 260,267,270), domain II.
+#   THE NEGATIVE CONTROL for the carboxylate-proximity requirement. That requirement was called necessary off 6/6 switches having a carboxylate within 4.0 A and 0/96 non-switches switching -- but every Mechanism A design we ever made was aimed AT an acidic site, so the claim had no negative arm. Caveat stated plainly: a truly carboxylate-free patch does NOT exist on this surface. The EGFR ECD is acid-dense -- median nearest-carboxylate distance for a non-acidic residue is 5.6 A and the maximum anywhere is 17.2 A, and every position beyond 9 A is either a structural cysteine or a glycosylation sequon. This patch is the best available: worst-case 7.5 A to any carboxylate, 1.9x the 4.0 A the mechanism requires, conserved, burial 19-45, sequon clearance >20 A.
+#
+# Pinned residue at sampled index 61. Length 120..160, identical to the baseline, so the
+# pinned residue (and the labels, where present) are the only changes.
+# Labels ON: the pinned residue is declared interfacial and placed in a loop. The interface
+# label is UNARY (partner unspecified); a pairwise "contacts E455" term does not exist.
+#
+# DIGITS request that many designed residues, LETTERS are fixed identities (schema.py
+# 743-760). No wildcard exists: 'X' pins UNK, lowercase silently becomes UNK.
+# Run with EXTRA_ARGS="--diffusion_batch_size 1".
+# Numbering: canonical = renum + 27, mature = renum + 3, verified residue-by-residue.
+entities:
+  - protein:
+      id: B
+      sequence: 60, H, 59..99
+      binding_types:
+        binding: 61
+      secondary_structure:
+        loop: 56..60,62..66
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 260,267,270
+      structure_groups: "all"

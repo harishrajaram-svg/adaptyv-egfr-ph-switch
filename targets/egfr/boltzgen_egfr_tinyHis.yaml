@@ -1,0 +1,24 @@
+# tinyHis -- mechanism A (binder histidine paired with a TARGET carboxylate)
+# Length 30..50. Pinned at sampled index/indices 13, which is deterministic because
+# every a..b range sits after them.
+# Target hotspots (renum): 292,293,294  [canonical E319/E320/D321]
+# Run with EXTRA_ARGS="--diffusion_batch_size 1".
+entities:
+  - protein:
+      id: B
+      sequence: 12, H, 17..37
+      binding_types:
+        binding: 13
+      secondary_structure:
+        loop: 9..12,14..17
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 292,293,294
+      structure_groups: "all"

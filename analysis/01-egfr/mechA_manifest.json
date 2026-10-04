@@ -1,0 +1,30 @@
+{
+ "mechA_cf_cropfree__boltzgen_egfr_cropfree_28": {
+  "ratio": 2.165,
+  "his": "HIS123",
+  "acid": "ASP150",
+  "dist": 2.31,
+  "len": 160
+ },
+ "mechA_c2_long__boltzgen_egfr_crop_long_23": {
+  "ratio": 1.963,
+  "his": "HIS101",
+  "acid": "GLU90",
+  "dist": 2.79,
+  "len": 121
+ },
+ "mechA_rimB01__boltzgen_egfr_d3_rimB_34": {
+  "ratio": 1.687,
+  "his": "HIS83",
+  "acid": "ASP45",
+  "dist": 2.96,
+  "len": 147
+ },
+ "mechA_mechAd4_02__boltzgen_egfr_mechA_d4_03": {
+  "ratio": 1.432,
+  "his": "HIS122",
+  "acid": "ASP355",
+  "dist": 2.54,
+  "len": 149
+ }
+}

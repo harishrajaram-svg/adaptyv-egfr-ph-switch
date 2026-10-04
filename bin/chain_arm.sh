@@ -29,7 +29,12 @@ log "watching $RUN (pid $PID)"
 while kill -0 "$PID" 2>/dev/null; do sleep 60; done
 date +%s > "$ABS/$RUN.end"
 
-N=1
+# Derive the counter from the run name actually passed in. Hardcoding N=1 meant the
+# first chained run was ALWAYS <PREFIX>02, so relaunching with INITIAL_RUN=bg03 would
+# next create bg02 and overwrite an existing run directory. 10# forces base 10 so a
+# zero-padded index like 08 is not parsed as octal.
+N=${RUN#$PREFIX}
+case "$N" in (''|*[!0-9]*) N=1 ;; (*) N=$((10#$N)) ;; esac
 while :; do
   [ -f "$ABS/STOP" ] || [ -f "$HOME/code/adaptyv-2026/runs/STOP_ALL" ] && { log "STOP flag — exiting"; break; }
   A=$(accepted "$RUN"); B=$(built "$RUN"); T=$(trajs "$RUN")

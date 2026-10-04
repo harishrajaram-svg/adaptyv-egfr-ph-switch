@@ -1,0 +1,37 @@
+# MECHANISM A, HISTIDINE PINNED AT GENERATION -- domIII site, 2His, labels ON.
+#
+# Across 140 Mechanism A designs on two sites, 106 (76%) contained NO binder histidine at
+# the interface and exactly ONE was a real switch. The limiting factor was never the site or
+# the mechanism: nothing told the generator to supply a titratable group. This spec does.
+#
+# Site: E455/D458/D460 canonical (renum 428,431,433), domain III.
+#   20.6 A sequon clearance, 3/3 conserved, and 41.9 A from the tether -- the farthest of any clear site, so insensitive to the tethered-vs-extended question. Domain III is also the drug-relevant surface (cetuximab epitope, ligand binding). The 2026-10-01 scan wrongly concluded domain III had no usable acidic surface.
+#
+# Pinned residue at sampled index 46,75. Length 120..160, identical to the baseline, so the
+# pinned residue (and the labels, where present) are the only changes.
+# Labels ON: the pinned residue is declared interfacial and placed in a loop. The interface
+# label is UNARY (partner unspecified); a pairwise "contacts E455" term does not exist.
+#
+# DIGITS request that many designed residues, LETTERS are fixed identities (schema.py
+# 743-760). No wildcard exists: 'X' pins UNK, lowercase silently becomes UNK.
+# Run with EXTRA_ARGS="--diffusion_batch_size 1".
+# Numbering: canonical = renum + 27, mature = renum + 3, verified residue-by-residue.
+entities:
+  - protein:
+      id: B
+      sequence: 45, H, 28, H, 45..85
+      binding_types:
+        binding: 46,75
+      secondary_structure:
+        loop: 41..45,47..51,70..74,76..80
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 428,431,433
+      structure_groups: "all"

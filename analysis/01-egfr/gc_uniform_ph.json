@@ -1,0 +1,132 @@
+{
+ "gc_h370_2site__boltzgen_egfr_2site_009": {
+  "site": "H433",
+  "ratio": 4.317,
+  "n": 6,
+  "all": [
+   3.88,
+   3.98,
+   4.26,
+   4.37,
+   4.44,
+   4.57
+  ]
+ },
+ "gc_h370_only__boltzgen_egfr_h370_018": {
+  "site": "H433",
+  "ratio": 3.454,
+  "n": 6,
+  "all": [
+   2.98,
+   3.35,
+   3.43,
+   3.48,
+   3.5,
+   3.81
+  ]
+ },
+ "gc_h370_2site__boltzgen_egfr_2site_027": {
+  "site": "H433",
+  "ratio": 0.71,
+  "n": 6,
+  "all": [
+   0.68,
+   0.68,
+   0.71,
+   0.71,
+   0.98,
+   3.11
+  ]
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_21_11": {
+  "site": "H433",
+  "ratio": 1.327,
+  "n": 6,
+  "all": [
+   0.68,
+   0.7,
+   0.86,
+   1.79,
+   1.87,
+   2.48
+  ]
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_short_031_15": {
+  "site": "H433",
+  "ratio": 3.78,
+  "n": 6,
+  "all": [
+   3.6,
+   3.66,
+   3.73,
+   3.83,
+   3.92,
+   4.08
+  ]
+ },
+ "gc_h370_only__boltzgen_egfr_h370_020": {
+  "site": "H433",
+  "ratio": 2.373,
+  "n": 6,
+  "all": [
+   2.04,
+   2.12,
+   2.21,
+   2.54,
+   2.54,
+   3.1
+  ]
+ },
+ "gc_h370_2site__boltzgen_egfr_2site_029": {
+  "site": "H433",
+  "ratio": 4.716,
+  "n": 6,
+  "all": [
+   4.38,
+   4.51,
+   4.54,
+   4.89,
+   4.93,
+   4.96
+  ]
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_09_05": {
+  "site": "H433",
+  "ratio": 1.51,
+  "n": 6,
+  "all": [
+   0.78,
+   1.01,
+   1.03,
+   1.99,
+   4.39,
+   4.81
+  ]
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_21_01": {
+  "site": "H433",
+  "ratio": 0.794,
+  "n": 6,
+  "all": [
+   0.7,
+   0.71,
+   0.72,
+   0.86,
+   1.75,
+   1.75
+  ]
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_09_19": {
+  "site": "H433",
+  "ratio": 1.698,
+  "n": 6,
+  "all": [
+   0.69,
+   0.72,
+   1.56,
+   1.84,
+   1.92,
+   2.24
+  ]
+ }
+}

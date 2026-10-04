@@ -1,0 +1,94 @@
+{
+ "CDRDECOY_vhh_1": {
+  "ident_to_parent": 0.709,
+  "len": 127,
+  "class": "CDR_DECOY_presumed_negative"
+ },
+ "CDRDECOY_vhh_2": {
+  "ident_to_parent": 0.685,
+  "len": 127,
+  "class": "CDR_DECOY_presumed_negative"
+ },
+ "CDRDECOY_vhh_3": {
+  "ident_to_parent": 0.677,
+  "len": 127,
+  "class": "CDR_DECOY_presumed_negative"
+ },
+ "CDRDECOY_vhh_4": {
+  "ident_to_parent": 0.701,
+  "len": 127,
+  "class": "CDR_DECOY_presumed_negative"
+ },
+ "SHUF_bg04_r03_boltzgen_egfr_d3__r1": {
+  "parent": "bg04_r03_boltzgen_egfr_d3_00",
+  "replicate": 1,
+  "len": 159,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_bg04_r03_boltzgen_egfr_d3__r2": {
+  "parent": "bg04_r03_boltzgen_egfr_d3_00",
+  "replicate": 2,
+  "len": 159,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_bg04_r03_boltzgen_egfr_d3__r3": {
+  "parent": "bg04_r03_boltzgen_egfr_d3_00",
+  "replicate": 3,
+  "len": 159,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_cf_short120_r031_boltzgen__r1": {
+  "parent": "cf_short120_r031_boltzgen_egfr_cropfree_short_031",
+  "replicate": 1,
+  "len": 86,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_cf_short120_r031_boltzgen__r2": {
+  "parent": "cf_short120_r031_boltzgen_egfr_cropfree_short_031",
+  "replicate": 2,
+  "len": 86,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_cf_short120_r031_boltzgen__r3": {
+  "parent": "cf_short120_r031_boltzgen_egfr_cropfree_short_031",
+  "replicate": 3,
+  "len": 86,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_d2d_101_l133_s154858_mpnn9_r1": {
+  "parent": "d2d_101_l133_s154858_mpnn9",
+  "replicate": 1,
+  "len": 133,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_d2d_101_l133_s154858_mpnn9_r2": {
+  "parent": "d2d_101_l133_s154858_mpnn9",
+  "replicate": 2,
+  "len": 133,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_d2d_101_l133_s154858_mpnn9_r3": {
+  "parent": "d2d_101_l133_s154858_mpnn9",
+  "replicate": 3,
+  "len": 133,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_rimA01_r15_boltzgen_egfr_d_r1": {
+  "parent": "rimA01_r15_boltzgen_egfr_d3_rimA_20",
+  "replicate": 1,
+  "len": 150,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_rimA01_r15_boltzgen_egfr_d_r2": {
+  "parent": "rimA01_r15_boltzgen_egfr_d3_rimA_20",
+  "replicate": 2,
+  "len": 150,
+  "class": "SHUFFLE_null"
+ },
+ "SHUF_rimA01_r15_boltzgen_egfr_d_r3": {
+  "parent": "rimA01_r15_boltzgen_egfr_d3_rimA_20",
+  "replicate": 3,
+  "len": 150,
+  "class": "SHUFFLE_null"
+ }
+}

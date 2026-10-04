@@ -1,0 +1,110 @@
+{
+ "c5_cf_short__boltzgen_egfr_cropfree_short_48": {
+  "design": "rest_cf_short__boltzgen_egfr_cropfree_short_48",
+  "ph": 5.945,
+  "site": "H370",
+  "hu": 0.179921,
+  "mo": 0.120487,
+  "len": 70,
+  "seq_len": 70
+ },
+ "c5_tg_tight_h433__boltzgen_egfr_tight_h433_24": {
+  "design": "rest_tg_tight_h433__boltzgen_egfr_tight_h433_24",
+  "ph": 5.464,
+  "site": "H433",
+  "hu": 0.0,
+  "mo": 0.150135,
+  "len": 89,
+  "seq_len": 89
+ },
+ "c5_cr_crop_patch__boltzgen_egfr_crop_patch_05": {
+  "design": "rest_cr_crop_patch__boltzgen_egfr_crop_patch_05",
+  "ph": 5.322,
+  "site": "H433",
+  "hu": 0.090026,
+  "mo": 0.200819,
+  "len": 66,
+  "seq_len": 66
+ },
+ "c5_rimA01__boltzgen_egfr_d3_rimA_14": {
+  "design": "rest_rimA01__boltzgen_egfr_d3_rimA_14",
+  "ph": 4.571,
+  "site": "H433",
+  "hu": 0.20967,
+  "mo": 0.425526,
+  "len": 129,
+  "seq_len": 125
+ },
+ "c5_cf_short__boltzgen_egfr_cropfree_short_38": {
+  "design": "rest_cf_short__boltzgen_egfr_cropfree_short_38",
+  "ph": 4.318,
+  "site": "H433",
+  "hu": 0.168942,
+  "mo": 0.0,
+  "len": 62,
+  "seq_len": 62
+ },
+ "c5_cr_crop_anchor__boltzgen_egfr_crop_anchor_13": {
+  "design": "rest_cr_crop_anchor__boltzgen_egfr_crop_anchor_13",
+  "ph": 3.779,
+  "site": "H433",
+  "hu": 0.0,
+  "mo": 0.493914,
+  "len": 90,
+  "seq_len": 90
+ },
+ "c5_hf_domII_1His__boltzgen_egfr_hf_domII_1His_04": {
+  "design": "rest_hf_domII_1His__boltzgen_egfr_hf_domII_1His_04",
+  "ph": 2.765,
+  "site": "H433",
+  "hu": 0.352175,
+  "mo": 0.121283,
+  "len": 154,
+  "seq_len": 154
+ },
+ "c5_hf_domII_2His__boltzgen_egfr_hf_domII_2His_03": {
+  "design": "rest_hf_domII_2His__boltzgen_egfr_hf_domII_2His_03",
+  "ph": 2.125,
+  "site": "H433",
+  "hu": 0.405443,
+  "mo": 0.0,
+  "len": 132,
+  "seq_len": 132
+ },
+ "c5_cf_short120__boltzgen_egfr_cropfree_short_035": {
+  "design": "rest_cf_short120__boltzgen_egfr_cropfree_short_035",
+  "ph": 1.913,
+  "site": "H433",
+  "hu": 0.0,
+  "mo": 0.27953,
+  "len": 58,
+  "seq_len": 58
+ },
+ "c5_c2_long__boltzgen_egfr_crop_long_26": {
+  "design": "rest_c2_long__boltzgen_egfr_crop_long_26",
+  "ph": 1.801,
+  "site": "H433",
+  "hu": 0.459602,
+  "mo": 0.0,
+  "len": 136,
+  "seq_len": 136
+ },
+ "c5_cf_short__boltzgen_egfr_cropfree_short_46": {
+  "design": "rest_cf_short__boltzgen_egfr_cropfree_short_46",
+  "ph": 1.286,
+  "site": "H433",
+  "hu": 0.515657,
+  "mo": 0.030141,
+  "len": 66,
+  "seq_len": 66
+ },
+ "c5_cf_short120__boltzgen_egfr_cropfree_short_026": {
+  "design": "rest_cf_short120__boltzgen_egfr_cropfree_short_026",
+  "ph": 1.215,
+  "site": "H433",
+  "hu": 0.05806,
+  "mo": 0.183536,
+  "len": 60,
+  "seq_len": 60
+ }
+}

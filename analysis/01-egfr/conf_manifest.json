@@ -1,0 +1,18 @@
+{
+ "conf_rimB02__boltzgen_egfr_d3_rimB_16": {
+  "kind": "d3",
+  "len": 158
+ },
+ "conf_hf_domII_1His__boltzgen_egfr_hf_domII_1His_10": {
+  "kind": "ecd",
+  "len": 122
+ },
+ "conf_tg_tight_h433__boltzgen_egfr_tight_h433_05": {
+  "kind": "ecd",
+  "len": 87
+ },
+ "conf_mechAd4_03__boltzgen_egfr_mechA_d4_02": {
+  "kind": "ecd",
+  "len": 133
+ }
+}

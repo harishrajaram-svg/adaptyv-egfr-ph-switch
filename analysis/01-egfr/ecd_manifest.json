@@ -1,0 +1,322 @@
+{
+ "ecd_gm_g532mimic_short__boltzgen_egfr_g532mimic_short_12": {
+  "arm": "gm_g532mimic_short",
+  "file": "boltzgen_egfr_g532mimic_short_12",
+  "ratio": 4.184,
+  "site": "H358",
+  "inside": 9,
+  "outside": 33,
+  "len": 61,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domII_1His__boltzgen_egfr_hf_domII_1His_10": {
+  "arm": "hf_domII_1His",
+  "file": "boltzgen_egfr_hf_domII_1His_10",
+  "ratio": 4.062,
+  "site": "H358",
+  "inside": 6,
+  "outside": 17,
+  "len": 122,
+  "mouse_site_ok": true
+ },
+ "ecd_mechA03__boltzgen_egfr_mechA_13": {
+  "arm": "mechA03",
+  "file": "boltzgen_egfr_mechA_13",
+  "ratio": 3.755,
+  "site": "H304",
+  "inside": 0,
+  "outside": 27,
+  "len": 148,
+  "mouse_site_ok": true
+ },
+ "ecd_tg_tight_h433__boltzgen_egfr_tight_h433_57": {
+  "arm": "tg_tight_h433",
+  "file": "boltzgen_egfr_tight_h433_57",
+  "ratio": 3.69,
+  "site": "H358",
+  "inside": 8,
+  "outside": 19,
+  "len": 85,
+  "mouse_site_ok": true
+ },
+ "ecd_tg_tight_h433__boltzgen_egfr_tight_h433_17": {
+  "arm": "tg_tight_h433",
+  "file": "boltzgen_egfr_tight_h433_17",
+  "ratio": 3.675,
+  "site": "H145",
+  "inside": 0,
+  "outside": 30,
+  "len": 86,
+  "mouse_site_ok": false
+ },
+ "ecd_hf_neutral_2His__boltzgen_egfr_hf_neutral_2His_15": {
+  "arm": "hf_neutral_2His",
+  "file": "boltzgen_egfr_hf_neutral_2His_15",
+  "ratio": 3.61,
+  "site": "H358",
+  "inside": 17,
+  "outside": 20,
+  "len": 124,
+  "mouse_site_ok": true
+ },
+ "ecd_tg_tight_h433__boltzgen_egfr_tight_h433_27": {
+  "arm": "tg_tight_h433",
+  "file": "boltzgen_egfr_tight_h433_27",
+  "ratio": 3.568,
+  "site": "H358",
+  "inside": 2,
+  "outside": 21,
+  "len": 75,
+  "mouse_site_ok": true
+ },
+ "ecd_tg_tight_h433__boltzgen_egfr_tight_h433_29": {
+  "arm": "tg_tight_h433",
+  "file": "boltzgen_egfr_tight_h433_29",
+  "ratio": 3.551,
+  "site": "H358",
+  "inside": 3,
+  "outside": 17,
+  "len": 63,
+  "mouse_site_ok": true
+ },
+ "ecd_tg_tight_h433__boltzgen_egfr_tight_h433_05": {
+  "arm": "tg_tight_h433",
+  "file": "boltzgen_egfr_tight_h433_05",
+  "ratio": 3.329,
+  "site": "H304",
+  "inside": 0,
+  "outside": 20,
+  "len": 87,
+  "mouse_site_ok": true
+ },
+ "ecd_tg_tight_h433_EE__boltzgen_egfr_tight_h433_EE_12": {
+  "arm": "tg_tight_h433_EE",
+  "file": "boltzgen_egfr_tight_h433_EE_12",
+  "ratio": 2.863,
+  "site": "H358",
+  "inside": 15,
+  "outside": 23,
+  "len": 65,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domII_1Gln__boltzgen_egfr_hf_domII_1Gln_18": {
+  "arm": "hf_domII_1Gln",
+  "file": "boltzgen_egfr_hf_domII_1Gln_18",
+  "ratio": 2.636,
+  "site": "H590",
+  "inside": 0,
+  "outside": 30,
+  "len": 124,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domIII_1His_ctrl__boltzgen_egfr_hf_domIII_1His_ctrl_17": {
+  "arm": "hf_domIII_1His_ctrl",
+  "file": "boltzgen_egfr_hf_domIII_1His_ctrl_17",
+  "ratio": 2.519,
+  "site": "H358",
+  "inside": 13,
+  "outside": 25,
+  "len": 124,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domII_2His__boltzgen_egfr_hf_domII_2His_07": {
+  "arm": "hf_domII_2His",
+  "file": "boltzgen_egfr_hf_domII_2His_07",
+  "ratio": 2.419,
+  "site": "H590",
+  "inside": 0,
+  "outside": 27,
+  "len": 136,
+  "mouse_site_ok": true
+ },
+ "ecd_mechAd4_03__boltzgen_egfr_mechA_d4_02": {
+  "arm": "mechAd4_03",
+  "file": "boltzgen_egfr_mechA_d4_02",
+  "ratio": 2.412,
+  "site": "H590",
+  "inside": 0,
+  "outside": 21,
+  "len": 133,
+  "mouse_site_ok": true
+ },
+ "ecd_gm_g532mimic_tiny__boltzgen_egfr_g532mimic_tiny_15": {
+  "arm": "gm_g532mimic_tiny",
+  "file": "boltzgen_egfr_g532mimic_tiny_15",
+  "ratio": 2.375,
+  "site": "H304",
+  "inside": 0,
+  "outside": 52,
+  "len": 48,
+  "mouse_site_ok": true
+ },
+ "ecd_mechAd4_03__boltzgen_egfr_mechA_d4_07": {
+  "arm": "mechAd4_03",
+  "file": "boltzgen_egfr_mechA_d4_07",
+  "ratio": 2.364,
+  "site": "H590",
+  "inside": 0,
+  "outside": 29,
+  "len": 146,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domIII_1His__boltzgen_egfr_hf_domIII_1His_05": {
+  "arm": "hf_domIII_1His",
+  "file": "boltzgen_egfr_hf_domIII_1His_05",
+  "ratio": 2.363,
+  "site": "H590",
+  "inside": 0,
+  "outside": 24,
+  "len": 120,
+  "mouse_site_ok": true
+ },
+ "ecd_tg_dom4_pair__boltzgen_egfr_dom4_pair_28": {
+  "arm": "tg_dom4_pair",
+  "file": "boltzgen_egfr_dom4_pair_28",
+  "ratio": 2.273,
+  "site": "H383",
+  "inside": 15,
+  "outside": 15,
+  "len": 86,
+  "mouse_site_ok": false
+ },
+ "ecd_tg_tight_h433_DD__boltzgen_egfr_tight_h433_DD_16": {
+  "arm": "tg_tight_h433_DD",
+  "file": "boltzgen_egfr_tight_h433_DD_16",
+  "ratio": 2.244,
+  "site": "H358",
+  "inside": 7,
+  "outside": 27,
+  "len": 89,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domII_2His__boltzgen_egfr_hf_domII_2His_13": {
+  "arm": "hf_domII_2His",
+  "file": "boltzgen_egfr_hf_domII_2His_13",
+  "ratio": 2.213,
+  "site": "H383",
+  "inside": 17,
+  "outside": 21,
+  "len": 154,
+  "mouse_site_ok": false
+ },
+ "ecd_hf_domIV_1His__boltzgen_egfr_hisfix_domIV_1His_09": {
+  "arm": "hf_domIV_1His",
+  "file": "boltzgen_egfr_hisfix_domIV_1His_09",
+  "ratio": 2.212,
+  "site": "H370",
+  "inside": 21,
+  "outside": 29,
+  "len": 149,
+  "mouse_site_ok": true
+ },
+ "ecd_tg_dom4_pair__boltzgen_egfr_dom4_pair_12": {
+  "arm": "tg_dom4_pair",
+  "file": "boltzgen_egfr_dom4_pair_12",
+  "ratio": 2.144,
+  "site": "H590",
+  "inside": 0,
+  "outside": 31,
+  "len": 64,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domII_1His__boltzgen_egfr_hf_domII_1His_13": {
+  "arm": "hf_domII_1His",
+  "file": "boltzgen_egfr_hf_domII_1His_13",
+  "ratio": 2.075,
+  "site": "H358",
+  "inside": 4,
+  "outside": 25,
+  "len": 133,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domII_1Gln__boltzgen_egfr_hf_domII_1Gln_19": {
+  "arm": "hf_domII_1Gln",
+  "file": "boltzgen_egfr_hf_domII_1Gln_19",
+  "ratio": 2.043,
+  "site": "H304",
+  "inside": 0,
+  "outside": 68,
+  "len": 131,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_neutral_1His__boltzgen_egfr_hf_neutral_1His_04": {
+  "arm": "hf_neutral_1His",
+  "file": "boltzgen_egfr_hf_neutral_1His_04",
+  "ratio": 2.013,
+  "site": "H358",
+  "inside": 22,
+  "outside": 19,
+  "len": 149,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domII_2His__boltzgen_egfr_hf_domII_2His_08": {
+  "arm": "hf_domII_2His",
+  "file": "boltzgen_egfr_hf_domII_2His_08",
+  "ratio": 1.937,
+  "site": "H145",
+  "inside": 6,
+  "outside": 32,
+  "len": 128,
+  "mouse_site_ok": false
+ },
+ "ecd_mechA03__boltzgen_egfr_mechA_10": {
+  "arm": "mechA03",
+  "file": "boltzgen_egfr_mechA_10",
+  "ratio": 1.879,
+  "site": "H358",
+  "inside": 12,
+  "outside": 16,
+  "len": 149,
+  "mouse_site_ok": true
+ },
+ "ecd_mechAd4_04__boltzgen_egfr_mechA_d4_08": {
+  "arm": "mechAd4_04",
+  "file": "boltzgen_egfr_mechA_d4_08",
+  "ratio": 1.732,
+  "site": "H590",
+  "inside": 13,
+  "outside": 26,
+  "len": 155,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domIV_1His__boltzgen_egfr_hisfix_domIV_1His_19": {
+  "arm": "hf_domIV_1His",
+  "file": "boltzgen_egfr_hisfix_domIV_1His_19",
+  "ratio": 1.398,
+  "site": "H383",
+  "inside": 24,
+  "outside": 29,
+  "len": 141,
+  "mouse_site_ok": false
+ },
+ "ecd_hf_domIII_1Gln__boltzgen_egfr_hf_domIII_1Gln_11": {
+  "arm": "hf_domIII_1Gln",
+  "file": "boltzgen_egfr_hf_domIII_1Gln_11",
+  "ratio": 1.356,
+  "site": "H383",
+  "inside": 2,
+  "outside": 16,
+  "len": 123,
+  "mouse_site_ok": false
+ },
+ "ecd_hf_domII_2His__boltzgen_egfr_hf_domII_2His_19": {
+  "arm": "hf_domII_2His",
+  "file": "boltzgen_egfr_hf_domII_2His_19",
+  "ratio": 1.328,
+  "site": "H358",
+  "inside": 10,
+  "outside": 22,
+  "len": 122,
+  "mouse_site_ok": true
+ },
+ "ecd_hf_domIII_2His__boltzgen_egfr_hf_domIII_2His_10": {
+  "arm": "hf_domIII_2His",
+  "file": "boltzgen_egfr_hf_domIII_2His_10",
+  "ratio": 1.297,
+  "site": "H304",
+  "inside": 9,
+  "outside": 52,
+  "len": 139,
+  "mouse_site_ok": true
+ }
+}

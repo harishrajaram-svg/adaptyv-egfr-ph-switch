@@ -1,0 +1,102 @@
+{
+ "gc_h370_2site__boltzgen_egfr_2site_029": {
+  "design": "gap_h370_2site__boltzgen_egfr_2site_029",
+  "ph": 4.891,
+  "site": "H433",
+  "hu": 0.222311,
+  "mo": 0.529116,
+  "pool": "h370_2site",
+  "len": 68,
+  "seq_len": 68
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_09_05": {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_09_05",
+  "ph": 4.387,
+  "site": "H433",
+  "hu": 0.0,
+  "mo": 0.405652,
+  "pool": "rs_crop6",
+  "len": 113,
+  "seq_len": 113
+ },
+ "gc_h370_2site__boltzgen_egfr_2site_009": {
+  "design": "gap_h370_2site__boltzgen_egfr_2site_009",
+  "ph": 4.374,
+  "site": "H433",
+  "hu": 0.209592,
+  "mo": 0.204881,
+  "pool": "h370_2site",
+  "len": 110,
+  "seq_len": 110
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_short_031_15": {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_short_031_15",
+  "ph": 4.077,
+  "site": "H433",
+  "hu": 0.251283,
+  "mo": 0.066101,
+  "pool": "rs_crop6",
+  "len": 86,
+  "seq_len": 86
+ },
+ "gc_h370_only__boltzgen_egfr_h370_018": {
+  "design": "gap_h370_only__boltzgen_egfr_h370_018",
+  "ph": 3.354,
+  "site": "H433",
+  "hu": 0.457058,
+  "mo": 0.215016,
+  "pool": "h370_only",
+  "len": 90,
+  "seq_len": 90
+ },
+ "gc_h370_2site__boltzgen_egfr_2site_027": {
+  "design": "gap_h370_2site__boltzgen_egfr_2site_027",
+  "ph": 3.113,
+  "site": "H433",
+  "hu": 0.0,
+  "mo": 0.543587,
+  "pool": "h370_2site",
+  "len": 94,
+  "seq_len": 94
+ },
+ "gc_h370_only__boltzgen_egfr_h370_020": {
+  "design": "gap_h370_only__boltzgen_egfr_h370_020",
+  "ph": 3.104,
+  "site": "H433",
+  "hu": 0.345538,
+  "mo": 0.715166,
+  "pool": "h370_only",
+  "len": 98,
+  "seq_len": 98
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_21_11": {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_21_11",
+  "ph": 1.869,
+  "site": "H433",
+  "hu": 0.438208,
+  "mo": 0.155729,
+  "pool": "rs_crop6",
+  "len": 150,
+  "seq_len": 150
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_21_01": {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_21_01",
+  "ph": 1.746,
+  "site": "H433",
+  "hu": 0.630279,
+  "mo": 0.417425,
+  "pool": "rs_crop6",
+  "len": 150,
+  "seq_len": 150
+ },
+ "gc_rs_crop6__boltzgen_egfr_cropfree_09_19": {
+  "design": "gap_rs_crop6__boltzgen_egfr_cropfree_09_19",
+  "ph": 1.56,
+  "site": "H433",
+  "hu": 0.167913,
+  "mo": 0.341704,
+  "pool": "rs_crop6",
+  "len": 113,
+  "seq_len": 113
+ }
+}

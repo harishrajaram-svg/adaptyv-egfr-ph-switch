@@ -1,0 +1,53 @@
+# MECHANISM A with the HISTIDINE PINNED AT GENERATION -- DOMAIN III site, 1His.
+#
+# WHY THIS SITE, AND WHY IT REPLACES THE DOMAIN IV ARMS (2026-10-03, 4:45 PM).
+# The 2026-10-01 site scan concluded "domain III has no usable acidic surface" and sent
+# Mechanism A to domain II and domain IV. Re-run with glycan clearance measured against
+# N-X-S/T SEQUONS IN THE SEQUENCE instead of glycans modelled in the coordinates
+# (bin/acidic_site_scan.py), that conclusion is wrong, and the domain IV site is worse
+# than the one it displaced:
+#
+#   site                     dom  n  conserved  burial  sequon clearance  verdict
+#   E455/D458/D460           III  3       3/3      41            20.6 A   CLEAR
+#   E319/E320/D321 (domII)    II  3       3/3      23            20.5 A   CLEAR
+#   E543/E545      (domIV)    IV  2       2/2      17             8.5 A   UNDER-GLYCAN
+#
+# E543/E545 sits 8.5 A from sequon N568 -- one of the 7 sequons whose glycan 6ARU does not
+# resolve. Its own spec file claims "nearest modelled glycan 22-28 A", which is exactly the
+# coordinate-based artifact that also wrongly cleared cluster 5. An N-glycan reaches
+# 10-20 A+ from its Asn, so a binder there would be competing with carbohydrate in the
+# real assay even though PROPKA and the folding models cannot see it.
+#
+# Domain III is also the drug-relevant surface -- the cetuximab epitope and the ligand-
+# binding domain, and the domain the entire problem-1 campaign targeted -- so a Mechanism A
+# binder here is worth more than one on the membrane-proximal leg.
+#
+# Geometry: D458-D460 carboxylates 6.9 A apart (the tight pair one face engages), E455 at
+# 10.2 A from D458; full span 17.9 A. Three coupled protons is the point -- PK's ceiling for
+# a SINGLE linked proton is ~8x over a 0.9 pH-unit swing.
+# Tether clearance 41.9 A, the farthest of any CLEAR site, so this is insensitive to the
+# tethered-vs-extended question that compromises the domain II site (16.9 A).
+#
+# How the constraint works (BoltzGen commit 247b9bb, src/boltzgen/data/parse/schema.py
+# 743-760): DIGITS request that many designed residues, LETTERS are FIXED identities. There
+# is no wildcard -- 'X' pins UNK and lowercase silently becomes UNK, so case matters.
+# Length 120..160 matches the 140-design baseline, so the pinned His is the only change.
+# Run with EXTRA_ARGS="--diffusion_batch_size 1" or the His lands at one index in all 20.
+#
+# Numbering: file renumbered 1..609, so canonical = renum + 27 and mature = renum + 3,
+# verified residue-by-residue. 428/431/433 = E455/D458/D460 canonical = GLU/ASP/ASP.
+entities:
+  - protein:
+      id: B
+      sequence: 60..80, H, 59..79
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 428,431,433
+      structure_groups: "all"

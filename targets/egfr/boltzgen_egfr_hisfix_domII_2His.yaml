@@ -1,0 +1,38 @@
+# MECHANISM A with the HISTIDINE PINNED AT GENERATION -- domII site, 2His.
+#
+# Why this spec exists (2026-10-03). Across 140 mechanism A designs on these two sites,
+# 106 (76%) contained NO binder histidine at the interface at all, and only ONE design in
+# the whole set was a real switch (mechAd4_02_r02, 1.432x). The limiting factor was never
+# the site or the mechanism -- nothing told the generator to supply a titratable group, so
+# pH lived in the filter and never in the design objective. This spec moves it.
+#
+# How the constraint works (BoltzGen commit 247b9bb, src/boltzgen/data/parse/schema.py
+# lines 743-760): inside 'sequence', DIGITS request that many designed residues and
+# LETTERS are FIXED residue identities. So "45..60, H, 28..38, H, 45..60"
+# guarantees the histidine. There is no wildcard character -- 'X' pins an UNK residue and
+# lowercase silently becomes UNK, so the case here is load-bearing.
+#
+# Length is held at 120..160, identical to the 140-design baseline, so the pinned histidine
+# is the ONLY variable that changed.
+#
+# Run with EXTRA_ARGS="--diffusion_batch_size 1". Without it every design in a batch shares
+# one sampled length and the histidine lands at the same index in all 20.
+#
+# Site: E319/E320/D321 canonical (renum 292/293/294) -- three CONTIGUOUS acidic residues, the most coupled protons on the receptor; nearest sequon 21.7 A
+# Numbering: file renumbered 1..609 so author numbering == label_seq_id (BoltzGen indexes
+# by label_seq_id). H433 is renumbered 406 and is NOT in play here -- this is mechanism A.
+entities:
+  - protein:
+      id: B
+      sequence: 45..60, H, 28..38, H, 45..60
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 292,293,294
+      structure_groups: "all"

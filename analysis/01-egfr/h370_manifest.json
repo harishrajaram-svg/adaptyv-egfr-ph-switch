@@ -1,0 +1,82 @@
+{
+ "h370_tg_resequence60__winner14_r46": {
+  "arm": "tg_resequence60",
+  "d370": 2.53,
+  "d433": 8.19,
+  "r370": 3.29,
+  "twosite": 2.75,
+  "len": 83
+ },
+ "h370_c2_long__boltzgen_egfr_crop_long_20": {
+  "arm": "c2_long",
+  "d370": 2.71,
+  "d433": 6.71,
+  "r370": 4.19,
+  "twosite": 3.14,
+  "len": 141
+ },
+ "h370_rimB02__boltzgen_egfr_d3_rimB_39": {
+  "arm": "rimB02",
+  "d370": 2.84,
+  "d433": 6.03,
+  "r370": 5.77,
+  "twosite": 3.7,
+  "len": 122
+ },
+ "h370_bg01__boltzgen_egfr_d3_01": {
+  "arm": "bg01",
+  "d370": 2.86,
+  "d433": 5.62,
+  "r370": 5.46,
+  "twosite": 3.81,
+  "len": 152
+ },
+ "h370_bg01__boltzgen_egfr_d3_21": {
+  "arm": "bg01",
+  "d370": 2.99,
+  "d433": 3.33,
+  "r370": 4.78,
+  "twosite": 3.4,
+  "len": 158
+ },
+ "h370_bg04__boltzgen_egfr_d3_10": {
+  "arm": "bg04",
+  "d370": 3.01,
+  "d433": 7.74,
+  "r370": 4.95,
+  "twosite": 3.55,
+  "len": 132
+ },
+ "h370_rimA01__boltzgen_egfr_d3_rimA_50": {
+  "arm": "rimA01",
+  "d370": 3.04,
+  "d433": 6.22,
+  "r370": 6.06,
+  "twosite": 4.38,
+  "len": 160
+ },
+ "h370_rimB02__boltzgen_egfr_d3_rimB_17": {
+  "arm": "rimB02",
+  "d370": 3.2,
+  "d433": 4.76,
+  "r370": 5.95,
+  "twosite": 4.09,
+  "len": 145
+ },
+ "h370_cf_short120__boltzgen_egfr_cropfree_short_008": {
+  "arm": "cf_short120",
+  "d370": 3.34,
+  "d433": 3.87,
+  "r370": 5.41,
+  "twosite": 6.59,
+  "len": 86
+ },
+ "h370_c2_2site__boltzgen_egfr_crop_2site_33": {
+  "arm": "c2_2site",
+  "d370": 3.57,
+  "d433": 5.33,
+  "r370": 3.75,
+  "twosite": 2.74,
+  "len": 147
+ }
+}

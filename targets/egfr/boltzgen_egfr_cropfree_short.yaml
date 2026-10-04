@@ -1,0 +1,74 @@
+# cropfree_short -- cropfree restricted to the 56..90 band, on the LENGTH evidence.
+#
+# WHY THIS BAND. Hit rate for a carboxylate within 2.8 A of H433, by design length:
+#     crop arms      56-90 aa    4/60  = 6.7%   <-- best
+#     bg120         120-160 aa   6/120 = 5.0%
+#     rim120        120-160 aa   2/120 = 1.7%
+#     g532mimic_tiny 31-49 aa    0/20  = 0.0%   <-- too small to form an interface
+# Every crop hit was 62-78 aa. Shorter binders reach the histidine more often, down to a
+# floor around 50 aa where they stop binding at all. cropfree spans 56..160 and therefore
+# spends most of its budget in the 2-5% regime; this arm concentrates on the 6.7% one.
+#
+# SECOND REASON. The competition stratifies winners into five molecule categories by
+# length (microbinder <40, minibinder 40-100, large protein >100, nanobody, antibody).
+# All 20 of our submitted designs are 120-160 aa, i.e. ONE category. This band is the
+# minibinder category, where we currently have zero entries.
+#
+# EXPECTED YIELD, from measured numbers: ~7% reach a canonical H-bond distance, and
+# 62% of designs at 2.6-3.2 A switch -> roughly 4 switchers per 100 designs. Against
+# 1.3% for the pinned strategy. That is the rate this arm is trying to beat.
+#
+# TWO MEASURED FACTS, both from our own data, drive this spec:
+#
+# 1. CROPPING FIXES EPITOPE SELECTION. Against the full 609-residue ECD only 4/30
+#    designs touched the declared H433 patch; against the 170-residue domain III
+#    crop, 27/30 did (and 24/30 touched H433 itself). The generator was never
+#    ignoring binding_types -- it was taking a better offer, because half the time
+#    domain I was more designable. Remove the alternative and it complies.
+#
+# 2. PINNING A CARBOXYLATE MAKES THE GEOMETRY ~15x LESS LIKELY, NOT MORE.
+#       unpinned bg/rim designs, any Asp/Glu within 4.0 A of H433:  46/240 = 19.2%
+#       pinned carboxylate, full ECD:                                2/160 =  1.3%
+#       pinned, tight patch, full ECD:                               0/90
+#       pinned, cropped target:                                      0/60
+#    Pinning fixes a sequence POSITION before the backbone exists, which fixes
+#    which FACE of the binder the acid sits on -- and that face is usually wrong.
+#    Measured directly: cropped designs contact H433 with THR74 / ALA43 / GLY55 /
+#    LYS27 / ALA15 / ALA34 / SER69 / LEU42 at 2.3-4.3 A while the pinned D21/E36
+#    sit 7-23 A away. Right place, wrong face.
+#    Decisively: rank-1 rimA01_r15's GLU92 (2.74 A) and ASP67 were NEVER PINNED.
+#    Inverse folding chose them. The only verified switch in the project came from
+#    the unpinned pool.
+#
+# SO: crop the target, pin NOTHING, generate broadly, and screen for incidental
+# geometry afterwards. The screen is free -- a distance measurement on output
+# structures, no GPU. Expected rate: ~19% was achieved at ~50% epitope compliance,
+# so at 90% compliance it should compose to roughly 30%.
+#
+# The pipeline this spec is the front of:
+#   generate -> geometry filter (free) -> ESMFold2/ipSAE -> pH gate ON THE REFOLDED
+#   POSE -> knockout control. That is how rimA01_r15 was found, by accident; this
+#   runs it deliberately.
+#
+# Binder band 56..160: the 56..90 band produced the one pinned hit, but the unpinned
+# 19.2% came from 120-160 aa designs, and rank 1 is 150 aa. Do not narrow it on the
+# strength of the pinned result -- that band was selected under the wrong strategy.
+#
+# NOTE ON NUMBERING. egfr_d3_crop_renum.pdb is renum 284..453 (canonical 311..480).
+# H433 is POSITIONAL 123 in that file, and BoltzGen writes chain B renumbered 1..170
+# so H433 is residue 123 in the output too -- verified. Do NOT reuse 406 or 409 here.
+entities:
+  - protein:
+      id: B
+      sequence: 56..90
+
+  - file:
+      path: egfr_d3_crop_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 120,121,122,123,124,125,126
+      structure_groups: "all"

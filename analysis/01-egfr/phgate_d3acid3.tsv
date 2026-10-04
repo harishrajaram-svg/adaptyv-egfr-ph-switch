@@ -1,0 +1,7 @@
+design	his	pka_free	pka_bound	delta	ratio	passes
+d3acid3_l66_s450708_mpnn3_model2	59	6.36	6.36	0.0	1.0	False
+d3acid3_l66_s450708_mpnn5_model2	59	6.35	6.34	-0.01	0.992	False
+d3acid3_l66_s450708_mpnn5_model2	58	6.86	6.77	-0.09	0.908	False
+d3acid3_l66_s450708_mpnn3_model2	58	6.84	6.73	-0.11	0.889	False
+d3acid3_l66_s450708_mpnn5_model2	19	6.07	4.07	-2.0	0.766	False
+d3acid3_l66_s450708_mpnn3_model2	19	6.55	3.66	-2.89	0.538	False

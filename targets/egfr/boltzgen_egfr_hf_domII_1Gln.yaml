@@ -1,0 +1,37 @@
+# MECHANISM A, GLUTAMINE (non-titratable control) PINNED AT GENERATION -- domII site, 1Gln, labels ON.
+#
+# Across 140 Mechanism A designs on two sites, 106 (76%) contained NO binder histidine at
+# the interface and exactly ONE was a real switch. The limiting factor was never the site or
+# the mechanism: nothing told the generator to supply a titratable group. This spec does.
+#
+# Site: E319/E320/D321 canonical (renum 292,293,294), domain II.
+#   three CONTIGUOUS acidic residues, the most coupled protons on the receptor; 20.5 A sequon clearance, 3/3 conserved, burial 23. Caveat: 16.9 A from the Y246-D563 tether, and domain II rearranges between the tethered and extended states.
+#
+# Pinned residue at sampled index 61. Length 120..160, identical to the baseline, so the
+# pinned residue (and the labels, where present) are the only changes.
+# Labels ON: the pinned residue is declared interfacial and placed in a loop. The interface
+# label is UNARY (partner unspecified); a pairwise "contacts E455" term does not exist.
+#
+# DIGITS request that many designed residues, LETTERS are fixed identities (schema.py
+# 743-760). No wildcard exists: 'X' pins UNK, lowercase silently becomes UNK.
+# Run with EXTRA_ARGS="--diffusion_batch_size 1".
+# Numbering: canonical = renum + 27, mature = renum + 3, verified residue-by-residue.
+entities:
+  - protein:
+      id: B
+      sequence: 60, Q, 59..99
+      binding_types:
+        binding: 61
+      secondary_structure:
+        loop: 56..60,62..66
+
+  - file:
+      path: egfr_ecd_6aru_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 292,293,294
+      structure_groups: "all"

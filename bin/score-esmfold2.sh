@@ -38,8 +38,21 @@ else
 fi
 N_SEEDS=$(awk -F, '{print NF}' <<<"$SEEDS")
 N_FOLDS=$(( N_COMPLEX * N_SEEDS ))
-# Measured: ~120-160s per fold for a ~620+150 residue complex, ~140s model load.
-EST_MIN=$(( (N_FOLDS * 160 + 140) / 60 + 1 ))
+# Fold time scales with complex SIZE, and the flat 160s/fold constant this used to
+# carry is calibrated on the 620+150 residue full-ECD complexes. On the 170-residue
+# domain III construct, folds measured 6-14s -- so the estimate overshot by ~13x and
+# REFUSED TO LAUNCH a run that needed 55 minutes (2026-10-04, 8 apps x 254 folds).
+# That is the third time this constant has misled a launch decision, so it is now
+# derived from the actual residue count in the input.
+#   measured anchors: 770 residues ~ 140s/fold ; 240 residues ~ 10s/fold
+# => roughly quadratic in length; a linear fit through those two points is enough
+#    for a timeout, and it is rounded UP.
+N_RES=$(awk '/^[A-Z]/ {n+=length($0)} END {print n}' "$(find "$IN" -maxdepth 1 -name '*.faa' | head -1)" 2>/dev/null)
+N_RES=${N_RES:-770}
+SEC_PER_FOLD=$(( 10 + (N_RES - 240) * 130 / 530 ))
+(( SEC_PER_FOLD < 8 )) && SEC_PER_FOLD=8
+EST_MIN=$(( (N_FOLDS * SEC_PER_FOLD + 180) / 60 + 1 ))
+echo "[score-esmfold2] ${N_RES} residues/complex -> ~${SEC_PER_FOLD}s per fold"
 NEED_MIN=$(( EST_MIN * 2 ))                     # 2x headroom for a slow GPU draw
 MODAL_TIMEOUT="${MODAL_TIMEOUT:-$NEED_MIN}"
 

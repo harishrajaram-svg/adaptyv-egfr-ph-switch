@@ -1,0 +1,58 @@
+{
+ "bcd_d3acid_l65_s831683_mpnn19": {
+  "len": 65,
+  "ph_1pose": 3.731,
+  "hu_1seed": 0.830282,
+  "mo_1seed": 0.815534,
+  "family": "d3acid_l65_s831683"
+ },
+ "bcd_d3acid_l65_s831683_mpnn9": {
+  "len": 65,
+  "ph_1pose": 4.048,
+  "hu_1seed": 0.795309,
+  "mo_1seed": 0.789365,
+  "family": "d3acid_l65_s831683"
+ },
+ "bcd_d3acid_l65_s831683_mpnn11": {
+  "len": 65,
+  "ph_1pose": 3.998,
+  "hu_1seed": 0.804172,
+  "mo_1seed": 0.79092,
+  "family": "d3acid_l65_s831683"
+ },
+ "bcd_d3acid_l65_s831683_mpnn2": {
+  "len": 65,
+  "ph_1pose": 3.832,
+  "hu_1seed": 0.810509,
+  "mo_1seed": 0.797397,
+  "family": "d3acid_l65_s831683"
+ },
+ "bcd_d3acid_l65_s831683_mpnn8": {
+  "len": 65,
+  "ph_1pose": 3.182,
+  "hu_1seed": 0.821769,
+  "mo_1seed": 0.810304,
+  "family": "d3acid_l65_s831683"
+ },
+ "bcd_d3acid3_l60_s647537_mpnn14": {
+  "len": 60,
+  "ph_1pose": 3.061,
+  "hu_1seed": 0.481566,
+  "mo_1seed": 0.339397,
+  "family": "d3acid3_l60_s647537"
+ },
+ "bcd_d3acid3_l60_s647537_mpnn15": {
+  "len": 60,
+  "ph_1pose": 3.007,
+  "hu_1seed": 0.4914,
+  "mo_1seed": 0.316612,
+  "family": "d3acid3_l60_s647537"
+ },
+ "bcd_d3acid3_l60_s632578_mpnn2": {
+  "len": 60,
+  "ph_1pose": 2.324,
+  "hu_1seed": 0.459833,
+  "mo_1seed": 0.689054,
+  "family": "d3acid3_l60_s632578"
+ }
+}

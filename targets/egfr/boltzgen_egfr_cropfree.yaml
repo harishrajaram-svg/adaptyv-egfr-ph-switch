@@ -1,0 +1,56 @@
+# cropfree -- the arm the 2026-10-04 evidence actually supports.
+#
+# TWO MEASURED FACTS, both from our own data, drive this spec:
+#
+# 1. CROPPING FIXES EPITOPE SELECTION. Against the full 609-residue ECD only 4/30
+#    designs touched the declared H433 patch; against the 170-residue domain III
+#    crop, 27/30 did (and 24/30 touched H433 itself). The generator was never
+#    ignoring binding_types -- it was taking a better offer, because half the time
+#    domain I was more designable. Remove the alternative and it complies.
+#
+# 2. PINNING A CARBOXYLATE MAKES THE GEOMETRY ~15x LESS LIKELY, NOT MORE.
+#       unpinned bg/rim designs, any Asp/Glu within 4.0 A of H433:  46/240 = 19.2%
+#       pinned carboxylate, full ECD:                                2/160 =  1.3%
+#       pinned, tight patch, full ECD:                               0/90
+#       pinned, cropped target:                                      0/60
+#    Pinning fixes a sequence POSITION before the backbone exists, which fixes
+#    which FACE of the binder the acid sits on -- and that face is usually wrong.
+#    Measured directly: cropped designs contact H433 with THR74 / ALA43 / GLY55 /
+#    LYS27 / ALA15 / ALA34 / SER69 / LEU42 at 2.3-4.3 A while the pinned D21/E36
+#    sit 7-23 A away. Right place, wrong face.
+#    Decisively: rank-1 rimA01_r15's GLU92 (2.74 A) and ASP67 were NEVER PINNED.
+#    Inverse folding chose them. The only verified switch in the project came from
+#    the unpinned pool.
+#
+# SO: crop the target, pin NOTHING, generate broadly, and screen for incidental
+# geometry afterwards. The screen is free -- a distance measurement on output
+# structures, no GPU. Expected rate: ~19% was achieved at ~50% epitope compliance,
+# so at 90% compliance it should compose to roughly 30%.
+#
+# The pipeline this spec is the front of:
+#   generate -> geometry filter (free) -> ESMFold2/ipSAE -> pH gate ON THE REFOLDED
+#   POSE -> knockout control. That is how rimA01_r15 was found, by accident; this
+#   runs it deliberately.
+#
+# Binder band 56..160: the 56..90 band produced the one pinned hit, but the unpinned
+# 19.2% came from 120-160 aa designs, and rank 1 is 150 aa. Do not narrow it on the
+# strength of the pinned result -- that band was selected under the wrong strategy.
+#
+# NOTE ON NUMBERING. egfr_d3_crop_renum.pdb is renum 284..453 (canonical 311..480).
+# H433 is POSITIONAL 123 in that file, and BoltzGen writes chain B renumbered 1..170
+# so H433 is residue 123 in the output too -- verified. Do NOT reuse 406 or 409 here.
+entities:
+  - protein:
+      id: B
+      sequence: 56..160
+
+  - file:
+      path: egfr_d3_crop_renum.pdb
+      include:
+        - chain:
+            id: A
+      binding_types:
+        - chain:
+            id: A
+            binding: 120,121,122,123,124,125,126
+      structure_groups: "all"
