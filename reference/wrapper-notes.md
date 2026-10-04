@@ -377,3 +377,62 @@ Screen the pool at 1 seed, confirm the shortlist at 5. Verified end to end 2026-
 The `moved` column is the diagnostic: large rank movement between tiers means the 1-seed screen was noisy *at that score range*, which tells you empirically whether screening is safe on a given problem instead of assuming.
 
 **Standing rule, in the script's docstring:** scoring never eats the optimization rounds. If a run is behind, cut seeds or sampling breadth before predict-then-redesign cycles -- those are the cheapest hit-rate gain in the literature.
+
+## Mosaic — the versions that actually worked, 2026-10-03
+
+The original "done when" for this wrapper asked for the JAX/CUDA versions that work,
+because nothing else in `biomodals/` had a JAX dependency and the pairing is the part
+most likely to rot. Recorded after two successful runs.
+
+| | |
+|---|---|
+| image | `Image.debian_slim(python_version="3.12")`, `uv_pip_install("jax[cuda12]")`, then `uv_pip_install("git+https://github.com/escalante-bio/mosaic")` |
+| jax | **0.11.2**, reporting `[CudaDevice(id=0)]` |
+| GPU | **L40S** (48 GB). Domain-III target + L76 binder ≈ 246 tokens fits with a backward pass; the full 609-residue ECD ≈ 700 tokens is expected not to |
+| weights | **8.03 GB / 45,230 files** on the `mosaic-weights` Volume, cached 2026-10-02. Startup off the cache is ~3–5 min, not a download |
+| local clone read for the API | `escalante-bio/mosaic` at `b94b9d4` (Sep 24) — every call matched what the image installed |
+
+**Mosaic has no PyPI release and no CLI.** It is driven by its Python API, so this wrapper
+*embeds* the design script instead of shelling out — the only one in `biomodals/` that does.
+`python_version="3.12"` is required: Mosaic needs ≥3.11, and Modal's default 3.14 breaks the
+build for the same reason it breaks BoltzGen.
+
+**Measured economics.** First APGM step **146 s** (the JIT), every step after **3.54 s**. So
+180 steps ≈ 11 min per seed. The compile amortizes across *seeds* at one length but **not
+across lengths** — each additional binder length pays the 146 s again, which is why
+`--lengths` defaults to a single value.
+
+**Mosaic ignores `HF_HOME` and `TORCH_HOME`.** It keeps its own cache at `~/.cache/mosaic`
+and the only documented override is a `--cache` CLI flag that does not exist when driving the
+Python API. The wrapper symlinks `/root/.cache/mosaic` onto the Volume instead. Without this
+every container re-downloads 8 GB.
+
+**Three gotchas that cost real time, none of them JAX version problems:**
+
+1. **XLA's Triton autotuner logs scary errors that are not failures.** Nine identical
+   `loc("dot.3682"): error: 'tt.dot' op expected the output shape...` lines appeared mid-
+   compile on both runs. That is the GEMM autotuner sweeping candidate configs; the ones that
+   fail to emit log this and XLA falls back. A real shape bug surfaces as a Python traceback
+   naming the loss term. Do not kill a run over these, and do not grep for bare `error` in a
+   log monitor.
+2. **`predict()` without a `PSSM` returns iptm exactly 0.0, for any design.** mosaic's
+   `predict` substitutes `jnp.zeros((0, 20))`, `IPTMLoss` then reads `binder_len = 0`,
+   `asym_id` collapses to all-ones, the pair mask is all-False, and the score is 0. Read
+   `model_output.chain_pair_iptm()[(0, 1)]` instead for any prediction where the binder
+   sequence is baked into the features rather than passed in.
+3. **`simplex_APGM` evaluates the loss OFF the simplex.** Momentum extrapolates to
+   `x + momentum*(x - x_prev)`, where entries can be negative or exceed 1. Any custom
+   `LossTerm` that assumes probabilities must clip: unclipped, a `log` of a summed score went
+   NaN on 5 of 180 steps (APGM's own guard discarded them), and a `(1 - p)*100` penalty
+   printed a distance of **−39.59 Å**. Clipping to [0,1] costs nothing, because inside the
+   simplex — where every real sequence lives — the gradient is unchanged.
+
+**Design features give the binder no sidechains.** AF3-style models take a reference-atom
+channel, and mosaic fills the binder's with UNK/G, so a predicted *binder* sidechain atom
+does not exist during design. Any sidechain-geometry objective has to run on a proxy and be
+verified afterwards by re-predicting with `target_only_features` for both chains, which does
+produce an all-atom complex.
+
+**Self-test before spending.** `python3 bin/mosaic_selftest.py` checks the target prep, the
+numbering arithmetic against the TKQHGQF motif, the geometry bar both directions, the metric
+invariants, and the C1 loss-tree audit — no GPU and no Modal account.
