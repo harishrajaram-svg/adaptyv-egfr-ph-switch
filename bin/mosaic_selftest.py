@@ -132,6 +132,77 @@ def main():
     print(f"geometry bar  {g['acid_O_to_his_N']} A -> geometry_pass="
           f"{g['geometry_pass']}, as it must")
 
+    # 5. the metric audit, against the two bugs this file actually shipped on 2026-10-03
+    check_row, loss_term_names, audit_c1 = (
+        ns["check_row"], ns["loss_term_names"], ns["audit_c1"]
+    )
+    clean = {
+        "design": "t", "length": 76, "seed": 0, "sequence": "A" * 76,
+        "iptm_design": 0.42, "plddt_binder_design": 0.81,
+        "iptm_repred": 0.39, "plddt_binder_repred": 0.78,
+        "frac_V": 0.05, "frac_G": 0.04, "n_C": 0,
+        "acid_O_to_his_N": 3.1, "acid_CA_to_his_N": 5.4,
+        "closest_acid": "ASP34", "geometry_pass": True,
+    }
+    assert check_row(clean, 76) == [], check_row(clean, 76)
+
+    def with_(**kw):
+        r = dict(clean)
+        r.update(kw)
+        return r
+
+    cases = [
+        # the real bug: IPTMLoss handed a zero-length sequence returns exactly 0.0
+        ("iptm_repred exactly 0.0", with_(iptm_repred=0.0), "iptm_repred"),
+        # the real bug: a distance reported as negative
+        ("negative distance", with_(acid_CA_to_his_N=-39.59), "acid_CA_to_his_N"),
+        ("NaN metric", with_(iptm_design=float("nan")), "NaN"),
+        ("probability over 1", with_(plddt_binder_repred=1.4), "plddt_binder_repred"),
+        ("cysteine present", with_(n_C=5), "n_C"),
+        ("wrong sequence length", with_(sequence="A" * 70), "sequence is 70"),
+        ("pass disagrees with distance",
+         with_(acid_O_to_his_N=7.2, geometry_pass=True), "disagrees"),
+        ("distance without a residue",
+         with_(closest_acid=None), "present or absent together"),
+    ]
+    for label, row, needle in cases:
+        found = check_row(row, 76)
+        assert found, f"{label}: audit found nothing"
+        assert any(needle in f for f in found), f"{label}: {found}"
+    # a BAD DESIGN must still pass -- the audit judges measurement, not quality
+    bad_design = with_(iptm_repred=0.01, acid_O_to_his_N=19.4, geometry_pass=False,
+                       frac_G=0.33)
+    assert check_row(bad_design, 76) == [], check_row(bad_design, 76)
+    print(f"metric audit   clean row OK, {len(cases)} impossible rows all caught, "
+          "a merely-bad design still passes")
+
+    # 6. C1 derived from a loss tree, not asserted
+    class Combo:
+        def __init__(self, *members):
+            self.l = list(members)
+
+    def term(name, inner=None):
+        t = type(name, (), {})()
+        t.loss = inner
+        return t
+
+    tree = Combo(
+        term("BinderTargetIPTM"), term("BinderTargetPAE"),
+        term("BinderTargetContact"), term("PLDDTLoss"),
+        term("ESMFoldGlobularity"),           # model-agnostic, must be ALLOWED
+        term("AcidNearHis"),
+    )
+    wrapped = term("NoCys", inner=term("Boltz2Loss", inner=tree))
+    names = loss_term_names(wrapped)
+    assert "AcidNearHis" in names and "ESMFoldGlobularity" in names, names
+    assert audit_c1(names, ["Boltz2"]) == [], audit_c1(names, ["Boltz2"])
+    # and it must FAIL on the two things C1 forbids
+    bad_terms = loss_term_names(Combo(term("IPSAE_min"), term("PLDDTLoss")))
+    assert any("ipSAE" in v for v in audit_c1(bad_terms, ["Boltz2"])), bad_terms
+    assert any("ESMFold2" in v for v in audit_c1(names, ["ESMFold2"]))
+    print(f"C1 audit       {len(names)} terms walked, ESMFoldGlobularity allowed, "
+          "IPSAE_min and an ESMFold2 model both rejected")
+
     print("\nselftest OK")
 
 

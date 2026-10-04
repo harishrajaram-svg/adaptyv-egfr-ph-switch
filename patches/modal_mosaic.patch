@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..6dbe9be
+index 0000000..4a502f4
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,704 @@
+@@ -0,0 +1,844 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -306,6 +306,108 @@ index 0000000..6dbe9be
 +    }
 +
 +
++# Both bugs found in this file on 2026-10-03 were caught by looking at ONE number and
++# knowing what it had to be, not by reading the code: `iptm_repred` pinned at exactly
++# 0.0 (IPTMLoss handed a zero-length sequence) and `acid_dmin_CA` reported as -39.59 A
++# (APGM evaluates the loss at an extrapolated point off the simplex, so `1 - acid` goes
++# negative). Both printed as plausible numbers next to a clean exit code. These two
++# functions turn "a reviewer might notice" into "the run refuses to lie".
++
++# (column, low, high, closed_low, closed_high) -- None means unbounded on that side.
++METRIC_BOUNDS = (
++    ("iptm_design", 0.0, 1.0, False, True),        # exactly 0.0 is the IPTMLoss artifact
++    ("iptm_repred", 0.0, 1.0, False, True),
++    ("plddt_binder_design", 0.0, 1.0, False, True),
++    ("plddt_binder_repred", 0.0, 1.0, False, True),
++    ("frac_V", 0.0, 1.0, True, True),
++    ("frac_G", 0.0, 1.0, True, True),
++    ("acid_O_to_his_N", 0.0, 200.0, True, True),   # a distance is never negative
++    ("acid_CA_to_his_N", 0.0, 200.0, True, True),
++)
++GEOMETRY_BAR = 4.0
++
++
++def check_row(row: dict, binder_length: int) -> list[str]:
++    """Impossible-value audit of one emitted design row. Returns a list of violations.
++
++    Checks what the quantity IS, not what it should ideally be: a distance cannot be
++    negative, a probability cannot exceed 1, NoCys means zero cysteine, and
++    geometry_pass must agree with the distance it was derived from. A bad DESIGN passes
++    every check here; only a bad MEASUREMENT fails.
++    """
++    bad = []
++    for col, lo, hi, closed_lo, closed_hi in METRIC_BOUNDS:
++        v = row.get(col)
++        if v is None:
++            continue                      # legitimately absent, e.g. no acid in the binder
++        if v != v:
++            bad.append(f"{col} is NaN")
++            continue
++        if v < lo or (v == lo and not closed_lo):
++            bad.append(f"{col}={v} violates lower bound {'[' if closed_lo else '('}{lo}")
++        if v > hi or (v == hi and not closed_hi):
++            bad.append(f"{col}={v} violates upper bound {hi}{']' if closed_hi else ')'}")
++    if row.get("n_C") not in (0, None):
++        bad.append(f"n_C={row['n_C']} but NoCys should make cysteine impossible")
++    if len(row.get("sequence", "")) != binder_length:
++        bad.append(f"sequence is {len(row.get('sequence', ''))} aa, expected {binder_length}")
++    d, passed = row.get("acid_O_to_his_N"), row.get("geometry_pass")
++    if d is not None and passed is not None and passed != (d <= GEOMETRY_BAR):
++        bad.append(f"geometry_pass={passed} disagrees with acid_O_to_his_N={d} "
++                   f"at the {GEOMETRY_BAR} A bar")
++    if (d is None) != (row.get("closest_acid") is None):
++        bad.append("acid_O_to_his_N and closest_acid must be present or absent together")
++    return bad
++
++
++def loss_term_names(loss) -> list[str]:
++    """Every LossTerm class name in a composed loss, flattened, in order.
++
++    `LinearCombination` holds its members in `.l`, and model losses hold the inner loss
++    in `.loss`, so the whole tree walks. This is what makes C1 checkable: the previous
++    `no_ipsae_no_esmfold2: True` in config.json was a hardcoded literal that would have
++    printed True with IPSAE_min sitting in the objective. A claim, not evidence.
++    """
++    names = []
++    seen = set()
++
++    def walk(node, depth=0):
++        if node is None or depth > 12 or id(node) in seen:
++            return
++        seen.add(id(node))
++        members = getattr(node, "l", None)
++        if isinstance(members, (list, tuple)):
++            for m in members:
++                walk(m, depth + 1)
++            return
++        names.append(type(node).__name__)
++        walk(getattr(node, "loss", None), depth + 1)
++
++    walk(loss)
++    return names
++
++
++def audit_c1(term_names: list[str], model_names: list[str]) -> list[str]:
++    """C1: the design objective may not contain ipSAE and may not run on ESMFold2.
++
++    Derived from the actual composed loss, never asserted. ESMFoldGlobularity and
++    ESMFoldInterContact are NOT ESMFold2 models -- they are model-agnostic terms on
++    whatever distogram they are handed -- so they are matched exactly and allowed, while
++    anything else carrying the name is a violation.
++    """
++    allowed_esmfold_terms = {"ESMFoldGlobularity", "ESMFoldInterContact"}
++    bad = []
++    for name in term_names:
++        if "IPSAE" in name.upper():
++            bad.append(f"C1: loss term {name} contains ipSAE, the frozen ranking instrument")
++        if "ESMFOLD" in name.upper() and name not in allowed_esmfold_terms:
++            bad.append(f"C1: loss term {name} looks like an ESMFold2 term")
++    for name in model_names:
++        if "ESMFOLD" in name.upper():
++            bad.append(f"C1: design ran on model {name}; ESMFold2 is reserved for ranking")
++    return bad
++
++
 +@app.function(image=image, gpu=GPU, timeout=TIMEOUT * 60,
 +              volumes={"/weights": weights})
 +def design(
@@ -446,10 +548,16 @@ index 0000000..6dbe9be
 +            score = acid * jax.nn.sigmoid((self.d0 - d) / self.width)
 +            total = score.sum()
 +            loss = -jnp.log(total + 1e-3)
++            # The DIAGNOSTIC clips `acid` to [0,1]; the loss above deliberately does not.
++            # APGM evaluates at an extrapolated point `x + momentum*(x - x_prev)` that is
++            # off the simplex, where `acid` can exceed 1 and `(1 - acid)*100` flips sign --
++            # which is how this field printed -39.59 A on 2026-10-03. Clipping the loss
++            # would flatten its gradient; clipping the report costs nothing.
++            acid_c = jnp.clip(acid, 0.0, 1.0)
 +            return loss, {
 +                "acid_his": loss,
 +                "acid_best": score.max(),
-+                "acid_dmin_CA": jnp.min(d + (1.0 - acid) * 100.0),
++                "acid_dmin_CA": jnp.min(d + (1.0 - acid_c) * 100.0),
 +            }
 +
 +    class CompositionCap(LossTerm):
@@ -527,6 +635,12 @@ index 0000000..6dbe9be
 +        if caps:
 +            total_loss = total_loss + w_comp * CompositionCap(caps=caps)
 +        loss_fn = NoCys(loss=total_loss)      # Cys removed from the alphabet entirely
++        term_names = loss_term_names(loss_fn)
++        model_names = ["Boltz2"] + (["ProteinMPNN_soluble"] if mpnn is not None else [])
++        c1_violations = audit_c1(term_names, model_names)
++        if c1_violations:
++            raise SystemExit("STEP 4 FAILED on C1:\n  " + "\n  ".join(c1_violations))
++        print(f"[mosaic] C1 audit clean. loss terms: {', '.join(term_names)}")
 +        step = stepsize if stepsize > 0 else 0.1 * float(np.sqrt(L))
 +        print(f"[mosaic] L={L} stepsize={step:.3f} epitope={len(epitope_idx)} "
 +              f"terms={'+mpnn' if mpnn else 'no-mpnn'}")
@@ -605,8 +719,24 @@ index 0000000..6dbe9be
 +                "n_C": seq.count("C"),
 +                **geom,
 +            }
++            # The audit must never be the thing that destroys a design it was added to
++            # protect. By this point the GPU work for this design is already paid for, so
++            # a bug in ~40 lines of pure Python cannot be allowed to take it down. The C1
++            # audit above stays fatal on purpose: that one runs BEFORE any compute.
++            try:
++                violations = check_row(row, L)
++            except Exception as e:
++                violations = [f"the metric audit itself raised {type(e).__name__}: {e}"]
++            row["metrics_ok"] = not violations
 +            rows.append(row)
 +            print(f"[mosaic] {tag} {json.dumps(geom)} iptm={row['iptm_repred']}")
++            if violations:
++                # Loud, and recorded in the row, but NOT fatal: the designs and the
++                # structures are still worth keeping. What must never happen is a bad
++                # number travelling downstream looking like a good one.
++                print(f"[mosaic] 🔴 {tag} METRICS SUSPECT -- do not rank on this row:")
++                for v in violations:
++                    print(f"[mosaic]      {v}")
 +            files[f"complex/{tag}.pdb"] = st.make_pdb_string().encode()
 +            files[f"pssm/{tag}.npy"] = np.asarray(pssm).astype(np.float32).tobytes()
 +
@@ -638,7 +768,11 @@ index 0000000..6dbe9be
 +                    "within": w_within, "plddt": w_plddt, "glob": w_glob,
 +                    "acid": w_acid, "mpnn": w_mpnn, "comp": w_comp},
 +        "caps": {"V": cap_val, "G": cap_gly}, "acid_d0": acid_d0,
-+        "acid_width": acid_width, "no_ipsae_no_esmfold2": True,
++        "acid_width": acid_width,
++        # Derived from the composed loss object, not asserted. The previous value here
++        # was a hardcoded `True` that would have printed True with ipSAE in the loss.
++        "loss_terms": term_names, "design_models": model_names,
++        "c1_audit": "clean" if not audit_c1(term_names, model_names) else "VIOLATION",
 +    }, indent=2).encode()
 +
 +    out = Path("/weights/runs") / run_name
@@ -649,8 +783,14 @@ index 0000000..6dbe9be
 +    weights.commit()
 +    print(f"[mosaic] {len(rows)} designs; also written to {out} on the Volume")
 +    passed = [r for r in rows if r.get("geometry_pass")]
++    suspect = [r["design"] for r in rows if not r.get("metrics_ok", True)]
 +    print(f"[mosaic] STEP 4 {'PASSED' if rows else 'FAILED - no designs'}: "
 +          f"{len(passed)}/{len(rows)} within 4.0 A of H433")
++    if suspect:
++        print(f"[mosaic] 🔴 {len(suspect)}/{len(rows)} rows have SUSPECT METRICS: "
++              f"{', '.join(suspect)} -- see metrics_ok in designs.tsv")
++    else:
++        print(f"[mosaic] metrics audit clean on all {len(rows)} rows")
 +    return [(rel, content) for rel, content in files.items()]
 +
 +
