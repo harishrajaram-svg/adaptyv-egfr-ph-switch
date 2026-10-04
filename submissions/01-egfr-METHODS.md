@@ -251,15 +251,26 @@ experimental outcome rather than against itself.**
 | gitter-yolo3 | no binding | 0.0000 | 0.0121 |
 | gitter-yolo2, 6, 7, 8 | no binding | 0.0000 | 0.0000 |
 
-**On the human leg the instrument puts 8 of 10 measured non-binders below the measured binder
-and 2 above it** — AUC 0.80. The highest-scoring molecule in the whole measured panel is a
-measured non-binder: gitter-yolo10 at 0.5893 against EGF's 0.3549.
+**What this panel can and cannot support, before the numbers.** It is **10 negatives and one
+positive.** With a single positive there is no discrimination estimate to be had: every summary
+statistic reduces to *where that one molecule ranks*, and an ROC-AUC computed from it would be
+that same single comparison restated ten times. We report ranks and we do not report an AUC.
 
-**The cross-reactivity requirement is what rescues it.** Both false positives score exactly
-**0.0000 on the mouse leg**. Scored the way the submission is scored — requiring both species —
-the ordering is perfect: **AUC 1.00, 10 of 10** measured non-binders below the measured binder.
-The dual-species criterion came from the brief, not from us. It turns out to be the only
-specificity filter in this pipeline that the measured data actually supports.
+**On the human leg, 8 of 10 measured non-binders rank below the measured binder and 2 rank above
+it.** The highest-scoring molecule in the whole measured panel is a measured non-binder:
+gitter-yolo10 at 0.5893 against EGF's 0.3549.
+
+**The cross-reactivity requirement is what rescues it.** Both molecules that outrank the binder
+score exactly **0.0000 on the mouse leg**. Scored the way the submission is scored — requiring
+both species — **the one measured binder outranks all ten measured non-binders.**
+
+The reason that works here is a mechanism and not a curve: the two false positives are not
+*nearly* excluded by the mouse leg, they are at **exactly zero on five of five seeds**, which is
+what this instrument returns when it finds no interface at all. A filter that depends on a
+margin could erode with a larger panel; this one does not depend on a margin. The dual-species
+criterion came from the brief, not from us, and it is the only specificity filter in this
+pipeline that measured data supports at all — which is a statement about the *absence* of
+evidence for the others, not a validation of this one on n=1.
 
 **gitter-yolo10 is the entire problem in one molecule.** Pooled over 5 refold poses it reads a
 **5.27× pH ratio** — rank 8 of 2,009 sequences on our primary objective — alongside a human
@@ -271,9 +282,12 @@ anyway because it is the objective. **A 5× switch is not evidence of binding, o
 data, in this pool.** Any ranking that reads the ratio without the affinity columns beside it
 is reading a number that a known non-binder scores in the top 0.4%.
 
-Two limits. The positive class is **one molecule** of 53 aa, shorter than every design here, so
-an AUC against it is one comparison repeated ten times and not an estimate of sensitivity. And
-"no binding detected" bounds affinity from below; it does not prove no interaction.
+Three limits. The positive class is **one molecule** of 53 aa, shorter than every design here,
+so nothing in this section estimates sensitivity — the strongest honest reading is "the one
+measured binder outranks all ten measured non-binders when both species are required."
+"No binding detected" bounds affinity from below; it does not prove no interaction. And ten
+negatives do not characterise a tail, so the 0.5893 we found is a floor on how high a measured
+non-binder can score here, not a ceiling.
 
 ### 4.5 The matched null is degenerate, so the screening flag does almost nothing.
 
@@ -520,6 +534,10 @@ above the shuffle null of §4.5 and, as that section says, very little else.
 | 9 | **bc_s831683_mpnn9_WT** | protein | 3.52× | 0.783 | 0.783 | 11 |
 | 10 | h370_020_vhh | nanobody | 2.29× | 0.441 | 0.709 | 11 |
 
+**The order of ranks 1–4 is not a claim.** Those four ratios span 0.22 pKa units (§3.7), inside
+PROPKA's own error, so the table's ordering among them is noise. The CSV has to be submitted in
+*some* order; read the top four as one result with four replicates, not as a preference.
+
 **We gave back half the allocation on purpose.** The 20-design build existed and is in the
 history. Ranks 11–20 of it did not stand on a measurement: eight read **below 1.0×** — no
 switch at all — sitting on the 0.702× steric floor of §6, which is what *any* design that
@@ -575,6 +593,8 @@ gate at submission time.
    so surviving designs are selected on the data that would evaluate them. §4.4 is the one
    exception, because its outcomes were measured by someone else before we folded anything.
 8. **n = 1 on the positive class.** §4.4, the one measured-outcome test here, rests on a
-   single measured binder of 53 aa. Ten of the eleven published molecules are negatives.
+   single measured binder of 53 aa; ten of the eleven published molecules are negatives. Nothing
+   in that section is a discrimination estimate, and we deliberately report ranks rather than an
+   ROC-AUC, which from one positive would restate one comparison ten times.
 9. The two highest-ranked formats we cannot score (§4.5) are in the submission anyway, and
    two of ten rows depend on Adaptyv's ANARCI calling them antibodies (§9).

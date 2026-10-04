@@ -21,9 +21,11 @@ cross-reactive with mouse EGFR.
 2. **A measured non-binder reads a 5.27× switch.** Of 11 molecules Adaptyv measured on this
    platform, the highest-scoring one on our own ranking metric is a design already measured
    **not to bind** — and it ranks 8th of 2,009 on the competition's primary objective.
-3. **Requiring both species is what catches it.** Both false positives score exactly 0.0000 on
-   mouse. Cross-reactivity was in the brief; it turns out to be the only specificity filter
-   here that measured data supports.
+3. **Requiring both species is what catches it.** Both molecules that outrank the measured
+   binder on human score exactly 0.0000 on mouse — no interface at all, not a narrow miss.
+   Cross-reactivity was in the brief; it turns out to be the only specificity filter here that
+   measured data supports. The panel is 10 negatives and one positive, so this is a statement
+   about ranks and a mechanism, not a validated error rate.
 4. **The single-site ceiling is 5.55× and the route past it is closed.** H433's free pKa is
    6.22, so no single-site design can beat 5.55× over a 0.9 pH-unit window. The only histidine
    pair close enough to bridge (H433+H370, 8.5 Å) is unreachable: 3 of 1,944 designs hit both,
