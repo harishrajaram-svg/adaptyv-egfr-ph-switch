@@ -19,9 +19,27 @@ RANKING = the challenge page's stated priority order, not our old iptm order:
           cross-reactivity ABOVE affinity to human EGFR, which our previous
           iptm-descending order did not reflect.
 
-THE CUT. Three designs score zero on all three objectives. We drop the weakest to
-reach 20. Note PK's advice -- "I would not fill the allocation simply to reach
-twenty" -- so the data supports cutting further; that is a judgment call left open.
+THE CUT -- settled 2026-10-04 with Harish, on PK's advice ("I would not fill the
+allocation simply to reach twenty"). LIMIT is 10, not the allowed 20.
+
+Ranks 11-20 of the 20-design build did not stand on a measurement. Eight of them read
+BELOW 1.0x -- no switch at all -- sitting on the 0.702x steric floor that every design
+touching a histidine without a nearby carboxylate returns. That floor is a constant of
+the method, so those rows reported the method back to itself. The weakest, bg04_r03,
+was 1.94x pooled with 0.0000/0.0000 on both species and three expression-QC flags
+including an unpaired cysteine.
+
+All 10 that remain stand on something measured: the four S15D designs, their matched
+wild-type control, rimA01_r15, d2c S88D, mpnn11, and the two VHH-format designs that
+section 4.5 of the methods document shows this instrument cannot score (reported as
+such, not as scores).
+
+SIDE EFFECT, recorded because it was an open question: `rank_key` sorts BOTH tiers by
+(-mo, -hu) while the recorded decision says tier 2 should sort by HUMAN, since mouse is
+measured at pH 7.4 only and a design that switches off at 7.4 has no defined mouse
+ratio. That contradiction only ever changed which null-value rows padded the tail. At
+LIMIT = 10 no tier-2 design ships, so it is moot and is left unchanged rather than
+edited blind at submission time.
 
 Usage:
     python3 bin/emit_submission_csv.py            # writes submissions/01-egfr.csv
@@ -31,7 +49,7 @@ import csv, json, os, sys, importlib.util
 
 SUB   = "analysis/01-egfr/submission_final.json"
 OUT   = "submissions/01-egfr.csv"
-LIMIT = 20
+LIMIT = 10        # NOT the allowed 20 -- see THE CUT above.
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
 MOLECULE_CLASS = "protein"     # DEFAULT only -- per-design `molecule_class` overrides it.
