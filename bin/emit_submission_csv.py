@@ -34,7 +34,13 @@ OUT   = "submissions/01-egfr.csv"
 LIMIT = 20
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
-MOLECULE_CLASS = "protein"     # all our designs are de novo single-chain proteins
+MOLECULE_CLASS = "protein"     # DEFAULT only -- per-design `molecule_class` overrides it.
+# Was hardcoded for every row. That is a compliance error the moment a non-protein format
+# enters the file: `rimA02_d3_rimA_14_vhh` is a VHH and must ship as `nanobody`, both because
+# the label must be true and because Adaptyv score ANTIBODY novelty by a different rule
+# (CDRH3 < 70% AND global >= 70% = Level 3). Under the general-protein rule that design reads
+# 77.5% identity and looks rejected; under the correct rule it is Level 3 and eligible.
+VALID_CLASSES = ("protein", "nanobody", "scfv", "fab_kappa", "fab_lambda")
 
 
 def load_scores():
@@ -99,7 +105,7 @@ def main():
         hu, _, _, _ = ms.score(idx, x["seq"], "hu", "v2")
         mo, _, _, _ = ms.score(idx, x["seq"], "mo", "v2")
         scored.append(dict(name=x["name"], sequence=x["seq"],
-                           molecule_class=MOLECULE_CLASS,
+                           molecule_class=x.get("molecule_class", MOLECULE_CLASS),
                            ratio=float(x["ratio"]), hu=hu or 0.0, mo=mo or 0.0,
                            # ratio_n must be carried through: rank_key fails CLOSED without
                            # it, so dropping it here silently emptied tier 1 and put a
@@ -116,6 +122,8 @@ def main():
         assert MIN_AA <= n <= MAX_AA, f"{r['name']}: {n} aa is outside {MIN_AA}-{MAX_AA}"
     assert len({r["sequence"] for r in scored}) == len(scored), "duplicate sequences"
     assert len({r["name"] for r in scored}) == len(scored), "duplicate names"
+    for r in scored:
+        assert r["molecule_class"] in VALID_CLASSES, f"{r['name']}: bad molecule_class {r['molecule_class']}"
 
     scored.sort(key=rank_key)
     dropped = []
@@ -190,7 +198,7 @@ def selftest():
         assert rank_key(nonbinder) < rank_key(solid), "with the gate retired, ratio orders tier 1"
     else:
         assert rank_key(solid) < rank_key(nonbinder), "a 0.0000/0.0000 design must not reach tier 1"
-    assert MOLECULE_CLASS in ("protein", "nanobody", "scfv", "fab_kappa", "fab_lambda")
+    assert MOLECULE_CLASS in VALID_CLASSES
     print("selftest OK")
 
 

@@ -1,0 +1,6 @@
+design	chain	nres	best_qtm	best_target	best_fident	cov	level	clears_gate	antibody	passes_struct	passes_struct_tmonly	passes_seq	passes
+/private/tmp/claude-501/-Users-harish-code-context-directory/58d3026b-ac0d-4a87-a2ff-1e100fd7c79e/scratchpad/nov_new/mpnn19_S15D.pdb	A	65	0.7067	8qcq-assembly1_o	0.1780	1.0000	3	True	False	False	False	True	False
+/private/tmp/claude-501/-Users-harish-code-context-directory/58d3026b-ac0d-4a87-a2ff-1e100fd7c79e/scratchpad/nov_new/mpnn6_S15D.pdb	A	65	0.7408	6zmb-assembly1_B	0.1450	1.0000	3	True	False	False	False	True	False
+/private/tmp/claude-501/-Users-harish-code-context-directory/58d3026b-ac0d-4a87-a2ff-1e100fd7c79e/scratchpad/nov_new/mpnn8_S15D.pdb	A	65	0.7669	6nph-assembly1_A	0.1830	1.0000	3	True	False	False	False	True	False
+/private/tmp/claude-501/-Users-harish-code-context-directory/58d3026b-ac0d-4a87-a2ff-1e100fd7c79e/scratchpad/nov_new/mpnn9_S15D.pdb	A	65	0.7717	7y6i-assembly1_B	0.1460	1.0000	3	True	False	False	False	True	False
+/private/tmp/claude-501/-Users-harish-code-context-directory/58d3026b-ac0d-4a87-a2ff-1e100fd7c79e/scratchpad/nov_new/mpnn9_WT.pdb	A	65	0.7623	7y6i-assembly1_B	0.2020	1.0000	3	True	False	False	False	True	False

@@ -1,0 +1,4 @@
+design	chain	nres	antibody	best_target	best_qtm	global_id	cdrh3	cdrh3_id	level	clears_gate	note
+analysis/01-egfr/vhh/boltzgen_egfr_2site_009.pdb	A	110	False	4dkf-assembly1_L	0.9502	0.7593			None	None	CDRH3 UNDELIMITED -- motifs absent
+analysis/01-egfr/vhh/boltzgen_egfr_h370_020.pdb	A	98	True	6ieb-assembly2_E	0.8714	0.5263	AAVDDETGDIY	0.2727	4	True	
+analysis/01-egfr/vhh/rimA02__d3_rimA_14.pdb	A	129	True	5vzy-assembly1_H	0.8552	0.8482	ARAKDSLIVEVSTSLATSDFDY	0.1364	3	True	

@@ -43,9 +43,48 @@ USAGE
 """
 import argparse, os, subprocess, sys, tempfile, shutil, csv
 
-TM_BAR = 0.50     # "less than moderate" structural similarity
-FID_BAR = 0.30    # sequence identity ceiling
-COV_BAR = 0.70    # ">70% of the sequence covered" -- the clause this script used to ignore
+# ---------------------------------------------------------------------------------------
+# ADAPTYV'S ACTUAL RULE, implemented verbatim.  https://www.adaptyvbio.com/blog/novelty
+# (linked in the competition Slack by both Tudor Cotet and Simon as the rule they run.)
+#
+# Structural:   TM >= 0.80 = HIGH     TM >= 0.50 = MODERATE
+# Sequence:     70% and 30% identity
+#
+# GENERAL PROTEINS
+#   L1 Essentially Known  seq > 70% AND at least moderate structural
+#   L2 Familiar           seq > 70% alone, OR **HIGH STRUCTURAL ALONE**, OR (seq > 30% AND moderate)
+#   L3 Partly Novel       seq > 30% OR moderate structural -- exactly ONE of them
+#   L4 De Novo            seq <= 30% AND less than moderate structural
+#
+# ANTIBODIES (nanobody, scFv, Fab, VHH, VNAR)
+#   L1 CDRH3 >= 95%, OR CDRH3 >= 70% AND global >= 95%
+#   L2 CDRH3 70-95% AND global < 95%
+#   L3 CDRH3 < 70% AND global >= 70%
+#   L4 CDRH3 < 70% AND global < 70%
+#
+# WHAT THIS SCRIPT USED TO DO, AND WHY IT WAS WRONG (fixed 2026-10-04):
+# it tested a single TM < 0.50 bar and called everything above it a failure, reporting
+# "0/20 pass". The submission gate is **level >= 3**, and a design with moderate (not high)
+# structural similarity and <30% sequence identity is Level 3 and CLEARS. The true state of
+# the 20-design submission was 19 clear / 1 does not -- `cf_short120_r031` at TM 0.811, which
+# crosses the HIGH line by 0.011 and is Level 2 despite 19.7% sequence identity. That clause
+# -- high structural similarity ALONE, with no sequence condition -- is the one we missed.
+#
+# TWO LIMITS OF THIS IMPLEMENTATION, stated rather than hidden:
+#  1. Adaptyv run MMseqs2 against SwissProt, PDB, patent sequences, the therapeutic-antibody
+#     database and PLAbDab. We search PDB only, via FoldSeek. Our sequence identities are
+#     therefore LOWER BOUNDS; a design clean here may still hit a patent or SwissProt entry.
+#  2. The antibody branch needs CDRH3 identity, which requires ANARCI numbering we do not run.
+#     Antibody-format designs are reported as ANTIBODY/UNSCORED rather than given a level.
+TM_HIGH = 0.80    # "high" structural similarity
+TM_MOD  = 0.50    # "moderate" structural similarity
+SEQ_HI  = 0.70
+SEQ_MID = 0.30
+GATE_LEVEL = 3    # submissions must clear level >= 3
+
+TM_BAR = TM_MOD   # retained: callers and the old TSV columns reference it
+FID_BAR = SEQ_MID
+COV_BAR = 0.70    # ">70% of the sequence covered" -- used for the coverage-qualified variant
 FOLDSEEK = os.environ.get("FOLDSEEK", "foldseek")
 
 FMT = "query,target,fident,alnlen,qtmscore,ttmscore,alntmscore,evalue,prob,qstart,qend"
@@ -112,6 +151,51 @@ def union_coverage(hits, nres, tm_bar=TM_BAR):
     return min(1.0, sum(e - s + 1 for s, e in merged) / nres)
 
 
+AA3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D','CYS':'C','GLN':'Q','GLU':'E','GLY':'G',
+          'HIS':'H','ILE':'I','LEU':'L','LYS':'K','MET':'M','PHE':'F','PRO':'P','SER':'S',
+          'THR':'T','TRP':'W','TYR':'Y','VAL':'V'}
+
+
+def seq_of(pdb, chain=None):
+    """One-letter sequence of `chain` (or the only chain) straight from the PDB CA records."""
+    out, seen = [], set()
+    for line in open(pdb):
+        if line[:4] != "ATOM" or line[12:16].strip() != "CA":
+            continue
+        if chain and line[21] != chain:
+            continue
+        key = (line[21], line[22:27])
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(AA3to1.get(line[17:20].strip().upper(), "X"))
+    return "".join(out)
+
+
+def novelty_level(tm, seq_id):
+    """Adaptyv's general-protein level, verbatim from the blog post. Returns 1-4."""
+    hi_struct  = tm >= TM_HIGH
+    mod_struct = tm >= TM_MOD
+    hi_seq     = seq_id > SEQ_HI
+    mid_seq    = seq_id > SEQ_MID
+    if hi_seq and mod_struct:
+        return 1
+    if hi_seq or hi_struct or (mid_seq and mod_struct):
+        return 2
+    if mid_seq or mod_struct:
+        return 3
+    return 4
+
+
+def looks_like_antibody(seq):
+    """Crude format flag. The real pipeline uses ANARCI; we only need to know when NOT to
+    apply the general-protein rule, because the antibody rule is far more permissive."""
+    import re as _re
+    motifs = (_re.search(r'W[GRS][QRK]G[TA]', seq or ''), _re.search(r'[YF][YF]C[AGSV]', seq or ''),
+              _re.search(r'C[AV][AV]S', seq or ''))
+    return sum(1 for m in motifs if m) >= 2
+
+
 def assess(pdb, db, chain=None, tm_bar=TM_BAR, fid_bar=FID_BAR, cov_bar=COV_BAR):
     ch = chains_in(pdb)
     if not ch:
@@ -143,7 +227,10 @@ def assess(pdb, db, chain=None, tm_bar=TM_BAR, fid_bar=FID_BAR, cov_bar=COV_BAR)
                 best_qtm=top_tm["qtm"], best_target=top_tm["target"],
                 best_fident=top_id["fident"], fident_target=top_id["target"],
                 cov=cov, passes_struct=ps, passes_struct_tmonly=ps_tmonly,
-                passes_seq=pq, passes=ps and pq)
+                passes_seq=pq, passes=ps and pq,
+                level=novelty_level(top_tm["qtm"], top_id["fident"]),
+                antibody=looks_like_antibody(seq_of(pdb, chain)),
+                clears_gate=novelty_level(top_tm["qtm"], top_id["fident"]) >= GATE_LEVEL)
 
 
 def main():
@@ -159,7 +246,7 @@ def main():
     tm_bar, fid_bar = a.tm_bar, a.fid_bar
 
     rows = []
-    print(f"{'design':<36} {'ch':>3} {'res':>4} {'best_TM':>8} {'best_id':>8}  verdict")
+    print(f"{'design':<36} {'ch':>3} {'res':>4} {'best_TM':>8} {'best_id':>8} {'LVL':>4}  verdict")
     print("-" * 86)
     for p in a.pdbs:
         try:
@@ -171,27 +258,47 @@ def main():
             print(f"{os.path.basename(p):<36} {r['error']}")
             continue
         rows.append(r)
-        v = ("PASS" if r["passes"] else
-             "FAIL struct+seq" if not r["passes_struct"] and not r["passes_seq"] else
-             "FAIL structure" if not r["passes_struct"] else "FAIL sequence")
+        L = r["level"]
+        if r.get("antibody"):
+            v = "ANTIBODY/UNSCORED -- needs ANARCI CDRH3, antibody rule is more permissive"
+        elif L >= GATE_LEVEL:
+            v = f"clears gate (level {L})" + ("  [LEVEL 4 de novo]" if L == 4 else "")
+        else:
+            why = "high structural TM>=0.80" if r["best_qtm"] >= TM_HIGH else "sequence"
+            v = f"*** LEVEL {L} -- REJECTED AT UPLOAD ({why})"
         print(f"{os.path.basename(p):<36} {r['chain']:>3} {r['nres']:>4} "
-              f"{r['best_qtm']:>8.3f} {r['best_fident']:>8.3f}  {v}  <- {r['best_target'][:26]}")
+              f"{r['best_qtm']:>8.3f} {r['best_fident']:>8.3f} {r['level']:>4}  {v}  <- {r['best_target'][:22]}")
     if rows:
-        n = sum(1 for r in rows if r["passes"])
-        ns = sum(1 for r in rows if r["passes_struct"])
-        print("-" * 86)
-        print(f"structural (TM < {tm_bar}):      {ns}/{len(rows)} = {100*ns/len(rows):.1f}%")
-        print(f"BOTH halves (Level 4):       {n}/{len(rows)} = {100*n/len(rows):.1f}%")
-        print(f"round-2 baseline for comparison: 3.6% structural, 2.8% full Level 4")
+        import collections
+        lv = collections.Counter(r["level"] for r in rows)
+        clears = sum(1 for r in rows if r["clears_gate"])
+        ab = sum(1 for r in rows if r.get("antibody"))
+        print("-" * 96)
+        for L in (4, 3, 2, 1):
+            if lv[L]: print(f"  level {L}: {lv[L]:>4}")
+        print(f"CLEARS THE SUBMISSION GATE (level >= {GATE_LEVEL}): {clears}/{len(rows)} "
+              f"= {100*clears/len(rows):.1f}%")
+        if lv[2] or lv[1]:
+            print(f"  *** {lv[1]+lv[2]} design(s) would be REJECTED AT UPLOAD")
+            for r in rows:
+                if r["level"] < GATE_LEVEL:
+                    print(f"      {os.path.basename(r.get('pdb','?')):<40} TM {r['best_qtm']:.3f} "
+                          f"seq {r['best_fident']:.3f} -> level {r['level']}")
+        if ab: print(f"  {ab} design(s) flagged ANTIBODY -- scored by the general-protein rule here, "
+                     f"which is STRICTER than the antibody rule. Re-check with ANARCI before excluding.")
+        print(f"Level 4 (de novo) for reference: {lv[4]}/{len(rows)}; "
+              f"Adaptyv round-2 baseline was 2.8%")
     if a.tsv and rows:
         with open(a.tsv, "w") as fh:
-            fh.write("design\tchain\tnres\tbest_qtm\tbest_target\tbest_fident\tcov\tpasses_struct\tpasses_struct_tmonly\tpasses_seq\tpasses\n")
+            fh.write("design\tchain\tnres\tbest_qtm\tbest_target\tbest_fident\tcov\t"
+                     "level\tclears_gate\tantibody\tpasses_struct\tpasses_struct_tmonly\tpasses_seq\tpasses\n")
             for r in rows:
                 # The header declares 11 columns. Emit all 11: `cov` and
                 # passes_struct_tmonly were missing, which silently SHIFTED every
                 # column after best_fident and made the TSV read as its own reversal.
                 fh.write(f"{r['pdb']}\t{r['chain']}\t{r['nres']}\t{r['best_qtm']:.4f}\t"
                          f"{r['best_target']}\t{r['best_fident']:.4f}\t{r['cov']:.4f}\t"
+                         f"{r['level']}\t{r['clears_gate']}\t{r.get('antibody',False)}\t"
                          f"{r['passes_struct']}\t{r['passes_struct_tmonly']}\t"
                          f"{r['passes_seq']}\t{r['passes']}\n")
         print(f"wrote {a.tsv}")

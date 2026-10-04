@@ -1,0 +1,17 @@
+design	chain	nres	best_qtm	best_target	best_fident	cov	level	clears_gate	antibody	passes_struct	passes_struct_tmonly	passes_seq	passes
+/tmp/nov20/bg01_r02_boltzgen_egfr_d3_22.pdb	A	155	0.6724	3sn6-assembly1_A	0.1270	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/bg02_r01_boltzgen_egfr_d3_11.pdb	A	156	0.6156	3la6-assembly1_H	0.1220	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/bg04_r01_boltzgen_egfr_d3_21.pdb	A	155	0.6852	1wky-assembly1_A	0.1430	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/bg04_r03_boltzgen_egfr_d3_00.pdb	A	159	0.7169	9glb-assembly1_C	0.1730	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/bg04_r05_boltzgen_egfr_d3_08.pdb	A	150	0.6669	5yhu-assembly1_A	0.1210	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/cf_short_r059_boltzgen_egfr_cropfree_sho.pdb	A	69	0.6401	4ywq-assembly1_B	0.1800	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/cf_short120_r031_boltzgen_egfr_cropfree_.pdb	A	86	0.8108	3afg-assembly2_B	0.1970	1.0000	2	False	False	False	False	True	False
+/tmp/nov20/mechA01_r01_boltzgen_egfr_mechA_05.pdb	A	158	0.5239	3aeh-assembly2_B	0.1050	0.9873	3	True	False	False	False	True	False
+/tmp/nov20/mechA01_r02_boltzgen_egfr_mechA_03.pdb	A	152	0.8726	3mbr-assembly1_X	0.1420	1.0000	2	False	False	False	False	True	False
+/tmp/nov20/mechAd4_01_r01_boltzgen_egfr_mechA_d4_04.pdb	A	156	0.5961	6yro-assembly5_E	0.1600	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/rimA01_r02_boltzgen_egfr_d3_rimA_26.pdb	A	160	0.6892	8aul-assembly1_A	0.1550	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/rimA01_r05_boltzgen_egfr_d3_rimA_11.pdb	A	159	0.6713	4h3w-assembly2_B	0.1110	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/rimA01_r15_boltzgen_egfr_d3_rimA_20.pdb	A	150	0.7002	8xf6-assembly1_A	0.1850	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/rimA02_r01_boltzgen_egfr_d3_rimA_07.pdb	A	159	0.6737	6s59-assembly1_A	0.1350	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/rimB01_r01_boltzgen_egfr_d3_rimB_27.pdb	A	149	0.6436	5of1-assembly1_A	0.1290	1.0000	3	True	False	False	False	True	False
+/tmp/nov20/rimB02_r01_boltzgen_egfr_d3_rimB_12.pdb	A	157	0.6439	7bvb-assembly2_B	0.1610	1.0000	3	True	False	False	False	True	False
