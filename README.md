@@ -1,77 +1,69 @@
-# Adaptyv 2026 — working directory
+# pH-switchable EGFR binder design
 
-Code and compute for the Anthropic × Adaptyv protein design competition, Track 3.
+Anthropic × Adaptyv Bio protein design competition, 2026 — **Challenge 1, Track 3**.
 
-**Notes, strategy, and the per-problem workflow live in the vault**, not here:
-`~/code/context-directory/projects/anthropic-adaptyv-2026/`
+Design a de novo binder to human EGFR that binds **more tightly at pH 6.5 than at pH 7.4**,
+cross-reactive with mouse EGFR.
 
-This directory is for things that are large, generated, or not worth committing to a personal journal repo.
+## Start here
 
-## Layout
-
-```
-biomodals/     Modal GPU wrappers for every design tool (cloned, MIT)
-reference/     Anthropic's 16k-word binder-design protocol prompt
-targets/       Target structures (1ALU = human IL-6, the test target)
-runs/          Output from design runs
-```
-
-## Status as of 2026-09-18
-
-| Piece | State |
+| | |
 |---|---|
-| `adaptyv@protein-design-skills` plugin | ✅ installed, 24 skills, user scope |
-| `biomodals` GPU wrappers | ✅ cloned |
-| Modal CLI | ✅ v1.5.5 via `uv tool install modal` |
-| Anthropic protocol prompt | ✅ `reference/`, 111 KB |
-| Test target 1ALU | ✅ `targets/` |
-| Modal authentication | ✅ workspace `harishrajaram-svg`, verified, $0.00 spent |
-| **Proteinbase account** | 🚫 **BLOCKED ON ADAPTYV, 2026-09-18.** Both Google and GitHub return "Signups not allowed for this instance" — signups are disabled at their project level. Support email drafted to proteinbase@adaptyvbio.com. Not urgent: the account is only needed to submit, and problem 1 closes Oct 4. |
-| **Compute cap** | ❌ **dashboard only — modal.com → Settings → Usage & Billing** |
+| **[submissions/01-egfr-METHODS.md](submissions/01-egfr-METHODS.md)** | The methods document. Read §4.4 first. |
+| **[submissions/01-egfr.csv](submissions/01-egfr.csv)** | The submission: 10 designs, ranked. |
 
-## Still needed from you
+## What this submission claims, in four lines
 
-**1. Set the spend cap.** There is no CLI for this — modal.com, Settings, Usage and Billing. `modal billing summary` reads current spend, `modal billing rates` reads pricing, but neither sets a limit.
+1. **One mutation makes the switch, and it replicated four times.** A single Ser→Asp on the
+   best-binding BindCraft backbone took four independent ProteinMPNN sequences from 3.15–3.85×
+   to 5.40–5.46× at no cost in predicted affinity. The matched wild-type is submitted alongside
+   so the comparison gets made in the laboratory, not in our gate.
+2. **A measured non-binder reads a 5.27× switch.** Of 11 molecules Adaptyv measured on this
+   platform, the highest-scoring one on our own ranking metric is a design already measured
+   **not to bind** — and it ranks 8th of 2,009 on the competition's primary objective.
+3. **Requiring both species is what catches it.** Both false positives score exactly 0.0000 on
+   mouse. Cross-reactivity was in the brief; it turns out to be the only specificity filter
+   here that measured data supports.
+4. **The single-site ceiling is 5.55× and the route past it is closed.** H433's free pKa is
+   6.22, so no single-site design can beat 5.55× over a 0.9 pH-unit window. The only histidine
+   pair close enough to bridge (H433+H370, 8.5 Å) is unreachable: 3 of 1,944 designs hit both,
+   all by accident, and 9 of 10 that switched there did not bind.
 
-**2. Create a Proteinbase account** at https://proteinbase.com/login. Google or GitHub sign-in. This is the only thing standing between you and being able to submit.
+We submitted **10 designs of the 20 allowed**. The other ten did not stand on a measurement —
+eight read *below* 1.0× and sat on the 0.702× steric floor that any design touching a histidine
+returns. [§11](submissions/01-egfr-METHODS.md) explains the cut.
 
-## Set the spend cap first
+## Reproducing it
 
-Track 3 is self-funded. Set a limit in the Modal dashboard under workspace settings before running anything real.
-
-Rates confirmed live on 2026-09-18: L40S $1.95/hr, A10G $1.10, A100-80 $2.50, H100 $3.95, L4 $0.80, T4 $0.59, CPU $0.047/core/hr.
-
-Defaults worth knowing: `modal_boltzgen.py` runs on an L40S at $1.95/hr with a 120-minute timeout, so one unattended run that hangs costs about $3.90. Both are overridable:
-
-```
-GPU=A10 TIMEOUT=30 modal run modal_boltzgen.py ...
-```
-
-Real budget is roughly $500–1,500 per target. Trimming the target before sampling is the difference between about $100 and about $30,000 on the same problem.
-
-## First run, once Modal is authenticated
+`bin/` holds every analysis step as a standalone script; several carry `--selftest`.
 
 ```
-cd biomodals
-modal run modal_boltzgen.py --help
-curl -o ../targets/1ALU.pdb https://files.rcsb.org/download/1ALU.pdb   # already done
+bin/ph_gate_refolds.py        pH gate on independent ESMFold2 refolds
+bin/ph_pool_by_sequence.py    one ratio per MOLECULE, pooled by binder sequence
+bin/master_rank.py            pH + affinity joined BY SEQUENCE -- the single ranking table
+bin/instrument_v2.py          ipSAE_min, median over 5 seeds   (--self-test)
+bin/novelty_gate.py           Adaptyv's general-protein novelty levels
+bin/antibody_novelty.py       their antibody branch, CDRH3     (--selftest)
+bin/express_qc.py             cell-free expression liabilities
+bin/emit_submission_csv.py    builds the CSV                   (--selftest)
+bin/check_discards.py         refuses to ship while an unmeasured design outranks a
+                              submitted one                    (--selftest)
 ```
 
-Then design against 1ALU end to end. It is a known target with published results, so it tells you whether the toolchain works before a real problem exists.
+Joins are on the **binder sequence**, never the run name: the same molecule appears in this
+project under as many as three names, and name-keyed joins broke five separate analyses before
+`master_rank.py` made it impossible.
 
-## Available wrappers
+## The error history is the point
 
-`boltzgen` `bindcraft` `chai1` `boltz` `esmfold2` `esmfold2_binder_design` `protenix` `alphafold` `ligandmpnn` `germinal` `afdesign` `af2rank` `rso` `anarci` `sasa` `usalign` `pdb2png` `esm2_predict_masked` `diffdock` `faspr` `iggm` `mber` `tmol` `minimap2`
+§7 of the methods document lists thirteen errors we found in our own instrument, each one a
+commit in this repository rather than a quiet rewrite. Several reversed a published-in-log
+conclusion. Two are worth knowing before you read any number here:
 
-**No RFdiffusion or plain ProteinMPNN wrapper exists here.** `modal_ligandmpnn.py` runs ProteinMPNN mode via `--model_type protein_mpnn`. An RFdiffusion wrapper is the one thing you would write yourself, and it is optional — PXDesign, BoltzGen and BindCraft cover generation.
+- Our negative control turned out to be **81% mature human EGF** — the agonist. Every bar in
+  the project had been calibrated against it. The thresholds are retired, not replaced.
+- The novelty rule was implemented with one clause missing, which rejected **114 designs that
+  actually clear**, including the entire pool that supplies ranks 1–4, 8 and 9.
 
-## Ranking instrument
-
-The thing that decides which designs get ordered. Score `ipSAE_min`, max over ≥5 seeds, across three arms, z-scored within target:
-
-- `modal_esmfold2.py` — ESMFold2 Full and Fast
-- `modal_protenix.py` — Protenix v2
-
-Set `TORCH_EXTENSIONS_DIR` to a persistent Modal Volume before the first Protenix call. It JIT-compiles a CUDA kernel for 4–6 minutes and will redo it in every container otherwise.
-
-Full rationale and thresholds: `methods-stack.md` in the vault project folder.
+Environment setup from the start of the project is in
+[docs/setup-notes-2026-09-18.md](docs/setup-notes-2026-09-18.md) and is largely out of date.
