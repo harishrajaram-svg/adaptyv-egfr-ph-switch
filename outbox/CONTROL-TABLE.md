@@ -61,8 +61,130 @@ probably artificially easy. It bounds the instrument's noise floor, not biology.
 
 ## 5. What we will and will not claim from this
 
-A provisional screening flag only: *above the 95th percentile of a matched calibration null*.
-That means "above this computational null", **not** "binds EGFR", and it does not establish a
-5% biological false-positive rate. With n=10 measured negatives the tail is not characterised
-well enough for a hard gate, so affinity is reported as a continuous score with an uncertainty
-flag and **no design is excluded on it**.
+**CORRECTION, 2026-10-04.** An earlier version of this section told you the shipped flag means
+*"above the 95th percentile of a matched calibration null."* **It does not, and no such flag is
+available.** Two reasons:
+
+1. The matched null is **degenerate**. See §6: 12 nested shuffles read 0.0000 on both species
+   with 5 of 5 dead seeds, all twelve, and a separate 22-molecule shuffle run has 20 of 22 dead
+   with a maximum median of 0.0110. Its 95th percentile is **0.0000**, so a percentile flag
+   admits anything above zero. You predicted full-sequence shuffling would destroy the fold and
+   make the comparison artificially easy; it is worse than that — the null has no tail to take a
+   percentile of.
+2. What the column actually computes is `max(ipSAE_human, ipSAE_mouse) >= 0.2218`
+   (`bin/emit_submission_csv.py:89`), and **0.2218 is the EGF-derived bar you had us retire.** It
+   survives as a *reporting* threshold only: `MIN_AFFINITY = None`, so no design is excluded on
+   affinity and the column orders nothing. It should be read as "above the legacy computational
+   null", which is a provenance statement and not a claim about binding.
+
+We have left the column in the submission rather than dropping it mid-flight, and said the same
+thing in METHODS §4.5 and §11 so all three documents now agree. If you would rather it came out,
+it is a one-line change and we have ~38 hours.
+
+With n=10 measured negatives the tail is not characterised well enough for a hard gate either,
+so affinity is reported as a continuous score with an uncertainty flag and **no design is
+excluded on it**.
+
+---
+
+## 6. THE CONTROL RECOVERY ITSELF — the result this document was missing
+
+**An earlier version of this file introduced the measured controls as "the class we never had"
+and then reported no ipSAE result for any of them.** The artifact answering your
+control-recovery ask did not contain the control recovery. The cause: the eight control shards
+had been folded on Modal and never ipSAE-scored — ESMFold2 writes `*_ipsae.json` (raw PAE) and
+the scoring step that writes `*_10_10.txt`, which every reader in `bin/` parses, is separate and
+had never been run on them. Backfilled 2026-10-04: 270 poses, 0 failures. Source:
+`analysis/01-egfr/control_recovery.{json,tsv}`.
+
+All values are ipSAE_min, **median over 5 seeds**, against the 621 aa human and mouse ECDs.
+
+**MEASURED BINDER (KD 55 nM, n=15 runs)** — n=1
+
+| molecule | ipSAE human (median) | dead seeds | ipSAE mouse (median) | dead seeds |
+|---|---|---|---|---|
+| `EXPPOS_Human_EGF` | 0.3549 | 0/5 | 0.3700 | 0/5 |
+
+**MEASURED NON-BINDERS (no binding detected)** — n=10
+
+| molecule | ipSAE human (median) | dead seeds | ipSAE mouse (median) | dead seeds |
+|---|---|---|---|---|
+| `EXPNEG_gitter-yolo10` | 0.5893 | 0/5 | 0.0000 | 5/5 |
+| `EXPNEG_gitter-yolo9` | 0.4326 | 2/5 | 0.0000 | 5/5 |
+| `EXPNEG_deepsatflow-design7_n0_mpnn1.320_p` | 0.2168 | 0/5 | 0.1823 | 0/5 |
+| `EXPNEG_gitter-yolo5` | 0.0264 | 1/5 | 0.0108 | 2/5 |
+| `EXPNEG_gitter-yolo4` | 0.0109 | 1/5 | 0.0000 | 4/5 |
+| `EXPNEG_gitter-yolo3` | 0.0000 | 5/5 | 0.0121 | 2/5 |
+| `EXPNEG_gitter-yolo7` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `EXPNEG_gitter-yolo8` | 0.0000 | 4/5 | 0.0000 | 5/5 |
+| `EXPNEG_gitter-yolo2` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `EXPNEG_gitter-yolo6` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+
+**CDR DECOYS (presumed negative, VHH framework preserved)** — n=4
+
+| molecule | ipSAE human (median) | dead seeds | ipSAE mouse (median) | dead seeds |
+|---|---|---|---|---|
+| `CDRDECOY_vhh_2` | 0.0117 | 1/5 | 0.0126 | 1/5 |
+| `CDRDECOY_vhh_1` | 0.0000 | 5/5 | 0.0000 | 4/5 |
+| `CDRDECOY_vhh_3` | 0.0000 | 4/5 | 0.0000 | 5/5 |
+| `CDRDECOY_vhh_4` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+
+**SHUFFLE NULLS (3 independent shuffles x 4 designs, seeds nested)** — n=12
+
+| molecule | ipSAE human (median) | dead seeds | ipSAE mouse (median) | dead seeds |
+|---|---|---|---|---|
+| `SHUF_bg04_r03_boltzgen_egfr_d3__r1` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_cf_short120_r031_boltzgen__r2` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_d2d_101_l133_s154858_mpnn9_r3` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_bg04_r03_boltzgen_egfr_d3__r2` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_cf_short120_r031_boltzgen__r3` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_rimA01_r15_boltzgen_egfr_d_r1` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_bg04_r03_boltzgen_egfr_d3__r3` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_d2d_101_l133_s154858_mpnn9_r1` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_rimA01_r15_boltzgen_egfr_d_r2` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_cf_short120_r031_boltzgen__r1` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_d2d_101_l133_s154858_mpnn9_r2` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+| `SHUF_rimA01_r15_boltzgen_egfr_d_r3` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+
+### What it says, stated as ranks rather than as a summary statistic
+
+**The panel is 10 negatives and ONE positive.** With a single positive there is no discrimination
+estimate available: every summary statistic reduces to *where that one molecule ranks*. We report
+ranks and deliberately do not report an AUROC — an earlier draft of our methods document did, and
+it was removed. This is your own `arms-backlog §2a` ("the gate is n=1 positive") arriving in the
+place it mattered.
+
+- **Human leg: 8 of 10 measured non-binders rank below the measured binder. 2 rank above it.**
+  The highest-scoring molecule in the entire measured panel is a measured **non-binder** —
+  `EXPNEG_gitter-yolo10` at 0.5893 against EGF's 0.3549. It also reads a **5.27× pH ratio**, which
+  places it 8th of the 132 molecules eligible to rank on our primary objective.
+- **Both species required: the one measured binder outranks all ten non-binders.**
+- **The reason that works is a mechanism, not a margin.** Both molecules that beat EGF on human
+  sit at **exactly 0.0000 on mouse with 5 of 5 dead seeds** — no interface found at all, rather
+  than a near miss. A filter resting on a margin could erode with a larger panel; this one does
+  not rest on a margin.
+- **The cross-reactivity requirement came from the organisers' brief, not from us**, and it is the
+  only specificity filter in this pipeline that measured data supports at all. That is a statement
+  about the absence of evidence for the others, not a validation of this one at n=1.
+
+**Three limits.** The positive class is one molecule of 53 aa, shorter than every design here.
+"No binding detected" bounds affinity from below and does not prove no interaction. And ten
+negatives do not characterise a tail, so 0.5893 is a floor on how high a measured non-binder can
+score here, not a ceiling.
+
+**One thing I have not fixed.** You asked twice for the historical EGFR data to be split by
+design family. Eight of these eleven molecules are one group's `gitter-yolo` series, and I have
+counted them as eight independent negatives. The effective n is closer to 3 families than 10
+molecules. I do not know the right construction at this n and it is question (c) in my covering
+note.
+
+### The VHH blind spot is total, not partial
+
+Your 0/2 reading understated it. Four **framework-preserving CDR decoys**, built on the real
+5 nM VHH scaffold with CDRs located by conserved anchors and randomised, read 0.0000, 0.0117,
+0.0000, 0.0000. **The real 5 nM VHH reads 0.0000 too.** The instrument cannot separate a
+validated nanobody from a randomised-CDR decoy on that nanobody's own framework.
+
+Two of the ten shipped designs are VHH format. They are reported as **affinity inadequately
+assessed**, not as weak binders, exactly as you asked — their 0.23/0.45 and 0.44/0.71 columns
+should not be read as measurements.

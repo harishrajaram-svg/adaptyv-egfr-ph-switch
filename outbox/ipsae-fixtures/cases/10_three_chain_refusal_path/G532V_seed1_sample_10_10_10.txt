@@ -1,0 +1,14 @@
+
+Chn1 Chn2  PAE Dist  Type   ipSAE    ipSAE_d0chn ipSAE_d0dom  ipTM_af  ipTM_d0chn     pDockQ     pDockQ2    LIS       n0res  n0chn  n0dom   d0res   d0chn   d0dom  nres1   nres2   dist1   dist2  Model
+A    B     10   10   asym  0.292613    0.509014    0.503060    0.000    0.509014      0.0183     0.0073     0.3160     121    325    316    4.07    6.59    6.51    195     121      25      20   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+B    A     10   10   asym  0.412240    0.517328    0.512751    0.000    0.512804      0.0183     0.0073     0.3417     200    325    318    5.27    6.59    6.53    115     203      20      23   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+A    B     10   10   max   0.412240    0.517328    0.512751    0.000    0.512804      0.0183     0.0073     0.3289     200    325    318    5.27    6.59    6.53    203     121      25      20   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+
+A    C     10   10   asym  0.273336    0.509510    0.499636    0.000    0.509510      0.0183     0.0073     0.3003     107    311    297    3.80    6.46    6.33    190     107      18      17   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+C    A     10   10   asym  0.428755    0.522248    0.519495    0.000    0.521026      0.0183     0.0073     0.3657     203    311    307    5.30    6.46    6.43    103     204      17      18   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+A    C     10   10   max   0.428755    0.522248    0.519495    0.000    0.521026      0.0183     0.0073     0.3330     203    311    307    5.30    6.46    6.43    204     107      18      17   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+
+B    C     10   10   asym  0.865618    0.929438    0.927361    0.000    0.929438      0.0183     0.0073     0.6980     107    228    220    3.80    5.61    5.51    113     107      40      35   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+C    B     10   10   asym  0.865877    0.920818    0.919965    0.000    0.920818      0.0183     0.0073     0.7334     121    228    225    4.07    5.61    5.57    104     121      35      40   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+B    C     10   10   max   0.865877    0.929438    0.927361    0.000    0.929438      0.0183     0.0073     0.7157     121    228    220    4.07    5.61    5.51    121     107      40      35   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refusal_path/G532V_seed1_sample_10
+

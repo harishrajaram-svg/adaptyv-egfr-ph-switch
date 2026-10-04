@@ -1,4 +1,24 @@
 {
+ "01_barnase_barstar_positive_regression": {
+  "structure": "pos_barnase_barstar_sample_0.cif",
+  "chains": {
+   "A": 110,
+   "B": 89
+  },
+  "asym": {
+   "A->B": 0.888672,
+   "B->A": 0.939795
+  },
+  "n_interface_residues": {
+   "A->B": "89",
+   "B->A": "110"
+  },
+  "n_chainpair_residues": {
+   "A->B": "199",
+   "B->A": "199"
+  },
+  "ipsae_min": 0.888672
+ },
  "02_vhh_ecd_targetA_scores_zero": {
   "structure": "POS_nano2_5nM_seed1_sample_5.cif",
   "chains": {
@@ -138,5 +158,36 @@
    "B->A": "320"
   },
   "ipsae_min": 0.576505
+ },
+ "09_empty_interface_shuffled_null": {
+  "structure": "SHUF_bg04_r03_boltzgen_egfr_d3__r1_hu_seed1_sample_10.cif",
+  "chains": {
+   "A": 159,
+   "B": 621
+  },
+  "asym": {
+   "A->B": 0.0,
+   "B->A": 0.0
+  },
+  "n_interface_residues": {
+   "A->B": "0",
+   "B->A": "0"
+  },
+  "n_chainpair_residues": {
+   "A->B": "780",
+   "B->A": "780"
+  },
+  "ipsae_min": 0.0
+ },
+ "10_three_chain_refusal_path": {
+  "error": "3 inter-chain pairs; ipSAE_min is undefined without naming the binder:target pair",
+  "asym": {
+   "A->B": 0.292613,
+   "B->A": 0.41224,
+   "A->C": 0.273336,
+   "C->A": 0.428755,
+   "B->C": 0.865618,
+   "C->B": 0.865877
+  }
  }
 }

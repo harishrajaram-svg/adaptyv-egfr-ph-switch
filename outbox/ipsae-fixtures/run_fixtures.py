@@ -18,7 +18,16 @@ import json, os, subprocess, sys
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
-IPSAE = REPO / "ipsae" / "ipsae.py"
+# Resolve the pinned Dunbrack reference. The bundle VENDORS it under vendor/ipsae/ (MIT,
+# commit 6174cf9e71cb1bd660cc805856a18c4871a6dec3) so this runs on a machine that has only
+# this directory. The repo checkout is preferred when present so a reviewer can confirm the
+# two copies are identical; `ipsae/` is gitignored in our repo, which is why the vendored
+# copy exists at all -- without it every case errored out on anyone else's machine.
+IPSAE = HERE / "vendor" / "ipsae" / "ipsae.py"
+if (REPO / "ipsae" / "ipsae.py").exists():
+    IPSAE = REPO / "ipsae" / "ipsae.py"
+if not IPSAE.exists():
+    sys.exit(f"reference implementation not found at {IPSAE}")
 PY_EXE = REPO / ".venv" / "bin" / "python"
 if not PY_EXE.exists(): PY_EXE = sys.executable
 PAE_CUT, DIST_CUT = 10, 10
@@ -81,12 +90,33 @@ def main():
     exp = HERE / "expected.json"
     if "--check" in sys.argv:
         want = json.loads(exp.read_text()); bad = 0
+        print()
         for k, v in want.items():
-            got = res.get(k, {}).get("ipsae_min")
-            ok = got is not None and abs(got - v["ipsae_min"]) < 1e-6
-            print(f"{'OK  ' if ok else 'FAIL'} {k}: expected {v['ipsae_min']:.6f} got {got}")
+            got = res.get(k, {})
+            # A case whose EXPECTED result is a refusal is checked on the refusal, not on a
+            # score. Case 10 is exactly that: a 3-chain complex where ipSAE_min is undefined
+            # until the binder:target pair is named, and the correct behaviour is to refuse.
+            # The earlier version of this loop assumed every case yields a number and crashed
+            # with KeyError on the refusal case -- i.e. the check could not express "the right
+            # answer here is an error", which is the one behaviour PK asked us to demonstrate
+            # ("a failed run must not silently become a valid score of zero").
+            if "error" in v:
+                ok = "error" in got and got["error"] == v["error"]
+                print(f"{'OK  ' if ok else 'FAIL'} {k}: expected REFUSAL -> "
+                      f"{'refused as expected' if ok else got.get('ipsae_min', got.get('error', 'no result'))}")
+            else:
+                g = got.get("ipsae_min")
+                ok = g is not None and abs(g - v["ipsae_min"]) < 1e-6
+                print(f"{'OK  ' if ok else 'FAIL'} {k}: expected {v['ipsae_min']:.6f} got {g}")
             bad += (not ok)
+        print(f"\n{len(want) - bad}/{len(want)} cases reproduce.")
         sys.exit(1 if bad else 0)
+    if "--freeze" not in sys.argv and exp.exists():
+        # expected.json is the frozen reference. Overwriting it on every plain run means a
+        # regression silently becomes the new expectation -- the same class of error as a
+        # threshold chosen after seeing the data. Writing it now requires --freeze.
+        print(f"\n{exp.name} left unchanged. Re-freeze deliberately with --freeze.")
+        return
     exp.write_text(json.dumps(res, indent=1))
     print(f"\nwrote {exp}")
 

@@ -67,6 +67,35 @@ def load_scores():
     return ms, ms.build_index()
 
 
+# AFFINITY NOW COMES FROM master_rank.json, NOT make_submission.score() -- fixed 2026-10-04.
+#
+# WHY. make_submission.score() calls pick_run(), which selects ONE run ("most seeds wins,
+# ties broken lexicographically") and takes the median over that run's seeds. For a molecule
+# that appears in several run directories -- and the same molecule appears here under up to
+# three run names -- the reported affinity is therefore a function of WHICH RUN NAME sorted
+# first, which is the keystone trap of this project stated verbatim in HANDOFF: "That file is
+# the single source for both columns; do not re-derive either one from a run name."
+#
+# The emitter was re-deriving from a run name. Measured consequence: 5 of the 10 shipped
+# affinity cells matched neither the pooled median nor the pooled max, because they were one
+# run's median. All 5 were molecules with poses in more than one run (ratio_n 6, 6, 6, 11, 11);
+# the five single-run molecules agreed exactly. METHODS 11 meanwhile told the reader the
+# columns were medians, so the graded file disagreed with its own methods document.
+#
+# master_rank.py pools every pose of a binder SEQUENCE across all runs and is the file both
+# HANDOFF and METHODS name as canonical. Reading it here makes the CSV, master_rank.json and
+# METHODS agree, and removes the last run-name-keyed join on the submission path.
+MASTER = "analysis/01-egfr/master_rank.json"
+
+
+def pooled_affinity():
+    """seq -> (hu_med, mo_med) pooled over every pose of that sequence, from master_rank.json."""
+    out = {}
+    for d in json.load(open(MASTER)):
+        out[d["seq"]] = (d.get("hu_med"), d.get("mo_med"))
+    return out
+
+
 MIN_N = 5          # poses required before a ratio may put a design in tier 1
 
 # AFFINITY PRECONDITION — RETIRED AS A HARD GATE on PK's review, 2026-10-04.
@@ -117,11 +146,19 @@ def rank_key(r):
 
 def main():
     rows = json.load(open(SUB))
-    ms, idx = load_scores()
+    pooled = pooled_affinity()
+    missing = [x["name"] for x in rows if x["seq"] not in pooled]
+    if missing:
+        # Fail LOUD. The silent-zero path is this project's signature failure: `hu or 0.0`
+        # turned an ABSENT measurement into a reported 0.0000, and a measured non-binder
+        # scoring 0.0000 is indistinguishable from a design that was never scored.
+        raise SystemExit(
+            f"{len(missing)} submitted sequence(s) are absent from {MASTER}: "
+            f"{', '.join(missing[:5])}. Re-run bin/master_rank.py. Refusing to emit a CSV "
+            f"with affinity columns that would silently read 0.0000.")
     scored = []
     for x in rows:
-        hu, _, _, _ = ms.score(idx, x["seq"], "hu", "v2")
-        mo, _, _, _ = ms.score(idx, x["seq"], "mo", "v2")
+        hu, mo = pooled[x["seq"]]
         scored.append(dict(name=x["name"], sequence=x["seq"],
                            molecule_class=x.get("molecule_class", MOLECULE_CLASS),
                            ratio=float(x["ratio"]), hu=hu or 0.0, mo=mo or 0.0,
