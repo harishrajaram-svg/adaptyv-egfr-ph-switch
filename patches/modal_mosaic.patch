@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..40b8d76
+index 0000000..bcb7e7c
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,860 @@
+@@ -0,0 +1,888 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -436,6 +436,7 @@ index 0000000..40b8d76
 +    w_acid: float = 2.0,
 +    w_mpnn: float = 3.0,
 +    w_comp: float = 10.0,
++    w_monomer: float = 0.5,
 +    cap_val: float = 0.12,
 +    cap_gly: float = 0.08,
 +    acid_d0: float = 8.0,
@@ -646,6 +647,28 @@ index 0000000..40b8d76
 +            loss=inner, features=features,
 +            recycling_steps=recycling_steps, sampling_steps=sampling_steps,
 +        )
++        # GATE 0 -- THE MONOMER LOSS. tune01 produced binder pLDDT 0.41-0.52, barely above
++        # the 0.32-0.45 range of the resequencing arms that were written off as not folding.
++        # The likely cause: every term above sees only the COMPLEX, so nothing ever asks
++        # whether the binder folds ON ITS OWN. A binder can borrow structure from the target
++        # in a complex prediction and have no fold of its own. Both the mosaic README's
++        # worked example and the published Nipah recipe predict the binder alone as a second
++        # loss, with `chains=[]`.
++        #
++        # Costs a second Boltz-2 forward+backward per step, but on L residues instead of
++        # L + 170, so the step time should rise by much less than double.
++        #
++        # Set --w-monomer 0 to disable and reproduce tune01 exactly.
++        if w_monomer > 0:
++            mono_features, _ = model.binder_features(binder_length=L, chains=[])
++            total_loss = total_loss + w_monomer * model.build_loss(
++                loss=sp.PLDDTLoss()
++                + sp.WithinBinderContact()
++                + sp.ESMFoldGlobularity(),
++                features=mono_features,
++                recycling_steps=recycling_steps,
++                sampling_steps=sampling_steps,
++            )
 +        if caps:
 +            total_loss = total_loss + w_comp * CompositionCap(caps=caps)
 +        loss_fn = NoCys(loss=total_loss)      # Cys removed from the alphabet entirely
@@ -780,7 +803,8 @@ index 0000000..40b8d76
 +        "use_mpnn": mpnn is not None, "smoke": smoke,
 +        "weights": {"iptm": w_iptm, "pae": w_pae, "contact": w_contact,
 +                    "within": w_within, "plddt": w_plddt, "glob": w_glob,
-+                    "acid": w_acid, "mpnn": w_mpnn, "comp": w_comp},
++                    "acid": w_acid, "mpnn": w_mpnn, "comp": w_comp,
++                    "monomer": w_monomer},
 +        "caps": {"V": cap_val, "G": cap_gly}, "acid_d0": acid_d0,
 +        "acid_width": acid_width, "acid_eps": acid_eps,
 +        # Derived from the composed loss object, not asserted. The previous value here
@@ -828,6 +852,9 @@ index 0000000..40b8d76
 +    sharpen: float = 1.3,
 +    use_mpnn: bool = True,
 +    w_acid: float = 2.0,
++    w_mpnn: float = 3.0,
++    w_plddt: float = 1.0,
++    w_monomer: float = 0.5,
 +    cap_val: float = 0.12,
 +    cap_gly: float = 0.08,
 +    acid_d0: float = 8.0,
@@ -855,6 +882,7 @@ index 0000000..40b8d76
 +        steps_soft=steps_soft, steps_sharp=steps_sharp,
 +        recycling_steps=recycling_steps, sampling_steps=sampling_steps,
 +        stepsize=stepsize, sharpen=sharpen, use_mpnn=use_mpnn, w_acid=w_acid,
++        w_mpnn=w_mpnn, w_plddt=w_plddt, w_monomer=w_monomer,
 +        cap_val=cap_val, cap_gly=cap_gly, acid_d0=acid_d0, acid_eps=acid_eps,
 +        smoke=smoke,
 +    )

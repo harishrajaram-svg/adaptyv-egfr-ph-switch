@@ -1,0 +1,57 @@
+{
+  "crop": "284:453",
+  "epitope": "403,404,405,406,407,408,409",
+  "anchor": 406,
+  "lengths": "76",
+  "n_seeds": 4,
+  "seed0": 0,
+  "steps_soft": 120,
+  "steps_sharp": 60,
+  "recycling_steps": 1,
+  "sampling_steps": 10,
+  "stepsize": 0.0,
+  "sharpen": 1.3,
+  "use_mpnn": true,
+  "smoke": false,
+  "weights": {
+    "iptm": 1.0,
+    "pae": 0.05,
+    "contact": 1.0,
+    "within": 1.0,
+    "plddt": 1.0,
+    "glob": 0.3,
+    "acid": 2.0,
+    "mpnn": 3.0,
+    "comp": 10.0,
+    "monomer": 0.5
+  },
+  "caps": {
+    "V": 0.12,
+    "G": 0.08
+  },
+  "acid_d0": 8.0,
+  "acid_width": 1.5,
+  "acid_eps": 0.001,
+  "loss_terms": [
+    "NoCys",
+    "Boltz2Loss",
+    "BinderTargetIPTM",
+    "BinderTargetPAE",
+    "BinderTargetContact",
+    "WithinBinderContact",
+    "PLDDTLoss",
+    "ESMFoldGlobularity",
+    "AcidNearHis",
+    "InverseFoldingSequenceRecovery",
+    "Boltz2Loss",
+    "PLDDTLoss",
+    "WithinBinderContact",
+    "ESMFoldGlobularity",
+    "CompositionCap"
+  ],
+  "design_models": [
+    "Boltz2",
+    "ProteinMPNN_soluble"
+  ],
+  "c1_audit": "clean"
+}
