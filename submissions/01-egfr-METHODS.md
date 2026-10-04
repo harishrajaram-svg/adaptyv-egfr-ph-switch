@@ -279,9 +279,12 @@ an AUC against it is one comparison repeated ten times and not an estimate of se
 
 12 shuffle nulls — 4 designs × 3 independent shuffles, composition and length preserved
 exactly, 5 seeds nested within each shuffle — score **0.0000 on both legs with 5 of 5 dead
-seeds, all twelve of them.** This was predicted on review: full-sequence shuffling destroys the
-fold, so the null bounds the instrument's noise floor at exactly zero, and a "95th percentile of
-a matched null" flag admits anything above 0.0000. We still report `affinity_above_null` in the
+seeds, all twelve of them.** A separate, larger shuffle run (22 molecules, 110 poses) agrees:
+**20 of 22 are dead on all 5 seeds and the highest median in it is 0.0110.** Across 34 shuffled
+sequences the null does not produce a single score worth a threshold. This was predicted on
+review: full-sequence shuffling destroys the fold, so the null bounds the instrument's noise
+floor at exactly zero, and a "95th percentile of a matched null" flag admits anything above
+0.0000. We still report `affinity_above_null` in the
 submission, and it carries almost no information. **The 10 measured non-binders are the only
 negative class with a usable tail, and that tail reaches 0.5893.**
 
