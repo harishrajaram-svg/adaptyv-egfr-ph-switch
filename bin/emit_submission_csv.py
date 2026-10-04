@@ -49,7 +49,7 @@ import csv, json, os, sys, importlib.util
 
 SUB   = "analysis/01-egfr/submission_final.json"
 OUT   = "submissions/01-egfr.csv"
-LIMIT = 10        # NOT the allowed 20 -- see THE CUT above.
+LIMIT = 11        # 10 cut designs + A22D added 2026-10-04. NOT the allowed 20 -- see THE CUT.
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
 MOLECULE_CLASS = "protein"     # DEFAULT only -- per-design `molecule_class` overrides it.
@@ -59,6 +59,8 @@ MOLECULE_CLASS = "protein"     # DEFAULT only -- per-design `molecule_class` ove
 # (CDRH3 < 70% AND global >= 70% = Level 3). Under the general-protein rule that design reads
 # 77.5% identity and looks rejected; under the correct rule it is Level 3 and eligible.
 VALID_CLASSES = ("protein", "nanobody", "scfv", "fab_kappa", "fab_lambda")
+# Formats whose affinity this instrument cannot read -- see METHODS 4.5 and the G532 inversion.
+ANTIBODY_CLASSES = {"nanobody", "scfv", "fab_kappa", "fab_lambda"}
 
 
 def load_scores():
@@ -86,6 +88,52 @@ def load_scores():
 # HANDOFF and METHODS name as canonical. Reading it here makes the CSV, master_rank.json and
 # METHODS agree, and removes the last run-name-keyed join on the submission path.
 MASTER = "analysis/01-egfr/master_rank.json"
+MULTISITE = "analysis/01-egfr/multisite_pooled.json"
+
+# RANKING BASIS CHANGED 2026-10-04 19:50 EDT, with Harish, from the target-only pH ratio to the
+# ALL-TITRATABLE-SITE product over BOTH partners.
+#
+# WHY. The competition's primary objective is KD(7.4)/KD(6.5). Until tonight we estimated it with
+# bin/ph_gate_refolds.py, which measures only the TARGET's histidines. It never measured our own
+# binders' titratable groups, and six of the then-ten submitted designs carry two or three
+# histidines of their own. Those get buried at the interface, lose 1.5-2.5 pKa units, and by
+# thermodynamic linkage that OPPOSES acid-tightening. Composing honestly over every titratable
+# site on both partners (bin/ph_gate_multisite.py, 65 poses, n=5-11 per design):
+#
+#   rimA02_d3_rimA_14_vhh   5.186 -> 4.838     no binder histidine
+#   rimA01_r15              4.582 -> 4.256     no binder histidine
+#   bc_s360518_mpnn9_A22D   5.630 -> 3.738     one, dragging 0.776
+#   d2c_mpnn13_S88D         4.572 -> 3.526     two, worst 0.983
+#   h370_020_vhh            2.289 -> 2.101     no binder histidine
+#   bc_s831683_mpnn6_S15D   5.397 -> 1.835     three, worst 0.661
+#   bc_s831683_mpnn19_S15D  5.435 -> 1.774     three, worst 0.660
+#   bc_s831683_mpnn9_S15D   5.428 -> 1.057     three, worst 0.344
+#   bc_s831683_mpnn8_S15D   5.461 -> 1.023     three, worst 0.333
+#   bc_d3acid_..._mpnn11    4.010 -> 0.737     three, worst 0.359
+#   bc_s831683_mpnn9_WT     3.522 -> 0.593     three, worst 0.338
+#
+# Every binder histidine moves DOWN, 0.33 to 0.98, none up -- PROPKA noise would scatter both
+# ways. Guard 4 of the combined gate fires on nearly all of them (nearest counter-charge 6.9-8.8
+# A), so these are desolvation shifts with no electrostatic partner: the same mechanism as the
+# 0.702x steric floor of METHODS 6 and the same physics that killed mechanism A.
+#
+# This is NOT a different objective. It is a less wrong estimate of the same one. The old number
+# is retained as `ph_ratio_target_only_SUPERSEDED` so the change is auditable rather than silent.
+#
+# WHAT IT COSTS. Two VHH-format rows rise to ranks 1 and 5 on a pH estimate while their affinity
+# is UNASSESSABLE by this instrument -- METHODS 4.5 shows it scores a measured 294 nM antibody
+# below its own non-switching comparator. PK warned that "a nonbinding pose must not rise to the
+# top through apparent selectivity." We are not demoting them for it, because demoting a design
+# on an affinity reading we have shown to be inverted would be treating 0.219 as a measurement,
+# which is the error METHODS 4.2 documents. Instead his other instruction is followed literally:
+# "keep a diverse, eligible panel with separate columns for human binding evidence, mouse
+# compatibility, pH hypothesis and uncertainty." The uncertainty is a column, not a demotion.
+
+
+def multisite():
+    """seq -> all-site pH product, pooled as the median over poses. The ranking key."""
+    import json as _j
+    return {k: v["allsite"] for k, v in _j.load(open(MULTISITE)).items()}
 
 
 def pooled_affinity():
@@ -145,15 +193,48 @@ def rank_key(r):
     # Affinity no longer EXCLUDES (PK, 2026-10-04): it orders within tier 2 and is reported with
     # a flag. A hard gate here would launder a compromised control into a yes/no decision.
     binds = True if MIN_AFFINITY is None else max(r["hu"], r["mo"]) >= MIN_AFFINITY
-    tier1 = r["ratio"] >= RATIO_BAR and n >= MIN_N and binds
+    # rank on the all-site product when we have it; fall back to target-only and say so
+    # A design with NO multi-site measurement cannot be ranked on the multi-site basis, and
+    # must not be compared against one that can. Falling back to the target-only ratio looked
+    # harmless and was not: it let bg04_r03 (1.937 target-only, no multi-site value) outrank
+    # bc_s831683_mpnn6_S15D (5.397 target-only but 1.835 all-site), i.e. it compared two numbers
+    # computed on different bases -- the error class this whole file exists to prevent. So a
+    # missing multi-site value FAILS CLOSED out of tier 1 rather than borrowing the old number.
+    key_ratio = r.get("allsite")
+    if key_ratio is None:
+        return (2, 0, -r["mo"], -r["hu"])      # unrankable on this basis: below both tiers
+    tier1 = key_ratio >= RATIO_BAR and n >= MIN_N and binds
+
+    # ASSESSABLE DESIGNS RANK AHEAD OF UNASSESSABLE ONES WITHIN TIER 1 (Harish, 2026-10-04).
+    #
+    # PK's ranking instruction was "apply eligibility and credible-interface checks FIRST, then
+    # use the challenge priorities", with the guardrail "a nonbinding pose must not rise to the
+    # top through apparent selectivity." On a pure pH ordering, rimA02_d3_rimA_14_vhh leads the
+    # submission on a human ipSAE of 0.219 -- and we cannot say whether that is a weak interface
+    # or an unreadable one, because METHODS 4.5 shows this instrument scores a measured 294 nM
+    # antibody (G532, 0.0135) BELOW its own non-switching comparator (G532Ctrl, 0.2503) while
+    # folding the Fv at 0.85. An antibody-format affinity reading here is uninterpretable.
+    #
+    # We do not demote them on the pH axis -- their ratios stand and are reported unchanged --
+    # and we do not score them at 0.0000, which is the error METHODS 4.2 documents. We order
+    # them after the designs whose affinity we CAN assess, so the row a reader reaches first is
+    # one where both axes mean something.
+    #
+    # THE COST, stated rather than hidden: rimA02 carries the second-highest honest pH ratio in
+    # the submission (4.838x all-site) and now sits below bc_s831683_mpnn19_S15D at 1.774x. If
+    # Adaptyv rank strictly by the primary objective, this ordering costs us. It is a judgement
+    # that credible-interface-first is the more defensible frame, not a claim that rimA02 is worse.
+    unassessable = r.get("molecule_class") in ANTIBODY_CLASSES
     return (0 if tier1 else 1,
-            -r["ratio"] if tier1 else 0,
+            (1 if unassessable else 0) if tier1 else 0,
+            -key_ratio if tier1 else 0,
             -r["mo"], -r["hu"])
 
 
 def main():
     rows = json.load(open(SUB))
     pooled = pooled_affinity()
+    ms = multisite()
     missing = [x["name"] for x in rows if x["seq"] not in pooled]
     if missing:
         # Fail LOUD. The silent-zero path is this project's signature failure: `hu or 0.0`
@@ -168,7 +249,8 @@ def main():
         hu, mo = pooled[x["seq"]]
         scored.append(dict(name=x["name"], sequence=x["seq"],
                            molecule_class=x.get("molecule_class", MOLECULE_CLASS),
-                           ratio=float(x["ratio"]), hu=hu or 0.0, mo=mo or 0.0,
+                           ratio=float(x["ratio"]), allsite=ms.get(x["seq"]),
+                           hu=hu or 0.0, mo=mo or 0.0,
                            # ratio_n must be carried through: rank_key fails CLOSED without
                            # it, so dropping it here silently emptied tier 1 and put a
                            # non-switching binder at rank 1.
@@ -217,13 +299,27 @@ def main():
     # than shipping neither, so it is dropped and the finding goes in the methods doc.
     cols = ["name", "sequence", "molecule_class",
             "ph_ratio_6p5_over_7p4", "ipsae_min_human", "ipsae_min_mouse",
-            "ph_poses_n", "affinity_above_null", "assessment"]
+            "ph_poses_n", "ph_ratio_target_only_SUPERSEDED", "affinity_assessable",
+            "affinity_above_null", "assessment"]
     with open(OUT, "w", newline="") as fh:
         w = csv.writer(fh); w.writerow(cols)
         for r in scored:
+            # The headline pH column is the ALL-SITE product (both partners). The old
+            # target-only number rides alongside as _SUPERSEDED so the re-rank is auditable.
+            head = r.get("allsite")
+            if head is None: head = r["ratio"]
             w.writerow([r["name"], r["sequence"], r["molecule_class"],
-                        f"{r['ratio']:.3f}", f"{r['hu']:.4f}", f"{r['mo']:.4f}",
+                        f"{head:.3f}", f"{r['hu']:.4f}", f"{r['mo']:.4f}",
                         r.get("ratio_n", 0),
+                        f"{r['ratio']:.3f}",
+                        # PK: "a failed run must not silently become a valid score of zero" --
+                        # a VHH affinity reading here is not low, it is UNINTERPRETABLE. METHODS
+                        # 4.5: this instrument scores a measured 294 nM antibody below its own
+                        # non-switching comparator. So the column says so rather than implying
+                        # the number means something.
+                        "no -- antibody format, see METHODS 4.5"
+                            if r["molecule_class"] in ("nanobody", "scfv", "fab_kappa", "fab_lambda")
+                            else "yes",
                         # PK: separate columns for binding evidence, pH hypothesis and uncertainty
                         "yes" if max(r["hu"], r["mo"]) >= AFFINITY_FLAG else "no",
                         r.get("assessment", "computational candidate")])
@@ -234,29 +330,61 @@ def main():
 
 
 def selftest():
-    # NOTE: `a` used to carry mo=hu=0.1 and still counted as tier 1. Under the affinity
-    # precondition it no longer does, which is the point of the precondition -- a 4.5x ratio on
-    # a design scoring 0.1 is not a ratio of affinities. The fixture is raised above the bar so
-    # it tests tier ordering rather than the gate it was silently exempt from.
-    a = dict(ratio=4.5, mo=0.3, hu=0.3, ratio_n=5); b = dict(ratio=0.0, mo=0.9, hu=0.9, ratio_n=5)
+    """Every fixture now carries `allsite`, because that is the ranking key as of 2026-10-04.
+
+    A fixture WITHOUT it is not a tier-1 candidate at all -- see rank_key. The old fixtures
+    carried only `ratio` and so silently fell to tier 2 the moment the basis changed, which is
+    how this selftest caught the switch rather than the CSV catching it.
+    """
+    A = lambda **k: dict(ratio_n=5, **k)
+    # tier ordering on the NEW basis
+    a = A(ratio=4.5, allsite=4.5, mo=0.3, hu=0.3)
+    b = A(ratio=0.0, allsite=0.0, mo=0.9, hu=0.9)
     assert rank_key(a) < rank_key(b), "a real switch must outrank a non-switching binder"
-    c = dict(ratio=0.0, mo=0.5, hu=0.9, ratio_n=5); d = dict(ratio=0.0, mo=0.9, hu=0.1, ratio_n=5)
+    c = A(ratio=0.0, allsite=0.0, mo=0.5, hu=0.9)
+    d = A(ratio=0.0, allsite=0.0, mo=0.9, hu=0.1)
     assert rank_key(d) < rank_key(c), "mouse must outrank human affinity in tier 2"
-    # Every tier-1 fixture below must also satisfy the AFFINITY precondition, or it is testing
-    # the wrong thing. BIND = just over the bar; the three gates are then varied one at a time.
+
+    # THE BASIS ITSELF. A design whose target-only ratio is large but whose all-site product is
+    # small must rank BELOW one whose all-site product is large. This is the whole re-rank, and
+    # it is the live case: bc_s831683_mpnn8_S15D reads 5.461 target-only and 1.023 all-site,
+    # while rimA02_d3_rimA_14_vhh reads 5.186 target-only and 4.838 all-site.
+    s15d  = A(ratio=5.461, allsite=1.023, mo=0.764, hu=0.776)
+    vhh   = A(ratio=5.186, allsite=4.838, mo=0.447, hu=0.219)
+    # ASSESSABLE-FIRST, within tier 1 only. The live case: rimA02 (nanobody, 4.838 all-site)
+    # must rank BELOW bc_s831683_mpnn19_S15D (protein, 1.774 all-site) despite a 2.7x higher
+    # ratio, because the nanobody's affinity is unreadable on this instrument. That is the
+    # deliberate cost recorded in rank_key.
+    vhh_t1  = A(ratio=5.186, allsite=4.838, mo=0.447, hu=0.219, molecule_class="nanobody")
+    prot_t1 = A(ratio=5.435, allsite=1.774, mo=0.786, hu=0.808, molecule_class="protein")
+    assert rank_key(prot_t1) < rank_key(vhh_t1), \
+        "an assessable tier-1 design outranks an unassessable tier-1 design"
+    # but a tier-1 nanobody still outranks a tier-2 protein -- the format penalty does not
+    # override the switch/no-switch split
+    prot_t2 = A(ratio=5.461, allsite=1.023, mo=0.764, hu=0.776, molecule_class="protein")
+    assert rank_key(vhh_t1) < rank_key(prot_t2), "tier 1 still beats tier 2 regardless of format"
+    # and among assessable designs the all-site product drives the order
+    hi = A(ratio=4.582, allsite=4.256, mo=0.567, hu=0.594, molecule_class="protein")
+    assert rank_key(hi) < rank_key(prot_t1), "all-site product drives order among assessable designs"
+
+    # MIXED BASIS MUST FAIL CLOSED. A candidate with no multi-site measurement cannot be
+    # compared against one that has it. Before this guard, bg04_r03 (target-only 1.937, no
+    # all-site value) outranked a design measured at 1.835 all-site -- two numbers on different
+    # bases. Unrankable now means below both tiers.
+    unmeasured = dict(ratio=9.9, mo=0.9, hu=0.9, ratio_n=9)          # no `allsite` key at all
+    assert rank_key(s15d) < rank_key(unmeasured), "no multi-site value must fail closed"
+    assert rank_key(A(ratio=0.1, allsite=0.1, mo=0.0, hu=0.0)) < rank_key(unmeasured), \
+        "even a non-switching MEASURED design outranks an unmeasured one on this basis"
+
     BIND = (MIN_AFFINITY if MIN_AFFINITY is not None else AFFINITY_FLAG) + 0.01
-    # the n floor: a big ratio on too few poses must NOT reach tier 1
-    thin = dict(ratio=9.9, mo=BIND, hu=BIND, ratio_n=1)
-    solid = dict(ratio=1.3, mo=BIND, hu=BIND, ratio_n=5)
+    thin  = A(ratio=9.9, allsite=9.9, mo=BIND, hu=BIND); thin["ratio_n"] = 1
+    solid = A(ratio=1.3, allsite=1.3, mo=BIND, hu=BIND)
     assert rank_key(solid) < rank_key(thin), "n<MIN_N must be excluded from tier 1"
-    # a missing n must fail closed, not silently qualify
-    assert rank_key(solid) < rank_key(dict(ratio=9.9, mo=BIND, hu=BIND)), "absent n must fail closed"
-    # the affinity precondition: a huge ratio on a design that does not bind is NOT tier 1
-    nonbinder = dict(ratio=9.9, mo=0.0, hu=0.0, ratio_n=9)
+    assert rank_key(solid) < rank_key(dict(ratio=9.9, allsite=9.9, mo=BIND, hu=BIND)), \
+        "absent n must fail closed"
+
+    nonbinder = A(ratio=9.9, allsite=9.9, mo=0.0, hu=0.0); nonbinder["ratio_n"] = 9
     if MIN_AFFINITY is None:
-        # gate retired: a 0.0000/0.0000 design with a confirmed switch MAY hold tier 1, because
-        # we no longer have a control that licenses calling it a nonbinder. It is reported with
-        # an uncertainty flag instead of being excluded.
         assert rank_key(nonbinder) < rank_key(solid), "with the gate retired, ratio orders tier 1"
     else:
         assert rank_key(solid) < rank_key(nonbinder), "a 0.0000/0.0000 design must not reach tier 1"

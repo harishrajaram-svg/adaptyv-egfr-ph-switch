@@ -23,14 +23,14 @@ rather than hidden.
 | scored by Proton-PottsMPNN | 1,693 |
 | distinct binder sequences scored on the instrument | **2,009** (of which 27 are controls) |
 | complexes folded and ipSAE-cached | **6,011** |
-| **submitted** | **10** |
+| **submitted** | **11** |
 
 The universe is the 1,948. Designs outside it (e.g. BindCraft trajectories never sequenced)
 are **not** eligible and are not nonbinders; they were never candidates.
 
 **Amended 2026-10-04, 18:00 EDT, and the amendment is itself part of the selection history.**
 The first draft of this document (13:18 EDT) froze a **20-design** submission. At 15:32 the
-submission was cut to **10** — ranks 11–20 of that build did not stand on a measurement: eight
+submission was cut to **10**, and at 19:45 `bc_s360518_mpnn9_A22D` was added as an eleventh — ranks 11–20 of that build did not stand on a measurement: eight
 read *below* 1.0×, i.e. on the 0.702× steric floor that any design touching a histidine with no
 carboxylate nearby returns. That cut is a post-freeze selection change and is recorded here
 rather than silently absorbed, on your own standard: *"A correction does not invalidate
@@ -56,20 +56,22 @@ resequencings), and the cache now holds 6,011 scored outputs, not 5,368.
 
 ## 1.3 Sequence families
 
-**5 families among the 10 submitted designs.** The first draft of this section described a
+**6 families among the 11 submitted designs.** (Amended 19:55 EDT: A22D added a sixth family,
+and the ranking basis change moved the 6-member cluster out of the top three — see 1.6.) The first draft of this section described a
 submission that was never shipped — it named `d2d_101_l120_s869126_mpnn1`/`_mpnn5` as the one
 multi-member family, and neither design is in the file. The real partition:
 
 | family | n | members (submission rank) | note |
 |---|---|---|---|
-| **`d3acid_l65_s831683`** | **6** | 1, 2, 3, 4, 8, 9 | all 65 aa on one BindCraft backbone: four S15D point mutants, one unmutated MPNN sequence, and the matched wild-type of rank 3 |
-| `rimA02_d3_rimA_14` | 1 | 5 | VHH, 129 aa |
-| `rimA01_r15_d3_rimA_20` | 1 | 6 | 150 aa BoltzGen |
-| `d2c_101_l147_s144898` | 1 | 7 | 147 aa, the S88D causal result |
-| `h370_020` | 1 | 10 | VHH, 98 aa |
+| **`d3acid_l65_s831683`** | **6** | 4, 5, 8, 9, 10, 11 | all 65 aa on one BindCraft backbone: four S15D point mutants, one unmutated MPNN sequence, and the matched wild-type of rank 8 |
+| `rimA01_r15_d3_rimA_20` | 1 | 1 | 150 aa BoltzGen |
+| `d3acid3_l65_s360518` | 1 | 2 | 65 aa, A22D — added 2026-10-04 19:45 |
+| `d2c_101_l147_s144898` | 1 | 3 | 147 aa, the S88D causal result |
+| `rimA02_d3_rimA_14` | 1 | 6 | VHH, 129 aa |
+| `h370_020` | 1 | 7 | VHH, 98 aa |
 
-**Consequence, and it is the whole point of your ask: the effective n of this submission is 5
-clusters, not 10 designs — and 6 of the 10 sit in one cluster.** Any December confidence
+**Consequence, and it is the whole point of your ask: the effective n of this submission is 6
+clusters, not 11 designs — and 6 of the 11 sit in one cluster.** Any December confidence
 interval, hit rate or test must be computed on families, not on designs. Ranks 1, 2, 3 and 4
 differ from one another by nothing but the ProteinMPNN sequence on an identical backbone, and
 ranks 3 and 9 differ by **one residue** (Ser15 vs Asp15). Treating those six as six independent
@@ -109,6 +111,12 @@ Control families (binder chain): EGF-derived (2 runs, 1 molecule), cetuximab scF
      permissive, and classification depends on the organisers' own ANARCI call.
    - our search is **FoldSeek against PDB only**; the organisers additionally search SwissProt,
      patents, a therapeutic-antibody database and PLAbDab, so our identities are **lower bounds**
+
+8. **the ranking basis itself changed, 2026-10-04 19:45** — from the target-only pH ratio to
+   the all-titratable-site product over both partners. This is a narrowing of a different kind:
+   it did not remove candidates, it reordered them, and it moved four of eleven out of tier 1
+   altogether. Recorded here because a change to the *objective function* belongs in the
+   selection history as much as a change to a threshold does.
 
 Steps 1–5 were applied, revised and re-applied to the **same pool**, with thresholds chosen
 after seeing the data. Three designs were promoted and later withdrawn on re-measurement.
@@ -150,35 +158,50 @@ value is 84.8%. Fixed before upload.)
 
 ## 1.6 Final ranks, frozen
 
-You asked to freeze *"final ranks and exclusions"*. The first draft froze the exclusions and
-then contained no ranks and no design list anywhere, which made it undiffable against the file
-you receive. Here is the submission as uploaded, in order. It should reconcile row-for-row with
-`submissions/01-egfr.csv`.
+**Amended 2026-10-04 19:55 EDT. The RANKING BASIS changed after the first freeze, and this is a
+material post-freeze change recorded in full rather than absorbed.**
 
-| rank | design | class | family | aa | pH ratio | poses | ipSAE human | ipSAE mouse |
-|---|---|---|---|---|---|---|---|---|
-| 1 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **5.461** | 5 | 0.7760 | 0.7637 |
-| 2 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **5.435** | 5 | 0.8077 | 0.7859 |
-| 3 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **5.428** | 5 | 0.8025 | 0.8026 |
-| 4 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **5.397** | 5 | 0.7803 | 0.7507 |
-| 5 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02 (VHH) | 129 | **5.186** | 6 | 0.2186 | 0.4468 |
-| 6 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15 | 150 | **4.582** | 6 | 0.5938 | 0.5668 |
-| 7 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147 | 147 | **4.572** | 5 | 0.6031 | 0.5283 |
-| 8 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **4.010** | 6 | 0.7963 | 0.7838 |
-| 9 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **3.522** | 11 | 0.7833 | 0.7829 |
-| 10 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.289** | 11 | 0.4171 | 0.7093 |
+The first freeze ranked on the pH ratio measured over the **target's** histidines only. That gate
+never measured our own binders' titratable groups, and six of the eleven designs carry two or
+three histidines of their own which lose 1.5–2.5 pKa units on burial — opposing acid-tightening
+by the same linkage. `bin/ph_gate_multisite.py` now composes over **every** titratable site on
+**both** partners (76 poses, n = 5–11 per design). It is the same objective, estimated less
+wrongly, and it reordered the submission:
 
-Reading conventions, so the columns are not over-read:
+| rank | design | class | family | aa | **all-site pH** | target-only | poses | human | mouse | affinity assessable |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 4.582 | 6 | 0.594 | 0.567 | yes |
+| 2 | `bc_s360518_mpnn9_A22D` | protein | d3acid3_l65_s360518 | 65 | **3.738** | 5.630 | 5 | 0.451 | 0.474 | yes |
+| 3 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 4.572 | 5 | 0.603 | 0.528 | yes |
+| 4 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 5.397 | 5 | 0.780 | 0.751 | yes |
+| 5 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.435 | 5 | 0.808 | 0.786 | yes |
+| 6 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 5.186 | 6 | 0.219 | 0.447 | **no** |
+| 7 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.289 | 11 | 0.417 | 0.709 | **no** |
+| 8 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.057** | 5.428 | 5 | 0.802 | 0.803 | yes |
+| 9 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 4.010 | 6 | 0.796 | 0.784 | yes |
+| 10 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.593** | 3.522 | 11 | 0.783 | 0.783 | yes |
+| 11 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 5.461 | 5 | 0.776 | 0.764 | yes |
 
-* **pH ratio** = predicted KD(7.4)/KD(6.5), the median over every ESMFold2 refold pose of that
-  exact binder sequence, pooled across runs by **sequence** (`bin/ph_pool_by_sequence.py`). Not
-  a measurement.
-* **ipSAE human / mouse** = ipSAE_min on ESMFold2, median of 5 seeds, pooled by sequence from
-  `analysis/01-egfr/master_rank.json`. **pH-agnostic** — it is structural compatibility, not
-  affinity at either pH. For ranks 5 and 10 it is **not interpretable at all** (VHH format).
-* Ranks 1–4 span **0.22 pKa units** and are not distinguishable from one another. The order
-  among them is not a claim.
-* Rank 9 is a **control**, not a candidate: the matched wild-type of rank 3, one residue apart.
+**Four designs (ranks 8–11) fall below the 1.20× noise bar on the corrected basis and carry no
+pH claim at all.** They are ordered by mouse affinity. `bc_s831683_mpnn8_S15D` was rank 1 at
+5.461× before the correction and is rank 11 at 1.023×.
+
+**Within tier 1, assessable formats rank ahead of unassessable ones.** `rimA02` holds the
+second-highest honest ratio (4.838×) and sits at rank 6, because its affinity is unreadable on
+this instrument — §4.5 of the methods document shows a measured 294 nM antibody scoring below its
+own non-switching comparator. Your instruction to apply eligibility and credible-interface checks
+before the challenge priorities is the basis; the cost is stated in the methods document.
+
+**On your standard for whether this invalidates December:** *"A correction does not invalidate
+December's analysis if every candidate can be rescored consistently before outcomes are examined;
+silent selective changes would."* Every submitted candidate was rescored on the new basis, at
+n ≥ 5, before any outcome exists. The superseded value ships as its own CSV column. Nothing was
+selectively rescored and nothing was dropped.
+
+**What we do not claim.** The binder's free leg comes from deleting the target in place, so the
+isolated binder is unrelaxed and PROPKA on a buried histidine is its hardest case. The direction
+is consistent across all 76 poses and mechanistically coherent; the magnitude is not established.
+**This is the assumption we would most like you to check.**
 
 ---
 

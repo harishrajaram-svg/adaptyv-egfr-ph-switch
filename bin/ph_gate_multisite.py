@@ -1,0 +1,338 @@
+#!/usr/bin/env python3
+"""Combined pH gate: EVERY titratable site, on BOTH partners, in one pass.
+
+WHY THIS FILE EXISTS, AND WHY IT IS THE MOST DANGEROUS CODE IN THIS PROJECT
+--------------------------------------------------------------------------
+Two gates existed and neither could see a two-site design:
+
+    bin/ph_gate_refolds.py / ph_gate_all.py   TARGET histidines only (chain = target)
+    bin/ph_gate_mechA.py                      BINDER histidines only (chain = binder)
+
+They were never run on the same molecule. A genuinely two-site design -- a carboxylate on
+the binder shifting target H433, PLUS a binder histidine paired to a target carboxylate --
+would come back from the first gate reporting H433 alone and from the second reporting the
+binder histidine alone, with the linkage between them invisible in both.
+
+This script composes them. Its entire purpose is therefore to produce a number ABOVE the
+single-site ceiling, and METHODS section 7 records that we have already manufactured exactly
+such a number once, by composing over the sites that helped:
+
+    "`product` composed over helping sites only -- selection on the outcome; manufactured
+     our only claim above the 7.94x ceiling"
+
+rimA01/d3_rimA_50 was reported at 9.10x (H370 6.056 x H383 1.503) while its own H433 read
+0.723. Its true all-site product is 6.581x. 1,547 of 1,584 designs were overstated, by up
+to 4.77x. So this file is written to make that class of error structurally impossible, and
+every guard below exists because of it. Read FIVE GUARDS before trusting any output.
+
+THE PHYSICS
+-----------
+Thermodynamic linkage for one titratable site:
+
+    K(pH) = (1 + 10^(pKa_bound - pH)) / (1 + 10^(pKa_free - pH))
+    ratio = K(6.5) / K(7.4)
+
+Independent sites multiply. The one-proton bound over this pH pair is 10^0.9 = 7.943x; for
+a site with pKa_free = 6.22 the attainable range is 0.699x to 5.554x (both figures
+independently confirmed by PK, 2026-10-03).
+
+THE FREE LEG, ON BOTH SIDES, BY DELETION IN PLACE
+-------------------------------------------------
+ph_gate_all computes the target's free pKa by deleting the BINDER from the same file,
+holding every other coordinate fixed -- METHODS section 2 defends that at length, because
+taking pKa_free from a separate apo structure turned 10 apparent switches into 1 when the
+generator repacked the target per design.
+
+This script applies the mirror image to the binder: its free pKa comes from the same file
+with the TARGET deleted in place. That is symmetric, it needs no additional folding, and it
+holds the binder's own conformation fixed. ph_gate_mechA instead required a separately
+folded binder-only structure (--binder-dir), which introduces a conformational difference
+the deletion method does not have.
+
+Cost: 4 PROPKA runs per pose rather than 2. PROPKA is local CPU.
+
+FIVE GUARDS
+-----------
+ 1. ALL-SITES COMPOSITION, never a subset. Sites with ratio < 1 are sites where acid
+    genuinely weakens binding and they belong in the product. `product_helpful_only` is
+    computed and reported ONLY so the old bug's value stays visible for audit; it is never
+    the headline and `--check` fails if anything reads it as one.
+ 2. CEILING CHECK. If k sites moved, the product cannot exceed 7.943^k. A product above
+    that is arithmetically impossible and is reported as `IMPOSSIBLE`, not as a result.
+ 3. IMPLIED pKa_bound. Every ratio is inverted back to the pKa_bound it requires. A site
+    demanding pKa_bound > 10.5 or < 2.0 for a histidine is flagged `implausible` -- a real
+    histidine does not reach those, so the number is PROPKA noise or a packing artifact.
+ 4. COUNTER-CHARGE DISTANCE. A site with a large shift and no counter-charge within 6 A on
+    the other chain is flagged `no_partner`. That is the H370 desolvation signature: a shift
+    with no mechanism. Measured from the titratable atom to the nearest opposite-charge
+    heavy atom ACROSS the interface.
+ 5. EPISTASIS RECONSTRUCTION. With --parent and --singles, the double mutant's product is
+    checked against its parts. A product that cannot be reconstructed from the single
+    mutants is epistasis or a bug, and the script says which it cannot distinguish.
+    This is the check that would have caught the 9.10x.
+
+USAGE
+    ph_gate_multisite.py <complex.cif> [more...]            # score poses
+    ph_gate_multisite.py --dir <run_dir> [--tsv out.tsv]    # all poses under a run
+    ph_gate_multisite.py --selftest                         # no I/O, pure arithmetic
+"""
+import argparse, glob, json, math, os, subprocess, sys, tempfile
+from pathlib import Path
+
+PH_LO, PH_HI = 6.5, 7.4
+ONE_PROTON_BOUND = 10 ** (PH_HI - PH_LO)      # 7.943x, the general one-proton maximum
+NOISE = 0.05                                   # |ratio-1| below this is PROPKA noise
+PKA_PLAUSIBLE = (2.0, 10.5)                    # a histidine's pKa_bound outside this is suspect
+PARTNER_CUT = 6.0                              # A, titratable atom -> nearest counter-charge
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ph_gate_all import CROP, D3, ECD, link, family, orient   # one source for the physics
+
+ACID_O = {('ASP','OD1'),('ASP','OD2'),('GLU','OE1'),('GLU','OE2')}
+BASE_N = {('HIS','ND1'),('HIS','NE2'),('LYS','NZ'),('ARG','NH1'),('ARG','NH2'),('ARG','NE')}
+
+
+def implied_pka_bound(ratio, free):
+    """Invert the linkage equation for pKa_bound. Returns None if the ratio is unreachable."""
+    lo, hi = free - 8.0, free + 20.0
+    if not (link(free, lo) <= ratio <= link(free, hi)):
+        return None
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        if link(free, mid) < ratio: lo = mid
+        else: hi = mid
+    return round((lo + hi) / 2, 2)
+
+
+def propka_his_and_acids(st, wd, tag, chain):
+    """pKa of every HIS/ASP/GLU on `chain`. Returns {(resname,resnum): pKa}."""
+    st.write_pdb(os.path.join(wd, tag + '.pdb'))
+    subprocess.run([sys.executable, '-m', 'propka', tag + '.pdb'], capture_output=True, cwd=wd)
+    f = os.path.join(wd, tag + '.pka'); out = {}
+    if os.path.exists(f):
+        for ln in open(f):
+            q = ln.split()
+            if len(q) > 3 and q[0] in ('HIS', 'ASP', 'GLU') and q[2] == chain:
+                try: out[(q[0], int(q[1]))] = float(q[3])
+                except ValueError: pass
+    return out
+
+
+def cross_partner_distance(model, chain_of_site, resnum, resname, other_chain):
+    """Nearest opposite-charge heavy atom on the OTHER chain. Guard 4."""
+    import gemmi
+    C = {c.name: c for c in model}
+    if chain_of_site not in C or other_chain not in C: return None
+    site = next((r for r in C[chain_of_site] if r.seqid.num == resnum and r.name == resname), None)
+    if site is None: return None
+    want_acid = resname in ('HIS', 'LYS', 'ARG')          # a base looks for acids
+    mine = [a.pos for a in site if (resname, a.name) in (BASE_N if want_acid else ACID_O)]
+    if not mine: return None
+    theirs = [a.pos for r in C[other_chain] for a in r
+              if (r.name, a.name) in (ACID_O if want_acid else BASE_N)]
+    if not theirs: return None
+    return round(min(p.dist(q) for p in mine for q in theirs), 2)
+
+
+def score_pose(cif):
+    """All titratable sites on both partners, one pose. Returns a dict or None."""
+    import gemmi
+    try:
+        st = gemmi.read_structure(cif); st.setup_entities()
+        st.remove_ligands_and_waters(); st.setup_entities()
+        tgt, names = orient(st[0])
+        if names is None:
+            return {'file': os.path.basename(cif), 'error': 'target family unrecognised'}
+        chains = [c.name for c in st[0]]
+        if len(chains) != 2:
+            return {'file': os.path.basename(cif),
+                    'error': f'{len(chains)} chains; multi-site composition needs exactly 2'}
+        bnd = [c for c in chains if c != tgt][0]
+
+        with tempfile.TemporaryDirectory() as wd:
+            bound_t = propka_his_and_acids(st, wd, 'cpx_t', tgt)
+            bound_b = propka_his_and_acids(st, wd, 'cpx_b', bnd)
+            # free TARGET: delete the binder in place
+            a = gemmi.read_structure(cif); a.setup_entities()
+            a.remove_ligands_and_waters(); a.setup_entities()
+            for i in range(len(a[0]) - 1, -1, -1):
+                if a[0][i].name != tgt: del a[0][i]
+            a.setup_entities()
+            free_t = propka_his_and_acids(a, wd, 'apo_t', tgt)
+            # free BINDER: delete the target in place -- the mirror image
+            b = gemmi.read_structure(cif); b.setup_entities()
+            b.remove_ligands_and_waters(); b.setup_entities()
+            for i in range(len(b[0]) - 1, -1, -1):
+                if b[0][i].name != bnd: del b[0][i]
+            b.setup_entities()
+            free_b = propka_his_and_acids(b, wd, 'apo_b', bnd)
+
+        sites = {}
+        # TARGET histidines, named from the construct's fingerprint
+        for num, nm in names.items():
+            f, bo = free_t.get(('HIS', num)), bound_t.get(('HIS', num))
+            if f is None or bo is None: continue
+            sites[f'target:{nm}'] = dict(partner='target', resname='HIS', resnum=num,
+                                         free=round(f, 2), bound=round(bo, 2),
+                                         ratio=round(link(f, bo), 4))
+        # BINDER histidines -- every one, not a curated list
+        for (rn, num), f in free_b.items():
+            if rn != 'HIS': continue
+            bo = bound_b.get((rn, num))
+            if bo is None: continue
+            sites[f'binder:HIS{num}'] = dict(partner='binder', resname='HIS', resnum=num,
+                                             free=round(f, 2), bound=round(bo, 2),
+                                             ratio=round(link(f, bo), 4))
+        if not sites:
+            return {'file': os.path.basename(cif), 'error': 'no titratable site measured'}
+
+        # Guard 3 + 4, per site
+        for k, v in sites.items():
+            v['implied_pka_bound'] = implied_pka_bound(v['ratio'], v['free'])
+            v['implausible'] = (v['implied_pka_bound'] is None or
+                                not (PKA_PLAUSIBLE[0] <= v['implied_pka_bound'] <= PKA_PLAUSIBLE[1]))
+            other = bnd if v['partner'] == 'target' else tgt
+            mine = tgt if v['partner'] == 'target' else bnd
+            d = cross_partner_distance(st[0], mine, v['resnum'], v['resname'], other)
+            v['partner_dist'] = d
+            v['no_partner'] = (d is None or d > PARTNER_CUT)
+            v['moved'] = abs(v['ratio'] - 1.0) >= NOISE
+
+        # Guard 1: compose over EVERYTHING
+        prod = 1.0
+        for v in sites.values(): prod *= v['ratio']
+        helpful = [v['ratio'] for v in sites.values() if v['ratio'] > 1.0]
+        k_moved = sum(1 for v in sites.values() if v['moved'])
+        # Guard 2: ceiling
+        ceiling = ONE_PROTON_BOUND ** max(k_moved, 1)
+        verdict = 'IMPOSSIBLE' if prod > ceiling * 1.001 else 'ok'
+        contributing = {k: v for k, v in sites.items() if v['moved']}
+        return dict(file=os.path.basename(cif)[:-4], path=cif, target_chain=tgt, binder_chain=bnd,
+                    product=round(prod, 4),
+                    product_helpful_only_DO_NOT_USE=round(math.prod(helpful) if helpful else 1.0, 4),
+                    n_sites=len(sites), n_moved=k_moved, ceiling_for_n_moved=round(ceiling, 2),
+                    verdict=verdict,
+                    n_implausible=sum(1 for v in sites.values() if v['moved'] and v['implausible']),
+                    n_no_partner=sum(1 for v in sites.values() if v['moved'] and v['no_partner']),
+                    contributing=contributing, sites=sites)
+    except Exception as e:
+        return {'file': os.path.basename(cif), 'error': f'{type(e).__name__}: {e}'}
+
+
+def reconstruct(parent, singles, double):
+    """Guard 5. Is the double's product the product of its single-mutant effects?
+
+    effect(X) = product(X) / product(parent).  Expected double effect = prod(effects).
+    Returns a dict including whether the observed effect is within tolerance.
+    """
+    if not parent or 'product' not in parent: return {'error': 'no parent product'}
+    p0 = parent['product']
+    if p0 <= 0: return {'error': 'parent product is zero'}
+    eff = {}
+    for nm, s in singles.items():
+        if s and 'product' in s: eff[nm] = s['product'] / p0
+    if not eff: return {'error': 'no single-mutant products'}
+    expected = p0
+    for e in eff.values(): expected *= e
+    observed = double.get('product') if double else None
+    if observed is None: return {'error': 'no double product'}
+    ratio = observed / expected if expected else None
+    return dict(parent_product=round(p0, 4),
+                single_effects={k: round(v, 4) for k, v in eff.items()},
+                expected_double=round(expected, 4), observed_double=round(observed, 4),
+                observed_over_expected=round(ratio, 4) if ratio else None,
+                additive_in_log=bool(ratio and 0.7 <= ratio <= 1.43),
+                note=('reconstructs from its parts' if ratio and 0.7 <= ratio <= 1.43 else
+                      'DOES NOT reconstruct -- epistasis or a bug, and this script '
+                      'cannot distinguish them. Do not report the product as a result.'))
+
+
+def selftest():
+    # the physics
+    # 40 / -20 stand in for the pKa_bound limits; 1e6 overflows the 10**x in link().
+    assert abs(link(6.22, 40.0) - 5.554) < 0.01, link(6.22, 40.0)
+    assert abs(link(6.22, -20.0) - 0.699) < 0.01, link(6.22, -20.0)
+    assert abs(ONE_PROTON_BOUND - 7.943) < 0.001
+    assert abs(link(6.0, 6.0) - 1.0) < 1e-9, 'no shift must give exactly 1.0'
+    # inversion round-trips
+    for free, pb in [(6.22, 9.0), (6.22, 7.0), (4.93, 8.0), (6.5, 6.6)]:
+        r = link(free, pb)
+        assert abs(implied_pka_bound(r, free) - pb) < 0.05, (free, pb, r)
+    assert implied_pka_bound(999.0, 6.22) is None, 'unreachable ratio must return None'
+    # Guard 1: the historical bug. H370 6.056 x H383 1.503 while H433 reads 0.723
+    sites = {'a': 6.056, 'b': 1.503, 'c': 0.723}
+    allp = 1.0
+    for v in sites.values(): allp *= v
+    helpful = 6.056 * 1.503
+    assert abs(helpful - 9.102) < 0.01, helpful
+    assert abs(allp - 6.581) < 0.01, allp
+    assert allp < helpful, 'all-sites must be below helpful-only on this case'
+    assert allp < ONE_PROTON_BOUND, 'and below the single-proton ceiling'
+    # Guard 2: a product above the k-site ceiling is impossible.
+    # One site caps at 7.943x, two at 63.1x, three at 501x.
+    assert abs(ONE_PROTON_BOUND ** 2 - 63.096) < 0.01, ONE_PROTON_BOUND ** 2
+    assert 50.0 > ONE_PROTON_BOUND ** 1, 'a 50x product needs >1 site'
+    assert 50.0 < ONE_PROTON_BOUND ** 2, 'and 2 sites suffice for it'
+    assert 600.0 > ONE_PROTON_BOUND ** 2, 'a 600x product needs >2 sites'
+    # Guard 5: reconstruction
+    par = {'product': 1.0}
+    rec = reconstruct(par, {'m1': {'product': 3.0}, 'm2': {'product': 2.0}}, {'product': 6.0})
+    assert rec['additive_in_log'] and abs(rec['observed_over_expected'] - 1.0) < 1e-9, rec
+    rec2 = reconstruct(par, {'m1': {'product': 3.0}, 'm2': {'product': 2.0}}, {'product': 20.0})
+    assert not rec2['additive_in_log'], rec2
+    # a double that is merely the better single does NOT reconstruct as multiplicative
+    rec3 = reconstruct({'product': 0.70}, {'S88D': {'product': 4.57}, 'S60D': {'product': 1.11}},
+                       {'product': 4.59})
+    assert not rec3['additive_in_log'], rec3
+    print('selftest OK')
+    print(f'  single-site range at pKa_free 6.22 : {link(6.22,-20.0):.3f}x to {link(6.22,40.0):.3f}x')
+    print(f'  one-proton bound                   : {ONE_PROTON_BOUND:.3f}x')
+    print(f'  historical bug reproduced          : helpful-only 9.102x vs all-sites 6.581x')
+    print(f'  S88D+S60D does NOT reconstruct     : observed 4.59 vs expected '
+          f"{rec3['expected_double']} (ratio {rec3['observed_over_expected']})")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('cifs', nargs='*')
+    ap.add_argument('--dir'); ap.add_argument('--tsv'); ap.add_argument('--json')
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+    if a.selftest: selftest(); return
+    cifs = a.cifs or (sorted(glob.glob(os.path.join(a.dir, '**', '*.cif'), recursive=True))
+                      if a.dir else [])
+    if not cifs: raise SystemExit(__doc__)
+    rows = []
+    for c in cifs:
+        r = score_pose(c)
+        rows.append(r)
+        if 'error' in r:
+            print(f"SKIP  {r['file']}: {r['error']}"); continue
+        flag = (' ** ' + r['verdict']) if r['verdict'] != 'ok' else ''
+        print(f"{r['file'][:52]:<54} product {r['product']:>8.3f}  "
+              f"{r['n_moved']}/{r['n_sites']} sites moved  ceiling {r['ceiling_for_n_moved']:.1f}"
+              f"{flag}")
+        for k, v in sorted(r['contributing'].items(), key=lambda kv: -kv[1]['ratio']):
+            w = []
+            if v['implausible']: w.append(f"IMPLAUSIBLE pKa_bound={v['implied_pka_bound']}")
+            if v['no_partner']: w.append(f"NO COUNTER-CHARGE within {PARTNER_CUT}A"
+                                         + (f" (nearest {v['partner_dist']}A)" if v['partner_dist'] else ""))
+            print(f"      {k:<22} {v['ratio']:>7.3f}x  free {v['free']:.2f} -> bound {v['bound']:.2f}"
+                  f"  {'  '.join(w)}")
+    if a.json: json.dump(rows, open(a.json, 'w'), indent=1); print(f"\nwrote {a.json}")
+    if a.tsv:
+        import csv as _csv
+        with open(a.tsv, 'w', newline='') as fh:
+            w = _csv.writer(fh, delimiter='\t')
+            w.writerow(['file','product','n_sites','n_moved','ceiling','verdict',
+                        'n_implausible','n_no_partner'])
+            for r in rows:
+                if 'error' in r: continue
+                w.writerow([r['file'], r['product'], r['n_sites'], r['n_moved'],
+                            r['ceiling_for_n_moved'], r['verdict'], r['n_implausible'],
+                            r['n_no_partner']])
+        print(f"wrote {a.tsv}")
+
+
+if __name__ == '__main__':
+    main()

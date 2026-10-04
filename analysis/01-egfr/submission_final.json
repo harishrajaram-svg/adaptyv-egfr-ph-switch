@@ -446,5 +446,22 @@
   "iptm": "",
   "rmsd": "",
   "assessment": "COMPUTATIONAL CANDIDATE. VHH format: antibody-rule Level 4 (CDRH3 27.3%, global 52.6%) -- the only de novo design in this set under that rule. Note it is Level 2 under the general-protein rule (TM 0.914), so its eligibility depends on being classified as an antibody. CDR3 AAVDDETGDIY is carboxylate-rich and pairs with the target's native H433. pH 2.29x pooled over 11 refold poses in two independent arms. AFFINITY INADEQUATELY ASSESSED -- VHH format, see rank 5."
+ },
+ {
+  "src": "sd2_d3acid3",
+  "name": "bc_s360518_mpnn9_A22D",
+  "seq": "RPFSKEEAEELVEFMEGLVETDKEKGGSDDPMISEETIKRWGEYDAKFYEEHIKKVREEYGVPEK",
+  "ratio": 5.63,
+  "ratio_n": 5,
+  "ratio_site": "H433",
+  "molecule_class": "protein",
+  "real": 1,
+  "dir": "runs/esmfold2/sd2",
+  "iptm": "",
+  "rmsd": "",
+  "cont": "",
+  "sim": "",
+  "sim_hit": "",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Single Ala->Asp at position 22 on a backbone not otherwise represented in this submission (d3acid3_l65_s360518). Matched wild-type, same gate, same pose count: 0.826x -> 5.630x, a 6.82x causal swing -- the largest in the submission, and larger than any of the four S15D pairs. Tightest seed reproducibility in the project: 5.616 / 5.626 / 5.630 / 5.631 / 5.662 over 5 poses, no dead seeds on either species. The install costs affinity: -0.165 human, -0.119 mouse against its wild-type. Switching residue is the TARGET's native H433. Novelty re-measured on the MUTANT pose, not the wild-type backbone: TM 0.792, identity 15.2%, Level 3 -- it clears, but by 0.008, and the organisers' rule is domain-wise where splitting can only raise TM, so this is the row most exposed to a novelty rejection at upload. Expression QC clean: 0 Cys, GRAVY -1.225, longest hydrophobic run 2, no deamidation motif. On the all-titratable-site basis (both partners, see METHODS) it reads 3.738x against a wild-type 0.574x -- swing 6.51x, i.e. the result survives the honest multi-site accounting, which most of this submission does not."
  }
 ]

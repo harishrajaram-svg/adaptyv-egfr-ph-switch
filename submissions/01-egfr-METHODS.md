@@ -755,82 +755,115 @@ entries in the 45 we would want back, and what they need is poses, not an argume
 
 ## 11. The submission
 
-**10 designs, not the 20 Track 3 allows.** The primary column is the pH ratio, pooled as the
-**median over every ESMFold2 refold pose of that exact binder sequence**
-(`bin/ph_pool_by_sequence.py`), joined to affinity **by sequence** (`bin/master_rank.py`)
-because the same molecule appears in this project under as many as three run names. Both
-affinity columns are ipSAE_min on ESMFold2, median of 5 seeds. `affinity_above_null` is
-`max(ipSAE_human, ipSAE_mouse) ≥ 0.2218`, a **retained legacy reporting threshold** that came
-from the retired EGF-derived control — not a percentile of the matched null, which §4.5 shows is
-degenerate at 0.0000 and admits of no percentile. It excludes nothing (`MIN_AFFINITY = None`)
-and should be read as a provenance marker, not a claim about binding.
+**11 designs, ranked on the all-titratable-site pH product.** Track 3 allows 20.
 
-**One provenance correction to the affinity columns themselves.** Until 2026-10-04 the emitter
-took them from a helper that selects **one run directory** per molecule ("most seeds wins, ties
-broken lexicographically") and medians within it. Because the same molecule appears here under
-as many as three run names, the reported affinity was therefore a function of which run name
-sorted first — the keystone error of this project, committed on the submission path. Five of the
-ten cells matched neither the pooled median nor the pooled max as a result; the five single-run
-molecules were unaffected. All ten now come from `master_rank.json`, pooled over every pose of
-the binder sequence, which is what this section already claimed they were.
+### 11.1 The ranking basis changed, and it reordered everything
 
-| # | design | class | pH ratio | human | mouse | poses |
-|---|---|---|---|---|---|---|
-| 1 | bc_s831683_mpnn8_S15D | protein | **5.46×** | 0.776 | 0.764 | 5 |
-| 2 | bc_s831683_mpnn19_S15D | protein | **5.43×** | 0.808 | 0.786 | 5 |
-| 3 | bc_s831683_mpnn9_S15D | protein | **5.43×** | 0.803 | 0.803 | 5 |
-| 4 | bc_s831683_mpnn6_S15D | protein | **5.40×** | 0.780 | 0.751 | 5 |
-| 5 | rimA02_d3_rimA_14_vhh | nanobody | 5.19× | 0.228 | 0.451 | 6 |
-| 6 | rimA01_r15_boltzgen_egfr_d3_rimA_20 | protein | 4.58× | 0.577 | 0.560 | 6 |
-| 7 | d2c_mpnn13_S88D_serasp | protein | 4.57× | 0.603 | 0.528 | 5 |
-| 8 | bc_d3acid_l65_s831683_mpnn11 | protein | 4.01× | 0.795 | 0.784 | 6 |
-| 9 | **bc_s831683_mpnn9_WT** | protein | 3.52× | 0.783 | 0.783 | 11 |
-| 10 | h370_020_vhh | nanobody | 2.29× | 0.441 | 0.709 | 11 |
+Until 2026-10-04 we estimated the pH ratio with a gate that measures only the **target's**
+histidines. It never measured our own binders' titratable groups — and six of the eleven
+submitted designs carry two or three histidines of their own. Those get buried at the interface
+and lose 1.5–2.5 pKa units, and by the same thermodynamic linkage of §1 that **opposes**
+acid-tightening. We were counting the target's sites and ignoring ours.
 
-**The order of ranks 1–4 is not a claim.** Those four ratios span 0.22 pKa units (§3.7), inside
-PROPKA's own error, so the table's ordering among them is noise. The CSV has to be submitted in
-*some* order; read the top four as one result with four replicates, not as a preference.
+`bin/ph_gate_multisite.py` composes over every titratable site on **both** partners, with the
+free leg taken by deleting the other chain in place — the mirror of the argument §2 makes for
+the target leg. Measured over 76 poses, n = 5–11 per design:
 
-**We gave back half the allocation on purpose.** The 20-design build existed and is in the
-history. Ranks 11–20 of it did not stand on a measurement: eight read **below 1.0×** — no
-switch at all — sitting on the 0.702× steric floor of §6, which is what *any* design that
-touches a histidine with no carboxylate near it returns. Those rows reported the method back to
-itself.
+| design | target-only | **all-site** | binder histidines | worst drag |
+|---|---|---|---|---|
+| rimA02_d3_rimA_14_vhh | 5.186 | **4.838** | 0 | — |
+| rimA01_r15 | 4.582 | **4.256** | 0 | — |
+| bc_s360518_mpnn9_A22D | 5.630 | **3.738** | 1 | 0.776 |
+| d2c_mpnn13_S88D | 4.572 | **3.526** | 2 | 0.983 |
+| h370_020_vhh | 2.289 | **2.101** | 0 | — |
+| bc_s831683_mpnn6_S15D | 5.397 | **1.835** | 3 | 0.661 |
+| bc_s831683_mpnn19_S15D | 5.435 | **1.774** | 3 | 0.660 |
+| bc_s831683_mpnn9_S15D | 5.428 | **1.057** | 3 | 0.344 |
+| bc_s831683_mpnn8_S15D | 5.461 | **1.023** | 3 | 0.333 |
+| bc_d3acid_l65_s831683_mpnn11 | 4.010 | **0.737** | 3 | 0.359 |
+| bc_s831683_mpnn9_WT | 3.522 | **0.593** | 3 | 0.338 |
 
-`bg04_r03` was described in an earlier version as "the weakest, 1.94× with **0.0000 on both
-species**." **Both halves were wrong.** It is 1.94× over 15 poses with **human 0.0000 and mouse
-0.4406** — it binds one species, not neither — and it was the **strongest** of the ten cut rows,
-not the weakest. The 0.0000/0.0000 reading came from the run-name-keyed affinity path corrected
-below; the "weakest" label was simply not checked. It remains out of the submission, because one
-species plus three expression-QC flags including an unpaired cysteine is not a candidate, but the
-reason we gave for cutting it was wrong twice over.
+**Every binder histidine moves down — 0.33 to 0.98, none up.** PROPKA noise would scatter both
+ways. The gate's counter-charge guard fires on nearly all of them (nearest opposite charge
+6.9–8.8 Å), so these are desolvation shifts with no electrostatic partner: the same mechanism as
+the 0.702× steric floor of §6, and the same physics that defeated mechanism A (§3.5).
 
-Also note the 0.702× floor cited above is the single-site model's own analytic minimum of 0.699×
-(§1), so "sitting on the floor" means "indistinguishable from no linkage at all", which is the
-stronger statement. Filling the allocation would have bought ten more wet-lab wells and no more
-evidence, so we did not.
+**This is not a different objective. It is a less wrong estimate of the same one** —
+KD(7.4)/KD(6.5). The superseded number ships as its own CSV column so the change is auditable
+rather than silent.
 
-**Rank 9 is a control, deliberately.** `bc_s831683_mpnn9_WT` is the matched wild-type of rank 3,
-one residue apart. It costs a slot and buys the one thing predictions cannot: if the four S15D
-designs switch and this one does not, §3.7 is established in the laboratory independently of
-every threshold in this document. If all five switch equally, the mutation is not the cause, and
-we will know that too. That is the result we most want from this round, whichever way it goes.
+**Four of the eleven are no longer switches.** Ranks 8–11 fall below the 1.20× bar that §6 sets
+as PROPKA's noise floor, so they carry no pH claim and are ordered by mouse affinity instead.
+`bc_s831683_mpnn8_S15D` led this submission at 5.461× before the correction and is now rank 11
+at 1.023×.
 
-**Ranks 1–4, 8 and 9 are six of ten slots on one backbone** (`d3acid_l65_s831683`) — six MPNN
-sequences and one point mutant. It is a deliberate trade of diversity for replication of the
-project's only causal result, made with §3.7's caveat in full view: those four ratios span
-**0.22 pKa units** and are not distinguishable from one another. We are not claiming rank 1
-beats rank 4. We are claiming the mutation does something, four times.
+**What we are NOT claiming.** The binder's free leg comes from deleting the target in place, so
+the isolated binder is not relaxed — a histidine buried in the complex may be solvent-exposed in
+the real free binder, which would make its free pKa wrong. PROPKA on a buried histidine is its
+hardest case. The *direction* is consistent across 76 poses and mechanistically coherent; the
+*magnitude* is not established.
 
-**Ranks 5 and 10 are nanobodies this instrument cannot score** (§4.5). They are included
-because excluding them would be scoring them at 0.0000, which is exactly the error §4.2
-documents. They also carry the upload risk described in §9.
+### 11.2 Final ranks
 
-One consistency note we are recording rather than papering over: `bin/check_discards.py` reads
-the 29-design candidate JSON, not the emitted 10-row CSV, so the bar it tests against is looser
-than the one that ships. It therefore flags a superset of what the shipped bar would flag — the
-gate errs toward warning, which is the safe direction — and we left it alone rather than edit a
-gate at submission time.
+| rank | design | class | family | aa | **all-site pH** | target-only | poses | human | mouse | affinity assessable |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 4.582 | 6 | 0.594 | 0.567 | yes |
+| 2 | `bc_s360518_mpnn9_A22D` | protein | d3acid3_l65_s360518 | 65 | **3.738** | 5.630 | 5 | 0.451 | 0.474 | yes |
+| 3 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 4.572 | 5 | 0.603 | 0.528 | yes |
+| 4 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 5.397 | 5 | 0.780 | 0.751 | yes |
+| 5 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.435 | 5 | 0.808 | 0.786 | yes |
+| 6 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 5.186 | 6 | 0.219 | 0.447 | **no** |
+| 7 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.289 | 11 | 0.417 | 0.709 | **no** |
+| 8 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.057** | 5.428 | 5 | 0.802 | 0.803 | yes |
+| 9 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 4.010 | 6 | 0.796 | 0.784 | yes |
+| 10 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.593** | 3.522 | 11 | 0.783 | 0.783 | yes |
+| 11 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 5.461 | 5 | 0.776 | 0.764 | yes |
+
+**Assessable designs rank ahead of unassessable ones within tier 1.** On a pure pH ordering
+`rimA02_d3_rimA_14_vhh` leads the submission at 4.838× — on a human ipSAE of 0.219 that we
+cannot interpret, because §4.5 shows this instrument scores a measured 294 nM antibody **below
+its own non-switching comparator**. We neither demote it on the pH axis nor score it at 0.0000
+(the §4.2 error); we place it after the designs where both axes mean something.
+
+**The cost, stated:** rimA02 carries the second-highest honest pH ratio in the submission and
+sits at rank 6, below a design at 1.774×. If the organisers rank strictly on the primary
+objective, this ordering costs us. It is a judgement that credible-interface-first is the more
+defensible frame, following the reviewer instruction to apply eligibility and interface checks
+before the challenge priorities — not a claim that rimA02 is worse.
+
+### 11.3 Six families, eleven designs
+
+`d3acid_l65_s831683` ×6 (ranks 4, 5, 8, 9, 10, 11) · `rimA01_r15` · `d3acid3_l65_s360518`
+(A22D) · `d2c_101_l147_s144898` · `rimA02_d3_rimA_14` (VHH) · `h370_020` (VHH).
+
+**Effective n is 6 clusters, not 11 designs**, and the 6-member cluster is now entirely in
+ranks 4–11 — the correction moved it out of the top three. Any interval must be computed on
+families. Ranks 8 and 10 differ by **one residue** (Ser15 vs Asp15).
+
+### 11.4 Reading conventions
+
+* **all-site pH ratio** — median over every ESMFold2 refold pose of that exact binder sequence,
+  composed over all titratable sites on both partners. A prediction, not a measurement.
+* **ipSAE human / mouse** — median of 5 seeds, pooled by sequence from `master_rank.json`.
+  **pH-agnostic.** For ranks 6 and 7 not interpretable at all.
+* **Rank 10 is a control**, not a candidate: the matched wild-type of rank 8, one residue apart.
+  Its all-site product of 0.593× is itself informative — the unmutated backbone is predicted to
+  bind *worse* in acid, which is the baseline the S15D install has to beat.
+* `affinity_above_null` means `max(hu, mo) ≥ 0.2218`, a retained legacy threshold. See §4.5.
+
+### 11.5 Why not 20
+
+The 20-design build is in the history. Ranks 11–20 of it did not stand on a measurement: eight
+read below 1.0× even on the old, more generous basis. Filling the allocation would have bought
+ten more wet-lab wells and no more evidence. A22D was added on 2026-10-04 because it is a
+backbone not otherwise represented, carries the largest causal swing in the set (0.826 → 5.630
+target-only; 0.574 → 3.738 all-site, so the swing survives the correction), and has the tightest
+seed reproducibility in the project.
+
+One consistency note recorded rather than papered over: `bin/check_discards.py` reads the
+30-design candidate JSON, not the emitted CSV, and still compares on the target-only ratio. It
+therefore flags a superset of what the shipped bar would flag — the safe direction — and we left
+it alone rather than edit a gate at submission time.
 
 ---
 
