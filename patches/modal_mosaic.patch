@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..4a502f4
+index 0000000..40b8d76
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,844 @@
+@@ -0,0 +1,860 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -440,6 +440,7 @@ index 0000000..4a502f4
 +    cap_gly: float = 0.08,
 +    acid_d0: float = 8.0,
 +    acid_width: float = 1.5,
++    acid_eps: float = 1e-3,
 +    smoke: bool = False,
 +):
 +    """Step 4: gradient design of an acid-presenting binder against the H433 patch.
@@ -535,6 +536,7 @@ index 0000000..4a502f4
 +        e_idx: int
 +        d0: float = 8.0
 +        width: float = 1.5
++        eps: float = 1e-3
 +
 +        def __call__(self, sequence, output, key):
 +            L = sequence.shape[0]
@@ -544,20 +546,31 @@ index 0000000..4a502f4
 +            d = jnp.minimum(
 +                jnp.linalg.norm(ca - nd1, axis=-1), jnp.linalg.norm(ca - ne2, axis=-1)
 +            )
-+            acid = sequence[:, self.d_idx] + sequence[:, self.e_idx]
++            # CLIP IS LOAD-BEARING, do not remove it. APGM evaluates the loss at the
++            # extrapolated point `x + momentum*(x - x_prev)`, which is OFF the simplex:
++            # entries there can be negative or exceed 1. Unclipped, `score` could go
++            # negative, `total + eps` could reach <= 0, and `log` of a non-positive number
++            # is NaN -- which is exactly what happened on 5 of 180 steps in tune01 (2.8%),
++            # each one discarded by APGM's own NaN guard. The earlier comment here claimed
++            # clipping the loss "would flatten its gradient"; that was wrong in the way
++            # that matters. Clipping to [0,1] only zeroes this term's gradient at points
++            # that are not valid probability vectors. Inside the simplex -- where every
++            # real sequence lives -- the gradient is untouched.
++            acid = jnp.clip(
++                sequence[:, self.d_idx] + sequence[:, self.e_idx], 0.0, 1.0
++            )
 +            score = acid * jax.nn.sigmoid((self.d0 - d) / self.width)
 +            total = score.sum()
-+            loss = -jnp.log(total + 1e-3)
-+            # The DIAGNOSTIC clips `acid` to [0,1]; the loss above deliberately does not.
-+            # APGM evaluates at an extrapolated point `x + momentum*(x - x_prev)` that is
-+            # off the simplex, where `acid` can exceed 1 and `(1 - acid)*100` flips sign --
-+            # which is how this field printed -39.59 A on 2026-10-03. Clipping the loss
-+            # would flatten its gradient; clipping the report costs nothing.
-+            acid_c = jnp.clip(acid, 0.0, 1.0)
++            # `eps` sets how hard this term pushes when no carboxylate is placed at all:
++            # the loss maxes out at -log(eps), so 1e-3 peaks near 6.9 with a gradient of
++            # ~1000, and 0.1 peaks near 2.3. Left at 1e-3 so tune01 stays the comparable
++            # baseline; it is a parameter now so it can be swept deliberately instead of
++            # being changed by accident.
++            loss = -jnp.log(total + self.eps)
 +            return loss, {
 +                "acid_his": loss,
 +                "acid_best": score.max(),
-+                "acid_dmin_CA": jnp.min(d + (1.0 - acid_c) * 100.0),
++                "acid_dmin_CA": jnp.min(d + (1.0 - acid) * 100.0),
 +            }
 +
 +    class CompositionCap(LossTerm):
@@ -622,6 +635,7 @@ index 0000000..4a502f4
 +                e_idx=TOKENS.index("E"),
 +                d0=acid_d0,
 +                width=acid_width,
++                eps=acid_eps,
 +            )
 +        )
 +        if mpnn is not None:
@@ -768,7 +782,7 @@ index 0000000..4a502f4
 +                    "within": w_within, "plddt": w_plddt, "glob": w_glob,
 +                    "acid": w_acid, "mpnn": w_mpnn, "comp": w_comp},
 +        "caps": {"V": cap_val, "G": cap_gly}, "acid_d0": acid_d0,
-+        "acid_width": acid_width,
++        "acid_width": acid_width, "acid_eps": acid_eps,
 +        # Derived from the composed loss object, not asserted. The previous value here
 +        # was a hardcoded `True` that would have printed True with ipSAE in the loss.
 +        "loss_terms": term_names, "design_models": model_names,
@@ -817,6 +831,7 @@ index 0000000..4a502f4
 +    cap_val: float = 0.12,
 +    cap_gly: float = 0.08,
 +    acid_d0: float = 8.0,
++    acid_eps: float = 1e-3,
 +    smoke: bool = False,
 +):
 +    """Steps 1-3 are probes and take no arguments. Step 4 designs.
@@ -840,7 +855,8 @@ index 0000000..4a502f4
 +        steps_soft=steps_soft, steps_sharp=steps_sharp,
 +        recycling_steps=recycling_steps, sampling_steps=sampling_steps,
 +        stepsize=stepsize, sharpen=sharpen, use_mpnn=use_mpnn, w_acid=w_acid,
-+        cap_val=cap_val, cap_gly=cap_gly, acid_d0=acid_d0, smoke=smoke,
++        cap_val=cap_val, cap_gly=cap_gly, acid_d0=acid_d0, acid_eps=acid_eps,
++        smoke=smoke,
 +    )
 +    dest = Path(out_dir) / run
 +    for rel, content in results:

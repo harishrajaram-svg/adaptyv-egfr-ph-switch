@@ -1,0 +1,10 @@
+declared epitope: [403, 404, 405, 406, 407, 408, 409]  anchor 406  cutoff 5.0 A  offset 0
+design                             n_contact in_patch   frac anchor        domains  nearest_patch_residue
+tune01_L76_s0                             22        6   0.27    YES            III  406 at 1.84 A
+tune01_L76_s1                             37        5   0.14    YES            III  406 at 2.29 A
+tune01_L76_s2                             33        4   0.12    YES            III  408 at 2.42 A
+tune01_L76_s3                             49        4   0.08    YES            III  406 at 3.05 A
+smoke01_L76_s0                            55        7   0.13    YES            III  406 at 2.03 A
+
+5/5 designs touch the declared patch at all
+NOTE: a domain-III crop makes domain I/II/IV contact impossible by construction -- that escape route is closed by the crop, not by the objective.

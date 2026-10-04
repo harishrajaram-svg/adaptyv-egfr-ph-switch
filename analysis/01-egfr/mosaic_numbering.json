@@ -1,0 +1,23 @@
+{
+  "scheme": "positional in egfr_ecd_6aru_renum.pdb, contiguous 1..609, positional = canonical - 27",
+  "written_pdbs": "binder = chain A, 1..L; target = chain B, positional numbering",
+  "anchor": {
+    "positional": 406,
+    "canonical": 433,
+    "label": "H433"
+  },
+  "epitope_positional": [
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409
+  ],
+  "crop": [
+    284,
+    453
+  ],
+  "ph_gate_note": "bin/ph_gate_target_his.py CANON is BoltzGen-output numbering (H433 -> 409). For these files it must be {406: 'H433'}."
+}
