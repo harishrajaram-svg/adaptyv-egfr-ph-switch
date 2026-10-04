@@ -131,11 +131,49 @@ acidic residues are mutated out by design. A gate reading on a structure that ca
 mechanism is uninformative, so the failure is **attributed to the pose, not yet to the
 protonation model.**
 
-**What is still not done:** scoring the ladder's interface, which is what would separate "ESMFold2
-built no complex" from "the protonation model is wrong." It is a local ten-minute job. One
-complication to flag in advance: the ladder is a **3-chain** Fv complex with an intra-Fv pair at
-0.8659, and `ipsae_min` **refuses** on more than one inter-chain pair by design (fixture case 10).
-So the interface score may need the binder:target pair named explicitly rather than inferred.
+### The pose-vs-protonation separation you asked for, now answered
+
+You wrote: *"A failure to recover this control could arise from the predicted pose or the
+protonation model. Assess those separately before using the pH gate to discard candidates."*
+
+Done. **It is the pose, and the result is worse than a failure to recover — the instrument
+anti-ranks the ladder.** `ipsae_min` refuses on these structures by design (3 inter-chain pairs;
+fixture case 10), so each pair was scored explicitly. A = EGFR domain III target, B and C = Fv
+heavy and light. Medians over 5 seeds each:
+
+| molecule | measured | target:Fv (A:B) | target:Fv (A:C) | **best target:Fv** | intra-Fv (B:C) |
+|---|---|---|---|---|---|
+| **G532** | **13.26× SPR, 8.08 ELISA** | 0.0126 | 0.0000 | **0.0135** | 0.8510 |
+| G532V | 1.64 ELISA | 0.3512 | 0.3364 | 0.3713 | 0.8634 |
+| G532Ctrl | 0.76 ELISA | 0.1848 | 0.1602 | 0.2503 | 0.8433 |
+| G5V2 | — | 0.4110 | 0.3632 | 0.4289 | 0.8605 |
+
+**The real 294 nM binder scores lowest of the four, and its non-switching comparator scores 18×
+higher.** Meanwhile the intra-Fv packing is 0.84–0.86 in every molecule: ESMFold2 folds the Fv
+essentially perfectly and then **fails to dock it onto the target at all**.
+
+**Three consequences.**
+
+1. **The G532 pH-gate failure is fully attributed to the pose.** The protonation model was never
+   given a structure that could host the mechanism — consistent with the independent geometry
+   check, which put the nearest carboxylate 8.97–16.84 Å from H433 on all five G532 poses. We
+   therefore make **no claim either way** about the protonation model from this control, which is
+   the separation you asked for and the honest end of it.
+2. **It is a third and much stronger data point on antibody blindness.** §4.2 of the methods
+   document had 0/2 on VHH positives; §4.5 added four CDR decoys indistinguishable from the real
+   VHH at 0.0000. This is a *measured 294 nM antibody* scored **below its own negative
+   comparator**. The instrument is not merely insensitive to antibody formats — on the one
+   measured example we have, it is **anti-correlated**.
+3. **It bears directly on two of our ten submitted rows**, both VHH format. We already report
+   their affinity as inadequately assessed rather than low. This strengthens that from a caveat
+   to a measurement: on the only antibody in this project with a known KD, the affinity column
+   points the wrong way.
+
+**What we still cannot say.** This is n=1 molecule with 3 comparators, all from one published
+series, and ESMFold2 was run without an MSA. It does not establish a general docking failure
+rate for antibodies. It does establish that the number our pipeline would have reported for
+G532 is not merely uninformative but inverted, and that is enough to stop us reading the VHH
+affinity columns at all.
 
 **And the ordering consequence we have not honoured.** Your instruction was to assess pose and
 protonation separately *before* using the pH gate to discard candidates. The gate has been used

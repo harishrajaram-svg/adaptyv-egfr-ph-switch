@@ -189,5 +189,25 @@
    "B->C": 0.865618,
    "C->B": 0.865877
   }
+ },
+ "11_residue_renumbering_offset": {
+  "structure": "renum_barnase_barstar_sample_0.cif",
+  "chains": {
+   "A": 110,
+   "B": 89
+  },
+  "asym": {
+   "A->B": 0.888672,
+   "B->A": 0.939795
+  },
+  "n_interface_residues": {
+   "A->B": "89",
+   "B->A": "110"
+  },
+  "n_chainpair_residues": {
+   "A->B": "199",
+   "B->A": "199"
+  },
+  "ipsae_min": 0.888672
  }
 }

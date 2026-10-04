@@ -18,7 +18,7 @@ map to cases as follows — and **one of the five is still missing**:
 | asymmetric chains | 03 | present, A→B 0.014687 vs B→A 0.000000 |
 | chain-order changes | 06 | present, binder in chain A |
 | empty interfaces | 09 | present, 0 of 780 residue pairs in both directions |
-| **indexing errors** | — | **NOT COVERED.** No fixture exercises a residue-mapping offset. This is the one gap and we are naming it rather than leaving it to be found. |
+| indexing errors | 11 | present, and it **passes**: chain B renumbered 1–89 → 501–589 with the PAE matrix copied unchanged gives **identical** scores to case 01, 0.888672 / 0.939795. The scorer is positional and robust to renumbering. Constructed by us, not harvested — no structure in our cache has non-1-based numbering, because ESMFold2 always writes 1..N. |
 
 The minimum-over-directions step is tested explicitly: every case prints both asymmetric values
 before the minimum, and the reference's own `max` row is never used.
@@ -42,7 +42,7 @@ out. Vendoring fixes that.
 overwrites it. It used to, which means a regression would silently have become the new
 expectation — the same error as choosing a threshold after seeing the data.
 
-Expected output: **10/10 cases reproduce**, exit 0.
+Expected output: **11/11 cases reproduce**, exit 0.
 
 ## Provenance
 
@@ -73,7 +73,7 @@ count of residue pairs passing the interface filter**, `14` = n0chn, the total c
 residue count. An earlier version of this script printed column 14 and labelled it "interface
 residues", which made a zero-interface case look like a full interface scoring zero. Fixed.
 
-## The ten cases
+## The eleven cases
 
 | case | construct | chains | ipSAE_min | why it is here |
 |---|---|---|---|---|
@@ -86,7 +86,8 @@ residues", which made a zero-interface case look like a full interface scoring z
 | 07 | full ECD | A=621, B=134 | 0.140240 | the EGF-derived control, activity unknown |
 | 08 | d3 crop | A=150 binder, B=170 target | 0.576505 | a submitted design (`rimA01_r15`, now rank 6 of 10) |
 | 09 | full ECD | A=159 shuffled, B=621 target | **0.000000** | **empty interface**: 0 of 780 residue pairs pass the filter, in BOTH directions |
-| 10 | d3 crop | A=204 target, B+C = Fv heavy/light | **refuses** | 3 inter-chain pairs. `ipSAE_min` raises rather than letting the intra-Fv B:C interface (0.8659) become the binder score |
+| 10 | d3 crop | A=204 target, B+C = Fv heavy/light | **refuses** | 3 inter-chain pairs. `ipSAE_min` raises rather than letting the intra-Fv B:C interface (0.8550) become the binder score |
+| 11 | barnase/barstar | A=110, B=89 **renumbered 501–589** | **0.888672** | indexing check: identical to case 01 with the PAE matrix unchanged, so residue→PAE mapping is positional and offset-safe |
 
 **Correction, 2026-10-04.** An earlier version of this README told you barnase/barstar was
 "not on disk in a form this runner can reproduce" and to treat 0.8887 as unverified. That was
@@ -165,5 +166,8 @@ empty-interface cases"*, plus the barnase/barstar regression, plus a trace of th
 - A second structure model. Only ESMFold2-Full has ever scored a design here: ESMFold2-Fast,
   which you specified as a robustness check, has four controls and no designs. Chai-1 and
   Protenix v2 were never built.
-- No case yet covers an indexing error in the residue mapping, which you raised separately from
-  chain order.
+- A second structure model. Case 10's refusal means the G532 ladder needs its binder:target pair
+  named explicitly; we scored it that way and the result is in CONTROL-TABLE §5b — the real
+  294 nM binder reads **0.0135** while its non-switching comparator reads 0.2503, with the Fv
+  itself folding at 0.85. That is an inverted affinity reading on the one antibody here with a
+  measured KD, and it is the strongest statement we can make about this instrument's blind spot.

@@ -394,8 +394,27 @@ negative class with a usable tail, and that tail reaches 0.5893.**
 located by conserved anchors rather than fixed indices — score 0.0000, 0.0117, 0.0000, 0.0000.
 The real 5 nM VHH scores 0.0000 as well. **The instrument cannot separate a validated nanobody
 from a randomised-CDR decoy on that nanobody's own framework.** §4.2 called the nanobody blind
-spot partial on a 0/2 panel; on a matched decoy class it is total. The two VHH-format rows in
-this submission are reported on that basis and are not claimed to be scored.
+spot partial on a 0/2 panel; on a matched decoy class it is total.
+
+**And on the one antibody in this project with a measured KD, the column is inverted.** G532
+(§8.1) binds EGFR at 294 nM and switches 13.26×. Scored on its own ESMFold2 poses, by chain pair
+because `ipsae_min` refuses on a 3-chain complex, medians over 5 seeds:
+
+| molecule | measured | best target:Fv ipSAE | intra-Fv ipSAE |
+|---|---|---|---|
+| **G532** | **294 nM, 13.26×** | **0.0135** | 0.8510 |
+| G532V | ELISA 1.64 | 0.3713 | 0.8634 |
+| G532Ctrl | ELISA 0.76 | 0.2503 | 0.8433 |
+| G5V2 | — | 0.4289 | 0.8605 |
+
+**The real binder scores lowest of the four and its non-switching comparator scores 18× higher,
+while the Fv itself folds at 0.84–0.86 in every molecule.** ESMFold2 builds the antibody and then
+fails to dock it. So the affinity reading for an antibody format here is not merely uninformative
+— on the single measured example available it points the **wrong way**.
+
+This is n=1 molecule with 3 comparators from one published series, run without an MSA, so it does
+not establish a general docking failure rate. It is enough to stop us reading the affinity column
+for the two VHH-format rows in this submission at all, which is how they are reported.
 
 ---
 
@@ -592,6 +611,16 @@ reaches Level 4 under the general-protein rule; every design that clears does so
 Level 3 clause (moderate structural similarity *or* >30% sequence identity, exactly one of
 them), which is worth saying plainly: **this is a pool of partly novel designs, not de novo
 ones.**
+
+**Provenance of this count, because an internal review disputed it.** The 292 rows across the
+general-rule FoldSeek TSVs deduplicate to **238 distinct designs, 114 clearing**, keying on the
+design basename. Stripping a trailing `_modelN` collapses two more, giving 236/113; no key gives
+233/109. That figure is reproducible but stale — it is this same count computed **before
+`novelty_s15d.tsv` existed**, and that file holds the five S15D designs supplying ranks 1–4 and 9
+of this submission. 22 designs appear in more than one TSV, and 2 of those carry slightly
+different TM or identity values between FoldSeek runs (`bg01_r02` at fid 0.127 vs 0.143;
+`bg04_r03` at TM 0.7169 vs 0.7114) — **no design's level differs between rows**, so the
+levelling is stable even where the underlying search is not.
 
 Two limits we state rather than hide. Adaptyv run MMseqs2 against SwissProt, PDB, patent
 sequences, the therapeutic-antibody database and PLAbDab; we search **PDB only**, via FoldSeek,

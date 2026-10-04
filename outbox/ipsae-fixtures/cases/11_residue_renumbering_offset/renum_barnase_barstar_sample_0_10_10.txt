@@ -1,0 +1,6 @@
+
+Chn1 Chn2  PAE Dist  Type   ipSAE    ipSAE_d0chn ipSAE_d0dom  ipTM_af  ipTM_d0chn     pDockQ     pDockQ2    LIS       n0res  n0chn  n0dom   d0res   d0chn   d0dom  nres1   nres2   dist1   dist2  Model
+A    B     10   10   asym  0.888672    0.948782    0.948549    0.000    0.948782      0.0183     0.0073     0.8122      89    199    198    3.41    5.25    5.24    109      89      38      29   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/11_residue_renumbering_offset/renum_barnase_barstar_sample_0
+B    A     10   10   asym  0.939795    0.965449    0.965449    0.000    0.965449      0.0183     0.0073     0.7680     110    199    199    3.86    5.25    5.25     89     110      29      38   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/11_residue_renumbering_offset/renum_barnase_barstar_sample_0
+A    B     10   10   max   0.939795    0.965449    0.965449    0.000    0.965449      0.0183     0.0073     0.7901     110    199    199    3.86    5.25    5.25    110      89      38      29   /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/11_residue_renumbering_offset/renum_barnase_barstar_sample_0
+
