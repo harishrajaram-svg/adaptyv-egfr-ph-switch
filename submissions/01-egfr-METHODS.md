@@ -16,9 +16,23 @@ it is the only place where our ranking metric is graded against molecules whose 
 measured in a laboratory, and the highest-scoring molecule in that panel is a measured
 non-binder.
 
-**Repository.** <https://github.com/harishrajaram-svg/adaptyv-egfr-ph-switch> — everything here
-is reproducible from it, including the errors. Each correction in §7 is a commit, not a rewrite,
-and the 20-design build this submission cut in half (§11) is in the history.
+**Repository.** <https://github.com/harishrajaram-svg/adaptyv-egfr-ph-switch>. Each correction
+in §7 is a commit rather than a rewrite, and the 20-design build this submission cut in half
+(§11) is in the history.
+
+**What is and is not reproducible from it, stated precisely, because an earlier version of this
+line claimed "everything here is reproducible" and that is false.** The analysis code, the
+submission, every artifact under `analysis/`, and the full ranking table are published. The
+**6,011 cached pose outputs under `runs/` are not** — they are gitignored and run to tens of
+gigabytes. Consequence, and we would rather you read it here than discover it: running the
+documented command `python3 bin/emit_submission_csv.py` on a fresh clone emits a complete,
+plausible CSV in which **every affinity column reads 0.0000 and every `affinity_above_null`
+reads `no`**, with exit code 0 and no warning, because the pose index it needs is absent. That
+is this project's own signature failure — a `0.0000` meaning *absent* being read as *measured* —
+reproduced inside its reproducibility claim. The emitter now raises instead of emitting a
+silently zeroed file when a submitted sequence is missing from the ranking table, but it cannot
+conjure poses it does not have. **To reproduce the affinity columns you need the pose cache; ask
+and we will supply it. Everything else reproduces from the clone.**
 
 ---
 
@@ -33,6 +47,24 @@ Two mechanisms are available:
 
 - **Mechanism B** — a carboxylate on the *binder* raises the pKa of a histidine on the
   *target*, so the salt bridge only forms once that histidine protonates. We used this.
+
+**How this is assessed, from the organisers' own specification** (Adaptyv, 2026-10-04): human
+EGFR is measured at **both pH 6.5 and 7.4**; mouse EGFR at **pH 6.5 only**. So the switch is
+graded on the human leg and cross-reactivity on the acidic leg, where a working switch should
+bind. Our columns map onto that without adjustment: the pH ratio is pooled over **human-leg**
+refold poses only, and both affinity columns are the binding-competent state. An earlier
+project note recorded mouse as being measured at 7.4 only and concluded that cross-reactivity
+and pH selectivity were therefore in tension; the organisers retracted that premise and the
+tension does not exist.
+
+**The switching residue is the target's own H433 — a native domain III residue, conserved in
+mouse, and not an affinity tag.** This is worth stating because the assayed construct carries a
+C-terminal His tag, and the organisers have said explicitly that a binder engaging the tag
+"might look pH-selective but it would bind to anything with a His tag", and that in-silico
+evidence will be weighted more heavily to catch it. Across our whole pool of 50 designs that
+switch at n ≥ 5, the engaged site is **H433 in 48, H370 in 1 and H383 in 1** — zero tag. All ten
+submitted designs switch on H433. We designed against a tag-free crystal structure, so the tag
+was not available to optimise against even accidentally.
 - **Mechanism A** — the inverse: histidine on the binder, carboxylate on the target.
 
 **The ceiling, and why it set the strategy.** As pKa_bound → ∞ the ratio tends to
@@ -112,13 +144,44 @@ maximum and 15% of the 43.1× two-site ceiling. Of 23 designs that reached H370 
 **9 of 10 that switched did not bind.** H370 has 153 heavy atoms within 10 Å of its ring
 against H433's 57; reaching into that cleft appears to cost the interface area binding needs.
 
-### 3.5 Binding and switching trade off, on three independent predictors.
-This is the central result. Designs with the tightest carboxylate–histidine contacts switch
-most and bind least. It reproduces on the generator pose, on the refold, and on a trained
-protonation-aware model that shares no machinery with either.
+### 3.5 RETRACTED — "binding and switching trade off" was our central result and it is sign-reversed.
+
+An earlier version of this section read: *"This is the central result. Designs with the tightest
+carboxylate–histidine contacts switch most and bind least. It reproduces on the generator pose,
+on the refold, and on a trained protonation-aware model that shares no machinery with either."*
+It was four lines of prose with no table, no n and no coefficient. **Computed, it comes out with
+the opposite sign.**
+
+Across the 115 designs with n ≥ 5 pooled refold poses and an affinity reading, controls excluded,
+pH ratio against human ipSAE_min:
+
+| subset | n | Pearson | Spearman |
+|---|---|---|---|
+| all designs with n ≥ 5 | 115 | **+0.342** | **+0.273** |
+| those that switch (ratio ≥ 1.20×) | 49 | +0.249 | +0.247 |
+| those that bind human ≥ 0.50 | 34 | +0.199 | +0.170 |
+
+A trade-off requires a negative coefficient. All three slices are positive: in this pool, designs
+that switch more tend to bind slightly **better**, not worse. **The claim is withdrawn.** We have
+no pool-wide trade-off, and the sentence asserting one as the project's central result should
+never have been written without the table underneath it.
+
+**What survives, and it is narrower and site-specific.** The trade-off is real at **H370** and
+only there. Of the 23 designs that reached H370 incidentally, **9 of the 10 that switched did not
+bind** (§3.4); the one design built deliberately to put a carboxylate on H370, `S60D`, returned
+1.11× — inside PROPKA's noise — while dropping human ipSAE from 0.654 to **0.012** (§3.7). H370
+carries 153 heavy atoms within 10 Å of its ring against H433's 57, so reaching it costs the
+interface area binding needs. That is a statement about one cleft, not about the pool, and it is
+what §3.4's conclusion actually rests on.
+
+The three-predictor agreement claimed in the retracted text was never computed on affinity at
+all; §5 reports what the three pH predictors agree on, which is a different question.
 
 ### 3.6 Contact distance predicts switching — on the generator pose only.
-Measured on all 1,944 gated poses (H433 ∪ H370), generator pose:
+Measured on the **1,584** gated poses with a resolvable carboxylate–histidine distance at
+H433 ∪ H370 (of 1,944 gated in total; the remainder have no carboxylate within range to measure).
+An earlier version of this header said "all 1,944", which the table's own rows contradict —
+they sum to 1,584. Generator pose:
 
 | carboxylate–ring N | n | switch ≥1.20× |
 |---|---|---|
@@ -154,8 +217,21 @@ Ser→Asp at position 15:
 | mpnn9  | 3.52× | **5.43×** | 0.783 → 0.803 | 0.782 → 0.803 |
 | mpnn19 | 3.68× | **5.43×** | 0.828 → 0.808 | 0.815 → 0.786 |
 
-Four for four in the same direction at no cost in predicted affinity. These are simultaneously
-the four highest-affinity and the four highest-switching designs in the pool.
+Four for four in the same direction, at a small and consistent cost in predicted affinity
+(−0.009 to −0.045 human, −0.018 to −0.043 mouse; the mpnn9 pair is the exception and rises).
+
+**A correction to how this was previously stated.** An earlier version of this section said
+these were "simultaneously the four highest-affinity and the four highest-switching designs in
+the pool." **That is false on both halves**, and it was the sentence used to justify spending six
+of ten submission slots on one backbone, so it matters. Three designs with n ≥ 5 out-switch them
+(5.819×, 5.630×, 5.527×) and three out-bind them on the human leg (0.860, 0.828, 0.821) — two of
+the latter being these designs' own unmutated siblings. What is true, and sufficient:
+
+> Among the 12 designs that bind **both** species at ≥ 0.75 with n ≥ 5 poses, these four are the
+> four highest-switching, and the gap to the fifth is **5.40× against 4.01×**.
+
+That is a joint claim with its conditions attached, and it is the honest version. Taken
+unconditionally on either axis alone, they are not first.
 `bc_s831683_mpnn9_WT` is submitted alongside its S15D so the comparison gets made in the wet
 lab instead of inferred from our gate. If the S15D designs switch and the WT does not, the
 mechanism stands independently of every threshold in this document.
@@ -273,14 +349,17 @@ pipeline that measured data supports at all — which is a statement about the *
 evidence for the others, not a validation of this one on n=1.
 
 **gitter-yolo10 is the entire problem in one molecule.** Pooled over 5 refold poses it reads a
-**5.27× pH ratio** — rank 8 of 2,009 sequences on our primary objective — alongside a human
-ipSAE above every positive control we have. A human-leg-only pipeline would have submitted a
+**5.27× pH ratio** — **8th of the 132 molecules eligible to rank** on our primary objective —
+alongside a human ipSAE above every positive control we have. (An earlier version of this
+document said "rank 8 of 2,009", pairing a rank computed among molecules with ≥5 poses with the
+denominator of every sequence ever scored. That overstated it by about 15× and the derived
+"top 0.4%" was wrong; 2,009 is the scored universe, 132 is the rankable one.) A human-leg-only pipeline would have submitted a
 molecule already measured not to bind. One number excludes it, and it is mouse 0.0000.
 
 So the pH ratio does not discriminate binders, and we report it as the primary objective
 anyway because it is the objective. **A 5× switch is not evidence of binding, on measured
 data, in this pool.** Any ranking that reads the ratio without the affinity columns beside it
-is reading a number that a known non-binder scores in the top 0.4%.
+is reading a number that a known non-binder scores in the top 6% of everything eligible to rank.
 
 Three limits. The positive class is **one molecule** of 53 aa, shorter than every design here,
 so nothing in this section estimates sensitivity — the strongest honest reading is "the one
@@ -367,8 +446,11 @@ complex, which is exactly right for a neutral-pH agonist.
 
 ## 6. Reproducibility
 
-**93% of the switches in our pool rest on a single pose.** Of the 12 single-pose switches that
-later received five poses, **5 of 12 fell below the previous threshold on re-evaluation.**
+**76% of the switches in our pool rest on a single pose** — 164 of 217 designs reading ≥ 1.20×
+have n = 1. An earlier version of this section said **93%**, which is the fraction of the *whole
+design pool* at a single pose (1,827 of 1,982), not of the switches. The switch-specific figure
+is the relevant one and it is lower. Of the 12 single-pose switches that later received five
+poses, **5 of 12 fell below the previous threshold on re-evaluation.**
 That establishes instability under re-measurement. It is **not** a biological false-positive
 rate: there is no experimental ground truth, and the threshold itself was derived from a
 control we have since retired. We therefore require **n ≥ 5 poses** before a ratio may rank a design, and we
@@ -401,6 +483,12 @@ Listed because they bound the confidence of everything above.
 | novelty tested as a single TM < 0.50 bar | missed the "high structural similarity ALONE" clause; reported 0 of 238 passing where 114 clear (§9) |
 | the refold pH gate run on a third of the run directories | the four-pair S15D replication of §3.7 sat unscored for a day; 170 switches missed, 179 generator false positives left standing |
 | controls folded but never scored | `expctrl`/`ctrl2` wrote raw PAE matrices and no ipSAE output, so §4.4 — the only measured-outcome test in the project — was unavailable until the scoring step was backfilled |
+| **§3.5's "central result" asserted in prose, never computed** | computed, the correlation is **+0.34**, the opposite sign. Retracted (§3.5) |
+| **affinity columns taken from one run directory, chosen by name sort** | 5 of 10 shipped cells matched neither the pooled median nor max; now read from `master_rank.json` (§11) |
+| an ROC-AUC reported from a control panel with **one** positive | removed; §4.4 reports ranks. The weakness was already recorded weeks earlier as "the gate is n=1 positive" and shipped anyway |
+| a rank among 132 rankable molecules quoted against a denominator of 2,009 | overstated by ~15× (§4.4) |
+| "the four highest-affinity **and** four highest-switching designs" | false on both halves, and it was the justification for 6 of 10 slots on one backbone (§3.7) |
+| a measured pH-calibration ladder folded and never scored | the G532 series, the only molecules here with a published pH ratio, is absent from every analysis file (§12) |
 
 We also retracted two published-in-log claims on re-measurement: a length effect that
 disappeared at n=260, and a "pinning is 15× worse" conclusion that reverses on a like-for-like
@@ -468,12 +556,24 @@ antibodies. If it does not, those two rows fail at the gate.
 
 ## 10. The exclusion ledger
 
+**Read this section with two corrections in mind.** First, the "45 designs" below are **45 run
+names and 38 distinct molecules** — the gate is name-keyed on the discard side, so seven alias
+pairs are double-counted. The ledger built to catch this project's keystone trap is itself keyed
+on names. Second, and more seriously, the gate reads 69 rows out of the `phgate_*.tsv` files
+rather than the 2,009-row sequence-keyed `master_rank.json` that this document elsewhere calls
+canonical — **and no `phgate_*.tsv` exists for the `sd`/`sd2` arms that supplied five of the ten
+shipped designs.** Joined properly by sequence, **28 molecules with n ≥ 5 poses outrank the
+weakest shipped design** and were never candidates, two of them outranking the best shipped
+design (5.819× and 5.630×). The gate prints PASS. Those 28 are *not* accounted for below; they
+are a known, unclosed gap, recorded here rather than left for a reader to find.
+
 Our pre-submission gate (`bin/check_discards.py`) fails the build if any design that beats a
 submitted one on the primary objective was never measured on the ranking instrument — that is
 exclusion by proxy rather than by evidence, and it had already happened twice in this project
 at scales of 14 and 337 designs. It **passes**: every design outranking a submitted row on the
-pH ratio was also scored on the instrument. It then warns on **45 designs that were measured
-and still rejected**, and requires the reason be recorded. Here it is.
+pH ratio was also scored on the instrument. It then warns on **45 run names — 38 distinct
+molecules — that were measured and still rejected**, and requires the reason be recorded. Here it
+is.
 
 All 45 ratios in that list are **generator-pose** readings. Joined back to the pooled refold
 table by binder sequence:
@@ -518,8 +618,20 @@ entries in the 45 we would want back, and what they need is poses, not an argume
 **median over every ESMFold2 refold pose of that exact binder sequence**
 (`bin/ph_pool_by_sequence.py`), joined to affinity **by sequence** (`bin/master_rank.py`)
 because the same molecule appears in this project under as many as three run names. Both
-affinity columns are ipSAE_min on ESMFold2, median of 5 seeds. `affinity_above_null` means
-above the shuffle null of §4.5 and, as that section says, very little else.
+affinity columns are ipSAE_min on ESMFold2, median of 5 seeds. `affinity_above_null` is
+`max(ipSAE_human, ipSAE_mouse) ≥ 0.2218`, a **retained legacy reporting threshold** that came
+from the retired EGF-derived control — not a percentile of the matched null, which §4.5 shows is
+degenerate at 0.0000 and admits of no percentile. It excludes nothing (`MIN_AFFINITY = None`)
+and should be read as a provenance marker, not a claim about binding.
+
+**One provenance correction to the affinity columns themselves.** Until 2026-10-04 the emitter
+took them from a helper that selects **one run directory** per molecule ("most seeds wins, ties
+broken lexicographically") and medians within it. Because the same molecule appears here under
+as many as three run names, the reported affinity was therefore a function of which run name
+sorted first — the keystone error of this project, committed on the submission path. Five of the
+ten cells matched neither the pooled median nor the pooled max as a result; the five single-run
+molecules were unaffected. All ten now come from `master_rank.json`, pooled over every pose of
+the binder sequence, which is what this section already claimed they were.
 
 | # | design | class | pH ratio | human | mouse | poses |
 |---|---|---|---|---|---|---|
@@ -580,7 +692,7 @@ gate at submission time.
    "above zero". The only negative class with a real tail is the 10 measured non-binders, and
    that tail reaches 0.5893, above our own measured positive. Affinity is reported, not gated.
 3. **The primary objective does not discriminate binders.** A measured non-binder reads 5.27×,
-   rank 8 of 2,009 (§4.4). The pH ratio ranks this submission because it is the stated
+   8th of the 132 molecules eligible to rank (§4.4). The pH ratio ranks this submission because it is the stated
    objective, not because we have shown it selects for binding.
 4. ESMFold2 does not model pH. Our ipSAE scores are pH-agnostic structural compatibility, not
    affinity at 6.5 or 7.4. The two legs are not an independent ensemble.
@@ -598,3 +710,20 @@ gate at submission time.
    ROC-AUC, which from one positive would restate one comparison ten times.
 9. The two highest-ranked formats we cannot score (§4.5) are in the submission anyway, and
    two of ten rows depend on Adaptyv's ANARCI calling them antibodies (§9).
+10. **The pH gate has never been validated against a measured pH outcome.** The one opportunity
+    in this project is the G532 antibody series, which carries published pH ratios of 8.08 /
+    1.64 / 0.76. It was folded into 20 poses and never scored or gated; recovered, the gate
+    returns 0.677 / 0.689 / 0.677 / 0.697 — wrong direction on a measured 8× switch and no
+    separation from its own negative comparator. We do **not** present that as falsification,
+    because the structures cannot support the mechanism being measured: the nearest carboxylate
+    sits 8.97–16.84 Å from H433 across those poses, and a gate reading on such a structure is
+    uninformative. What it does mean is that **the primary objective of this submission rests on
+    an instrument with no validation against measured pH data** — not merely on one that "does
+    not model pH" (limitation 4). Separating "the structure is wrong" from "the protonation model
+    is wrong" requires scoring that series' interface, which we have not done.
+11. **Effective n is 5, not 10.** Six of the ten submitted designs sit on one backbone
+    (`d3acid_l65_s831683`), four of those differing only in the ProteinMPNN sequence and two by a
+    single residue. Any hit rate or interval computed over designs rather than sequence families
+    overstates n by up to six-fold on the arm carrying our only causal claim.
+12. **The reproducibility claim has a boundary** — see the Repository note above. The pose cache
+    is not published, and the documented emit command returns zeroed affinity columns without it.
