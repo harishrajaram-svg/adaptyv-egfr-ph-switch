@@ -87,6 +87,64 @@ excluded on it**.
 
 ---
 
+## 5b. THE pH CALIBRATION PAIR — G532 / G532Ctrl. Named twice, never used, and we had it backwards.
+
+**You named G532 and G532Ctrl as the relevant pH calibration pair in both replies, and
+instructed: "Use these binders only for calibration, not as starting sequences for competition
+entries."** We did the inverse. G532 exists in this project as a **design-generation arm**
+(`g532mimic`, `g532_ladder`) and is **absent from the control panel entirely** — it appears
+nowhere in the pH gate, the ranking table, or the methods document.
+
+Your SPR figures, which are the ones that matter:
+
+| target | KD at pH 6.5 | KD at pH 7.4 | KD(7.4)/KD(6.5) |
+|---|---|---|---|
+| human EGFR | 294 nM | 3,900 nM | **13.26×** |
+| mouse EGFR | 547 nM | 1,810 nM | **3.31×** |
+
+**And it switches on H433 and H370 — the exact pair this project is built on.** Two consequences
+we had wrong and have now corrected in the methods document (§8.1):
+
+1. **We were describing target-side histidines as "self-defeating."** You told us not to. G532
+   is the reason, and we had the citation a day before we wrote the claim.
+2. **We were calling the two-site H433+H370 route "closed."** 13.26× exceeds the 7.94×
+   single-proton bound, so G532 must be linking more than one proton at the pair we measured at
+   8.5 Å. We failed to build it; that is not the same thing.
+
+**Assay format, as you asked.** G532 also carries published **ELISA** ratios (8.08 / 1.64 / 0.76
+for G532 / G532V / G532Ctrl). Those are **EC50 ratios and must not be compared with SPR KD
+ratios** — an internal analysis of ours anchored on the 8.08 figure, which was the wrong
+comparator for our KD-ratio objective. The two are kept separate here.
+
+**Where the control check stands, honestly.** The ladder was folded into 20 ESMFold2 poses and
+never scored or pH-gated. Recovered, the gate returns **0.677 / 0.689 / 0.677 / 0.697** for
+G532 / G532V / G532Ctrl / G5V2 — wrong direction on a measured 13× switch, and no separation
+from its own negative comparator. All four land on the 0.699× analytic lower bound of the
+single-site model, i.e. the gate is returning its own floor.
+
+**We are not reporting that as a falsified gate, because you told us how to read it:** *"A
+failure to recover this control could arise from the predicted pose or the protonation model.
+Assess those separately before using the pH gate to discard candidates."* Running that
+separation (`bin/g532_pose_check.py`) gives **POSE WRONG on 20 of 20**: the nearest carboxylate
+sits **8.97–16.84 Å** from H433 across the five G532 poses, and in G532V/G532Ctrl the relevant
+acidic residues are mutated out by design. A gate reading on a structure that cannot host the
+mechanism is uninformative, so the failure is **attributed to the pose, not yet to the
+protonation model.**
+
+**What is still not done:** scoring the ladder's interface, which is what would separate "ESMFold2
+built no complex" from "the protonation model is wrong." It is a local ten-minute job. One
+complication to flag in advance: the ladder is a **3-chain** Fv complex with an intra-Fv pair at
+0.8659, and `ipsae_min` **refuses** on more than one inter-chain pair by design (fixture case 10).
+So the interface score may need the binder:target pair named explicitly rather than inferred.
+
+**And the ordering consequence we have not honoured.** Your instruction was to assess pose and
+protonation separately *before* using the pH gate to discard candidates. The gate has been used
+as a discard filter throughout — §10 of the methods document lists 38 molecules rejected on it.
+Those rejections rest on a gate whose only ground-truth test is unresolved. We are stating that
+rather than re-running the selection 14 hours before a deadline, and it is question (d) below.
+
+---
+
 ## 6. THE CONTROL RECOVERY ITSELF — the result this document was missing
 
 **An earlier version of this file introduced the measured controls as "the class we never had"

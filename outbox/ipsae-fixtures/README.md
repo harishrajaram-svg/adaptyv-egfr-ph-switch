@@ -1,8 +1,27 @@
 # ipSAE_min — fixture package for independent review
 
-Built for PK, 2026-10-04, in answer to: *"please send the actual file and reproducible
-fixtures ... include the code commit, model/version, raw PAE and structure files,
-chain/residue mapping, cutoffs, and expected directional scores."*
+Built 2026-10-04, in answer to: *"please send the actual code and fixtures. I have not reviewed
+`bin/ipsae_min.py` or reproduced 0.8887. Include the exact PAE/structure inputs, versions,
+cutoffs and expected directional values. The reference implementation distinguishes asymmetric
+scores from its maximum summary; your minimum must be tested explicitly. Reproducing
+barnase/barstar alone would not cover asymmetric chains, chain-order changes, empty interfaces
+or indexing errors."*
+
+**Nothing in this bundle has been independently reviewed.** The scorer, the expected values and
+this README are all ours. The 0.8887 figure reproduces here (case 01) but reproducing our own
+number against our own fixture is a regression test, not a review. The five classes named above
+map to cases as follows — and **one of the five is still missing**:
+
+| named class | case | status |
+|---|---|---|
+| barnase/barstar | 01 | present, 0.888672 |
+| asymmetric chains | 03 | present, A→B 0.014687 vs B→A 0.000000 |
+| chain-order changes | 06 | present, binder in chain A |
+| empty interfaces | 09 | present, 0 of 780 residue pairs in both directions |
+| **indexing errors** | — | **NOT COVERED.** No fixture exercises a residue-mapping offset. This is the one gap and we are naming it rather than leaving it to be found. |
+
+The minimum-over-directions step is tested explicitly: every case prints both asymmetric values
+before the minimum, and the reference's own `max` row is never used.
 
 ## Run it
 

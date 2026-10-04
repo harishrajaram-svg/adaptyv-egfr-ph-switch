@@ -219,17 +219,28 @@ reinterpreted later.
   showed no binding, i.e. a ~9% hit rate"*. That is wrong and it **tripled the bar**: the
   collection holds **10 de novo designs, all with no binding detected**, plus **human EGF**,
   which is the collection's positive control and the native agonist — not a design. So the
-  comparator is **0 of 10 expressed de novo designs with binding detected**, Wilson 95%
-  **[0, 0.278]**, from `proteinbase.com/collections/egfr-round1-second-submission` (local copy
+  comparator is **0 of 10 expressed de novo designs with binding detected**, **exact
+  (Clopper–Pearson) two-sided 95% interval [0, 0.308]**, from `proteinbase.com/collections/egfr-round1-second-submission` (local copy
   `data/proteinbase/egfr_round1_second.csv`). CONTROL-TABLE §2 described the same file correctly;
   this document did not.
-* **Minimum useful improvement:** prespecified as **a hit rate whose 95% CI excludes the
-  comparator's upper bound of 0.278**, computed on **families (n=5)** and not on designs
+* **Minimum useful improvement:** prespecified as **a hit rate whose exact 95% interval excludes
+  the comparator's upper bound of 0.308**, computed on **families (n=5)** and not on designs
   (n=10) — see §1.3. With 5 clusters, of which one holds 6 designs, that bar is demanding and we
   are stating so in advance rather than discovering it in December. Anything less is reported as
   **inconclusive**.
-* Every proportion reported with a 95% confidence interval (Wilson), **clustered by sequence
-  family**, and an explicit **inconclusive** category.
+* Every proportion reported with an **exact (Clopper–Pearson) two-sided 95% interval**,
+  **clustered by sequence family**, and an explicit **inconclusive** category. *Correction: an
+  earlier draft specified Wilson intervals and attributed the choice to PK. He specified "exact
+  two-sided 95% intervals"; Wilson was our word, not his.*
+* **Discrimination, for the December outcome analysis only:** **AUROC and average precision,
+  the latter reported relative to target prevalence**, computed **within target** and reported
+  target-specific **before** any equal-target summary — as asked. An earlier draft removed these
+  entirely while correcting a separate error (an ROC-AUC quoted off a control panel with a single
+  positive, §2.5). That over-corrected: the control panel cannot support an AUROC at n=1
+  positive, and the December outcome analysis both can and should carry one. **The two are
+  different objects and the distinction is now explicit here so it is not collapsed again.**
+* **Falsification rule and minimum useful effect are committed above, before outcomes**, and an
+  imprecise result is reported as **inconclusive** rather than as a negative.
 
 ## 2.5 Three assessments kept separate
 

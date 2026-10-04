@@ -67,8 +67,12 @@ submitted designs switch on H433. We designed against a tag-free crystal structu
 was not available to optimise against even accidentally.
 - **Mechanism A** — the inverse: histidine on the binder, carboxylate on the target.
 
-**The ceiling, and why it set the strategy.** As pKa_bound → ∞ the ratio tends to
-10^(7.4−6.5) = **7.943×** per site. For EGFR's H433, whose free pKa we measure at 6.22,
+**The ceiling, and why it set the strategy.** The general one-proton upper bound over this pH
+pair is **7.94×** per site; with H433's measured free pKa of 6.22 the single-site model spans
+**0.699× to 5.55×**. Both figures were independently confirmed by our collaborator's review.
+Worth noting that our empirically measured non-switch floor, **0.702×** over n=570 designs
+(§6), lands on the analytic lower bound of 0.699× — the floor is the model's own minimum, not
+a property of those designs. For EGFR's H433, whose free pKa we measure at 6.22,
 the attainable ceiling is **5.55×**. Over a 0.9 pH-unit window two sites give 63× and three
 give 500×; a single site cannot exceed 7.94× by any design.
 
@@ -137,10 +141,15 @@ told to hit.
 0/60 engaged, closest approach 13.6 Å. It is 26.2 Å from H433. We selected it before
 measuring the pairwise distances; the distance matrix would have ruled it out for free.
 
-### 3.4 The two-site route is closed, and no design in the pool beats the single-site ceiling.
+### 3.4 We could not build the two-site route — but it exists. See §8.1.
+**This section previously read "the two-site route is closed." It is not; we failed at it.**
+G532, a published antibody, achieves **13.26×** on human EGFR using carboxylate contacts with
+**H433 and H370** — this exact pair (§8.1). Everything below is an accurate account of our own
+failure and should be read that way.
+
 3 of 1,944 designs engage H433 and H370 simultaneously, all by accident. The best physically
-composed multi-site product in the entire pool is **6.58×** — below the 7.943× single-site
-maximum and 15% of the 43.1× two-site ceiling. Of 23 designs that reached H370 incidentally,
+composed multi-site product in the entire pool is **6.58×** — below the 7.94× single-proton
+bound and 15% of the 43.1× two-site ceiling. Of 23 designs that reached H370 incidentally,
 **9 of 10 that switched did not bind.** H370 has 153 heavy atoms within 10 Å of its ring
 against H433's 57; reaching into that cleft appears to cost the interface area binding needs.
 
@@ -504,13 +513,58 @@ lab's designs compare pH 7.4 to 5.4 and reach up to 1000× with three or more in
 histidines, from 4 experimental hits in 12,000 designs. The only published result near our
 window is a **>2× at pH 6.0**.
 
-**Both bodies of work design binders that release in acid; neither reports a design that
-binds more strongly at low pH.** Our direction is the one neither achieved — which is a
-reason for humility about our predictions, not confidence about our designs.
+### 8.1 RETRACTED — "nobody reports a design that binds more strongly at low pH." G532 does.
+
+An earlier version of this section said: *"Both bodies of work design binders that release in
+acid; neither reports a design that binds more strongly at low pH. Our direction is the one
+neither achieved."* **A counterexample was in our collaborator's review a day before we wrote
+that, and we had not read far enough into the email to find it.** It is the most important
+citation in this document and we missed it.
+
+**G532** is a published antibody that binds EGFR **more tightly at pH 6.5 than at 7.4**, on
+both species, by SPR:
+
+| target | KD at pH 6.5 | KD at pH 7.4 | KD(7.4)/KD(6.5) |
+|---|---|---|---|
+| human EGFR | 294 nM | 3,900 nM | **13.26×** |
+| mouse EGFR | 547 nM | 1,810 nM | **3.31×** |
+
+And the mechanism is **ours**: the study proposes antibody carboxylate interactions with the
+target's **H433 and H370** — the same two histidines, and the same direction of linkage, that
+this entire project is built on. (Caveat supplied with the citation: those contacts rest on
+modelling and mutational data, not an experimentally solved complex.)
+
+**Three things follow, and they revise §1, §3.4 and §3.5.**
+
+**1. Mechanism B is not self-defeating, and we should not have described it that way.** A real
+molecule exploits a target-side histidine and gets 13.26×. Our §3.5 retraction already withdrew
+the pool-wide trade-off claim on our own data; G532 independently removes the structural argument
+for it.
+
+**2. The two-site H433+H370 route is demonstrated, not closed.** §3.4 concluded the route was
+closed because 3 of 1,944 of *our* designs engaged both sites, all accidentally, and our one
+deliberate attempt (`S60D`) bought 1.11× while destroying the interface. That remains an accurate
+account of **our** failure. It is not evidence the route is unavailable: **13.26× exceeds the
+7.94× single-proton upper bound**, so G532 must be linking more than one proton, and the sites it
+names are the pair we measured at 8.5 Å. The honest statement is that we failed to build it, not
+that it cannot be built.
+
+**3. Our window is not above every published transition.** G532 is measured at exactly our pH
+pair, 6.5 against 7.4. The "above every published pH-switch transition" framing stands only
+against Proton-PottsMPNN (4.0–5.8) and the Baker lab (7.4 vs 5.4).
+
+**What this costs us.** Our best design reads 5.46× against G532's 13.26×, and G532 is a
+*measured* number against our *predicted* one. It is also an antibody, where CDR loops make
+multi-site placement tractable, which is the asymmetry §8.2 describes. We are reporting a
+single-site design at 98% of its site's ceiling in a problem where a two-site solution is known
+to exist and is 2.4× better.
+
+### 8.2 Where the histidines sit, and why it capped us
 
 Their histidines are on the **binder**, where they are placeable and multipliable. Ours is on
 the **target**, where evolution fixed its position. That choice, made before we read either
-paper, is what capped this project at a single site.
+paper, is what capped this project at a single site — and G532 shows the cap is a property of
+*our* search, not of the mechanism.
 
 ---
 
@@ -710,9 +764,14 @@ gate at submission time.
    ROC-AUC, which from one positive would restate one comparison ten times.
 9. The two highest-ranked formats we cannot score (§4.5) are in the submission anyway, and
    two of ten rows depend on Adaptyv's ANARCI calling them antibodies (§9).
-10. **The pH gate has never been validated against a measured pH outcome.** The one opportunity
-    in this project is the G532 antibody series, which carries published pH ratios of 8.08 /
-    1.64 / 0.76. It was folded into 20 poses and never scored or gated; recovered, the gate
+10. **The pH gate has never been validated against a measured pH outcome, and the control that
+    would do it was supplied to us and not used.** G532 is a published antibody with **SPR
+    ratios of 13.26× human / 3.31× mouse** at exactly our pH pair, switching on H433 and H370
+    (§8.1). Our collaborator named it as the calibration pair, twice, and instructed that it be
+    used for calibration only and never as a starting sequence. We did the inverse: G532 appears
+    in this project as a design-generation arm and is absent from the control panel. It also
+    carries published **ELISA** ratios of 8.08 / 1.64 / 0.76, which must not be compared against
+    SPR KD ratios — an earlier internal analysis anchored on the ELISA figure. It was folded into 20 poses and never scored or gated; recovered, the gate
     returns 0.677 / 0.689 / 0.677 / 0.697 — wrong direction on a measured 8× switch and no
     separation from its own negative comparator. We do **not** present that as falsification,
     because the structures cannot support the mechanism being measured: the nearest carboxylate
