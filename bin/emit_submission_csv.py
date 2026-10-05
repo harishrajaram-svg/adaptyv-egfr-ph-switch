@@ -78,7 +78,35 @@ OUT   = "submissions/01-egfr.csv"
 # 17 -> 18 on 2026-10-05: ss_bc_s831683_mpnn6_S15D_S62H_routeA restored as a DECLARED
 # parent/mutant pair with bc_s831683_mpnn6_S15D (see its assessment column). 18 of the 20
 # permitted; two slots remain deliberately unused.
-LIMIT = 18        # 10 cut + A22D + rimA01_r15_L133E. NOT the allowed 20 -- see THE CUT.
+LIMIT = 16        # 18 uploaded, 2 removed on the organisers' own novelty check -- see
+                  # INELIGIBLE below. NOT the allowed 20 -- see THE CUT.
+
+# REMOVED BY THE ORGANISERS' NOVELTY CHECK, 2026-10-05, not by us.
+#
+# The submission was uploaded with 18 designs. Proteinbase runs its own novelty check at
+# upload and scored 16 of them 3/4 and TWO of them 2/4, below the 3/4 bar, and blocks
+# submission until they are removed. Our own gate had cleared all 18, which is exactly the
+# failure limitation 33 predicted: our whole-chain qtmscore only approximates their
+# domain-segmented computation.
+#
+#   bc_s360518_mpnn9_A22D   ours: level 3 at qTM 0.7924 -- clearing the level-2 cliff by
+#                           0.0076, the tightest margin in the submission and named in
+#                           limitation 33 as its sharpest eligibility exposure. Theirs: 2/4.
+#                           The margin was real and it fell the wrong way.
+#   h370_020_vhh            ours: level 4 on the ANTIBODY branch (CDRH3 identity 0.273,
+#                           global 0.526). Theirs: 2/4. Its whole-chain qTM is 0.8714, above
+#                           the 0.80 HIGH line, so their pipeline does not appear to apply
+#                           the antibody rule here -- but rimA02_d3_rimA_14_vhh at qTM 0.8552
+#                           PASSED at 3/4, so it is not a simple general-rule substitution
+#                           either. Two data points do not characterise the difference and we
+#                           do not claim to understand it.
+#
+# Removing both breaks no declared parent/mutant pair: A22D's wild-type was never shipped
+# and h370_020_vhh is not half of a pair.
+INELIGIBLE = {
+    "bc_s360518_mpnn9_A22D": "organisers' novelty check 2/4 (ours: level 3, margin 0.0076)",
+    "h370_020_vhh": "organisers' novelty check 2/4 (ours: level 4 on the antibody branch)",
+}
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
 # PROTEINBASE'S VOCABULARY, NOT OURS. Verified 2026-10-05 against the live submission form
@@ -420,7 +448,14 @@ def main():
             f"{', '.join(missing[:5])}. Re-run bin/master_rank.py. Refusing to emit a CSV "
             f"with affinity columns that would silently read 0.0000.")
     scored = []
+    dropped = []
     for x in rows:
+        # Designs the organisers' own novelty check rejected are not eligible and are
+        # dropped here rather than hand-deleted from the CSV, so the reason travels with
+        # the code and a re-emit cannot quietly reinstate them.
+        if x["name"] in INELIGIBLE:
+            dropped.append((x["name"], INELIGIBLE[x["name"]]))
+            continue
         hu, mo = pooled[x["seq"]]
         scored.append(dict(name=x["name"], sequence=x["seq"],
                            molecule_class=({"protein": "single_chain"}.get(
@@ -489,6 +524,17 @@ def main():
                     f"{[c for c in r[k] if ord(c) > 127]!r} after normalisation.\n"
                     "  Add the character to SUBS in bin/emit_submission_csv.py, or write "
                     "it in ASCII at source.")
+
+    if dropped:
+        print(f"\nDROPPED {len(dropped)} design(s) as ineligible:")
+        for n_, why in dropped:
+            print(f"  {n_:<28} {why}")
+    missing_drop = [k for k in INELIGIBLE if k not in {d[0] for d in dropped}]
+    if missing_drop:
+        raise SystemExit(
+            f"INELIGIBLE names not found in the candidate pool: {missing_drop}.\n"
+            "  Either they were already removed upstream or a name changed. Fix the\n"
+            "  INELIGIBLE map rather than leaving a stale entry that silently does nothing.")
 
     for r in scored:
         n = len(r["sequence"])
