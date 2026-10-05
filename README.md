@@ -148,6 +148,43 @@ the glutamate-reach argument was geometric inference, now measured per pose. Wha
 is the mechanism's specificity: a neutral isostere at the same position leaves the gate
 unchanged and an acid one methylene shorter cannot reach its counter-charge and does nothing.
 
+**Second block, same day — the review's remaining items.**
+
+- **The exclusion ledger was rebuilt and it did not favour the submission.** 45 warn names
+  reconcile to 15 distinct sequences (not 38); that list and the separate "never a candidate"
+  list are **disjoint**, so the union is 75 molecules; 63 were excluded on the pH gate alone and
+  were reopened. Re-scored on the finalists' own gate, 35 of our own designs outranked the
+  weakest shipped tier-1 design, and novelty cleared 25 of them at Level 3. **Five were added to
+  the submission (12 → 17 of the 20 permitted)** by a rule fixed before the result was examined.
+- **The pre-submission gate was checking a 31-design candidate pool, not the 12 shipped**, so
+  its threshold came from a design we did not submit and 19 unshipped candidates were never
+  checked at all.
+- **Pose discovery was undercounting and double-counting simultaneously.** Three submitted
+  designs had four times more poses on disk than the submission counted; 76 sequences had an
+  inflated pose count because the same files were globbed twice. Medians barely moved; spreads
+  moved a lot (1.31 → 4.38 on one design). No gating decision was wrong.
+- **On its own co-crystal, the instrument scores a correct interface zero.** rAC1 against 4UIP
+  by structural contact recovery: one pose in ten reproduces 72% of the crystal contacts and 93%
+  of the epitope, and **all ten poses score ipSAE_min 0.0000**. A zero on this instrument does
+  not mean "no interface".
+- **The submission has nine backbone families and one epitope.** All 17 designs contact the same
+  patch of domain III, 20 residues shared by ≥80% of them. The top-ranked design contacts an
+  N-glycosylation sequon (Asn420). Human/mouse identity *at the contacted positions* is 0.86,
+  not the whole-protein figure.
+- **Control recovery is reported family-balanced**, because nine of the ten no-KD molecules come
+  from one submitter group. Raw 8/10 = 0.800; family-balanced 0.889; leave-one-family-out spans
+  0.778–1.000. No interval is reported and no effective-n is substituted into Clopper–Pearson.
+- **The 0.2218 `affinity_above_null` column is removed from the CSV**, not relabelled — it was a
+  percentile of a null that proved to be a point mass at zero.
+- **Two corrections to this day's own work**, both caught before release: 6ARU is the
+  cetuximab-Fab complex in the *tethered* conformation, which matches the assay, so an earlier
+  claim here that receptor state was unmatched and unassessed was wrong; and the count of
+  designs carrying binder histidines is ten of seventeen, not the eight that was carried forward
+  without recounting.
+- **The five additions created two new near-duplicate pairs**, so 8 of 17 designs now sit in a
+  pair differing by one or two residues. Recorded with the eligibility exposure it implies,
+  rather than smoothed over.
+
 **Still open.** The partner-deletion free leg is a fixed-conformation diagnostic, not a
 measurement of the apo state. Full-ECD, glycan and receptor-state checks have not been applied
 to the finalist footprints. The rAC1 comparison needs structural contact recovery against
