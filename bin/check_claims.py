@@ -290,14 +290,27 @@ FIELD_PATTERNS = [
 ]
 
 
-def citations(a, window=320):
-    """Numbers quoted near a design name must match that design's own CSV row."""
+def citations(a, window=200):
+    """Numbers quoted near a design name must match that design's own CSV row.
+
+    THE WINDOW STOPS AT THE NEXT DESIGN NAME. A fixed 320-character window was tried
+    first and produced an 18-of-48 mismatch rate -- almost all of it spurious, because
+    this document is full of A-versus-B comparisons ("`X` reads 3.545x ... against shipped
+    `Y`: 1.835x") and the window ran past the comparison boundary and attributed Y's
+    numbers to X. A 37% failure rate in a gate trains the reader to ignore it, which is
+    worse than having no gate, so the scan now ends at the next backticked identifier, the
+    next table cell, or the next sentence -- whichever comes first.
+    """
     rows = {r['name']: r for r in a['csv']}
     bad, checked = [], 0
     for doc, text in a['docs'].items():
         for name, row in rows.items():
             for m in re.finditer(re.escape('`' + name + '`'), text):
                 seg = text[m.end():m.end() + window]
+                stops = [seg.find('`'), seg.find('|'), seg.find('. '), seg.find('\n\n')]
+                stops = [x for x in stops if x > 0]
+                if stops:
+                    seg = seg[:min(stops)]
                 for field, pat, prec in FIELD_PATTERNS:
                     val = row.get(field)
                     if not val:
@@ -306,15 +319,25 @@ def citations(a, window=320):
                         truth = round(float(val), prec) if prec else int(float(val))
                     except ValueError:
                         continue
-                    for q in re.finditer(pat, seg):
+                    # ONLY THE FIRST match per field, i.e. the headline citation.
+                    #
+                    # A sentence may legitimately carry several numbers of the same shape:
+                    # "`L133E` reads 5.656x ... with H370 contributing 0.921-6.229x" has
+                    # three x-values and only the first is the design's pH ratio. Checking
+                    # all of them flagged 6.229 as a stale ratio, which is nonsense. So
+                    # this pass verifies the HEADLINE number only -- a stated limitation,
+                    # not a silent one: an elaborating figure deeper in a sentence is not
+                    # guarded, and the INVENTORY pass is what covers those.
+                    q = re.search(pat, seg)
+                    if q:
                         checked += 1
                         try:
                             got = round(float(q.group(1)), prec) if prec else int(float(q.group(1)))
                         except ValueError:
-                            continue
+                            got = None
                         # only flag when the number looks like it IS this field:
                         # same magnitude, differs in the last place(s)
-                        if got != truth and abs(got - truth) < max(truth * 0.5, 1.0):
+                        if got is not None and got != truth and abs(got - truth) < max(truth * 0.5, 1.0):
                             line = text[:m.start()].count('\n') + 1
                             bad.append(f"{doc}:{line} `{name}` {field}: doc says "
                                        f"{q.group(1)}, CSV says {val}")

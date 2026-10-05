@@ -159,8 +159,11 @@ measuring the pairwise distances; the distance matrix would have ruled it out fo
 **This section has been wrong twice.** It first read "the two-site route is closed" — it is not.
 It was then corrected to "we could not build it" — which was true of our *generative* search and
 is no longer true of the submission: `rimA01_r15_L133E`, a single Leu→Glu at position 133 of our
-rank-1 design, reads **5.659× all-site, above H433's 5.55× single-site ceiling**, with H370
-contributing 0.921–2.584× while H433 holds steady (§11.6). That is one molecule with a wide pose
+rank-1 design, reads **5.656× on the histidine-only basis, above H433's 5.55× single-site
+ceiling**, with H370 contributing 0.921–6.229× while H433 holds steady (§11.6). *(Two
+corrections in this sentence: the value was 5.659× on five poses and is 5.656× on the twenty
+now pooled, and the basis is the two-partner histidine-only gate, not the all-site product —
+§11.7 explains why those are different quantities.)* That is one molecule with a wide pose
 spread, not a demonstration — but it is no longer nothing, and this section should not be read as
 saying the route failed.
 G532, a published antibody, achieves **13.26×** on human EGFR using carboxylate contacts with
