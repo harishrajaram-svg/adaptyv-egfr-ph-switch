@@ -43,6 +43,11 @@ GATES = [
     ('control_family_balance',   [PY, 'bin/control_family_balance.py'], None),
     ('run_fixtures --check',     [PY, 'run_fixtures.py', '--check'], 'outbox/ipsae-fixtures'),
     ('test_failclosed',          [PY, 'test_failclosed.py'], 'outbox/ipsae-fixtures'),
+    # Hard ELIGIBILITY gate, not a document check. It is expected to be RED until the
+    # unlevelled designs are resolved in the portal; a red here means "do not nominate
+    # yet", not "the writeup is wrong". Added 2026-10-05 after 4 of 18 shipped designs
+    # were found never to have been levelled at all.
+    ('novelty_coverage',         [PY, 'bin/check_novelty_coverage.py'], None),
 ]
 
 
