@@ -154,9 +154,44 @@ heavy and light. Medians over 5 seeds each:
 | G532Ctrl | 0.76 ELISA | 0.1848 | 0.1602 | 0.2503 | 0.8433 |
 | G5V2 | — | 0.4110 | 0.3632 | 0.4289 | 0.8605 |
 
-**The real 294 nM binder scores lowest of the four, and its non-switching comparator scores 18×
-higher.** Meanwhile the intra-Fv packing is 0.84–0.86 in every molecule: ESMFold2 folds the Fv
-essentially perfectly and then **fails to dock it onto the target at all**.
+**The 294 nM binder scores lowest of the four, and its non-switching comparator scores 18×
+higher.** Meanwhile the intra-Fv packing is 0.84–0.86 in every molecule.
+
+**Three corrections to how this table was read, 2026-10-05.**
+
+*First, G532Ctrl is not a negative.* Earlier text here and in the methods document called it
+"its own negative" and treated G532 as the only binder in the ladder. **G532Ctrl is also a
+measured EGFR binder** — its 0.76 is an *EC50 ratio across pH*, i.e. a binder that does not
+pH-switch, not a molecule that fails to bind. All four rows are antibodies against the same
+target; what differs is the pH dependence. Any claim phrased as "the only one that binds"
+is withdrawn.
+
+*Second, four rows cannot establish an inverse relationship.* The observation that the
+tightest binder scores lowest is a four-point ordering with no replication across molecules
+and no error model. It is consistent with the instrument being uninformative on antibodies —
+which is the conclusion we draw elsewhere from larger evidence — but on its own it does not
+show that score runs *opposite* to affinity, and it is not offered as such.
+
+*Third, high intra-Fv confidence is not a correct fold.* The 0.84–0.86 figures say the model
+is confident about the VH:VL interface. They do not say the Fv is folded correctly, and they
+say nothing at all about the pose relative to the target. "Folds the Fv essentially perfectly
+and then fails to dock it" over-reads a confidence score; what is supportable is that the
+model places high confidence on the intra-Fv interface and near-zero on the target interface.
+
+**The same pattern on the full human ECD.** Scored 2026-10-05 on the 621-residue ECD rather
+than the domain-III crop, per named interface (chains A = VL, B = VH, C = EGFR ECD), medians
+over 5 seeds:
+
+| molecule | target:VL (A:C) | target:VH (B:C) | intra-Fv (A:B) |
+|---|---|---|---|
+| **G532** | **0.0000** | **0.0000** | 0.8189 |
+| G532V | 0.2625 | 0.2564 | 0.8200 |
+| G532Ctrl | 0.2270 | 0.2282 | 0.8110 |
+| G5V2 | 0.2547 | 0.2590 | 0.8159 |
+
+Same ordering, same intra-Fv/target gap, on a different target construct — which is what
+makes the pose attribution below credible rather than a crop artefact. Note these 20 poses
+were scored and then wired into no analysis; they are reported here and feed nothing.
 
 **Three consequences.**
 
@@ -167,7 +202,8 @@ essentially perfectly and then **fails to dock it onto the target at all**.
    the separation you asked for and the honest end of it.
 2. **It is a third and much stronger data point on antibody blindness.** §4.2 of the methods
    document had 0/2 on VHH positives; §4.5 added four CDR decoys indistinguishable from the real
-   VHH at 0.0000. This is a *measured 294 nM antibody* scored **below its own negative
+   VHH at 0.0000. This is a *measured 294 nM antibody* scored **below a non-pH-switching
+   comparator that is itself a measured binder
    comparator**. The instrument is not merely insensitive to antibody formats — on the one
    measured example we have, it is **anti-correlated**.
 3. **It bears directly on two of our ten submitted rows**, both VHH format. We already report

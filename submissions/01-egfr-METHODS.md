@@ -732,78 +732,101 @@ readings and was stated as though it were the only one.
 
 ## 10. The exclusion ledger
 
-**Read this section with two corrections in mind.** First, the "45 designs" below are **45 run
-names and 38 distinct molecules** — the gate is name-keyed on the discard side, so seven alias
-pairs are double-counted. The ledger built to catch this project's keystone trap is itself keyed
-on names. Second, and more seriously, the gate reads 69 rows out of the `phgate_*.tsv` files
-rather than the 2,009-row sequence-keyed `master_rank.json` that this document elsewhere calls
-canonical — **and no `phgate_*.tsv` exists for the `sd`/`sd2` arms that supply six of the twelve
-shipped designs.** Joined properly by sequence, **59 molecules with n ≥ 5 poses outrank the
-weakest shipped design on the target-only ratio** and were never candidates. **One** of them
-outranks the best shipped design: `c5_cf_short__boltzgen_egfr_cropfree_short_48` at 5.819×
-(human ipSAE 0.242, mouse 0.181 — weak on both species). The gate prints PASS.
+*Rebuilt 2026-10-05 as `bin/exclusion_ledger.py`, keyed on binder sequence. The prose ledger
+this replaces is preserved in git history at commit `efe1fa4^`. No outcome has been examined.*
 
-Two corrections to an earlier version of this paragraph. It said "28 molecules", which was the
-count before tonight's 60 re-folded BindCraft designs entered the ranking table; it is now 59.
-And it named **5.630×** as a second molecule outranking the submission — 5.630× is
-`bc_s360518_mpnn9_A22D`, which is **shipped at rank 2**. Citing a submitted design as an
-exclusion was the kind of error this section exists to prevent.
+**What was wrong with the old ledger.** It held two lists and never reconciled them. One was
+45 run names that `bin/check_discards.py` warns on — measured, outranking a submitted design,
+rejected anyway — described here as "38 distinct molecules" because the gate is name-keyed on
+the discard side and alias pairs double-count. The other was a set of high-ranking molecules
+that were never candidates at all, reported first as 28 and then as 59 after a re-fold changed
+the denominator. Adding 38 and 59 into "97 excluded" would have been wrong if the two lists
+intersect, and nobody had checked. The ledger built to catch this project's keystone trap was
+itself keyed on names.
 
-Those 59 are *not* accounted for below; they are a known, unclosed gap, recorded here rather than
-left for a reader to find. Note also that all 59 are ranked on the **superseded** target-only
-basis — the all-site product was computed only for the twelve submitted designs, so we cannot say
-how they would rank on the basis this submission actually uses. That is the more serious half of
-the gap and §13 states it.
+**The reconciliation.**
 
-Our pre-submission gate (`bin/check_discards.py`) fails the build if any design that beats a
-submitted one on the primary objective was never measured on the ranking instrument — that is
-exclusion by proxy rather than by evidence, and it had already happened twice in this project
-at scales of 14 and 337 designs. It **passes**: every design outranking a submitted row on the
-pH ratio was also scored on the instrument. It then warns on **45 run names — 38 distinct
-molecules — that were measured and still rejected**, and requires the reason be recorded. Here it
-is.
-
-One housekeeping note on the underlying file: `ph_refold_regate.json` merges rather than
-overwrites, so it carries **20 entries at n=1 whose pose directories no longer exist on disk**.
-All 20 read below 1.60× on the refold, so none is a lost candidate, but the file is larger than
-the evidence behind it and should not be counted as 2,154 measurements.
-
-All 45 ratios in that list are **generator-pose** readings. Joined back to the pooled refold
-table by binder sequence:
-
-| why it was rejected | n |
+| | |
 |---|---|
-| fewer than 5 refold poses **and** the refold pool kills the switch (<1.20×) **and** binds neither species | 20 |
-| fewer than 5 poses + refold kills the switch + scores on one species only | 6 |
-| fewer than 5 poses + refold kills the switch | 5 |
-| fewer than 5 poses + binds neither species | 4 |
-| refold kills the switch + binds neither species | 3 |
-| refold kills the switch | 3 |
-| refold kills the switch + one species only | 1 |
-| scores on one species only (`bg04_r03`, 2.47× generator → 1.94× pooled, mouse 0.0000) | 1 |
-| no refold pool at all (`rank2_noC_0`) | 1 |
-| **alias of a design that IS submitted** | 1 |
+| warn run names | 45 |
+| of those, resolvable to a binder sequence and not themselves shipped | 23 |
+| **distinct sequences (List A)** | **15** — 8 alias collapses |
+| **sequences outranking the weakest finalist, n ≥ 5, never candidates (List B)** | **60** |
+| **overlap** | **0 — the lists are disjoint** |
+| **union: distinct excluded molecules** | **75** |
 
-**35 of 45 were never confirmed on 5 or more refold poses**, which §6 makes a precondition for a
-ratio to rank anything. **39 of 45 drop below the 1.20× gate once the refold pool is pooled** —
-the largest, `domIII_1His_ctrl_r17`, goes from 6.60× on one generator pose to 0.67× on the
-pooled refold. This is §3.6 operating as a filter rather than as a table: the generator-pose
-ratio is largely a readout of the generator's own geometry, and these 45 are what that looks
-like when you stop trusting it.
+Two of the 45 warn names resolved to `rimA01_r15`, which is **shipped at rank 1** — including
+its own exact name. That is the same error §10 previously caught once by hand (citing 5.630×,
+which is `bc_s360518_mpnn9_A22D` at rank 2) now found systematically. The gate itself was also
+comparing against the wrong set: it read `submission_final.json`, a **31-design candidate
+pool**, not the 12 designs shipped, so its threshold came from a design we did not submit and
+the 19 unshipped candidates were skipped by a name-stub test and never checked against the
+shipped set. Fixed; it now reads the graded CSV and matches by sequence, and reports 23 warns
+against a 2.289× bar rather than 45 against 1.263×.
 
-The last row is an artifact of our own naming, not a rejection.
-`rank15_boltzgen_egfr_d3_rimA_20` and `rimA01_r15_boltzgen_egfr_d3_rimA_20` are
-**byte-identical sequences** under two run names; the second is submitted at rank 6. The gate
-is name-keyed on the discard side and so flags an alias of a submitted design as a rejection.
-We are recording it rather than silencing it, because name-vs-sequence confusion has broken
-five analyses in this project and this is the sixth instance, caught by a check instead of by
-luck.
+**Classification.** Every molecule in the union falls in exactly one category, in precedence
+order. These are not equivalent and were previously pooled.
 
-Four designs in the list keep a pooled ratio above 1.20× but bind neither species at n < 5
-(`domIII_1His_ctrl_r20` 5.72×, `bg01_r18` 3.48×, `domIII_1His_r15` 2.97×). Those are the only
-entries in the 45 we would want back, and what they need is poses, not an argument.
+| category | n | meaning |
+|---|---|---|
+| **ELIGIBILITY** | 4 | fails a rule that disqualifies it whatever it scored — all four fail the novelty gate. Not reopenable. |
+| **ASSESSMENT** | 8 | never adequately measured: all eight have 1–2 pH poses against a 5-pose minimum. Excluded for want of evidence, not on evidence. |
+| **GATE-ONLY** | 63 | eligible and adequately measured, excluded only on a pH threshold or a judgement call. |
 
----
+The 63 gate-only exclusions are **reopened**. The reason is the reviewer's, and we accept it:
+pH-gate-dependent rejections are *unsupported by a validated selection rule*, so a gate-only
+exclusion is not a finding. Note that the highest-ratio molecule in the whole warn list,
+`domIII_1His_ctrl_r17` at 6.60×, is an ASSESSMENT case with a single pose — it was never a
+measurement.
+
+**One assessment across both pools, which closes the gap this section used to admit.** The
+previous version of §10 said: *"all 59 are ranked on the superseded target-only basis — the
+all-site product was computed only for the twelve submitted designs, so we cannot say how they
+would rank on the basis this submission actually uses. That is the more serious half of the
+gap."* It is now closed. All 63 reopened molecules were re-scored over their own human-leg
+poses with the **same two-partner histidine-only gate that ranks the finalists**, same code
+path, 402 poses. Results in `analysis/01-egfr/exclusion_ledger.json`.
+
+**The result does not favour the submission.** Applying the submission's own tier-1 rule —
+ratio ≥ 1.20, n ≥ 5 poses, pose spread ≤ 1.0× the median — and the submission's own ranking
+basis:
+
+- **36 reopened molecules clear tier 1 and outrank the weakest shipped tier-1 design**
+  (`bc_s831683_mpnn19_S15D`, 1.774×). One is an Adaptyv control molecule and not a candidate;
+  **35 are our own designs.**
+- Several beat shipped designs on both axes at once.
+  `ss_bc_s831683_mpnn6_S15D_S62H_routeA` reads **3.545×** with human 0.765 / mouse 0.744,
+  against shipped `bc_s831683_mpnn6_S15D` at **1.835×** with human 0.780 / mouse 0.751 — the
+  same backbone with one further mutation, essentially the same predicted affinity, and
+  **1.9× the pH ratio**. `sd_d2c_101_l147_s144898_m_T65D` reads 4.735× with human 0.585.
+- The highest, `c5_cf_short__boltzgen_egfr_cropfree_short_48` at **5.546×**, would rank second
+  of everything on this basis, but scores human 0.241 / mouse 0.181.
+
+Read plainly: **the stated primary objective prefers designs we did not submit.** The shipped
+set was assembled with affinity carrying more weight than the objective licenses — this
+document already states that "no design is excluded on affinity", and the ranking nonetheless
+leaned on it. That is a selection effect in the submission, recorded here rather than left for
+a grader to find.
+
+**What blocks acting on it, and it is a real block.** **None of the 35 has a novelty
+assessment.** Novelty Level ≥ 3 is an Adaptyv eligibility requirement, not a preference, and
+every one of the 35 carries `NOT ASSESSED (no novelty record)`. Expression QC is likewise
+unavailable: it was only ever run on the 20 submission candidates, so for the reconsidered pool
+that axis is unassessed too, and the ledger records it as unassessed rather than defaulting it
+to eligible. Novelty is also a severe filter on this target — §9 of this document measures
+Adaptyv's own round-2 set at 2% of *binders* clearing the strict reading — so a high ratio is
+no guarantee any of these is submittable.
+
+**What remains unresolved, stated as such.** We have not established that any of the 35 is
+eligible, and therefore we have not established that the submission should change. What we have
+established is that the exclusion of 63 molecules rested on a gate the reviewer has told us
+cannot carry that weight, and that on the submission's own basis 35 of them outrank a shipped
+design. Running the novelty gate over those 35 is the step that would make this actionable; it
+is in progress at the time of writing and its outcome is recorded in
+`analysis/01-egfr/novelty_reopened.tsv` whether or not it changes the submission. The original
+exclusion list and this amendment are both preserved, timestamped, and written before any
+outcome was examined.
+
 
 ## 11. The submission
 

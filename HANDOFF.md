@@ -1,7 +1,7 @@
 # HANDOFF — Adaptyv challenge 1 (EGFR pH-switch)
 # Written 2026-10-04 ~3:40 PM EDT. Supersedes the 2:00 PM / 3:10 PM revisions entirely.
 
-**Deadline: Mon Oct 6, 23:59 AoE = Tue Oct 7, 07:59 EDT.** Confirmed from an organiser
+**Deadline: Tue Oct 6, 23:59 AoE = Wed Oct 7, 07:59 EDT.** *(Weekdays corrected 2026-10-05: Oct 6 2026 is a TUESDAY and Oct 7 a WEDNESDAY. The dates and times were always right; both weekday labels were wrong, which is the kind of error that makes someone plan a final upload a full day late.)* Confirmed from an organiser
 message, not from our own notes. Adaptyv extended it; the original Oct 4 date is wrong
 everywhere it still appears.
 
@@ -16,7 +16,7 @@ from this file for a week. Organisers: Tudor-Stefan Cotet, Simon Dürr, Amir Sha
 **Submission mechanics, from organiser messages:**
   * **One submission per 24 hours.** Submissions are **retained, not replaced** — you nominate
     which one counts, or the most recent is designated by default. So an early upload costs
-    nothing. **The last upload that still permits a second attempt is Mon Oct 6, 07:59 EDT.**
+    nothing. **The last upload that still permits a second attempt is Tue Oct 6, 07:59 EDT.**
   * Novelty runs **at upload**, in 3–5 minutes, and a **self-service novelty pipeline ships
     Oct 5** so designs can be checked before committing. A competitor has reproduced our exact
     VHH failure mode on the live platform and Adaptyv have said the antibody threshold is being

@@ -189,8 +189,11 @@ def main():
     print(f"LIST B  {len(listB_seqs)} sequences outranking the weakest finalist "
           f"({worst_sub_tgt:.3f}x target-only) with n >= {MIN_N}")
     print(f"OVERLAP {len(both)} sequence(s) in both lists")
-    print(f"UNION   {len(union)} distinct excluded molecules "
-          f"-- NOT {len(listA_seqs)} + {len(listB_seqs)} = {len(listA_seqs)+len(listB_seqs)}")
+    note = ("the lists are DISJOINT, so the union is their sum"
+            if not both else
+            f"NOT {len(listA_seqs)} + {len(listB_seqs)} = "
+            f"{len(listA_seqs)+len(listB_seqs)}; {len(both)} are counted in both")
+    print(f"UNION   {len(union)} distinct excluded molecules -- {note}")
 
     rows = {}
     for q in sorted(union):
