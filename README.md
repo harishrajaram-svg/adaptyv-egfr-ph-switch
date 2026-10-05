@@ -20,7 +20,7 @@ cross-reactive with mouse EGFR.
    so the comparison gets made in the laboratory, not in our gate.
 2. **A molecule with NO REPORTED KD reads a 5.27× switch.** Of 11 molecules Adaptyv ran on this
    platform, the highest-scoring one on our own ranking metric is a molecule with **no KD
-   reported** — which is right-censored, *not* a measurement that it does not bind (PK,
+   reported** — which is right-censored, *not* a measurement that it does not bind (the reviewer,
    2026-10-04; METHODS §4.1). Its rank is **18th of the 246 molecules rankable at n ≥ 5** — the top 7.3%. An earlier version of this file said "8th of 132", which does not reproduce from the current artifact either, and an earlier version still
    of this file quoted "8th of 2,009", which METHODS §7 records as a ~15× overstatement because
    1,877 of that denominator were never rankable.
@@ -181,7 +181,7 @@ unchanged and an acid one methylene shorter cannot reach its counter-charge and 
   figure.
 - **Control recovery is reported family-balanced**, because nine of the ten no-KD molecules come
   from one submitter group. Raw 8/10 = 0.800; family-balanced 0.889; leave-one-family-out spans
-  **0.867–1.000** (this read 0.778–1.000, which was the submitter-prefix family map PK ruled
+  **0.867–1.000** (this read 0.778–1.000, which was the submitter-prefix family map the reviewer ruled
   out; the sequence-clustered map gives 0.867). No interval is reported and no effective-n is substituted into Clopper–Pearson.
 - **The 0.2218 `affinity_above_null` column is removed from the CSV**, not relabelled — it was a
   percentile of a null that proved to be a point mass at zero.

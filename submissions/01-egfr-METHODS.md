@@ -297,7 +297,7 @@ validation.
 This is the only causal result in the project, and the only one where we changed one thing and
 measured the consequence.
 
-`d2c_mpnn13` is a **predicted** binding candidate with no supported pH switch (0.70×) — PK's
+`d2c_mpnn13` is a **predicted** binding candidate with no supported pH switch (0.70×) — the reviewer's
 own phrasing, 2026-10-03, which this sentence previously shortened to "binds and does not
 switch". A single Ser→Asp at position 88 gives
 **4.57×** over 5 poses. Truncating that Asp back to Ala in the same coordinates returns
@@ -756,7 +756,7 @@ distribution, and both EGF-derived 'nonbinders' fall in the top 14% — a model 
 target says protonating H433 is maximally bad for an EGF-like complex, which is exactly right
 for a neutral-pH agonist."* It is withdrawn for three reasons, each sufficient on its own:
 
-1. **The reviewer ruled it out by name.** PK, 2026-10-04 §5: *"The EGF-derived sequences' Potts
+1. **The reviewer ruled it out by name**, 2026-10-04 §5: *"The EGF-derived sequences' Potts
    ranks cannot independently establish their binding or agonism."* And §1: *"Relabel both
    EGF-derived controls as activity-unknown, document their provenance gap, and withdraw claims
    based on their supposed negative status."* §4.1 carried out the relabelling; this paragraph
@@ -2046,7 +2046,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     poses on a median effect smaller than the instrument's stated error. We report it because
     the mechanism is specifically controlled — Glu reaches, Asp does not — not because the
     magnitude is resolved.
-27. **PK's tethered-versus-extended footprint comparison was never run.** He asked for the
+27. **The reviewer's tethered-versus-extended footprint comparison was never run.** He asked for the
     complete binder footprint compared across tethered and ligand-bound extended assemblies,
     including the second receptor, glycans and membrane-facing orientation, and said
     explicitly that distance from one tether contact cannot settle it. §10b runs four other
@@ -2058,16 +2058,16 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     contact outside it. §4.4b's rAC1 result points the other way: on the full ectodomain the
     paratope recall is 0.37–0.96 and on the crop 0.00–0.07. The honest statement is that the
     crop is adequate *for the poses we generated*, which is not the same claim.
-29. **No solvent-accessible surface area was computed.** PK: *"The burial atom count is a
+29. **No solvent-accessible surface area was computed.** The reviewer: *"The burial atom count is a
     useful proxy, not a substitute for solvent-accessible surface area."* It is still the sole
     support for the H370 burial conclusion. `biomodals/modal_sasa.py` exists and was never
     run; "SASA" appears in no deliverable.
-30. **The seed-instability pilot PK specified was never run.** He asked for 20–30 diverse
+30. **The seed-instability pilot the reviewer specified was never run.** He asked for 20–30 diverse
     candidates enriched near decision boundaries at ~10 seeds each, assessing rank changes,
     pose consistency and threshold crossings. What exists instead is 5 seeds per design on the
     shipped set and a 15-seed triad on one design (§11.6). The pKa-perturbation study (§11.7)
     answers a different question — instrument noise, not seed noise.
-31. **Mechanism A was never tested, and was twice asserted to be ruled out.** PK's 2026-09-29
+31. **Mechanism A was never tested, and was twice asserted to be ruled out.** the reviewer's 2026-09-29
     answer 3 was to give mechanism A most of the initial design effort conditional on finding
     a suitable local acidic surface, retaining B as a smaller branch. §1 records that we used
     mechanism B. No mechanism-A result is reported anywhere in this document, so the two

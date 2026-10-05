@@ -88,7 +88,7 @@ every summary statistic is just "where does that one molecule rank", and an earl
 METHODS §4.4 led with AUC 0.80 / 1.00 before this was corrected. Report ranks.
 
 **Human leg: 8 of 10 RIGHT-CENSORED molecules rank below the measured binder, 2 rank ABOVE it.**
-They are molecules with no reported KD, not molecules measured not to bind (PK, 2026-10-04;
+They are molecules with no reported KD, not molecules measured not to bind (the reviewer, 2026-10-04;
 METHODS §4.1) — this line said "MEASURED non-binders" after that correction had landed.
 The top-scoring molecule in the entire measured panel is one with no reported KD (right-censored, not a measured zero) —
 `EXPNEG_gitter-yolo10` at 0.5893 against human EGF's 0.3549 — and it reads a **5.27× pH ratio,
@@ -140,7 +140,7 @@ and the four are NOT distinguishable from each other. Do not claim rank 1 beats 
    general-rule Level 2 (TM 0.914); `rimA02_d3_rimA_14_vhh` is general-rule Level 1. **If their
    ANARCI does not call them antibodies, those two rows fail the gate at upload.** METHODS §9
    states this. Do not upload at the wire.
-2. **Send the outbox.** All three of PK's asks are done and still unsent:
+2. **Send the outbox.** All three of the reviewer's asks are done and still unsent:
    `outbox/ipsae-fixtures/` (8 cases, `run_fixtures.py --check`, VHH-zero trace),
    `outbox/CONTROL-TABLE.md`, `outbox/PREREGISTRATION.md`. §4.4 is the answer to his
    control-recovery ask and he should see it.

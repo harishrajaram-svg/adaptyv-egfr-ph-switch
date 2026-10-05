@@ -1,6 +1,6 @@
 # Preregistration — Adaptyv challenge 1 (EGFR pH-switch), December analysis
 
-Written **2026-10-04**, before any experimental outcome is known, in answer to PK:
+Written **2026-10-04**, before any experimental outcome is known, in answer to the reviewer:
 *"Freeze the candidate universe, sequence-family assignments, model/code versions, scoring
 settings, selection history, final ranks and exclusions."*
 
@@ -274,7 +274,7 @@ reinterpreted later.
   **inconclusive**.
 * Every proportion reported with an **exact (Clopper–Pearson) two-sided 95% interval**,
   **clustered by sequence family**, and an explicit **inconclusive** category. *Correction: an
-  earlier draft specified Wilson intervals and attributed the choice to PK. He specified "exact
+  earlier draft specified Wilson intervals and attributed the choice to the reviewer. He specified "exact
   two-sided 95% intervals"; Wilson was our word, not his.*
 * **Discrimination, for the December outcome analysis only:** **AUROC and average precision,
   the latter reported relative to target prevalence**, computed **within target** and reported
@@ -333,7 +333,7 @@ reinterpreted later.
 
 ## 2.5 Three assessments kept separate
 
-PK: *"Keep software correctness, control recovery and prospective predictive performance as
+The reviewer: *"Keep software correctness, control recovery and prospective predictive performance as
 separate assessments."*
 
 1. **Software correctness** — does `ipsae_min.py` reproduce the pinned reference on the

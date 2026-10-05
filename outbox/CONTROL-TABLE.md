@@ -1,6 +1,6 @@
-# Control table — rebuilt on PK's spec, 2026-10-04
+# Control table — rebuilt on the reviewer's spec, 2026-10-04
 
-PK: *"I would not replace the compromised bar with another universal number ... Add
+The reviewer: *"I would not replace the compromised bar with another universal number ... Add
 experimentally characterised, expressed EGFR nonbinders where available ... For VHHs, include
 framework-preserving CDR decoys as a separate synthetic control class ... Deduplicate positive
 controls by sequence family ... keep seeds nested within sequences."*
@@ -34,13 +34,13 @@ downloaded to `data/proteinbase/egfr_round1_second.csv`.
   * **Human EGF, measured on the same platform, n=15 runs: median KD 5.5e-8 M = 55 nM**
     (range 27–795 nM).
 
-**CORRECTION TO WHAT I SENT PK:** I wrote that human EGF binds EGFR at "~2 nM". The platform's
+**CORRECTION TO WHAT I SENT THE REVIEWER:** I wrote that human EGF binds EGFR at "~2 nM". The platform's
 own measurement is **55 nM median**, more than an order of magnitude weaker. The conclusion is
 unchanged — EGF is a real binder, so an 81%-EGF molecule cannot serve as a negative control —
 but the number I quoted was from memory, not from this assay.
 
 What this does and does not settle: EGF's affinity is now measured. `NEG_nonbinder` is 81% EGF
-*with two insertions*, and its own activity remains **unknown**, exactly as PK said.
+*with two insertions*, and its own activity remains **unknown**, exactly as the reviewer said.
 
 ## 3. NEW — framework-preserving CDR decoys (VHH, presumed negative)
 
@@ -60,7 +60,7 @@ per shuffle. Each shuffle is ONE negative; its 5 seeds measure within-sequence n
 earlier `truenull` run counted 1 shuffle x 5 seeds per design and would have treated that as 5
 independent negatives.
 
-**Carried caveat, PK's:** full-sequence shuffling often destroys the fold, so this null is
+**Carried caveat, the reviewer's:** full-sequence shuffling often destroys the fold, so this null is
 probably artificially easy. It bounds the instrument's noise floor, not biology.
 
 ## 5. What we will and will not claim from this
