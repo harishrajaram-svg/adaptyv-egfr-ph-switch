@@ -323,6 +323,183 @@ def switch_site(rows):
     return txt + "."
 
 
+# The submission as it stood on 2026-10-04, recovered from git commit d53be33
+# ("Fold in the L133 triad..."), the last 10-04 commit before "12 -> 17". Recorded as a
+# constant rather than shelled out to git so that the attestation does not depend on the
+# repository's history being intact. Verified with:
+#   git show d53be33:submissions/01-egfr.csv | tail -n +2 | cut -d, -f1
+BASELINE_1004 = [
+    'rimA01_r15_boltzgen_egfr_d3_rimA_20', 'bc_s360518_mpnn9_A22D',
+    'd2c_mpnn13_S88D_serasp', 'bc_s831683_mpnn6_S15D', 'bc_s831683_mpnn19_S15D',
+    'rimA02_d3_rimA_14_vhh', 'h370_020_vhh', 'rimA01_r15_L133E',
+    'bc_s831683_mpnn9_S15D', 'bc_s831683_mpnn9_WT', 'bc_d3acid_l65_s831683_mpnn11',
+    'bc_s831683_mpnn8_S15D',
+]
+STRUCTDIR_REL = 'submissions/structures'
+
+
+def declaration_review(rows):
+    """SS 12's human-review attestation, generated.
+
+    It was hand-written and went stale in the worst possible place for a hand-written
+    number: an ATTESTATION. It read "the twelve sequences submitted on 2026-10-04" plus
+    "five sequences were added on 2026-10-05", naming `sd_d2c_101_l147_s144898_m_T65D` --
+    which was added on 10-05 and then SWAPPED OUT the same day -- while omitting designs
+    that did ship. So the attestation covered 17 names, one of them not in the submission.
+    An attestation that does not match the submission is worse than no attestation.
+    """
+    names = [r["name"] for r in rows]
+    base = [n for n in names if n in BASELINE_1004]
+    added = [n for n in names if n not in BASELINE_1004]
+    dropped = [n for n in BASELINE_1004 if n not in names]
+    out = []
+    out.append(f"**Human review.** The submitting researcher has reviewed all "
+               f"**{len(names)}** submitted sequences -- their `molecule_class` labels, their "
+               f"lengths, and the claims made about them in this document and in the CSV.")
+    out.append("")
+    out.append(f"Of these, **{len(base)}** were in the submission as it stood on 2026-10-04 "
+               f"and **{len(added)}** were added on 2026-10-05. The additions are "
+               + ", ".join(f"`{n}`" for n in added) + ".")
+    if dropped:
+        out.append("")
+        out.append("Designs that were in the 2026-10-04 set and are **no longer submitted**: "
+                   + ", ".join(f"`{n}`" for n in dropped) + ".")
+    out.append("")
+    out.append(f"What has been verified for the {len(added)} additions by code, and is "
+               f"reproducible from the repository: each comes from this project's own "
+               f"generation runs (SS 10); each was re-scored on the same three pH bases over "
+               f"its own human-leg poses; and the provenance audit below covers them. What has "
+               f"**not** been done for them: expression QC, which was only ever run on the "
+               f"original candidate set. Novelty is **not** uniformly established -- see "
+               f"`bin/check_novelty_coverage.py`, which is RED.")
+    return "\n".join(out).replace("SS ", "\u00a7")
+
+
+def declaration_structures(rows):
+    """SS 12's published-structure coverage, generated.
+
+    Read "Coverage is 10 of 12" naming two missing designs. The directory holds 10 poses
+    and the submission holds 18, so 8 are missing. The previous version of the same line
+    claimed full coverage of "all ten designs" when the submission held twelve -- the
+    identical failure, one revision earlier, which is why it is derived now."""
+    d = STRUCTDIR_REL
+    files = os.listdir(d) if os.path.isdir(d) else []
+    miss = [r["name"] for r in rows
+            if not any(r["name"] in f for f in files)]
+    have = len(rows) - len(miss)
+    txt = (f"**Structures.** Predicted complexes are published at `{d}/`, one median-ipSAE "
+           f"pose each -- not the best pose, which would be selection on the outcome. "
+           f"**Coverage is {have} of {len(rows)}.**")
+    if miss:
+        txt += (" Without a published structure: " + ", ".join(f"`{n}`" for n in miss) +
+                ". Their poses exist and are scored; they are simply not exported. Stated "
+                "rather than implied.")
+    return txt
+
+
+PERT = 'analysis/01-egfr/ph_pka_perturbation.json'
+
+
+def perturbation_findings(rows):
+    """SS 11.7's perturbation findings, generated from the artifact.
+
+    This block was a restatement of a 17-DESIGN run and every claim in it had drifted
+    from the 18-design artifact beside it. Worst: it asserted "No design holds a
+    top-three position in more than 50% of draws" when `rimA01_r15_L133E` holds one in
+    **60%** -- and that design is rank 1, so the sentence was both false and false in the
+    submission's own favour. It also named `sd_d2c..._T65D` in its "top set", a design
+    that is not submitted, and understated the maximum rank span by a third.
+    """
+    d = json.load(open(PERT))
+    ds = d['designs']
+    ship = {r['name'] for r in rows}
+    ds = [x for x in ds if x['name'] in ship]
+    if len(ds) != len(rows):
+        raise SystemExit(f"perturbation artifact covers {len(ds)} of {len(rows)} shipped "
+                         f"designs; re-run bin/ph_pka_perturbation.py")
+    span = lambda x: x['p95_rank'] - x['p5_rank']
+    widest = sorted(ds, key=lambda x: -span(x))[:3]
+    best = max(ds, key=lambda x: x['top3_fraction'])
+    top = sorted([x for x in ds if x['top3_fraction'] >= 0.25],
+                 key=lambda x: -x['top3_fraction'])
+    rest = [x for x in ds if x['top3_fraction'] < 0.25]
+    floor_ = sorted([x for x in ds if x['top3_fraction'] == 0.0],
+                    key=lambda x: x['p5_rank'])
+    n = len(rows)
+    o = []
+    o.append(f"**At PROPKA's own stated accuracy the ordering is not identifiable.** "
+             + "; ".join(f"`{x['name'][:34]}` spans ranks {x['p5_rank']}-{x['p95_rank']}"
+                         for x in widest)
+             + f". The widest span is {span(widest[0])} of {n} ranks.")
+    o.append("")
+    o.append(f"**The single most-stable design holds a top-three slot in "
+             f"{best['top3_fraction'] * 100:.0f}% of draws** (`{best['name']}`, base rank "
+             f"{best['base_rank']}, median {best['median_rank']:.0f}). An earlier version of "
+             f"this section claimed no design exceeded 50%; it did, and it is the top-ranked "
+             f"design, so the error ran in the submission's favour. The conclusion does not "
+             f"depend on sigma: it already holds at the optimistic 0.4.")
+    o.append("")
+    o.append(f"**What does survive.** Two things. First, the **bottom group is robustly at "
+             f"the bottom**: "
+             + ", ".join(f"`{x['name'][:30]}` never rises above {x['p5_rank']}"
+                         for x in floor_[:3])
+             + f" -- {len(floor_)} designs take a top-three slot in 0% of draws. "
+             f"\"These are not switches\" is stable under the noise. Second, a **top set "
+             f"exists even though its order does not**: {len(top)} designs "
+             + ", ".join(f"`{x['name'][:30]}` ({x['top3_fraction'] * 100:.0f}%)" for x in top)
+             + f" hold a top-three slot in at least 25% of draws, against 0-"
+             f"{max((x['top3_fraction'] for x in rest), default=0) * 100:.0f}% for the "
+             f"other {len(rest)}.")
+    return "\n".join(o)
+
+
+FOOT = 'analysis/01-egfr/finalist_footprints.json'
+
+
+def footprint_table(rows):
+    """SS 10b's four reviewer-requested footprint checks, generated.
+
+    Hand-written against a 17-design run and wrong on the count that matters: it read
+    "1 of 17 touches an N-glycosylation sequon -- and it is the top-ranked design". Three
+    of eighteen touch it. Naming only the top-ranked one made the exposure look like a
+    single unlucky row rather than a shared property of three designs at ranks 1, 8 and 9.
+    """
+    d = json.load(open(FOOT))
+    ds = [x for x in d['designs'] if x['name'] in {r['name'] for r in rows}]
+    if len(ds) != len(rows):
+        raise SystemExit(f"footprints cover {len(ds)} of {len(rows)} shipped designs; "
+                         f"re-run bin/finalist_footprints.py")
+    rank = {r['name']: r['_rank'] for r in rows}
+    n = len(ds)
+    out = [x for x in ds if x.get('n_outside_d3_crop')]
+    gl = [x for x in ds if x.get('glycan_sequon_hits')]
+    ids = [x['hu_mo_identity_at_epitope'] for x in ds
+           if x.get('hu_mo_identity_at_epitope') is not None]
+    lo, hi = d['crop_mature_range']
+    rowsout = [
+        "| **domain** | **every design, 100% of contacts, in domain III (L2)** "
+        "-- no domain-II contact anywhere |",
+        f"| **full-ECD** | **{len(out)} of {n}** have any contact outside the "
+        f"{hi - lo + 1} aa domain-III crop (mature {lo}-{hi}), so the crop is adequate and "
+        f"no footprint required the full ECD to assess |",
+    ]
+    if gl:
+        sites = sorted({f"Asn{p}" for x in gl for p in x['glycan_sequon_hits']})
+        who = ", ".join(f"`{x['name'][:36]}` (rank {rank[x['name']]})"
+                        for x in sorted(gl, key=lambda y: rank[y['name']]))
+        rowsout.append(
+            f"| **glycan** | **{len(gl)} of {n}** touch an N-glycosylation sequon, all of "
+            f"them {'/'.join(sites)}: {who}. Of {d['n_sequons']} sequons in the construct, "
+            f"only {len(sites)} is contacted |")
+    else:
+        rowsout.append(f"| **glycan** | **0 of {n}** touch an N-glycosylation sequon |")
+    rowsout.append(
+        f"| **human/mouse** | median identity **at the contacted positions** is "
+        f"**{statistics.median(ids):.2f}**; range {min(ids):.2f}-{max(ids):.2f} over "
+        f"{len(ids)} designs |")
+    return "\n".join(rowsout)
+
+
 def basis_table(rows):
     out = ["| design | target-only | **all-site** | binder histidines | worst drag |",
            "|---|---|---|---|---|"]
@@ -393,7 +570,11 @@ def write_into_methods(rows):
               "FAMILY-LIST": family_list(rows), "BINDER-HIS": binder_his_sentence(rows),
               "LIMIT-FAMILY": limit_family(rows),
               "LIMIT-AFFINITY": limit_affinity(rows),
-              "SWITCH-SITE": switch_site(rows)}
+              "SWITCH-SITE": switch_site(rows),
+              "DECL-REVIEW": declaration_review(rows),
+              "DECL-STRUCT": declaration_structures(rows),
+              "PERT-FINDINGS": perturbation_findings(rows),
+              "FOOTPRINT-TABLE": footprint_table(rows)}
     for tag, body in blocks.items():
         pat = re.compile(rf"(<!-- GENERATED:{tag}[^>]*-->\n).*?(<!-- /GENERATED:{tag} -->)",
                          re.S)
@@ -414,7 +595,11 @@ def check_methods(rows):
                       "BINDER-HIS": binder_his_sentence(rows),
                       "LIMIT-FAMILY": limit_family(rows),
               "LIMIT-AFFINITY": limit_affinity(rows),
-              "SWITCH-SITE": switch_site(rows)}.items():
+              "SWITCH-SITE": switch_site(rows),
+              "DECL-REVIEW": declaration_review(rows),
+              "DECL-STRUCT": declaration_structures(rows),
+              "PERT-FINDINGS": perturbation_findings(rows),
+              "FOOTPRINT-TABLE": footprint_table(rows)}.items():
         m = re.search(rf"<!-- GENERATED:{tag}[^>]*-->\n(.*?)<!-- /GENERATED:{tag} -->", src, re.S)
         if not m:
             bad.append(f"{tag}: block missing")

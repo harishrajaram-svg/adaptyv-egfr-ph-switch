@@ -25,8 +25,12 @@ families, one is activity-unknown, one is invisible to the instrument, and one w
 Source: Adaptyv's own public release, `proteinbase.com/collections/egfr-round1-second-submission`,
 downloaded to `data/proteinbase/egfr_round1_second.csv`.
 
-  * **10 designs expressed, tested against EGFR on this platform, NO binding detected.**
-    48–200 aa, from two independent groups. These are *measured* negatives, not presumed ones.
+  * **10 designs expressed and tested against EGFR on this platform, NO KD REPORTED.**
+    48–200 aa, from two independent groups. These are **right-censored observations, not
+    measured negatives** — a missing KD means the assay did not return a number, which is not
+    the same as a number showing no binding (your correction, 2026-10-04). This bullet read
+    "*measured* negatives, not presumed ones" after that correction had landed; the distinction
+    is the whole basis of §4.1 and it was wrong here.
   * **Human EGF, measured on the same platform, n=15 runs: median KD 5.5e-8 M = 55 nM**
     (range 27–795 nM).
 
@@ -77,11 +81,13 @@ available.** Two reasons:
    affinity and the column orders nothing. It should be read as "above the legacy computational
    null", which is a provenance statement and not a claim about binding.
 
-We have left the column in the submission rather than dropping it mid-flight, and said the same
-thing in METHODS §4.5 and §11 so all three documents now agree. If you would rather it came out,
-it is a one-line change and we have ~38 hours.
+**Update 2026-10-05: the column came out.** `affinity_above_null` is no longer in the
+submission — the shipped CSV has 15 columns and none of them is that flag — and
+`AFFINITY_FLAG_DEPRECATED = 0.2218` records the retired threshold in
+`bin/emit_submission_csv.py`. This paragraph said the column was still shipped, and that all
+three documents agreed, after it had already been removed.
 
-With n=10 measured negatives the tail is not characterised well enough for a hard gate either,
+With n=10 right-censored molecules the tail is not characterised well enough for a hard gate either,
 so affinity is reported as a continuous score with an uncertainty flag and **no design is
 excluded on it**.
 
@@ -219,7 +225,9 @@ affinity columns at all.
 
 **And the ordering consequence we have not honoured.** Your instruction was to assess pose and
 protonation separately *before* using the pH gate to discard candidates. The gate has been used
-as a discard filter throughout — §10 of the methods document lists 38 molecules rejected on it.
+as a discard filter throughout — §10 of the methods document was rebuilt on 2026-10-04 and now
+accounts for a **75-molecule** union, sequence-keyed, rather than the 38 this paragraph
+cites; the 38 was a run-name count that collapsed to fewer distinct sequences.
 Those rejections rest on a gate whose only ground-truth test is unresolved. We are stating that
 rather than re-running the selection 14 hours before a deadline, and it is question (d) below.
 
@@ -351,7 +359,7 @@ right-censored rather than measured at zero.
 
 ### What it says, stated as ranks rather than as a summary statistic
 
-**The panel is 10 negatives and ONE positive.** With a single positive there is no discrimination
+**The panel is 10 right-censored molecules and ONE quantified positive.** With a single positive there is no discrimination
 estimate available: every summary statistic reduces to *where that one molecule ranks*. We report
 ranks and deliberately do not report an AUROC — an earlier draft of our methods document did, and
 it was removed. This is your own `arms-backlog §2a` ("the gate is n=1 positive") arriving in the
@@ -360,8 +368,9 @@ place it mattered.
 - **Human leg: 8 of the 10 no-KD molecules rank below the quantified binder. 2 rank above it.**
   (Corrected 2026-10-05: a missing KD is right-censoring, not a measured zero, so this
   separates one quantified binder from ten censored observations.)
-  The highest-scoring molecule in the entire measured panel is a measured **non-binder** —
-  `EXPNEG_gitter-yolo10` at 0.5893 against EGF's 0.3549. It also reads a **5.27× pH ratio**, which
+  The highest-scoring molecule in the entire panel is one with **no KD reported** —
+  `EXPNEG_gitter-yolo10` at 0.5893 against EGF's 0.3549. It is not a measured non-binder; this
+  line called it one four lines below the correction that says it is not. It also reads a **5.27× pH ratio**, which
   places it 8th of the 132 molecules eligible to rank on our primary objective.
 - **Both species required: the one quantified binder outranks all ten no-KD molecules on this
   panel.** That is the full extent of the claim.

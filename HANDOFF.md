@@ -45,8 +45,11 @@ the git remote exists. What is left is upload.
 
 ## 1. STATE — everything below is verified, not remembered
 
-**Submission: `submissions/01-egfr.csv`, 10 designs** (Track 3 allows 20; we gave half back
-on purpose — see METHODS §11). `bin/check_discards.py` PASSES, exit 0.
+**Submission: `submissions/01-egfr.csv`, 18 designs** (Track 3 allows 20 — see METHODS §11;
+this file said 10 for a day after the count changed). Ranked on the two-partner
+histidine-only pH product, not the superseded target-only basis.
+`bin/check_discards.py` PASSES, exit 0. `bin/gate_sweep.py` runs 12 gates: 11 green,
+**`novelty_coverage` RED** — novelty eligibility is unresolved for four shipped designs.
 
      1  5.461  bc_s831683_mpnn8_S15D         hu 0.7760  mo 0.7637   65aa
      2  5.435  bc_s831683_mpnn19_S15D        hu 0.8077  mo 0.7859   65aa
@@ -84,10 +87,13 @@ after (200 poses; it is the superseded 1-shuffle×5-seed design, kept for n only
 every summary statistic is just "where does that one molecule rank", and an earlier draft of
 METHODS §4.4 led with AUC 0.80 / 1.00 before this was corrected. Report ranks.
 
-**Human leg: 8 of 10 MEASURED non-binders rank below the measured binder, 2 rank ABOVE it.**
+**Human leg: 8 of 10 RIGHT-CENSORED molecules rank below the measured binder, 2 rank ABOVE it.**
+They are molecules with no reported KD, not molecules measured not to bind (PK, 2026-10-04;
+METHODS §4.1) — this line said "MEASURED non-binders" after that correction had landed.
 The top-scoring molecule in the entire measured panel is one with no reported KD (right-censored, not a measured zero) —
 `EXPNEG_gitter-yolo10` at 0.5893 against human EGF's 0.3549 — and it reads a **5.27× pH ratio,
-rank 8 of 2,009** on the primary objective.
+rank 8 of 132 rankable molecules**. "Rank 8 of 2,009" appeared here and in README; METHODS §7
+records it as a ~15× overstatement, because 1,877 of that denominator were never rankable.
 
 **Requiring both species: the one quantified binder outranks all ten no-KD molecules.** Both
 molecules that beat it on human are at **exactly 0.0000 on mouse, 5 of 5 dead seeds** — no

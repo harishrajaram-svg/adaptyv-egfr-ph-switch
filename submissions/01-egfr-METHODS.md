@@ -88,7 +88,15 @@ we have, so the 0.702× group is reported as **uninterpretable on this gate**, n
 "no switch detected". Over a 0.9 pH-unit window two sites give 63× and three give 500×; a
 single site cannot exceed 7.94× by any design.
 
-A full PROPKA census of all 17 histidines in the EGFR ectodomain (6ARU, apo):
+The EGFR ectodomain carries **17 histidines** (6ARU, apo). **Five of them lie in the
+domain-III crop** our binders are designed against (mature 311–480); those five are the census
+below. The other twelve are not tabulated because none of them can participate: the nearest
+histidine outside the crop is **H507 at 37.5 Å** from H433's ring nitrogens, against the 8.5 Å
+of the H433–H370 pair, and the farthest is H183 at 83.9 Å. Measured over all sixteen
+non-H433 histidines in the ECD structure, so the "only pair close enough" conclusion below is a
+statement about all 17, not only about the five shown. (This line read "a full PROPKA census of
+all 17 histidines" above a five-row table, which described the scope wrongly in the direction
+of overstating it.)
 
 | site | pKa_free | own ceiling | ring-N distance to H433 | histidine in mouse |
 |---|---|---|---|---|
@@ -1006,20 +1014,26 @@ d3-crop and full-ECD poses land on one coordinate system.*
 
 | check | result across all 17 |
 |---|---|
-| **domain** | **every design, 100% of contacts, in domain III (L2)** — no domain-II contact anywhere |
-| **full-ECD** | **0 of 17** have any contact outside the 170 aa domain-III crop (mature 311–480), so the crop is adequate and no footprint required the full ECD to assess |
-| **glycan** | **1 of 17** touches an N-glycosylation sequon — and it is the top-ranked design |
-| **human/mouse** | median identity **at the contacted positions** is **0.86**; range 0.77–0.92 |
+<!-- GENERATED:FOOTPRINT-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+| **domain** | **every design, 100% of contacts, in domain III (L2)** -- no domain-II contact anywhere |
+| **full-ECD** | **0 of 18** have any contact outside the 170 aa domain-III crop (mature 311-480), so the crop is adequate and no footprint required the full ECD to assess |
+| **glycan** | **3 of 18** touch an N-glycosylation sequon, all of them Asn420: `c5_cf_short__boltzgen_egfr_cropfree_` (rank 1), `bcr_d3acid3_l60_s647537_mpnn3` (rank 8), `bcr_d3acid3_l60_s647537_mpnn11` (rank 9). Of 11 sequons in the construct, only 1 is contacted |
+| **human/mouse** | median identity **at the contacted positions** is **0.86**; range 0.77-0.92 over 18 designs |
+<!-- /GENERATED:FOOTPRINT-TABLE -->
 
 **Domain II is not in play.** The earlier assessment concerned domain II; these binders do not
 touch it. That resolves the question in the designs' favour but by irrelevance, not by passing.
 
-**The glycan flag is on rank 1.** `c5_cf_short__boltzgen_egfr_cropfree_short_48` contacts
-**Asn420**, one of eleven N-X-S/T sequons in the human ectodomain and one of four in domain III
-(N328, N337, N389, N420). None of our folded structures carries a glycan, so that contact is
-made against a surface that is glycosylated in a real cell and bare in every structure we
-scored. This is a liability on the design the pH objective ranks first, and it was not visible
-before the footprints were computed.
+**The glycan flag is on three designs, including rank 1.**
+`c5_cf_short__boltzgen_egfr_cropfree_short_48` (rank 1), `bcr_d3acid3_l60_s647537_mpnn3`
+(rank 8) and `bcr_d3acid3_l60_s647537_mpnn11` (rank 9) all contact **Asn420**, one of eleven
+N-X-S/T sequons in the human ectodomain and one of four in domain III (N328, N337, N389, N420).
+It is the only sequon any design touches. None of our folded structures carries a glycan, so
+that contact is made against a surface that is glycosylated in a real cell and bare in every
+structure we scored. This is a liability on the design the pH objective ranks first and on two
+more — though the two `bcr` rows are an 86.7%-identical pair, so the three are two independent
+exposures, not three. It was not visible before the footprints were computed, and this
+paragraph said "the glycan flag is on rank 1" for a day after the count became three.
 
 **Cross-reactivity is weaker at the epitope than whole-protein identity suggests.** The two
 ECDs are highly similar overall, but **14% of contacted positions differ between human and
@@ -1486,19 +1500,13 @@ own reported RMSD (~0.8 pKa units, worse for buried residues), not a tuned value
 | **0.8 (PROPKA's own RMSD)** | **4 of 17** | **16 of 17** |
 | 1.2 (buried residues) | 4 of 17 | **17 of 17** |
 
-**At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp`
-spans ranks 1–17 — the entire submission. `bc_s360518_mpnn9_A22D` spans 2–15 and
-`bc_s831683_mpnn6_S15D` spans 4–17.
-**No design holds a top-three position in more than 50% of draws.** The conclusion does not
-depend on σ: it already holds at the optimistic 0.4.
+<!-- GENERATED:PERT-FINDINGS do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+**At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp` spans ranks 1-18; `ss_bc_s831683_mpnn6_S15D_S62H_rout` spans ranks 1-17; `bc_s360518_mpnn9_A22D` spans ranks 1-16. The widest span is 17 of 18 ranks.
 
-**What does survive.** Two things, and they are the two worth having. First, the **bottom group
-is robustly at the bottom** — `bc_s831683_mpnn9_WT` never leaves ranks 13–17, and
-`bc_d3acid_l65_s831683_mpnn11` and `bc_s831683_mpnn9_S15D` never rise above 9. "These are not
-switches" is stable under the noise. Second, a **top set exists even though its order does
-not**: five designs (`rimA01_r15_L133E`, `c5_cf_short…_48`, `sd_d2c…_T65D`,
-`rimA02_d3_rimA_14_vhh`, `rimA01_r15`) hold a top-three slot in 25–50% of draws and the rest
-hold it in 0–18%.
+**The single most-stable design holds a top-three slot in 60% of draws** (`rimA01_r15_L133E`, base rank 1, median 3). An earlier version of this section claimed no design exceeded 50%; it did, and it is the top-ranked design, so the error ran in the submission's favour. The conclusion does not depend on sigma: it already holds at the optimistic 0.4.
+
+**What does survive.** Two things. First, the **bottom group is robustly at the bottom**: `bc_s831683_mpnn9_S15D` never rises above 10, `bc_d3acid_l65_s831683_mpnn11` never rises above 10, `bc_s831683_mpnn9_WT` never rises above 14 -- 3 designs take a top-three slot in 0% of draws. "These are not switches" is stable under the noise. Second, a **top set exists even though its order does not**: 5 designs `rimA01_r15_L133E` (60%), `c5_cf_short__boltzgen_egfr_cro` (49%), `rimA02_d3_rimA_14_vhh` (43%), `d2c_mpnn13_S88D_serasp` (28%), `rimA01_r15_boltzgen_egfr_d3_ri` (26%) hold a top-three slot in at least 25% of draws, against 0-17% for the other 13.
+<!-- /GENERATED:PERT-FINDINGS -->
 
 **One thing this understates, in the submission's favour.** The perturbation moves the pH ratio
 only, and the shipped order is produced by three sort keys, of which two — the pose-spread
@@ -1695,24 +1703,17 @@ throughout: design generation, scoring, analysis code, and the drafting of this 
 number here was computed by code in the published repository, and the code was written in that
 collaboration. The errors in §7 were found the same way.
 
-**Human review.** The submitting researcher has reviewed the **twelve** sequences submitted on
-2026-10-04 — their `molecule_class` labels, their lengths, and the claims made about them in this
-document and in the CSV.
+<!-- GENERATED:DECL-REVIEW do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+**Human review.** The submitting researcher has reviewed all **18** submitted sequences -- their `molecule_class` labels, their lengths, and the claims made about them in this document and in the CSV.
 
-**Five sequences were added on 2026-10-05 and their review is recorded separately, because it is
-a human attestation and must not be inflated by restating a count.** They are
-`c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`,
-`sd_d2c_101_l147_s144898_m_T65D`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA` and
-`cons_gap_h370_only__boltzgen_egfr_h370_018`. What has been verified for these five by code,
-and is reproducible from the repository: each comes from this project's own generation runs
-(§10); each clears novelty Level 3 on the same FoldSeek gate as the original twelve
-(`analysis/01-egfr/novelty_reopened.tsv`); each was re-scored on the same three pH bases over
-its own human-leg poses; and the provenance audit of §12 below covers them. What has **not**
-been done for them: expression QC, which was only ever run on the original candidate set.
+Of these, **12** were in the submission as it stood on 2026-10-04 and **6** were added on 2026-10-05. The additions are `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`.
+
+What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC, which was only ever run on the original candidate set. Novelty is **not** uniformly established -- see `bin/check_novelty_coverage.py`, which is RED.
+<!-- /GENERATED:DECL-REVIEW -->
 
 **Provenance.** All seventeen sequences are de novo designs from this project's own generation
 runs; none is a modification of a previously submitted design or of an existing characterised
-binder. This was checked by code over all seventeen, two ways: no submitted design has any
+binder. This was checked by code over all eighteen, two ways: no submitted design has any
 `g532` ancestry in its generation lineage, and the highest sequence identity of any submitted
 design to any known binder (G532 heavy and light chains, G532V, G532Ctrl, G5V2, and rAC1 from
 4UIP) is **39.7%**, a VHH framework match. The two published binders that appear anywhere in
@@ -1726,12 +1727,9 @@ model; FoldSeek against PDB for novelty; HBPLUS v3.06. All open-source and used 
 licences. The vendored reference implementation in `outbox/ipsae-fixtures/vendor/` carries its
 MIT licence file.
 
-**Structures.** Predicted complexes are published at `submissions/structures/`, one
-median-ipSAE pose each — not the best pose, which would be selection on the outcome.
-**Coverage is 10 of 12**: the two designs added latest, `bc_s360518_mpnn9_A22D` and
-`rimA01_r15_L133E`, have no published structure yet. Their poses exist and are scored; they are
-simply not exported. Stated rather than implied, because an earlier version of this line claimed
-full coverage of "all ten designs" when the submission held twelve.
+<!-- GENERATED:DECL-STRUCT do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+**Structures.** Predicted complexes are published at `submissions/structures/`, one median-ipSAE pose each -- not the best pose, which would be selection on the outcome. **Coverage is 10 of 18.** Without a published structure: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `bc_s360518_mpnn9_A22D`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Their poses exist and are scored; they are simply not exported. Stated rather than implied.
+<!-- /GENERATED:DECL-STRUCT -->
 
 **Funding and compute.** Self-funded. $503 of personal Modal spend on this target. No
 institutional affiliation, no grant, no commercial interest in the outcome.
@@ -1800,8 +1798,12 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
 13. **A 0.0000 on this instrument is not "no interface".** On its own co-crystal (4UIP), a
     pose reproducing 72% of the crystal contacts and 93% of the epitope scores ipSAE_min
     0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
-14. **Rank 1 contacts a glycosylation sequon.** `c5_cf_short__boltzgen_egfr_cropfree_short_48`
-    contacts Asn420; no structure we folded carries a glycan (§10b).
+14. **Three shipped designs contact a glycosylation sequon, not one.** `c5_cf_short…_48`
+    (rank 1), `bcr_d3acid3_l60_s647537_mpnn3` (rank 8) and `…_mpnn11` (rank 9) all contact
+    **Asn420**; no structure we folded carries a glycan (§10b). This limitation read "rank 1
+    contacts a glycosylation sequon" while §10b read "1 of 17", so the exposure looked like
+    one unlucky row rather than a property shared by three designs — and the two bcr rows
+    are an 86.7%-identical pair, so two of the three are not independent.
 15. **The domain-III crop may be the wrong construct, and most of the submission uses it.**
     On the only molecule here with a solved complex, neither ESMFold2 nor an architecturally
     independent model (Chai-1) recovers a single crystallographic contact on the crop, while
@@ -1813,9 +1815,12 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     leg; two cross 1.0× on that change alone (§11.7). The two legs order the submission
     consistently (τ = +0.868) but disagree about its floor.
 17. **The pH ratio cannot order this submission.** Under PROPKA's own reported accuracy
-    (±0.8 pKa units) 17 of 18 designs span five or more ranks and no design holds a
-    top-three slot in more than half of draws (§11.7). A top set and a bottom set are
-    defensible; a rank order is not.
+    (±0.8 pKa units) 17 of 18 designs span five or more ranks, and the widest span is 17 of
+    18 (§11.7). The most stable design holds a top-three slot in 60% of draws and the next
+    two in 49% and 43%; everything below the top five holds one in at most 17%. A top set
+    and a bottom set are defensible; a rank order is not. (This limitation previously read
+    "no design holds a top-three slot in more than half of draws", which was false — one
+    does, at 60%, and it is the top-ranked design.)
 18. **Two shipped designs are selected successes from a failed arm.** The second-site strategy
     improved 5 of 12 attempts, median fold 0.98 (§10c). Two of the five successes are in this
     submission and none of the seven failures is. Read the S62H and L133E rows as two

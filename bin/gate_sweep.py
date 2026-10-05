@@ -48,6 +48,9 @@ GATES = [
     # yet", not "the writeup is wrong". Added 2026-10-05 after 4 of 18 shipped designs
     # were found never to have been levelled at all.
     ('novelty_coverage',         [PY, 'bin/check_novelty_coverage.py'], None),
+    # The graded CSV's `assessment` column is prose and was the one part of the upload
+    # with no mechanical check. The 2026-10-05 audit found 13 problems in it.
+    ('assessment_strings',       [PY, 'bin/check_assessment_strings.py'], None),
 ]
 
 

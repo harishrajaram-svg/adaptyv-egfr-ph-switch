@@ -10,7 +10,7 @@ cross-reactive with mouse EGFR.
 | | |
 |---|---|
 | **[submissions/01-egfr-METHODS.md](submissions/01-egfr-METHODS.md)** | The methods document. Read §4.4 first. |
-| **[submissions/01-egfr.csv](submissions/01-egfr.csv)** | The submission: 10 designs, ranked. |
+| **[submissions/01-egfr.csv](submissions/01-egfr.csv)** | The submission: 18 designs, ranked on the two-partner histidine-only pH product. |
 
 ## What this submission claims, in four lines
 
@@ -18,20 +18,26 @@ cross-reactive with mouse EGFR.
    best-binding BindCraft backbone took four independent ProteinMPNN sequences from 3.15–3.85×
    to 5.40–5.46× at no cost in predicted affinity. The matched wild-type is submitted alongside
    so the comparison gets made in the laboratory, not in our gate.
-2. **A molecule with no reported KD reads a 5.27× switch.** Of 11 molecules Adaptyv measured on this
-   platform, the highest-scoring one on our own ranking metric is a design already measured
-   **not to bind** — and it ranks 8th of 2,009 on the competition's primary objective.
+2. **A molecule with NO REPORTED KD reads a 5.27× switch.** Of 11 molecules Adaptyv ran on this
+   platform, the highest-scoring one on our own ranking metric is a molecule with **no KD
+   reported** — which is right-censored, *not* a measurement that it does not bind (PK,
+   2026-10-04; METHODS §4.1). Its rank is **8th of 132 rankable molecules**; an earlier version
+   of this file quoted "8th of 2,009", which METHODS §7 records as a ~15× overstatement because
+   1,877 of that denominator were never rankable.
 3. **Requiring both species is what catches it.** Both molecules that outrank the measured
    binder on human score exactly 0.0000 on mouse — no interface at all, not a narrow miss.
    Cross-reactivity was in the brief; it turns out to be the only specificity filter here that
-   measured data supports. The panel is 10 negatives and one positive, so this is a statement
-   about ranks and a mechanism, not a validated error rate.
-4. **The single-site ceiling is 5.55× and the route past it is closed.** H433's free pKa is
-   6.22, so no single-site design can beat 5.55× over a 0.9 pH-unit window. The only histidine
-   pair close enough to bridge (H433+H370, 8.5 Å) is unreachable: 3 of 1,944 designs hit both,
-   all by accident, and 9 of 10 that switched there did not bind.
+   measured data supports. The panel is **10 right-censored molecules and one positive**, so
+   this is a statement about ranks and a mechanism, not a validated error rate — and with
+   n = 1 positive it cannot be an error rate at all.
+4. **The single-site ceiling is 5.55× and we failed to build the route past it — which is not
+   the same as the route being closed.** H433's free pKa is 6.22, so no single-site design can
+   beat 5.55× over a 0.9 pH-unit window. We reached the pair that bridges it (H433+H370, 8.5 Å)
+   only 3 times in 1,944 designs, all incidental. METHODS §8.1 and §3.4 both retract the
+   stronger claim by name: **the two-site route is demonstrated, not closed** — G532 is a
+   published molecule that does it. This section has been wrong twice in that direction.
 
-We submitted **10 designs of the 20 allowed**. The other ten did not stand on a measurement —
+We submitted **18 designs of the 20 allowed**. The ones we left out did not stand on a measurement —
 eight read *below* 1.0× and sat on the 0.702× value that a large share of designs return.
 (That value is **not** a "no-switch floor" — no linkage reads 1.0. 0.702× is the analytic
 *acid-weakening* extreme, and a pile-up there indicates protonation-model saturation, so those
@@ -179,17 +185,32 @@ unchanged and an acid one methylene shorter cannot reach its counter-charge and 
 - **Two corrections to this day's own work**, both caught before release: 6ARU is the
   cetuximab-Fab complex in the *tethered* conformation, which matches the assay, so an earlier
   claim here that receptor state was unmatched and unassessed was wrong; and the count of
-  designs carrying binder histidines is ten of seventeen, not the eight that was carried forward
-  without recounting.
-- **The five additions created two new near-duplicate pairs**, so 8 of 17 designs now sit in a
-  pair differing by one or two residues. Recorded with the eligibility exposure it implies,
-  rather than smoothed over.
+  designs carrying binder histidines is **nine of eighteen** — a figure that was wrong five times
+  by hand and is now a generated block (METHODS §11.1), never typed.
+- **Near-duplicate pairs are declared, not smoothed over.** Three pairs exceed 90% identity
+  (`rimA01_r15_d3_rimA_20`/`L133E` at 0.993, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`/
+  `bc_s831683_mpnn6_S15D` at 0.985, `bc_s831683_mpnn9_S15D`/`mpnn9_WT` at 0.985), so **6 of 18**
+  designs sit in one. A fourth pair sits at 0.867
+  (`bcr_d3acid3_l60_s647537_mpnn3`/`mpnn11`) — both are MPNN redesigns of one backbone, and both
+  CSV rows previously claimed "<0.47 identity to anything else submitted". Corrected 2026-10-05.
 
-**Still open.** The partner-deletion free leg is a fixed-conformation diagnostic, not a
-measurement of the apo state. Full-ECD, glycan and receptor-state checks have not been applied
-to the finalist footprints. The rAC1 comparison needs structural contact recovery against
-4UIP rather than predicted confidence attached to crystallographic coordinates. These are
-recorded in METHODS §13 rather than resolved.
+**Since closed.** All four items listed here as open on 2026-10-04 were completed on 10-05 and
+this paragraph described them as open for a day afterwards:
+
+- **The free leg now has three rungs, not one.** Partner-deletion (shipped), a backbone-restrained
+  relaxed leg and a separately-folded apo leg, with the bound leg identical in all three
+  (METHODS §11.7, §11.8). The relaxed leg moves every testable design *down* — median 0.842×,
+  so the shipped basis is optimistic — while leaving the order intact (Kendall τ = +0.956).
+- **Full-ECD, glycan and receptor-state checks were applied to the finalist footprints.**
+  `analysis/01-egfr/finalist_footprints.json` carries `n_outside_d3_crop`, `glycan_sequon_hits`
+  and `hu_mo_identity_at_epitope` for all 18 designs (METHODS §10b). Three designs contact the
+  Asn420 sequon, not one.
+- **The rAC1 comparison runs on structural contact recovery**, 5.0 Å heavy-atom contact sets
+  with numbering mapped by alignment (`bin/rac1_contact_recovery.py`), on both predictors
+  (METHODS §4.4b) — not predicted confidence attached to crystallographic coordinates.
+
+What remains genuinely open is in METHODS §13, now 24 numbered limitations, and in the one red
+gate: **novelty eligibility is unresolved for four shipped designs** (`bin/check_novelty_coverage.py`).
 
 ## The error history is the point
 
