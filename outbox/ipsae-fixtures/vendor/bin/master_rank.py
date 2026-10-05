@@ -83,8 +83,47 @@ def main():
     for d in glob.glob('runs/esmfold2/*/**/', recursive=True):
         posedirs.setdefault(os.path.basename(d.rstrip('/')), []).append(d)
 
-    aff = collections.defaultdict(lambda: collections.defaultdict(list))
+    # aff[seq][species] maps POSE FILE -> score, not a bare list. The two discovery
+    # passes below can both reach the same *_10_10.txt; keying on the file means a pose
+    # found twice contributes once, while two distinct poses that happen to score
+    # identically both survive. With a list, the overlap would silently inflate n and
+    # drag the median toward whichever poses both passes happened to find.
+    aff = collections.defaultdict(lambda: collections.defaultdict(dict))
     names = collections.defaultdict(set)
+
+    # POSE DISCOVERY, PASS 1: the binder sequence read out of each structure.
+    #
+    # Added 2026-10-05. The .faa pass below finds a pose directory only when a .faa of a
+    # matching basename exists in a score_* directory, so a run nobody wrote a .faa for is
+    # dropped SILENTLY -- the design simply reports a smaller n. Three submitted designs
+    # were affected: rimA01_r15_L133E had 20 human-leg poses on disk and was being scored
+    # on 5, and the two mpnn9 control poses likewise. The pH gate was fixed first; without
+    # this the CSV would carry a pH ratio pooled over n=20 beside an affinity pooled over
+    # n=5, which is the same two-sources defect in a different column.
+    #
+    # Joined on the SEQUENCE, which is the project rule. Legs come from the directory
+    # suffix, the convention the rest of the pipeline uses.
+    try:
+        import pose_seq_index
+        for seq, dirs in pose_seq_index.load().items():
+            for d in dirs:
+                base = os.path.basename(d.rstrip('/'))
+                sp = ('hu' if base.endswith(('_hu', '_human'))
+                      else 'mo' if base.endswith(('_mo', '_mouse')) else None)
+                if sp is None:
+                    continue
+                for t in glob.glob(os.path.join(d, '*_10_10.txt')):
+                    v = ipsae_min(t)
+                    if v is not None:
+                        aff[seq][sp][os.path.realpath(t)] = v
+    except Exception as e:
+        print(f"  WARNING: sequence-index pose discovery unavailable ({e}); "
+              f"falling back to the .faa join alone, which undercounts poses")
+
+    # POSE DISCOVERY, PASS 2: the original .faa join. Kept because it is the only source
+    # of the human-readable design NAMES, and because it de-duplicates against pass 1 --
+    # a pose found twice contributes once, since both passes append the same values from
+    # the same files and the dedup below collapses them.
     for faa in glob.glob('analysis/01-egfr/score_*/*.faa'):
         stem = os.path.basename(faa)[:-4]
         m = re.match(r'(.+)_(hu|mo|human|mouse)$', stem)
@@ -96,20 +135,20 @@ def main():
         for d in posedirs.get(stem, []):
             for t in glob.glob(os.path.join(d, '*_10_10.txt')):
                 v = ipsae_min(t)
-                if v is not None: aff[seq][sp].append(v)
+                if v is not None: aff[seq][sp][os.path.realpath(t)] = v
 
     ph = {r['seq']: r for r in json.load(open('analysis/01-egfr/ph_pooled_by_sequence.json'))}
     rows = []
     for seq in set(ph) | set(aff):
         p = ph.get(seq)
         a = aff.get(seq, {})
-        f = lambda sp, g: (g(a[sp]) if a.get(sp) else None)
+        f = lambda sp, g: (g(list(a[sp].values())) if a.get(sp) else None)
         rows.append(dict(
             seq=seq, aa=len(seq),
             ratio=p['median'] if p else None, ratio_max=p['max'] if p else None,
             ratio_n=p['n'] if p else 0, site=p['site'] if p else None,
-            hu=f('hu', max), hu_med=f('hu', st.median), hu_n=len(a.get('hu', [])),
-            mo=f('mo', max), mo_med=f('mo', st.median), mo_n=len(a.get('mo', [])),
+            hu=f('hu', max), hu_med=f('hu', st.median), hu_n=len(a.get('hu', {})),
+            mo=f('mo', max), mo_med=f('mo', st.median), mo_n=len(a.get('mo', {})),
             names=sorted((p['names'] if p else []) + sorted(names.get(seq, [])))[:6]))
 
     def key(r):

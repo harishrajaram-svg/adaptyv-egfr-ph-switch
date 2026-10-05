@@ -817,15 +817,52 @@ to eligible. Novelty is also a severe filter on this target — §9 of this docu
 Adaptyv's own round-2 set at 2% of *binders* clearing the strict reading — so a high ratio is
 no guarantee any of these is submittable.
 
-**What remains unresolved, stated as such.** We have not established that any of the 35 is
-eligible, and therefore we have not established that the submission should change. What we have
-established is that the exclusion of 63 molecules rested on a gate the reviewer has told us
-cannot carry that weight, and that on the submission's own basis 35 of them outrank a shipped
-design. Running the novelty gate over those 35 is the step that would make this actionable; it
-is in progress at the time of writing and its outcome is recorded in
-`analysis/01-egfr/novelty_reopened.tsv` whether or not it changes the submission. The original
-exclusion list and this amendment are both preserved, timestamped, and written before any
-outcome was examined.
+**The novelty gate has now run over those 35, and it does not rescue the submission.**
+FoldSeek against the PDB database, same `bin/novelty_gate.py` and same Level ≥ 3 bar applied to
+the finalists (`analysis/01-egfr/novelty_reopened.tsv`):
+
+| novelty level | n |
+|---|---|
+| Level 3 — **clears the eligibility gate** | **25** |
+| Level 2 | 6 |
+| Level 1 | 4 |
+| Level 4 (fully de novo) | 0 — Adaptyv's round-2 baseline was 2.8% |
+
+**25 of the 35 are eligible.** The blocker named above is removed for most of them, and the
+submission is carrying **12 of the 20 permitted designs**, so eight slots are unused. Three of
+the ten failures are flagged ANTIBODY and were scored by the general-protein rule, which §9
+notes is *stricter* than the antibody rule — including `ss_rimA02_d3_rimA_14_vhh_T28H_routeA`
+at 3.209×, a variant of shipped rank 6 — so those three need an ANARCI re-check before being
+treated as excluded.
+
+The cases that most directly contradict the current ranking, all Level 3:
+
+| molecule | pH (his-only) | human | mouse | spread | compare |
+|---|---|---|---|---|---|
+| `ss_bc_s831683_mpnn6_S15D_S62H_routeA` | **3.545×** | 0.765 | 0.744 | 0.358 | shipped `mpnn6_S15D`: 1.835×, 0.780, 0.751 |
+| `sd_d2c_101_l147_s144898_m_T65D` | **4.735×** | 0.585 | 0.366 | 0.944 | shipped `d2c_mpnn13_S88D`: 3.526×, 0.603, 0.528 |
+| `ss_bc_s831683_mpnn19_S15D_S62H_routeA` | **3.189×** | 0.642 | 0.601 | 0.591 | shipped `mpnn19_S15D`: 1.774×, 0.808, 0.786 |
+| `bcr_d3acid_l65_s831683_mpnn3_S15D` | 2.035× | 0.759 | 0.754 | 0.512 | beats shipped `mpnn6_S15D` at matched affinity |
+| `bcr_d3acid_l65_s831683_mpnn17_S15D` | 1.814× | 0.780 | 0.755 | **0.019** | the most reproducible pH measurement in the project |
+| `c5_cf_short__boltzgen_egfr_cropfree_short_48` | **5.546×** | 0.241 | 0.181 | 0.262 | would rank 2nd of everything; weak on both species |
+
+`ss_bc_s831683_mpnn6_S15D_S62H_routeA` is the clearest: it is a shipped design plus one further
+mutation, with predicted affinity indistinguishable from it (0.765/0.744 against 0.780/0.751)
+and **1.9× the pH ratio**, at an acceptable spread and Level 3. On this submission's own
+criteria it dominates a design we shipped.
+
+Note also the family composition: **15 of the 25 are the `d3acid3_l60_s647537` backbone**, a
+family with no representation in the submission at all, while six of the twelve shipped designs
+sit on a single other backbone.
+
+**What remains unresolved, stated as such.** This section does not change the submission, and
+the decision whether to use the eight unused slots is not made here. Three things are known and
+recorded: the exclusion of 63 molecules rested on a gate that cannot carry that weight; 25 of
+them are eligible and outrank a shipped tier-1 design on the submission's own basis; and all of
+these comparisons inherit the provisional status of that basis, since §11.7 measures Kendall
+τ = +0.000 between it and the partnered alternative. Expression QC remains unrun for every one
+of the 25. The original exclusion list and this amendment are both preserved and timestamped,
+and every number here was produced before any outcome was examined.
 
 
 ## 11. The submission
