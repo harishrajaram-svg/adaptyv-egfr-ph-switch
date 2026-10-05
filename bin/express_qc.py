@@ -18,7 +18,7 @@ Cell-free-specific liabilities, in rough order of how often they bite:
 Charge is reported at BOTH pH 7.4 and pH 6.5 because the competition objective is a
 pH switch: a design with more titratable charge in that window has more to work with.
 """
-import csv
+import csv, os
 from pathlib import Path, sys
 
 KD = dict(A=1.8,R=-4.5,N=-3.5,D=-3.5,C=2.5,Q=-3.5,E=-3.5,G=-0.4,H=-3.2,I=4.5,
@@ -109,6 +109,22 @@ def main():
     if not args:
         raise SystemExit("usage: express_qc.py <seqs.faa|seqs.csv> ... [--out=PATH]\n"
                          f"       default --out is {DEFAULT_OUT}")
+
+    # THE CANONICAL RECORD IS NOT A SCRATCH FILE.
+    #
+    # `analysis/01-egfr/express_qc.tsv` is the submission's expression-QC record and it is
+    # cited in METHODS limitation 35. Until 2026-10-05 any ad-hoc run wrote there by
+    # default, so clearing a swap candidate silently replaced the artifact describing the
+    # shipped slate -- three separate reviewers did exactly that in one afternoon and each
+    # had to restore it from git. Writing the default path now requires the submission CSV
+    # as the input, which is the only input that should ever produce it.
+    SUB = "submissions/01-egfr.csv"
+    if os.path.abspath(out) == os.path.abspath(DEFAULT_OUT) and \
+            not any(os.path.abspath(a) == os.path.abspath(SUB) for a in args):
+        raise SystemExit(
+            f"refusing to overwrite {DEFAULT_OUT} from {args!r}.\n"
+            f"  That file is the submission's QC record, cited in METHODS limitation 35.\n"
+            f"  Pass --out=PATH to score anything else, or run it on {SUB} to regenerate it.")
 
     rows = [assess(n, s) for src in args for n, s in read_seqs(src)]
     # Guarded because an empty input used to crash on rows[0] AFTER printing a
