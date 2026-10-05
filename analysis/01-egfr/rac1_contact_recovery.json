@@ -1,6 +1,7 @@
 {
  "crystal": "targets/egfr/controls/4UIP.pdb",
  "cut": 5.0,
+ "pose_glob": "runs/esmfold2/w1_rac1/**/*.cif",
  "n_xtal_contacts": 65,
  "n_epitope": 28,
  "n_paratope": 27,

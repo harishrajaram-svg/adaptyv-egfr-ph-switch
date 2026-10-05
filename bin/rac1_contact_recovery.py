@@ -93,8 +93,18 @@ def contacts(res_t, res_b, cut):
 
 def main():
     cut = CUT
+    global POSE_GLOB
     if '--cut' in sys.argv:
         cut = float(sys.argv[sys.argv.index('--cut') + 1])
+    # --poses lets the SAME geometric test run on another predictor's structures.
+    # Chai-1 emits no residue-level PAE (its npz carries aggregate_score, ptm, iptm,
+    # per_chain_pair_iptm and clashes only), so ipSAE cannot be computed on its output
+    # and a like-for-like SCORE comparison is impossible. The geometric test does not
+    # need a score, which is why it is the comparison that survives.
+    if '--poses' in sys.argv:
+        POSE_GLOB = sys.argv[sys.argv.index('--poses') + 1]
+    if '--label' in sys.argv:
+        print(f"[{sys.argv[sys.argv.index('--label') + 1]}]")
     xc = chains_with_seq(XTAL)
     if len(xc) < 2:
         sys.exit(f"{XTAL}: need 2 chains, got {[c[0] for c in xc]}")
@@ -149,10 +159,13 @@ def main():
         if tot_drop:
             print(f"  ({tot_drop} predicted contacts dropped across all poses because a "
                   f"residue had no crystal counterpart in the alignment)")
-    json.dump(dict(crystal=XTAL, cut=cut, n_xtal_contacts=len(xtal),
+    out = ('analysis/01-egfr/rac1_contact_recovery.json' if '--poses' not in sys.argv
+           else sys.argv[sys.argv.index('--out') + 1] if '--out' in sys.argv
+           else 'analysis/01-egfr/rac1_contact_recovery_alt.json')
+    json.dump(dict(crystal=XTAL, cut=cut, pose_glob=POSE_GLOB, n_xtal_contacts=len(xtal),
                    n_epitope=len(ep_x), n_paratope=len(pa_x), poses=rows),
-              open('analysis/01-egfr/rac1_contact_recovery.json', 'w'), indent=1)
-    print("\nwrote analysis/01-egfr/rac1_contact_recovery.json")
+              open(out, 'w'), indent=1)
+    print(f"\nwrote {out}")
     print("NOTE: no PAE or ipSAE value is attached to the crystal anywhere in this analysis.")
 
 
