@@ -55,6 +55,9 @@ GATES = [
     # citations rotted at every reorder. The 2026-10-05 audit raised 7 findings of this
     # one shape.
     ('rank_citations',           [PY, 'bin/check_rank_citations.py'], None),
+    # The submission's central causal claim is a set of point mutations. Nothing verified
+    # they are actually present in the sequences being uploaded until 2026-10-05.
+    ('mutation_identity',        [PY, 'bin/check_mutations.py'], None),
 ]
 
 

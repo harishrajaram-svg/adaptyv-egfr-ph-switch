@@ -410,6 +410,28 @@ def main():
                            assessment=x.get("assessment", "computational candidate"),
                            rmsd=x.get("rmsd", "")))
 
+    # THE GRADED FILE MUST BE PURE ASCII. The assessment strings are prose and today's
+    # corrections introduced curly apostrophes, em-dashes and U+00D7 into them via Python
+    # escapes; the organisers' ingest encoding is unknown, and a mangled field in a graded
+    # artifact is not a risk worth carrying for typography. Normalised here, at the one
+    # place every row passes through.
+    SUBS = {'\u2019': "'", '\u2018': "'", '\u201c': '"', '\u201d': '"',
+            '\u2014': ' -- ', '\u2013': '-', '\u00d7': 'x', '\u2265': '>=',
+            '\u2264': '<=', '\u00b1': '+/-', '\u00a7': 'section ', '\u2192': '->',
+            '\u00e5': 'A', '\u00c5': 'A'}
+    for r in scored:
+        for k, v in list(r.items()):
+            if isinstance(v, str) and not v.isascii():
+                for a, b in SUBS.items():
+                    v = v.replace(a, b)
+                r[k] = v
+            if isinstance(r.get(k), str) and not r[k].isascii():
+                raise SystemExit(
+                    f"{r.get('name')}: field {k!r} still carries non-ASCII "
+                    f"{[c for c in r[k] if ord(c) > 127]!r} after normalisation.\n"
+                    "  Add the character to SUBS in bin/emit_submission_csv.py, or write "
+                    "it in ASCII at source.")
+
     for r in scored:
         n = len(r["sequence"])
         assert MIN_AA <= n <= MAX_AA, f"{r['name']}: {n} aa is outside {MIN_AA}-{MAX_AA}"
