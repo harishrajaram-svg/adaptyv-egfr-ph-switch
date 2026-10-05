@@ -431,6 +431,60 @@ can quantify, and says nothing else, so it does not prove no interaction. And te
 observations do not characterise a tail, so the 0.5893 we found is a floor on how high a
 no-KD molecule can score here, not a ceiling.
 
+### 4.4b rAC1 against its own co-crystal (4UIP): the instrument scores a correct interface zero
+
+*Added 2026-10-05. The reviewer asked for this comparison to be done by structural contact
+recovery and specifically not by attaching a predicted PAE to crystallographic coordinates —
+a PAE describes a predictor's uncertainty about its own output, and a crystal has none.
+`bin/rac1_contact_recovery.py` is purely geometric; no ipSAE or PAE value is attached to the
+crystal anywhere in it.*
+
+rAC1 is a published EGFR binder solved in complex with the receptor (PDB **4UIP**). We folded
+it against both target constructs, 5 seeds each, and asked a geometric question: does the
+prediction put the same residues in contact as the crystal? An interface contact is a residue
+pair whose closest heavy atoms are within 5.0 Å. Residue numbering is mapped through a global
+sequence alignment of each chain to its crystal counterpart, so the cropped construct still
+lines up; 23 predicted contacts across all ten poses had no crystal counterpart and were
+dropped and counted rather than treated as non-contacts.
+
+The crystal interface is **65 residue–residue contacts over 28 epitope and 27 paratope
+residues**.
+
+| pose set | contact recall | precision | epitope recall | paratope recall |
+|---|---|---|---|---|
+| `ecd` seed 1 | **0.723** | 0.618 | **0.929** | 0.926 |
+| the other 9 poses | **0.000** | 0.000 | 0.000–0.036 | 0.000–0.963 |
+
+**One pose in ten reproduces the interface, and it reproduces it well** — 72% of the crystal
+contacts and 93% of the epitope. The other nine recover **no** crystal contact at all, while
+still predicting 31–121 contacts each: they dock the binder somewhere else. The paratope-recall
+column is the interesting part of the failure. Several of the misdocked ECD poses present
+**63–96% of the correct binder surface** while recovering **0%** of the correct epitope. The
+predictor largely knows which face of rAC1 does the binding and puts it against the wrong face
+of EGFR.
+
+**And the instrument cannot tell the difference. All ten poses score ipSAE_min = 0.0000** —
+including the one that is substantially correct. Ranked by ipSAE_min the correct pose sits at
+position 6 of 10, which is an artefact of ties, not of discrimination: every value is exactly
+zero.
+
+Two consequences, both of which constrain how this submission may be read.
+
+1. **A score of 0.0000 on this instrument does not mean "no interface".** It can mean "a
+   correctly reproduced crystallographic interface that the predictor is not confident about".
+   This matters directly: several submitted designs carry 0.0000 on one species, and §12 of
+   this document already warns that an absent measurement must not read as a measured zero.
+   Here is a case where a *measured, crystallographically-solved* interface reads 0.0000.
+2. **It is a second instance of the G532 pattern** (§5b of the control table), now with
+   geometry attached rather than inferred. A real binder, folded against its real target,
+   scored at the instrument's floor. The earlier claim that the G532 result was "fully
+   attributed to the pose" cannot be made here, because in this case the pose is **right** in
+   one of ten tries and the score is zero anyway.
+
+What this does not establish: n = 1 molecule and 10 poses cannot estimate how often the
+predictor docks correctly, and rAC1 is a non-antibody scaffold, so this does not generalise to
+the antibody-blindness finding by itself.
+
 ### 4.5 The matched null is degenerate, so the screening flag does almost nothing.
 
 12 shuffle nulls — 4 designs × 3 independent shuffles, composition and length preserved
@@ -440,8 +494,12 @@ seeds, all twelve of them.** A separate, larger shuffle run (22 molecules, 110 p
 sequences the null does not produce a single score worth a threshold. This was predicted on
 review: full-sequence shuffling destroys the fold, so the null bounds the instrument's noise
 floor at exactly zero, and a "95th percentile of a matched null" flag admits anything above
-0.0000. We still report `affinity_above_null` in the
-submission, and it carries almost no information. **The 10 no-KD molecules are the only
+0.0000. **The `affinity_above_null` column has therefore been REMOVED from the emitted CSV
+(2026-10-05).** A threshold taken as the 95th percentile of a null that is a point mass at zero
+is a percentile of nothing, and a column of that kind sitting in the one file Adaptyv grades
+invites exactly the reading it cannot support. Affinity is reported in full as the two
+continuous `ipsae_min` columns instead, and `AFFINITY_FLAG_DEPRECATED` survives in the code
+only to preserve the record of what was once reported. **The 10 no-KD molecules are the only
 comparison class with a usable tail, and that tail reaches 0.5893** — noting that they are
 right-censored, so this is a tail of unknown-affinity molecules, not of non-binders.
 
@@ -1013,7 +1071,9 @@ independent tests. A third near-pair was added 2026-10-05:
   *(Designs are referred to here by NAME rather than by rank. Rank references inside a
   rank-ordered file drift every time the file changes, and an audit found six of the twelve
   assessment strings citing the wrong design by rank for exactly that reason.)*
-* `affinity_above_null` means `max(hu, mo) ≥ 0.2218`, a retained legacy threshold. See §4.5.
+* `affinity_above_null` **was removed from the CSV on 2026-10-05.** It meant
+  `max(hu, mo) ≥ 0.2218`, a threshold derived from a null that proved degenerate. It is
+  deprecated historical metadata, not an interpretation. See §4.5.
 
 ### 11.5 Why not 20
 
@@ -1241,7 +1301,8 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
    submission has been validated experimentally.
 2. **There is no working affinity bar.** The original one derived from a control that is the
    agonist (§4.1). Its replacement, a composition-matched shuffled null, has now landed and is
-   degenerate — 12 of 12 at exactly 0.0000 (§4.5) — so the `affinity_above_null` flag means
+   degenerate — 12 of 12 at exactly 0.0000 (§4.5) — so the (now removed) `affinity_above_null`
+   flag meant
    "above zero". The only comparison class with a real tail is the 10 right-censored no-KD
    molecules, and that tail reaches 0.5893, above our own quantified positive. Affinity is
    reported, not gated.

@@ -1,0 +1,99 @@
+{
+ "crystal": "targets/egfr/controls/4UIP.pdb",
+ "cut": 5.0,
+ "n_xtal_contacts": 65,
+ "n_epitope": 28,
+ "n_paratope": 27,
+ "poses": [
+  {
+   "pose": "POSrac1_4UIP_d3_hu_seed1_sample_0.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.0,
+   "n_pred": 57,
+   "n_dropped_unaligned": 13
+  },
+  {
+   "pose": "POSrac1_4UIP_d3_hu_seed2_sample_1.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.0741,
+   "n_pred": 66,
+   "n_dropped_unaligned": 1
+  },
+  {
+   "pose": "POSrac1_4UIP_d3_hu_seed3_sample_2.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.037,
+   "n_pred": 47,
+   "n_dropped_unaligned": 4
+  },
+  {
+   "pose": "POSrac1_4UIP_d3_hu_seed4_sample_3.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.0,
+   "n_pred": 31,
+   "n_dropped_unaligned": 3
+  },
+  {
+   "pose": "POSrac1_4UIP_d3_hu_seed5_sample_4.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0357,
+   "paratope_recall": 0.037,
+   "n_pred": 68,
+   "n_dropped_unaligned": 2
+  },
+  {
+   "pose": "POSrac1_4UIP_ecd_hu_seed1_sample_5.cif",
+   "recall": 0.7231,
+   "precision": 0.6184,
+   "epitope_recall": 0.9286,
+   "paratope_recall": 0.9259,
+   "n_pred": 76,
+   "n_dropped_unaligned": 0
+  },
+  {
+   "pose": "POSrac1_4UIP_ecd_hu_seed2_sample_6.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.6296,
+   "n_pred": 48,
+   "n_dropped_unaligned": 0
+  },
+  {
+   "pose": "POSrac1_4UIP_ecd_hu_seed3_sample_7.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.963,
+   "n_pred": 121,
+   "n_dropped_unaligned": 0
+  },
+  {
+   "pose": "POSrac1_4UIP_ecd_hu_seed4_sample_8.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.8148,
+   "n_pred": 73,
+   "n_dropped_unaligned": 0
+  },
+  {
+   "pose": "POSrac1_4UIP_ecd_hu_seed5_sample_9.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.3704,
+   "n_pred": 53,
+   "n_dropped_unaligned": 0
+  }
+ ]
+}

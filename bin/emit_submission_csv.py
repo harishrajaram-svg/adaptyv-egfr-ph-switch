@@ -276,7 +276,29 @@ MIN_N = 5          # poses required before a ratio may put a design in tier 1
 # So: no design is EXCLUDED on affinity. Affinity becomes a reported, continuous column with an
 # explicit uncertainty flag, and the tier-1 test is the pH hypothesis plus pose count only.
 MIN_AFFINITY = None        # retired; see above. Set a float only to re-enable a hard gate.
-AFFINITY_FLAG = 0.2218     # REPORTING threshold: "above the (compromised) computational null"
+# DEPRECATED 2026-10-05 -- HISTORICAL METADATA ONLY, NOT AN ACTIVE INTERPRETATION.
+#
+# Reviewer: "Remove the 0.2218 flag from active interpretation; keep only as explicitly
+# deprecated historical metadata."
+#
+# Why it is indefensible as a threshold. 0.2218 was the 95th percentile of a
+# composition-matched shuffled null. That null then landed degenerate -- 12 of 12
+# molecules at exactly 0.0000 (METHODS 4.5) -- so a "95th percentile" of it is a
+# percentile of a point mass at zero, and "above the null" collapses to "above zero".
+# Independently, a measured 55 nM binder scores 0.3549 on this instrument while a
+# molecule with no reported KD scores 0.5893, so no cut on this axis separates binders
+# from non-binders on the only panel with measured outcomes.
+#
+# The `affinity_above_null` COLUMN IS REMOVED from the emitted CSV rather than relabelled.
+# A column that is a threshold on a degenerate null, sitting in the one file Adaptyv
+# grades, invites exactly the reading it cannot support. Affinity is still reported in
+# full as the two continuous ipsae_min columns, which is the honest form.
+#
+# The constant survives only because selftest_binds() below needs a number to construct
+# a fixture above "binding", and because deleting it would erase the record of what was
+# once reported. It must not be used to interpret a real design.
+AFFINITY_FLAG_DEPRECATED = 0.2218
+AFFINITY_FLAG = AFFINITY_FLAG_DEPRECATED   # alias kept for the selftest only
 
 
 def rank_key(r):
@@ -433,7 +455,8 @@ def main():
             "ph_ratio_allsite_SENSITIVITY", "ph_ratio_partnered_SENSITIVITY",
             "ph_rank_range_across_bases", "ph_tier_provisional",
             "ph_ratio_target_only_SUPERSEDED",
-            "affinity_assessable", "affinity_above_null", "assessment"]
+            # `affinity_above_null` removed 2026-10-05 -- see AFFINITY_FLAG_DEPRECATED.
+            "affinity_assessable", "assessment"]
     sens = sensitivity()
     # rank each design on all three bases, to report how far it moves
     import math as _m
@@ -474,7 +497,7 @@ def main():
                             if r["molecule_class"] in ("nanobody", "scfv", "fab_kappa", "fab_lambda")
                             else "yes",
                         # PK: separate columns for binding evidence, pH hypothesis and uncertainty
-                        "yes" if max(r["hu"], r["mo"]) >= AFFINITY_FLAG else "no",
+
                         r.get("assessment", "computational candidate")])
     print(f"\nwrote {OUT}: {len(scored)} designs, {len(cols)} columns")
     # Print the ratio the designs are RANKED on (all-site), not the superseded

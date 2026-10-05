@@ -270,6 +270,51 @@ reinterpreted later.
   positive, §2.5). That over-corrected: the control panel cannot support an AUROC at n=1
   positive, and the December outcome analysis both can and should carry one. **The two are
   different objects and the distinction is now explicit here so it is not collapsed again.**
+
+> ### Statistical amendment, 2026-10-05 — before any outcome was examined
+>
+> Four defects in the plan above, all raised in review. The original text is left in place;
+> this note governs where they conflict.
+>
+> **1. "Clopper–Pearson … clustered by sequence family" is not a method.** Clopper–Pearson is an
+> exact interval for a *binomial* proportion of independent trials. There is no standard
+> clustered variant of it, and attaching the word "clustered" to it does not define a procedure.
+> **Replaced by:** the design-level proportion reported with a genuine exact Clopper–Pearson
+> interval (no clustering claim attached), **plus** a cluster bootstrap resampling whole
+> families as the clustering-aware sensitivity. **No effective-n is substituted into
+> Clopper–Pearson** — that would be a different and unjustified interval wearing the exact
+> interval's name.
+>
+> **2. A family-level rate cannot be compared with the design-level 0/10 comparator.** The
+> historical comparator is 0 of 10 **designs**, with exact interval [0, 0.308]. The plan then
+> specified our own hit rate "computed on families (n=5) and not on designs". Those are
+> different estimands and the comparison is invalid as written. **Replaced by:** the primary
+> comparison is **design-level against design-level** — our k of 17 designs against the
+> historical 0 of 10 designs. The family-level rate is reported **alongside**, as the
+> clustering-aware sensitivity, and is **not** compared to 0.308.
+>
+> **3. The family count was wrong and has changed.** The plan says five families; §1.3 of this
+> document lists six; the submission as frozen on 2026-10-04 had **six** by the methods
+> document's own map. Five designs were added on 2026-10-05 (METHODS §10), so the submission is
+> now **17 designs across 9 families**, largest cluster 7. The family count is therefore not a
+> fixed quantity in this plan and is taken from
+> `bin/gen_methods_submission.py --write` at analysis time rather than quoted here.
+>
+> **4. Assay comparability is assumed and should not be.** The 0-of-10 comparator comes from the
+> same ProteinBase collection and platform, but those molecules were assessed for *binding*,
+> whereas this submission's primary objective is a **pH-dependent binding ratio** across two pH
+> points. A design can bind and not switch, or switch weakly and not register as a binder. The
+> historical rate is therefore a comparator for "did anything bind at all", not for "did
+> anything switch", and it is used only in that narrower sense. Any comparison also inherits
+> whatever differences exist in construct, immobilisation and buffer between that round and
+> this one, which we cannot audit from the published collection.
+>
+> **5. Censoring.** Per the amendment earlier in this document, the 10 comparator molecules have
+> **no reported KD** — right-censored, not measured non-binders. "0 of 10 with binding detected"
+> is accurate as written; "0 of 10 bind" would not be. A design of ours that is measurable at
+> pH 6.5 and undetectable at pH 7.4 yields a **lower bound** on its ratio, not a point estimate,
+> and will be reported as such.
+
 * **Falsification rule and minimum useful effect are committed above, before outcomes**, and an
   imprecise result is reported as **inconclusive** rather than as a negative.
 

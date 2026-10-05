@@ -227,6 +227,14 @@ rather than re-running the selection 14 hours before a deadline, and it is quest
 
 ## 6. THE CONTROL RECOVERY ITSELF — the result this document was missing
 
+**"The eight control shards", reconciled.** You asked how "eight" squares with a table listing
+nine `gitter-yolo` molecules plus one `deepsatflow`. It does not, and it was never meant to:
+**eight is a count of Modal shards, not of molecules.** Verified from the run tree — four
+`expctrl0–3` shards hold the 11 measured molecules (1 quantified binder + 10 no-KD, each folded
+against both species, 22 design directories), and four `ctrl2_0–3` shards hold the 4 CDR decoys
+and 12 shuffle nulls. Eight shards, 27 molecules. The sentence below conflated a compute unit
+with a molecule and is left in place with this correction above it.
+
 **An earlier version of this file introduced the measured controls as "the class we never had"
 and then reported no ipSAE result for any of them.** The artifact answering your
 control-recovery ask did not contain the control recovery. The cause: the eight control shards
@@ -257,6 +265,34 @@ All values are ipSAE_min, **median over 5 seeds**, against the 621 aa human and 
 | `EXPNEG_gitter-yolo8` | 0.0000 | 4/5 | 0.0000 | 5/5 |
 | `EXPNEG_gitter-yolo2` | 0.0000 | 5/5 | 0.0000 | 5/5 |
 | `EXPNEG_gitter-yolo6` | 0.0000 | 5/5 | 0.0000 | 5/5 |
+
+### 6b. Family-balanced comparison, per your item (b)
+
+`bin/control_family_balance.py` (reproducible, no arguments). **Nine of the ten no-KD molecules
+come from one submitter group**, so a raw 8-of-10 counts that group's designs nine times and is
+close to a statement about `gitter-yolo` alone. Families are assigned from the submitter-group
+prefix published with the molecules — fixed before any score was read, and independent of the
+outcome. One row per distinct sequence, five seeds nested in each.
+
+| | human leg (EGF 0.3549) | mouse leg (EGF 0.3700) |
+|---|---|---|
+| **raw**, one row per molecule | **8.0/10 = 0.800** | **10.0/10 = 1.000** |
+| `gitter` (n=9), fraction below EGF | 0.778 | 1.000 |
+| `deepsatflow` (n=1), fraction below EGF | 1.000 | 1.000 |
+| **family-balanced** (equal family weights, ties = ½) | **0.889** | **1.000** |
+| leave-one-family-out | 0.778 – 1.000 | 1.000 – 1.000 |
+
+**No confidence interval is reported, and no effective-n is substituted into Clopper–Pearson.**
+With two families, one of which has a single member, the family-balanced figure on the human leg
+moves across the whole range 0.778–1.000 depending on which single family is retained. That
+swing is the honest uncertainty statement; a binomial interval would imply a denominator we do
+not have. The mouse leg is 1.000 under every weighting, which is the one part of this panel that
+is not weighting-dependent.
+
+**Requiring both species — how the submission is actually scored — zero of the ten no-KD
+molecules match or exceed EGF on both legs.** That is consistent with the instrument working on
+this panel and does not demonstrate that it does: there is one positive, and the ten are
+right-censored rather than measured at zero.
 
 **CDR DECOYS (presumed negative, VHH framework preserved)** — n=4
 
