@@ -351,6 +351,18 @@ def declaration_review(rows):
     An attestation that does not match the submission is worse than no attestation.
     """
     names = [r["name"] for r in rows]
+    # Expression-QC coverage, counted rather than described. The hand-written version said
+    # QC "was only ever run on the original candidate set", which reads as 12 of 18; the
+    # QC table joins to 11, and the designs it misses are not the six additions.
+    noqc = []
+    qcf = 'analysis/01-egfr/express_qc.tsv'
+    if os.path.exists(qcf):
+        import csv as _c
+        have = {(r.get('name') or '').strip()
+                for r in _c.DictReader(open(qcf), delimiter='\t')}
+        noqc = [n for n in names
+                if not any(n == h or n in h or h in n for h in have if h)]
+    nqc = len(names) - len(noqc)
     base = [n for n in names if n in BASELINE_1004]
     added = [n for n in names if n not in BASELINE_1004]
     dropped = [n for n in BASELINE_1004 if n not in names]
@@ -371,8 +383,11 @@ def declaration_review(rows):
                f"reproducible from the repository: each comes from this project's own "
                f"generation runs (SS 10); each was re-scored on the same three pH bases over "
                f"its own human-leg poses; and the provenance audit below covers them. What has "
-               f"**not** been done for them: expression QC, which was only ever run on the "
-               f"original candidate set. Novelty is **not** uniformly established -- see "
+               f"**not** been done for them: expression QC. Measured rather than asserted -- "
+               f"`analysis/01-egfr/express_qc.tsv` joins to **{nqc} of the {len(names)}** "
+               f"submitted designs, so {len(names) - nqc} have no expression-QC row"
+               + (": " + ", ".join(f"`{n}`" for n in noqc) if noqc else "")
+               + f". Novelty is **not** uniformly established either -- see "
                f"`bin/check_novelty_coverage.py`, which is RED.")
     return "\n".join(out).replace("SS ", "\u00a7")
 

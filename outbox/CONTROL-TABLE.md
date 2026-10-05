@@ -209,9 +209,11 @@ were scored and then wired into no analysis; they are reported here and feed not
 2. **It is a third and much stronger data point on antibody blindness.** §4.2 of the methods
    document had 0/2 on VHH positives; §4.5 added four CDR decoys indistinguishable from the real
    VHH at 0.0000. This is a *measured 294 nM antibody* scored **below a non-pH-switching
-   comparator that is itself a measured binder
-   comparator**. The instrument is not merely insensitive to antibody formats — on the one
-   measured example we have, it is **anti-correlated**.
+   comparator that is itself a measured binder**. The instrument is not merely insensitive to
+   antibody formats — on the one measured example we have, the ordering is **inverted**.
+   *Stated as one inverted pair, not as a correlation*: this same file says four lines earlier
+   that "four rows cannot establish an inverse relationship", and "anti-correlated" claimed
+   exactly the relationship those four rows cannot support. One inversion is what we have.
 3. **It bears directly on two of our eighteen submitted rows**, both VHH format. We already report
    their affinity as inadequately assessed rather than low. This strengthens that from a caveat
    to a measurement: on the only antibody in this project with a known KD, the affinity column

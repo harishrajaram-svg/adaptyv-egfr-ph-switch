@@ -173,13 +173,15 @@ unchanged and an acid one methylene shorter cannot reach its counter-charge and 
   by structural contact recovery: one pose in ten reproduces 72% of the crystal contacts and 93%
   of the epitope, and **all ten poses score ipSAE_min 0.0000**. A zero on this instrument does
   not mean "no interface".
-- **The submission has nine backbone families and one epitope.** All 17 designs contact the same
-  patch of domain III, 20 residues shared by ≥80% of them. The top-ranked design contacts an
-  N-glycosylation sequon (Asn420). Human/mouse identity *at the contacted positions* is 0.86,
-  not the whole-protein figure.
+- **The submission has ten backbone families and one epitope.** All 18 designs contact the
+  same patch of domain III — a union of 62 positions spanning mature 316–474, with 7 contacted
+  by every design. **Three** designs contact an N-glycosylation sequon (Asn420), at ranks 1, 8
+  and 9. Human/mouse identity *at the contacted positions* is 0.86, not the whole-protein
+  figure.
 - **Control recovery is reported family-balanced**, because nine of the ten no-KD molecules come
   from one submitter group. Raw 8/10 = 0.800; family-balanced 0.889; leave-one-family-out spans
-  0.778–1.000. No interval is reported and no effective-n is substituted into Clopper–Pearson.
+  **0.867–1.000** (this read 0.778–1.000, which was the submitter-prefix family map PK ruled
+  out; the sequence-clustered map gives 0.867). No interval is reported and no effective-n is substituted into Clopper–Pearson.
 - **The 0.2218 `affinity_above_null` column is removed from the CSV**, not relabelled — it was a
   percentile of a null that proved to be a point mass at zero.
 - **Two corrections to this day's own work**, both caught before release: 6ARU is the
@@ -218,7 +220,8 @@ gate: **novelty eligibility is unresolved for four shipped designs** (`bin/check
 commit in this repository rather than a quiet rewrite. Several reversed a published-in-log
 conclusion. Two are worth knowing before you read any number here:
 
-- Our negative control turned out to be **81% mature human EGF** — the agonist. Every bar in
+- Our negative control turned out to be **32% mature human EGF** — the agonist. (81% is the
+  percentage *of EGF* covered, not of the molecule; METHODS §4.1 states it precisely.) Every bar in
   the project had been calibrated against it. The thresholds are retired, not replaced.
 - The novelty rule was implemented with one clause missing, which rejected **114 designs that
   actually clear**, including the entire pool that supplies ranks 1–4, 8 and 9.

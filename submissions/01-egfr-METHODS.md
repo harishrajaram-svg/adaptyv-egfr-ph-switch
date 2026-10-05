@@ -508,9 +508,15 @@ Two consequences, both of which constrain how this submission may be read.
 
 1. **A score of 0.0000 on this instrument does not mean "no interface".** It can mean "a
    correctly reproduced crystallographic interface that the predictor is not confident about".
-   This matters directly: several submitted designs carry 0.0000 on one species, and §12 of
-   this document already warns that an absent measurement must not read as a measured zero.
-   Here is a case where a *measured, crystallographically-solved* interface reads 0.0000.
+   This matters directly, though not in the way this paragraph first claimed: it read
+   *"several submitted designs carry 0.0000 on one species, and §12 of this document already
+   warns that an absent measurement must not read as a measured zero."* **No** shipped design
+   carries a 0.0000 on either species — the weakest assessable legs are 0.132 and 0.181 — and
+   §12 is Declarations and contains no such warning; it is **§4.2** that documents the error,
+   cited by limitation 22. What stands is the point itself: here is a *measured,
+   crystallographically-solved* interface reading 0.0000, so a zero on this instrument is not
+   evidence of no interface. That is why the two antibody-format rows are reported as
+   inadequately assessed rather than as low.
 2. **It is a second instance of the G532 pattern** (CONTROL-TABLE §5b, a different
    document), now with
    geometry attached rather than inferred. A real binder, folded against its real target,
@@ -582,7 +588,7 @@ ectodomain and sees all 17 target histidines rather than the crop's 5. (This rea
 18"; the count is derived from each design's own target-histidine census.) The one molecule in this project with a solved complex is never docked correctly on the
 crop by either predictor, while the full ectodomain recovers it once in five and gets the binder
 face approximately right every time. We are not able to rescore the submission on full ECD
-before the deadline — one design already uses it, the other seventeen would need refolding and
+before the deadline — one design already uses it, the other 17 would need refolding and
 re-gating — so this is recorded as a limitation on the construct rather than fixed.
 
 What none of this establishes: **n = 1 molecule.** One co-crystal cannot measure how often either
@@ -994,9 +1000,13 @@ assessment.** Novelty Level ≥ 3 is an Adaptyv eligibility requirement, not a p
 every one of the 35 carries `NOT ASSESSED (no novelty record)`. Expression QC is likewise
 unavailable: it was only ever run on the 20 submission candidates, so for the reconsidered pool
 that axis is unassessed too, and the ledger records it as unassessed rather than defaulting it
-to eligible. Novelty is also a severe filter on this target — §9 of this document measures
-Adaptyv's own round-2 set at 2% of *binders* clearing the strict reading — so a high ratio is
-no guarantee any of these is submittable.
+to eligible. Novelty is also a severe filter on this target — of the 53 round-2 designs that actually BOUND,
+**exactly one** would have passed the strict reading, i.e. **2%**, against 4% for non-binders,
+so novelty is mildly anti-correlated with binding here. (That calibration is stated and sourced
+in `bin/novelty_gate.py`, measured against Adaptyv's own pre-computed FoldSeek results for the
+393 tested round-2 EGFR designs. This sentence attributed it to §9, which contains no round-2
+measurement and no 2% figure of any kind.) So a high ratio is no guarantee any of these is
+submittable.
 
 **The novelty gate has now run over those 35, and it does not rescue the submission.**
 FoldSeek against the PDB database, same `bin/novelty_gate.py` and same Level ≥ 3 bar applied to
@@ -1053,7 +1063,8 @@ family with no representation in the submission at all, while six of the twelve 
 designs sat on a single other backbone.
 
 **What remains unresolved, stated as such.** This section does not change the submission, and
-the decision whether to use the eight unused slots is not made here. Three things are known and
+the decision whether to use the then-unused slots is not made here — 2 remain unused
+now, and six of the molecules below were subsequently added. Three things are known and
 recorded: the exclusion of 63 molecules rested on a gate that cannot carry that weight; 25 of
 them are eligible and outrank a shipped tier-1 design on the submission's own basis; and all of
 these comparisons inherit the provisional status of that basis, since §11.7 measures Kendall
@@ -1124,10 +1135,11 @@ ectodomain, and we are not asserting the overlap between our designs' shared cor
 cetuximab's own epitope at residue level, because the Fab coordinates were removed from the
 construct and we did not re-derive them. Both are checkable and neither was checked.
 
-**The finding the checks surfaced: this submission has nine backbone families and one epitope.**
-Across all 17 designs the union of contacted residues is only **58 distinct positions
-(mature 316–474)**, and **20 residues are contacted by at least 80% of the designs**: 323, 325,
-348, 349, 350, 353, 355, 357, 382, 384, 408, 409, 411, 412, 417, 418, 438, 440, 465, 467. The
+**The finding the checks surfaced: this submission has ten backbone families and one epitope.**
+Across all 18 designs the union of contacted residues is only **62 distinct positions
+(mature 316–474)**, and **19 residues are contacted by at least 80% of the
+designs**: 325, 348, 349, 350, 353, 355, 357, 382, 384, 408, 409, 411, 412, 417, 418, 438, 440, 465, 467. (This read "all 17 designs ... 58 distinct
+positions ... 20 residues", computed before the eighteenth design was added.) The
 backbone diversity reported in §11.3 is real and the epitope diversity is close to nil — every
 design is a different scaffold presented to the same patch of domain III.
 
@@ -1399,10 +1411,11 @@ backbone not otherwise represented, carries the largest causal swing in the set 
 target-only; 0.574 → 3.738 all-site, so the swing survives the correction), and has the tightest
 seed reproducibility in the project.
 
-One consistency note recorded rather than papered over: `bin/check_discards.py` reads the
-30-design candidate JSON, not the emitted CSV, and still compares on the target-only ratio. It
-therefore flags a superset of what the shipped bar would flag — the safe direction — and we left
-it alone rather than edit a gate at submission time.
+One consistency note, now resolved: this read *"`bin/check_discards.py` reads the 30-design
+candidate JSON, not the emitted CSV, and still compares on the target-only ratio."* It was
+changed on 2026-10-05 — `SUB_CSV = "submissions/01-egfr.csv"` — and now validates against the
+shipped set on the graded basis, matching by sequence. The note is kept because it describes why
+the earlier threshold was 1.263 instead of 2.289 and why 19 unshipped candidates were skipped.
 
 ### 11.6 `rimA01_r15_L133E` — a specific mechanism with an unreproducible magnitude
 
@@ -1527,7 +1540,8 @@ The all-site basis has a related defect: the largest single contributor to
 `rimA01_r15_L133E`'s 53× is `binder:ASP33` at ratio 7.37 with its nearest counter-charge
 **9.84 Å** away — a desolvation shift with no electrostatic partner, the same artefact class
 this project used to rule out Mechanism A — while the actual designed `GLU133` contributes
-only **1.30×**. This is independent support for the reviewer's point that L133E's
+only **1.141×** (its median ratio over all 20 poses; this read 1.30×, which is nearer H370's
+own 1.327× swing and attributed the wrong quantity to the designed residue). This is independent support for the reviewer's point that L133E's
 5.659 vs 5.554 is not evidence of a second site.
 
 **Noise does not accumulate.** With 30–123 titratable sites per complex, a multiplicative
@@ -1777,7 +1791,7 @@ collaboration. The errors in §7 were found the same way.
 
 Of these, **12** were in the submission as it stood on 2026-10-04 and **6** were added on 2026-10-05. The additions are `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`.
 
-What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC, which was only ever run on the original candidate set. Novelty is **not** uniformly established -- see `bin/check_novelty_coverage.py`, which is RED.
+What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC. Measured rather than asserted -- `analysis/01-egfr/express_qc.tsv` joins to **11 of the 18** submitted designs, so 7 have no expression-QC row: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `bc_s360518_mpnn9_A22D`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Novelty is **not** uniformly established either -- see `bin/check_novelty_coverage.py`, which is RED.
 <!-- /GENERATED:DECL-REVIEW -->
 
 **Provenance.** All seventeen sequences are de novo designs from this project's own generation
@@ -1855,7 +1869,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     an instrument with no validation against measured pH data** — not merely on one that "does
     not model pH" (limitation 4). Separating "the structure is wrong" from "the protonation model
     is wrong" requires scoring that series' interface, which we have not done.
-11. **Nine backbone families, one epitope.** All 17 designs contact the same patch of domain
+11. **Ten backbone families, one epitope.** All 18 designs contact the same patch of domain
     III — 20 residues are shared by ≥80% of them (§10b). The backbone diversity in §11.3 does
     not buy epitope diversity, so a wrong epitope fails the whole submission at once rather
     than nine partly-independent times.
@@ -1878,7 +1892,8 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     independent model (Chai-1) recovers a single crystallographic contact on the crop, while
     the full ectodomain recovers 72% of them once in five poses and gets 37–96% of the correct
     binder face in all five. 92% of that epitope is inside the crop, so absence is not the
-    explanation. 16 of 18 submitted designs are scored on the crop (§4.4b).
+    explanation. 17 of 18 submitted designs are scored on the crop (§4.4b); only
+    `d2c_mpnn13_S88D_serasp` is scored on the full ectodomain.
 16. **The "not a switch" verdict is free-leg dependent.** Four designs read below the 1.20×
     bar on the partner-deletion free leg and only one does on a separately-folded apo free
     leg; two cross 1.0× on that change alone (§11.7). The two legs order the submission
