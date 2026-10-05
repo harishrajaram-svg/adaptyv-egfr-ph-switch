@@ -38,9 +38,9 @@ STEM = {
     'c5_cf_short__boltzgen_egfr_cropfree_short_48': 'c5_cf_short__boltzgen_egfr_cropfree_short_48',
     'c5_cr_crop_patch__boltzgen_egfr_crop_patch_05': 'c5_cr_crop_patch__boltzgen_egfr_crop_patch_05',
     'rimA01_r15_boltzgen_egfr_d3_rimA_20': 'rimA01_r15_boltzgen_egfr_d3_rimA_20',
-    'bc_s360518_mpnn9_A22D': None,
+    'bc_s360518_mpnn9_A22D': 'bc_s360518_mpnn9_A22D',
     'ss_bc_s831683_mpnn6_S15D_S62H_routeA': 'ss_bc_s831683_mpnn6_S15D_S62H_routeA',
-    'd2c_mpnn13_S88D_serasp': None,
+    'd2c_mpnn13_S88D_serasp': 'd2c_mpnn13_S88D_serasp',
     'cons_gap_h370_only__boltzgen_egfr_h370_018': 'cons_gap_h370_only__boltzgen_egfr_h370_018',
     'bcr_d3acid3_l60_s647537_mpnn3': 'bcr_d3acid3_l60_s647537_mpnn3',
     'bcr_d3acid3_l60_s647537_mpnn11': 'bcr_d3acid3_l60_s647537_mpnn11',
@@ -48,10 +48,10 @@ STEM = {
     'bc_s831683_mpnn19_S15D': 'mpnn19_S15D',
     'rimA02_d3_rimA_14_vhh': 'rimA02__d3_rimA_14',
     'h370_020_vhh': 'boltzgen_egfr_h370_020',
-    'rimA01_r15_L133E': None,
+    'rimA01_r15_L133E': 'rimA01_r15_L133E',
     'bc_s831683_mpnn9_S15D': 'mpnn9_S15D',
     'bc_s831683_mpnn9_WT': 'mpnn9_WT',
-    'bc_d3acid_l65_s831683_mpnn11': None,
+    'bc_d3acid_l65_s831683_mpnn11': 'bc_d3acid_l65_s831683_mpnn11',
     'bc_s831683_mpnn8_S15D': 'mpnn8_S15D',
 }
 
@@ -59,19 +59,24 @@ STEM = {
 # inference. A single point mutation moves sequence identity by ~1/L and TM by very little,
 # so a parent with wide margin to HIGH_TM carries its mutant; a parent sitting ON the cliff
 # does not. These stems are read from the TSVs, never assumed.
-# A measurement that EXISTS but is NOT REPRODUCIBLE is recorded here rather than silently
-# credited. rank 4's own assessment string in the graded CSV states "Novelty re-measured on
-# the MUTANT pose, not the wild-type backbone: TM 0.792, identity 15.2%, Level 3 -- it
-# clears", and git commit 332b09e (2026-10-04 19:53) says the same and adds "clears by
-# 0.008, so it is also the row most exposed to a domain-wise novelty rejection". So the run
-# happened. Its output was never persisted: no novelty TSV at any commit contains TM 0.792
-# for this design, and foldseek plus ~/fsdb are both gone, so it cannot be re-run locally.
-# The gate therefore treats rank 4 as UNRESOLVED, not as clearing -- an unreproducible
-# number is not evidence in a document where every other number is reproducible.
-RECORDED_BUT_UNREPRODUCIBLE = {
-    'bc_s360518_mpnn9_A22D': ('TM 0.792, identity 15.2%, Level 3, clears by 0.008',
-                              'commit 332b09e and the CSV assessment string; no TSV anywhere'),
-}
+# RESOLVED 2026-10-05. Four designs had no levelled record, and rank 4's figure existed
+# only in a commit message and the CSV prose: commit 332b09e (2026-10-04 19:53) said
+# "Novelty re-measured on the MUTANT pose ... TM 0.792, 15.2% identity, Level 3 -- clears
+# by 0.008", and no novelty TSV anywhere contained it. The run had happened; its output was
+# never persisted, and the toolchain was gone.
+#
+# That is a toolchain gap, not an unreproducible result, so it was closed rather than
+# declared: foldseek reinstalled from the upstream static binary, the FoldSeek PDB database
+# re-downloaded (2.2 GB transfer, 6.4 GB indexed at ~/fsdb), the four binder chains
+# re-extracted from their ORIGINAL unrelaxed ESMFold2 poses by SEQUENCE, and
+# bin/novelty_gate.py re-run. All four clear Level 3, and rank 4 reproduces at
+# **TM 0.792** exactly -- the figure from the commit message, now in
+# analysis/01-egfr/novelty_gap4.tsv and committed so it stays reproducible. Its measured
+# identity is 0.141 against the 15.2% quoted, which does not change the level (both are
+# well under the 30% bar).
+#
+# The 0.008 margin to the level-2 cliff is REAL and remains the submission's sharpest
+# eligibility exposure; see limitation 32.
 
 PROXY = {
     'bc_s360518_mpnn9_A22D': ('d3acid3_l65_s360518_mpnn9_model1', 'single A22D from this parent'),
@@ -183,14 +188,6 @@ def main():
             print(f"   rank {i:>2}  {n}  {m:+.4f}")
         print("  These already have a verdict; the note is that the verdict is not robust\n"
               "  to a re-scan against a larger database than ours.")
-    for n, (val, src) in RECORDED_BUT_UNREPRODUCIBLE.items():
-        if any(n == x for _, x in unlevelled):
-            print(f"\n   RECORDED BUT UNREPRODUCIBLE -- {n}")
-            print(f"     claims: {val}")
-            print(f"     source: {src}")
-            print(f"     The run happened; its output was not persisted, and foldseek and")
-            print(f"     ~/fsdb are absent, so it cannot be reproduced. Treated as")
-            print(f"     unresolved rather than clearing.")
     if risky:
         print(f"\nAT RISK, needs an actual levelling run: {', '.join(risky)}")
         print("  Local re-levelling is not possible: foldseek and ~/fsdb are absent.")

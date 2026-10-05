@@ -1977,25 +1977,30 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     a suitable local acidic surface, retaining B as a smaller branch. §1 records that we used
     mechanism B. No mechanism-A result is reported anywhere in this document, so the two
     statements that A was ruled out are not supported by an experiment we ran.
-32. **The novelty gate is unresolved for four shipped designs, and rank 4's measurement is
-    recorded but not reproducible.** `bin/check_novelty_coverage.py` is RED: 14 of 18 designs
-    have a levelled record that clears Level ≥ 3, and four do not. Three are safe by
-    inference from a scanned relative with wide margin to the Level-2 cliff at TM 0.80
-    (+0.1996, +0.0998, +0.0607); a single point mutation cannot close those. The fourth,
-    `bc_s360518_mpnn9_A22D` at rank 4, is not. Its own assessment string in the graded CSV
-    states *"Novelty re-measured on the MUTANT pose, not the wild-type backbone: TM 0.792,
-    identity 15.2%, Level 3 — it clears"*, and the commit that added it (332b09e, 2026-10-04
-    19:53) says the same and adds *"clears by 0.008, so it is also the row most exposed to a
-    domain-wise novelty rejection"* — a warning that then disappeared from this document for
-    a day. **The run happened; its output was never persisted.** No novelty TSV at any commit
-    contains TM 0.792 for this design, and foldseek and the FoldSeek database are both absent
-    from the machine, so it cannot be re-run here. An unreproducible number is not evidence
-    in a document where every other number is reproducible, so the gate treats rank 4 as
-    unresolved rather than as clearing. It must go through the organisers' own novelty check
-    before this submission is nominated.
-33. **Five more designs clear novelty with less than 0.04 TM of margin** — ranks 15, 18, 9, 8
-    and 16, the tightest at +0.0283 (§bin/check_novelty_coverage.py `--margins`). Their
-    verdicts are not robust to a re-scan against a database larger than ours. The two
-    antibody-format designs sit *above* the 0.80 TM line (0.855 and 0.871) and clear anyway,
-    because antibodies are levelled on CDRH3 identity rather than whole-chain TM — a
-    different rule branch, and the TM margin is not their cliff.
+32. **Every shipped design clears novelty Level ≥ 3; the tightest margin is 0.0076.**
+    `bin/check_novelty_coverage.py` is green at 18 of 18. It was RED earlier on 2026-10-05:
+    four designs had no levelled record, and `bc_s360518_mpnn9_A22D`'s figure existed only in a
+    commit message and in its own CSV prose. Commit 332b09e (2026-10-04 19:53) read *"Novelty
+    re-measured on the MUTANT pose ... TM 0.792, 15.2% identity, Level 3 — clears by 0.008,
+    so it is also the row most exposed to a domain-wise novelty rejection"* — and no novelty
+    TSV anywhere in the repository contained it, so the number was unreproducible and that
+    warning never reached this document.
+    **Closed by re-running it rather than by declaring it unreproducible.** FoldSeek was
+    reinstalled from the upstream static binary, the PDB database re-downloaded (2.2 GB
+    transfer, 6.4 GB indexed), the four binder chains re-extracted from their **original
+    unrelaxed** ESMFold2 poses by sequence, and `bin/novelty_gate.py` re-run. Results in
+    `analysis/01-egfr/novelty_gap4.tsv`, committed: `bc_s360518_mpnn9_A22D` **TM 0.792**,
+    the commit message's figure exactly; `bc_d3acid_l65_s831683_mpnn11` 0.778;
+    `rimA01_r15_L133E` 0.644; `d2c_mpnn13_S88D_serasp` 0.598. All Level 3. Measured identity
+    for `bc_s360518_mpnn9_A22D` is **0.141** against the 15.2% quoted, which does not change
+    its level.
+33. **Seven designs clear novelty with under 0.04 TM of margin; the tightest is 0.0076.**
+    The level-2 cliff is TM 0.80 and HIGH structural similarity *alone* lands a design
+    there. Margins: rank 4 **+0.0076**, rank 17 +0.0217, rank 15 +0.0283, rank 18 +0.0331,
+    rank 9 +0.0337, ranks 8 and 16 +0.0377. Our whole-chain `qtmscore` is an approximation
+    of the organisers' domain-segmented computation (§9), so these verdicts are not robust
+    to their pipeline or to a larger database. `cf_short120_r031` at TM 0.811 is this
+    project's own precedent for landing on the wrong side by 0.011. **`bc_s360518_mpnn9_A22D` is the
+    submission's sharpest eligibility exposure and it is 0.0076 from rejection.** The two
+    antibody-format designs sit *above* 0.80 (0.855, 0.871) and clear anyway, on the CDRH3
+    branch, where TM margin is not the cliff.
