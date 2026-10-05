@@ -1,3 +1,4 @@
+import json
 #!/usr/bin/env python3
 """Generate the SUBMISSION sections of the methods document FROM the emitted CSV.
 
@@ -22,10 +23,10 @@ Usage:
     gen_methods_submission.py --selftest
 """
 from pathlib import Path
-import csv, json, os, re, sys
+import csv, statistics, json, os, re, sys
 
 CSV = "submissions/01-egfr.csv"
-MS = "analysis/01-egfr/multisite_pooled.json"
+MS = "analysis/01-egfr/ph_sensitivity.json"   # superseded multisite_pooled.json
 METHODS = "submissions/01-egfr-METHODS.md"
 STRUCTDIR = "submissions/structures"
 
@@ -73,6 +74,9 @@ ANTIBODY = {"nanobody", "scfv", "fab_kappa", "fab_lambda"}
 HEAD_PREFIX = "ph_ratio_6p5_over_7p4"
 
 
+SENS = 'analysis/01-egfr/ph_sensitivity.json'
+
+
 def headcol(rows):
     """The headline pH column, resolved by PREFIX rather than by exact name.
 
@@ -90,7 +94,47 @@ def headcol(rows):
 
 def load():
     rows = list(csv.DictReader(open(CSV)))
-    ms = {v["name"]: v for v in json.load(open(MS)).values()}
+    # ONE SOURCE, JOINED ON SEQUENCE.
+    #
+    # Two bugs met here. (1) `_ms` was keyed on NAME, and the records carry the internal
+    # run name, not the submission name. (2) It read multisite_pooled.json, which
+    # emit_submission_csv.py had ALREADY superseded for the CSV (see its multisite()
+    # docstring) and which holds 12 records against 18 shipped designs. Together they
+    # printed "--" in the published basis table's binder-histidine and worst-drag columns
+    # for six of the eighteen rows -- not because the quantity was unmeasured, but because
+    # the join missed a stale file.
+    #
+    # Both columns are now derived from ph_sensitivity.json, the same single source the
+    # CSV reads. Verified against the old artifact on all 12 of its records: n_his
+    # reproduces exactly, and worst reproduces to three decimals on ten, moving in the
+    # third on two where the larger pose set sees a drag n=5 could not.
+    ms = {}
+    for v in json.load(open(MS)).values():
+        q = (v.get("seq") or "").strip().upper()
+        poses = v.get("sites_all_poses") or {}
+        if not q or not poses:
+            continue
+        first = next(iter(poses.values()))
+        nb = sum(1 for st_ in first.values()
+                 if st_["resname"] == "HIS" and st_["partner"] == "binder")
+        pw = []
+        for pose in poses.values():
+            rr = [st_["ratio"] for st_ in pose.values()
+                  if st_["resname"] == "HIS" and st_["partner"] == "binder"]
+            if rr:
+                pw.append(min(rr))
+        # No binder histidine means no binder-borne drag to report. The old artifact
+        # wrote 1.0 here, which reads as "measured, none found"; it was never measured.
+        ms[q] = dict(name=v.get("name"), n_his=nb,
+                     worst=round(statistics.median(pw), 3) if pw else None)
+    unjoined = [r["name"] for r in rows
+                if r["sequence"].strip().upper() not in ms]
+    if unjoined:
+        raise SystemExit(
+            "no pH-sensitivity record for " + ", ".join(unjoined) +
+            "\n  The join is on SEQUENCE. Re-run bin/ph_sensitivity_multisite.py so every\n"
+            "  shipped design has a record; the basis table must not print a blank cell\n"
+            "  for a design whose record merely failed to join.")
     for i, r in enumerate(rows, 1):
         r["_rank"] = i
         fam = FAMILY.get(r["name"], DEFAULT_FAMILY)
@@ -102,7 +146,7 @@ def load():
                 "  family concentration in the graded methods table.")
         r["_family"] = fam
         r["_aa"] = len(r["sequence"])
-        r["_ms"] = ms.get(r["name"], {})
+        r["_ms"] = ms[r["sequence"].strip().upper()]
     return rows
 
 
@@ -193,6 +237,92 @@ def family_list(rows):
             "families, not designs.")
 
 
+def limit_family(rows):
+    """Limitation 19's body, generated.
+
+    It was hand-written and duplicated the counts that SS 11.3 already derives, so it
+    drifted: it still read "seventeen submitted designs" after the eighteenth was added,
+    and "overstates n by up to six-fold" was arithmetic on the old partition. The family
+    map, the collapse factor and the totals all come from the CSV, so they are derived.
+    SS 11.3 remains the single source of the partition itself; this block only restates
+    its consequence."""
+    fams = {}
+    for r in rows:
+        fams.setdefault(r["_family"], []).append(r["_rank"])
+    big = max(fams.items(), key=lambda kv: len(kv[1]))
+    pairs = sorted((f, v) for f, v in fams.items() if len(v) == 2)
+    pd = "; ".join(f"`{f}` (ranks {', '.join(str(x) for x in sorted(v))})"
+                  for f, v in pairs)
+    return "    " + (f"**Effective n is {len(fams)}, not {len(rows)}.** {len(big[1])} of the "
+            f"{len(rows)} submitted designs sit on one backbone (`{big[0]}`, ranks "
+            f"{', '.join(str(x) for x in sorted(big[1]))}), and "
+            f"{len(pairs)} further families are two-design clusters: {pd}. Any hit rate "
+            f"or interval computed over designs rather than sequence families overstates "
+            f"n by up to {len(big[1])}-fold on the arm carrying our only causal claim. "
+            f"See SS 11.3 for the partition.").replace("SS ", "\u00a7")
+
+
+def limit_affinity(rows):
+    """Limitation 22's body, generated.
+
+    Hand-written as "two of our ten rows ... a fifth of the submission" when the
+    submission held ten designs. The denominator changed twice afterwards and the
+    fraction did not, so both the count and the share are derived now."""
+    bad = [r for r in rows if r["affinity_assessable"].strip().lower()
+           not in ("yes", "true", "1")]
+    n = len(rows)
+    share = (f"{len(bad)} of {n}" if not bad else
+             f"{len(bad)} of the {n}")
+    frac = f"{100.0 * len(bad) / n:.0f}%"
+    names = ", ".join(f"`{r['name']}`" for r in bad)
+    return "    " + (f"**The organisers rank outcomes partly on affinity at pH 6.5, and {share} "
+            f"submitted rows have no usable affinity reading at all** (SS 4.5): {names}. "
+            f"We submitted them anyway, because excluding them would mean scoring them at "
+            f"0.0000, which is the error SS 4.2 documents -- but it means {frac} of the "
+            f"submission cannot compete on one of the stated criteria."
+            ).replace("SS ", "\u00a7").replace(" -- ", " \u2014 ")
+
+
+def switch_site(rows):
+    """Which EGFR histidine each shipped design actually switches on, generated.
+
+    Hand-written as "All ten submitted designs switch on H433". That was stale on the
+    count AND wrong on the substance: once the submission grew, one design stopped
+    agreeing -- and it is rank 1. A blanket "all" sentence is exactly the shape that hides
+    a single disagreeing row, so the distribution is derived and the exception named."""
+    import collections
+    sens = json.load(open(SENS))
+    ship = {r["sequence"].strip().upper(): r for r in rows}
+    dom = {}
+    for v in sens.values():
+        r = ship.get(v.get("seq", "").strip().upper())
+        if not r:
+            continue
+        poses = v.get("sites_all_poses") or {}
+        if not poses:
+            continue
+        best = None
+        for k, st_ in next(iter(poses.values())).items():
+            if st_["resname"] == "HIS" and st_.get("moved"):
+                if best is None or abs(st_["ratio"] - 1) > abs(best[1] - 1):
+                    best = (k, st_["ratio"])
+        if best:
+            dom.setdefault(best[0], []).append((r["name"], r["_rank"]))
+    if not dom:
+        raise SystemExit("switch_site: no moved histidine on any shipped design")
+    order = sorted(dom.items(), key=lambda kv: -len(kv[1]))
+    top, rest = order[0], order[1:]
+    txt = (f"{len(top[1])} of the {len(rows)} submitted designs switch on "
+           f"**{top[0].split(':')[1]}**")
+    if rest:
+        bits = []
+        for site, ms in rest:
+            who = ", ".join(f"`{n}` (rank {k})" for n, k in sorted(ms, key=lambda t: t[1]))
+            bits.append(f"**{site.split(':')[1]}** -- {who}")
+        txt += ". The remaining " + str(sum(len(m) for _, m in rest)) + ": " + "; ".join(bits)
+    return txt + "."
+
+
 def basis_table(rows):
     out = ["| design | target-only | **all-site** | binder histidines | worst drag |",
            "|---|---|---|---|---|"]
@@ -260,7 +390,10 @@ def write_into_methods(rows):
     import re
     src = Path(METHODS).read_text()
     blocks = {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows),
-              "FAMILY-LIST": family_list(rows), "BINDER-HIS": binder_his_sentence(rows)}
+              "FAMILY-LIST": family_list(rows), "BINDER-HIS": binder_his_sentence(rows),
+              "LIMIT-FAMILY": limit_family(rows),
+              "LIMIT-AFFINITY": limit_affinity(rows),
+              "SWITCH-SITE": switch_site(rows)}
     for tag, body in blocks.items():
         pat = re.compile(rf"(<!-- GENERATED:{tag}[^>]*-->\n).*?(<!-- /GENERATED:{tag} -->)",
                          re.S)
@@ -278,7 +411,10 @@ def check_methods(rows):
     bad = []
     for tag, body in {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows),
                       "FAMILY-LIST": family_list(rows),
-                      "BINDER-HIS": binder_his_sentence(rows)}.items():
+                      "BINDER-HIS": binder_his_sentence(rows),
+                      "LIMIT-FAMILY": limit_family(rows),
+              "LIMIT-AFFINITY": limit_affinity(rows),
+              "SWITCH-SITE": switch_site(rows)}.items():
         m = re.search(rf"<!-- GENERATED:{tag}[^>]*-->\n(.*?)<!-- /GENERATED:{tag} -->", src, re.S)
         if not m:
             bad.append(f"{tag}: block missing")

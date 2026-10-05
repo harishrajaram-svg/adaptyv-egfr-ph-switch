@@ -1,0 +1,172 @@
+{
+ "rows": [
+  {
+   "name": "c5_cf_short__boltzgen_egfr_cropfree_short_48",
+   "status": "no_movable_site",
+   "reason": "relaxed, no movable site: 0 binder histidines and no relaxed target -- this design switches on the target",
+   "n_poses_relaxed": 6,
+   "deletion": null
+  },
+  {
+   "name": "c5_cr_crop_patch__boltzgen_egfr_crop_patch_05",
+   "status": "no_movable_site",
+   "reason": "relaxed, no movable site: 0 binder histidines and no relaxed target -- this design switches on the target",
+   "n_poses_relaxed": 11,
+   "deletion": null
+  },
+  {
+   "name": "rimA01_r15_boltzgen_egfr_d3_rimA_20",
+   "status": "no_movable_site",
+   "reason": "relaxed, no movable site: 0 binder histidines and no relaxed target -- this design switches on the target",
+   "n_poses_relaxed": 6,
+   "deletion": null
+  },
+  {
+   "name": "bc_s360518_mpnn9_A22D",
+   "deletion": 3.7377,
+   "relaxed_binder_only": 3.7008,
+   "relaxed": 3.2094,
+   "fold": 0.8586,
+   "n_binder_his_relaxed": 1,
+   "n_target_his_relaxed": 5,
+   "n_poses": 5
+  },
+  {
+   "name": "ss_bc_s831683_mpnn6_S15D_S62H_routeA",
+   "status": "no_relaxed_structure"
+  },
+  {
+   "name": "d2c_mpnn13_S88D_serasp",
+   "deletion": 3.5262,
+   "relaxed_binder_only": 2.9376,
+   "relaxed": 2.9376,
+   "fold": 0.8331,
+   "n_binder_his_relaxed": 2,
+   "n_target_his_relaxed": 0,
+   "n_poses": 5
+  },
+  {
+   "name": "cons_gap_h370_only__boltzgen_egfr_h370_018",
+   "status": "no_movable_site",
+   "reason": "relaxed, no movable site: 0 binder histidines and no relaxed target -- this design switches on the target",
+   "n_poses_relaxed": 11,
+   "deletion": null
+  },
+  {
+   "name": "bc_s831683_mpnn6_S15D",
+   "deletion": 1.8353,
+   "relaxed_binder_only": 1.7812,
+   "relaxed": 1.7812,
+   "fold": 0.9705,
+   "n_binder_his_relaxed": 3,
+   "n_target_his_relaxed": 0,
+   "n_poses": 5
+  },
+  {
+   "name": "bc_s831683_mpnn19_S15D",
+   "deletion": 1.7743,
+   "relaxed_binder_only": 1.683,
+   "relaxed": 1.683,
+   "fold": 0.9485,
+   "n_binder_his_relaxed": 3,
+   "n_target_his_relaxed": 0,
+   "n_poses": 5
+  },
+  {
+   "name": "rimA02_d3_rimA_14_vhh",
+   "status": "no_movable_site",
+   "reason": "relaxed, no movable site: 0 binder histidines and no relaxed target -- this design switches on the target",
+   "n_poses_relaxed": 6,
+   "deletion": null
+  },
+  {
+   "name": "h370_020_vhh",
+   "status": "no_movable_site",
+   "reason": "relaxed, no movable site: 0 binder histidines and no relaxed target -- this design switches on the target",
+   "n_poses_relaxed": 11,
+   "deletion": null
+  },
+  {
+   "name": "rimA01_r15_L133E",
+   "deletion": 5.6559,
+   "relaxed_binder_only": 5.6559,
+   "relaxed": 4.8156,
+   "fold": 0.8514,
+   "n_binder_his_relaxed": 0,
+   "n_target_his_relaxed": 5,
+   "n_poses": 20
+  },
+  {
+   "name": "bc_s831683_mpnn9_S15D",
+   "deletion": 1.0614,
+   "relaxed_binder_only": 0.6986,
+   "relaxed": 0.6986,
+   "fold": 0.6581,
+   "n_binder_his_relaxed": 3,
+   "n_target_his_relaxed": 0,
+   "n_poses": 20
+  },
+  {
+   "name": "bc_s831683_mpnn9_WT",
+   "deletion": 0.6266,
+   "relaxed_binder_only": 0.4231,
+   "relaxed": 0.4231,
+   "fold": 0.6751,
+   "n_binder_his_relaxed": 3,
+   "n_target_his_relaxed": 0,
+   "n_poses": 26
+  },
+  {
+   "name": "bc_d3acid_l65_s831683_mpnn11",
+   "deletion": 0.7372,
+   "relaxed_binder_only": 0.4595,
+   "relaxed": 0.4595,
+   "fold": 0.6233,
+   "n_binder_his_relaxed": 3,
+   "n_target_his_relaxed": 0,
+   "n_poses": 6
+  },
+  {
+   "name": "bc_s831683_mpnn8_S15D",
+   "deletion": 1.023,
+   "relaxed_binder_only": 0.7038,
+   "relaxed": 0.7038,
+   "fold": 0.6879,
+   "n_binder_his_relaxed": 3,
+   "n_target_his_relaxed": 0,
+   "n_poses": 5
+  },
+  {
+   "name": "bcr_d3acid3_l60_s647537_mpnn11",
+   "status": "no_movable_site",
+   "reason": "relaxed, no movable site: 0 binder histidines and no relaxed target -- this design switches on the target",
+   "n_poses_relaxed": 6,
+   "deletion": null
+  },
+  {
+   "name": "bcr_d3acid3_l60_s647537_mpnn3",
+   "deletion": 2.914,
+   "relaxed_binder_only": 2.914,
+   "relaxed": 2.5857,
+   "fold": 0.8873,
+   "n_binder_his_relaxed": 0,
+   "n_target_his_relaxed": 5,
+   "n_poses": 6
+  }
+ ],
+ "summary": {
+  "n_compared": 10,
+  "n_no_movable_site": 7,
+  "n_no_relaxed_structure": 1,
+  "n": 10,
+  "fold_median": 0.8422,
+  "fold_min": 0.6233,
+  "fold_max": 0.9705,
+  "n_moved_10pct": 8,
+  "kendall_tau": 0.9556,
+  "max_rank_shift": 1,
+  "ladder_n": 10,
+  "ladder_span_median": 1.4453,
+  "ladder_span_max": 2.9336
+ }
+}

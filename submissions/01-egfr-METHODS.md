@@ -62,8 +62,10 @@ mouse, and not an affinity tag.** This is worth stating because the assayed cons
 C-terminal His tag, and the organisers have said explicitly that a binder engaging the tag
 "might look pH-selective but it would bind to anything with a His tag", and that in-silico
 evidence will be weighted more heavily to catch it. Across our whole pool of 50 designs that
-switch at n ≥ 5, the engaged site is **H433 in 48, H370 in 1 and H383 in 1** — zero tag. All ten
-submitted designs switch on H433. We designed against a tag-free crystal structure, so the tag
+switch at n ≥ 5, the engaged site is **H433 in 48, H370 in 1 and H383 in 1** — zero tag.
+<!-- GENERATED:SWITCH-SITE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+17 of the 18 submitted designs switch on **H433**. The remaining 1: **H370** -- `c5_cf_short__boltzgen_egfr_cropfree_short_48` (rank 1).
+<!-- /GENERATED:SWITCH-SITE --> We designed against a tag-free crystal structure, so the tag
 was not available to optimise against even accidentally.
 - **Mechanism A** — the inverse: histidine on the binder, carboxylate on the target.
 
@@ -1161,20 +1163,20 @@ design:
 | design | target-only | **all-site** | binder histidines | worst drag |
 |---|---|---|---|---|
 | rimA01_r15_L133E | 4.582 | **5.656** | 0 | — |
-| c5_cf_short__boltzgen_egfr_cropfree_short_48 | 5.819 | **5.546** | — | — |
+| c5_cf_short__boltzgen_egfr_cropfree_short_48 | 5.819 | **5.546** | 0 | — |
 | rimA02_d3_rimA_14_vhh | 5.186 | **4.838** | 0 | — |
-| c5_cr_crop_patch__boltzgen_egfr_crop_patch_05 | 5.265 | **4.812** | — | — |
+| c5_cr_crop_patch__boltzgen_egfr_crop_patch_05 | 5.265 | **4.812** | 0 | — |
 | rimA01_r15_boltzgen_egfr_d3_rimA_20 | 4.582 | **4.256** | 0 | — |
 | bc_s360518_mpnn9_A22D | 5.630 | **3.738** | 1 | 0.776 |
-| ss_bc_s831683_mpnn6_S15D_S62H_routeA | 5.386 | **3.545** | — | — |
-| d2c_mpnn13_S88D_serasp | 4.572 | **3.526** | 2 | 0.983 |
-| cons_gap_h370_only__boltzgen_egfr_h370_018 | 3.478 | **3.180** | — | — |
-| bcr_d3acid3_l60_s647537_mpnn3 | 3.154 | **2.914** | — | — |
-| bcr_d3acid3_l60_s647537_mpnn11 | 2.997 | **2.747** | — | — |
+| ss_bc_s831683_mpnn6_S15D_S62H_routeA | 5.386 | **3.545** | 4 | 0.66 |
+| d2c_mpnn13_S88D_serasp | 4.572 | **3.526** | 2 | 0.979 |
+| cons_gap_h370_only__boltzgen_egfr_h370_018 | 3.478 | **3.180** | 0 | — |
+| bcr_d3acid3_l60_s647537_mpnn3 | 3.154 | **2.914** | 0 | — |
+| bcr_d3acid3_l60_s647537_mpnn11 | 2.997 | **2.747** | 0 | — |
 | h370_020_vhh | 2.289 | **2.101** | 0 | — |
 | bc_s831683_mpnn6_S15D | 5.397 | **1.835** | 3 | 0.661 |
 | bc_s831683_mpnn19_S15D | 5.435 | **1.774** | 3 | 0.66 |
-| bc_s831683_mpnn9_S15D | 5.428 | **1.062** | 3 | 0.344 |
+| bc_s831683_mpnn9_S15D | 5.428 | **1.062** | 3 | 0.339 |
 | bc_s831683_mpnn8_S15D | 5.461 | **1.023** | 3 | 0.333 |
 | bc_d3acid_l65_s831683_mpnn11 | 4.010 | **0.737** | 3 | 0.359 |
 | bc_s831683_mpnn9_WT | 3.522 | **0.627** | 3 | 0.338 |
@@ -1465,7 +1467,7 @@ not reordering the submission on the strength of that judgement.
 
 **Unassessed sites.** The gate now records, per pose, any titratable site for which a pKa
 is unavailable in either leg, with the reason, instead of skipping it with a bare
-`continue`. Across all **158 poses of the seventeen submitted designs** the count is **0** —
+`continue`. Across all **165 poses of the eighteen submitted designs** the count is **0** —
 every site entered or was accounted for. Site-level detail for every pose is retained in
 `analysis/01-egfr/ph_sensitivity.json` so no later question requires a re-run.
 
@@ -1602,9 +1604,87 @@ a bounded three-design subset (`rimA01_r15_L133E`, `bc_s360518_mpnn9_A22D`,
 191 relaxations in total. The target subset is bounded because a 170 aa target minimisation costs
 ~42 s against ~9 s for a 65 aa binder.
 
-**Status at the time of writing: the arm is running.** Results and their effect on the ordering
-are filled in here when it completes; this section is published with its method stated so that
-the analysis cannot be quietly reshaped after its own outcome is known.
+**Completed 2026-10-05 01:17.** 191 relaxations, 0 failures, 60.8 min wall-clock.
+
+**Coverage, stated before the result.** Of the 18 shipped designs, the relaxed leg can only move
+a design that carries a histidine on a chain that was relaxed:
+
+| | designs | why |
+|---|---|---|
+| compared | 10 | a binder histidine, or a relaxed target, or both |
+| relaxed, no movable site | 7 | **zero binder histidines** — the pH signal is carried by the target's own H370/H433, and a binder-only relaxation cannot touch it |
+| no relaxed structure | 1 | `ss_bc_s831683_mpnn6_S15D_S62H_routeA` entered the submission after the relax queue was built — a real gap, not a filtered one |
+
+The seven "no movable site" designs are not missing data and their deletion numbers are not in
+doubt; they are simply outside this arm's reach. Reporting them as uncovered would overstate the
+arm, and dropping them silently would overstate its coverage.
+
+**Result 1 — the direction is one-way.** All ten designs move **down**:
+
+| | fold (relaxed ÷ deletion) |
+|---|---|
+| median | **0.842** |
+| range | 0.623 – 0.971 |
+| moving ≥10% | 8 of 10 |
+| moving up | **0 of 10** |
+
+This is a bias, not scatter. Relaxing the free state lets a partially buried histidine's side
+chain reorganise and recover part of its solvated pKa; the free-state pKa rises toward normal,
+the bound-minus-free gap narrows, and the linkage ratio falls. **The shipped deletion basis is
+therefore optimistic on the pH ratio — by about 16% at the median and up to 38% at the worst.**
+It is stated here as a signed bias rather than a symmetric uncertainty, because that is what the
+data show.
+
+**Result 2 — the ordering survives.** Kendall τ between the deletion and relaxed orderings is
+**+0.956**, and the largest single-design rank shift is **1**.
+
+This is the opposite of §11.7's perturbation result, and the contrast is the point. Perturbing
+the pKa values at PROPKA's own accuracy moves 16 of 17 designs by ≥5 ranks. Changing the
+free-leg definition — a much larger conceptual change — barely moves the ordering at all. So the
+ranking is fragile with respect to **pKa accuracy** and robust with respect to **free-leg
+choice**. Those are two distinct axes, and only one of them scrambles the table. §11.7's
+conclusion stands unchanged: the objective cannot order this submission. This section does not
+rescue it.
+
+**Result 3 — the target leg is not a special case.** The three designs whose target chain was
+also relaxed move 0.85×, 0.86× and 0.89×, inside the binder-only range. There is no evidence that
+relaxing the target behaves differently from relaxing the binder, which is the only claim the
+bounded three-design subset can support. It cannot rule out a target-specific effect at designs
+not in the subset.
+
+**Result 4 — the three-rung ladder.**
+
+| design | deletion | relaxed | apo | span |
+|---|---|---|---|---|
+| `rimA01_r15_L133E` | 5.656 | 4.816 | 5.656 † | 1.17× |
+| `bc_s360518_mpnn9_A22D` | 3.738 | 3.209 | 3.681 | 1.16× |
+| `d2c_mpnn13_S88D_serasp` | 3.526 | 2.938 | 5.041 | 1.72× |
+| `bcr_d3acid3_l60_s647537_mpnn3` | 2.914 | 2.586 | 2.914 † | 1.13× |
+| `bc_s831683_mpnn6_S15D` | 1.835 | 1.781 | 1.679 | 1.09× |
+| `bc_s831683_mpnn19_S15D` | 1.774 | 1.683 | 1.595 | 1.11× |
+| `bc_s831683_mpnn9_S15D` | 1.061 | 0.699 | 1.863 | 2.67× |
+| `bc_s831683_mpnn8_S15D` | 1.023 | 0.704 | 2.065 | 2.93× |
+| `bc_d3acid_l65_s831683_mpnn11` | 0.737 | 0.460 | 1.260 | 2.74× |
+| `bc_s831683_mpnn9_WT` | 0.627 | 0.423 | 1.161 | 2.74× |
+
+Span across the three free legs: **median 1.445×, maximum 2.934×**.
+
+† **These two rows are a two-rung ladder, not a three-rung one.** The apo arm (§11.7) remaps only
+*binder* histidines, and these designs have none, so their apo entry is the deletion number
+restated rather than an independent estimate. Their 1.13–1.17× span comes entirely from the
+relaxed column. Counting those as three-way agreement would be the same vacuous-agreement
+artifact that `check_claims.py` was built to catch, so they are marked instead of averaged in.
+
+For the s831683 family the two arms move in **opposite** directions — relaxed down to 0.42–0.70,
+apo up to 1.16–2.07. The deletion basis sits between them rather than at an extreme, which is
+mildly reassuring about the shipped choice and says nothing about which leg is right. None of the
+three is the free protein.
+
+**What this changes in the submission: nothing.** The graded column remains the deletion,
+histidine-only basis, declared as such in its own column name. What this arm adds is a bound on
+that basis's modelling error — **≈1.4× at the median, ≈2.9× at the worst, with the error signed
+optimistic** — and the finding that the error does not reorder the table. Recorded as
+limitations 23 (the signed bias) and 24 (the arm's reach).
 
 ## 12. Declarations
 
@@ -1740,19 +1820,30 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     improved 5 of 12 attempts, median fold 0.98 (§10c). Two of the five successes are in this
     submission and none of the seven failures is. Read the S62H and L133E rows as two
     successes out of twelve attempts, not as a working method.
-19. **Effective n is 10, not 18.** Seven of the seventeen submitted designs sit on one backbone
-    (`d3acid_l65_s831683`) and a further two are a parent/point-mutant pair
-    (`rimA01_r15_d3_rimA_20` and its `L133E`). Any hit rate or interval computed over designs
-    rather than sequence families overstates n by up to six-fold on the arm carrying our only
-    causal claim. See §11.3 for the partition.
-12. **The reproducibility claim has a boundary** — see the Repository note above. The pose cache
+19. <!-- GENERATED:LIMIT-FAMILY do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+    **Effective n is 10, not 18.** 7 of the 18 submitted designs sit on one backbone (`d3acid_l65_s831683`, ranks 5, 10, 11, 15, 16, 17, 18), and 2 further families are two-design clusters: `d3acid3_l60_s647537` (ranks 8, 9); `rimA01_r15_d3_rimA_20` (ranks 3, 14). Any hit rate or interval computed over designs rather than sequence families overstates n by up to 7-fold on the arm carrying our only causal claim. See §11.3 for the partition.
+<!-- /GENERATED:LIMIT-FAMILY -->
+20. **The reproducibility claim has a boundary** — see the Repository note above. The pose cache
     is not published, and the documented emit command returns zeroed affinity columns without it.
-13. **The design family with the best measured prior is the one we scored least.** 60 of the 71
+21. **The design family with the best measured prior is the one we scored least.** 60 of the 71
     recovered BindCraft sequences sit at **n = 1 pose**, below the n ≥ 5 floor §6 requires, so
     they are structurally ineligible for tier 1 regardless of merit. 22 of those read ≥ 2.0× at
     n = 1. BindCraft also beat BoltzGen on every axis we measured, on 11 invocations against
     1,944 designs. We did not resolve them, and the submission is poorer for it.
-14. **The organisers rank outcomes partly on affinity at pH 6.5, and two of our ten rows have no
-    usable affinity reading at all** (§4.5). We submitted them anyway, because excluding them
-    would mean scoring them at 0.0000, which is the error §4.2 documents — but it means a fifth
-    of the submission cannot compete on one of the stated criteria.
+22. <!-- GENERATED:LIMIT-AFFINITY do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+    **The organisers rank outcomes partly on affinity at pH 6.5, and 2 of the 18 submitted rows have no usable affinity reading at all** (§4.5): `rimA02_d3_rimA_14_vhh`, `h370_020_vhh`. We submitted them anyway, because excluding them would mean scoring them at 0.0000, which is the error §4.2 documents — but it means 11% of the submission cannot compete on one of the stated criteria.
+<!-- /GENERATED:LIMIT-AFFINITY -->
+23. **The shipped pH basis is optimistic, by a measured and signed amount.** The relaxed free
+    leg (§11.8) moves all ten testable designs **down** — median 0.842×, worst 0.623× — so
+    freezing the free state in the bound conformation inflates the headline ratio. Across the
+    three free legs the span reaches 2.934×. The graded column is not corrected for this,
+    because none of the three legs is the free protein and picking one post hoc would be the
+    reshaping §11.8 was published early to prevent. The ordering is unaffected (Kendall
+    τ = +0.956); the magnitudes are not reliable to better than about 1.4×.
+24. **The relaxed arm reaches 10 of 18 designs, and the gap is not random.** Seven designs carry
+    no binder histidine — their switch is target-borne — and a binder-only relaxation cannot
+    move them, so the eight designs whose signal sits on EGFR's own H370/H433 are exactly the
+    ones this sensitivity check cannot cover. One further design
+    (`ss_bc_s831683_mpnn6_S15D_S62H_routeA`) entered the submission after the relax queue was
+    built and has no relaxed structure at all. The 0.842× median therefore describes the
+    binder-borne designs, not the submission.

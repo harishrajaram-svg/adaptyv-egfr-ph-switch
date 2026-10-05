@@ -136,6 +136,13 @@ def rules(a):
         """
         bad, hits = [], 0
         for doc, (text, offs) in a['flat'].items():
+            # The pre-registration is a FROZEN document: it records what was committed to
+            # before the outcome was known, and retro-editing its numbers to match the
+            # current submission would destroy the only thing it is for. Its own amendment
+            # notes carry the drift. So it is read for citations and inventory, but never
+            # held to a current-state count.
+            if doc.endswith('PREREGISTRATION.md'):
+                continue
             for m in re.finditer(pattern, text, re.I):
                 # Skip past-tense recitals: this document deliberately records what the
                 # submission USED to contain, and flagging those would make the gate cry
@@ -167,6 +174,26 @@ def rules(a):
     rule('design count "N designs, ranked on"', n, r'\*\*(\d+) designs, ranked on')
     rule('slot usage "N of the 20 permitted"', n, r'\*\*(\d+) of the 20 permitted')
     rule('slot usage "stands at N of 20"', n, r'stands at \*\*(\d+) of the 20 permitted')
+
+    # Broad denominator sweep. The three rules above are literal phrasings, and that was
+    # the hole: a hand-written "Seven of the SEVENTEEN submitted designs" and "two of our
+    # TEN rows" both sat in the limitations through a green sweep, because neither matched
+    # a literal pattern. Any number immediately qualifying "submitted designs/rows" or
+    # "our N rows" is a denominator and must equal the CSV row count.
+    NUM = '(' + '|'.join([r'\d+'] + sorted(set(WORDS.values()), key=len,
+                                            reverse=True)) + ')'
+    # A number before "submitted designs" is only a DENOMINATOR when a determiner marks
+    # it as the whole set. Without this guard the rule fires on numerators -- README's
+    # "three submitted designs had more poses on disk than the submission was counting"
+    # is a true statement about three designs, not a claim that the submission holds
+    # three. Requiring all/the/our/of-the keeps the rule on denominators only.
+    DET = r'(?:all |the |our |of the |among the |across the )'
+    rule('denominator "<det> N submitted designs"', n,
+         DET + NUM + r'(?= submitted designs?\b)')
+    rule('denominator "<det> N submitted rows"', n,
+         DET + NUM + r'(?= submitted rows?\b)', optional=True)
+    rule('denominator "our N rows"', n,
+         r'our ' + NUM + r'(?= rows?\b)', optional=True)
 
     # family count from the generator's own map
     try:
