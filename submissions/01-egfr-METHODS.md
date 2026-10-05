@@ -496,7 +496,8 @@ Two consequences, both of which constrain how this submission may be read.
    This matters directly: several submitted designs carry 0.0000 on one species, and §12 of
    this document already warns that an absent measurement must not read as a measured zero.
    Here is a case where a *measured, crystallographically-solved* interface reads 0.0000.
-2. **It is a second instance of the G532 pattern** (§5b of the control table), now with
+2. **It is a second instance of the G532 pattern** (CONTROL-TABLE §5b, a different
+   document), now with
    geometry attached rather than inferred. A real binder, folded against its real target,
    scored at the instrument's floor. The earlier claim that the G532 result was "fully
    attributed to the pose" cannot be made here, because in this case the pose is **right** in
@@ -1574,6 +1575,36 @@ separately in §11.8.
 interval. They bound how much the composition rule moves the answer; they say nothing about
 whether PROPKA's pKa values are right, and the partner-deletion free leg remains a
 fixed-conformation diagnostic rather than a measurement of the apo state.
+
+### 11.8 Relaxed free leg, and the target's own free leg
+
+*The third rung of the free-leg ladder the reviewer asked for. §11.7 compares the
+partner-deletion estimate against a separately-folded apo structure; those two differ in
+backbone as well as side chains, so neither isolates the effect he actually named —
+**"side-chain relaxation ... not represented"**. This section isolates it.*
+
+**Method.** `bin/relax_chain.py` takes each bound complex, extracts one chain, repairs it with
+pdbfixer, and energy-minimises it under amber14 + GBn2 implicit solvent **with the backbone
+harmonically restrained** (10 kcal/mol/Å² on N, CA, C, O). Two choices are deliberate:
+
+- **The backbone is restrained.** Released, this becomes a slow refold and stops isolating
+  side-chain relaxation — it would just be a worse version of the apo arm.
+- **Implicit solvent, not vacuum.** In vacuum, surface polar side chains collapse onto the
+  protein to satisfy their own electrostatics. That is precisely the burial change a pKa
+  calculation responds to, so vacuum would manufacture the effect being measured.
+
+So the three legs differ in exactly one controlled way each: deletion freezes everything, relaxed
+frees the side chains only, apo changes the backbone too.
+
+**Scope.** The binder chain of every human-leg pose of all 18 designs, plus the target chain for
+a bounded three-design subset (`rimA01_r15_L133E`, `bc_s360518_mpnn9_A22D`,
+`bcr_d3acid3_l60_s647537_mpnn3`) to test whether the target leg behaves like the binder leg.
+191 relaxations in total. The target subset is bounded because a 170 aa target minimisation costs
+~42 s against ~9 s for a 65 aa binder.
+
+**Status at the time of writing: the arm is running.** Results and their effect on the ordering
+are filled in here when it completes; this section is published with its method stated so that
+the analysis cannot be quietly reshaped after its own outcome is known.
 
 ## 12. Declarations
 
