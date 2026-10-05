@@ -207,7 +207,7 @@ All values are ipSAE_min, **median over 5 seeds**, against the 621 aa human and 
 |---|---|---|---|---|
 | `EXPPOS_Human_EGF` | 0.3549 | 0/5 | 0.3700 | 0/5 |
 
-**MEASURED NON-BINDERS (no binding detected)** — n=10
+**NO KD REPORTED (right-censored; affinity weaker than the quantifiable limit, or an expression/QC failure)** — n=10
 
 | molecule | ipSAE human (median) | dead seeds | ipSAE mouse (median) | dead seeds |
 |---|---|---|---|---|
@@ -256,7 +256,9 @@ ranks and deliberately do not report an AUROC — an earlier draft of our method
 it was removed. This is your own `arms-backlog §2a` ("the gate is n=1 positive") arriving in the
 place it mattered.
 
-- **Human leg: 8 of 10 measured non-binders rank below the measured binder. 2 rank above it.**
+- **Human leg: 8 of the 10 no-KD molecules rank below the quantified binder. 2 rank above it.**
+  (Corrected 2026-10-05: a missing KD is right-censoring, not a measured zero, so this
+  separates one quantified binder from ten censored observations.)
   The highest-scoring molecule in the entire measured panel is a measured **non-binder** —
   `EXPNEG_gitter-yolo10` at 0.5893 against EGF's 0.3549. It also reads a **5.27× pH ratio**, which
   places it 8th of the 132 molecules eligible to rank on our primary objective.
@@ -271,7 +273,7 @@ place it mattered.
 
 **Three limits.** The positive class is one molecule of 53 aa, shorter than every design here.
 "No binding detected" bounds affinity from below and does not prove no interaction. And ten
-negatives do not characterise a tail, so 0.5893 is a floor on how high a measured non-binder can
+censored observations do not characterise a tail, so 0.5893 is a floor on how high a no-KD molecule can
 score here, not a ceiling.
 
 **One thing I have not fixed.** You asked twice for the historical EGFR data to be split by

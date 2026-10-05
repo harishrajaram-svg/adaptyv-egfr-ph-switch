@@ -350,35 +350,56 @@ binder only reaches 0.4183.
 ### 4.4 Control recovery: the instrument graded against measured outcomes.
 
 Adaptyv published 11 molecules expressed and measured against EGFR on the assay platform this
-challenge uses — human EGF, and **10 designs with no binding detected**
+challenge uses — human EGF, and **10 designs for which no KD was reported**
 (`proteinbase.com/collections/egfr-round1-second-submission`). We folded all 11 against both
 target constructs, 5 seeds each, and scored them with the same ipSAE_min that ranks our
 designs. **This is the only test in the project where the instrument is graded against an
 experimental outcome rather than against itself.**
 
+**How the ten are labelled, corrected 2026-10-05.** Earlier versions of this section called
+them "measured non-binders". That is not what the data says and the distinction was put to us
+directly: *"Distinguish assay failure and missing KD from no binding detected. Weak binding
+beyond the quantifiable limit is right-censored, not below."* A molecule with no reported KD is
+one whose affinity is **right-censored** — known only to be weaker than the assay's
+quantifiable limit — and that class also contains molecules that failed to express or failed QC
+for reasons unrelated to affinity. It is not a measurement of zero affinity. Throughout this
+section they are therefore **"no KD reported"**, and every claim below is a claim about
+separating one quantified binder from ten censored observations, which is weaker than
+separating binders from non-binders. We do not know the true affinity of any of the ten.
+
 | molecule | measured | ipSAE_min human | ipSAE_min mouse |
 |---|---|---|---|
 | Human EGF | **KD 55 nM** (n=15) | 0.3549 | 0.3700 |
-| gitter-yolo10 | no binding | **0.5893** | 0.0000 |
-| gitter-yolo9 | no binding | **0.4326** | 0.0000 |
-| deepsatflow-design7 | no binding | 0.2168 | 0.1823 |
-| gitter-yolo5 | no binding | 0.0264 | 0.0108 |
-| gitter-yolo4 | no binding | 0.0109 | 0.0000 |
-| gitter-yolo3 | no binding | 0.0000 | 0.0121 |
-| gitter-yolo2, 6, 7, 8 | no binding | 0.0000 | 0.0000 |
+| gitter-yolo10 | no KD reported | **0.5893** | 0.0000 |
+| gitter-yolo9 | no KD reported | **0.4326** | 0.0000 |
+| deepsatflow-design7 | no KD reported | 0.2168 | 0.1823 |
+| gitter-yolo5 | no KD reported | 0.0264 | 0.0108 |
+| gitter-yolo4 | no KD reported | 0.0109 | 0.0000 |
+| gitter-yolo3 | no KD reported | 0.0000 | 0.0121 |
+| gitter-yolo2, 6, 7, 8 | no KD reported | 0.0000 | 0.0000 |
 
-**What this panel can and cannot support, before the numbers.** It is **10 negatives and one
-positive.** With a single positive there is no discrimination estimate to be had: every summary
-statistic reduces to *where that one molecule ranks*, and an ROC-AUC computed from it would be
-that same single comparison restated ten times. We report ranks and we do not report an AUC.
+**What this panel can and cannot support, before the numbers.** It is **ten right-censored
+observations and one quantified binder.** An AUROC *is* computable here — it is **0.80**, the
+fraction of censored molecules ranking below EGF — but it is a monotone function of that single
+molecule's rank and carries no information beyond it, so reporting it as a discrimination
+estimate would dress one comparison up as ten. We report the rank. *An earlier version of this
+paragraph said there was "no discrimination estimate to be had", which overstated it; the
+statistic exists, it just adds nothing.*
 
-**On the human leg, 8 of 10 measured non-binders rank below the measured binder and 2 rank above
-it.** The highest-scoring molecule in the whole measured panel is a measured non-binder:
-gitter-yolo10 at 0.5893 against EGF's 0.3549.
+**On the human leg, 8 of the 10 no-KD molecules rank below the quantified binder and 2 rank
+above it.** The highest-scoring molecule in the whole measured panel is one with no reported KD:
+gitter-yolo10 at 0.5893 against EGF's 0.3549. Note what this does and does not show: gitter-yolo10
+may bind EGFR more weakly than the assay can quantify, so "the instrument ranks a non-binder
+first" is not established — what is established is that the instrument ranks a molecule of
+*unknown, weaker-than-quantifiable* affinity above a 55 nM binder.
 
 **The cross-reactivity requirement is what rescues it.** Both molecules that outrank the binder
 score exactly **0.0000 on the mouse leg**. Scored the way the submission is scored — requiring
-both species — **the one measured binder outranks all ten measured non-binders.**
+both species — **the one quantified binder outranks all ten no-KD molecules.** Stated at the
+strength the data supports: on this panel, requiring both species is sufficient to rank the only
+molecule with a measured KD above every censored one. With n = 1 positive this is consistent
+with the instrument working and does not demonstrate that it does, and a lack of significance
+here would be inconclusive rather than a falsification.
 
 The reason that works here is a mechanism and not a curve: the two false positives are not
 *nearly* excluded by the mouse leg, they are at **exactly zero on five of five seeds**, which is
@@ -399,14 +420,16 @@ molecule already measured not to bind. One number excludes it, and it is mouse 0
 So the pH ratio does not discriminate binders, and we report it as the primary objective
 anyway because it is the objective. **A 5× switch is not evidence of binding, on measured
 data, in this pool.** Any ranking that reads the ratio without the affinity columns beside it
-is reading a number that a known non-binder scores in the top 6% of everything eligible to rank.
+is reading a number that a molecule with no reported KD scores in the top 6% of everything
+eligible to rank.
 
 Three limits. The positive class is **one molecule** of 53 aa, shorter than every design here,
 so nothing in this section estimates sensitivity — the strongest honest reading is "the one
-measured binder outranks all ten measured non-binders when both species are required."
-"No binding detected" bounds affinity from below; it does not prove no interaction. And ten
-negatives do not characterise a tail, so the 0.5893 we found is a floor on how high a measured
-non-binder can score here, not a ceiling.
+quantified binder outranks all ten no-KD molecules when both species are required." A missing
+KD **bounds affinity from above, not below**: it says the interaction is weaker than the assay
+can quantify, and says nothing else, so it does not prove no interaction. And ten censored
+observations do not characterise a tail, so the 0.5893 we found is a floor on how high a
+no-KD molecule can score here, not a ceiling.
 
 ### 4.5 The matched null is degenerate, so the screening flag does almost nothing.
 
@@ -418,8 +441,9 @@ sequences the null does not produce a single score worth a threshold. This was p
 review: full-sequence shuffling destroys the fold, so the null bounds the instrument's noise
 floor at exactly zero, and a "95th percentile of a matched null" flag admits anything above
 0.0000. We still report `affinity_above_null` in the
-submission, and it carries almost no information. **The 10 measured non-binders are the only
-negative class with a usable tail, and that tail reaches 0.5893.**
+submission, and it carries almost no information. **The 10 no-KD molecules are the only
+comparison class with a usable tail, and that tail reaches 0.5893** — noting that they are
+right-censored, so this is a tail of unknown-affinity molecules, not of non-binders.
 
 4 framework-preserving CDR decoys — the real 5 nM VHH scaffold with its three CDRs randomised,
 located by conserved anchors rather than fixed indices — score 0.0000, 0.0117, 0.0000, 0.0000.
@@ -1112,9 +1136,11 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
 2. **There is no working affinity bar.** The original one derived from a control that is the
    agonist (§4.1). Its replacement, a composition-matched shuffled null, has now landed and is
    degenerate — 12 of 12 at exactly 0.0000 (§4.5) — so the `affinity_above_null` flag means
-   "above zero". The only negative class with a real tail is the 10 measured non-binders, and
-   that tail reaches 0.5893, above our own measured positive. Affinity is reported, not gated.
-3. **The primary objective does not discriminate binders.** A measured non-binder reads 5.27×,
+   "above zero". The only comparison class with a real tail is the 10 right-censored no-KD
+   molecules, and that tail reaches 0.5893, above our own quantified positive. Affinity is
+   reported, not gated.
+3. **The primary objective does not discriminate binders.** A molecule with no reported KD
+   reads 5.27×,
    8th of the 132 molecules eligible to rank (§4.4). The pH ratio ranks this submission because it is the stated
    objective, not because we have shown it selects for binding.
 4. ESMFold2 does not model pH. Our ipSAE scores are pH-agnostic structural compatibility, not

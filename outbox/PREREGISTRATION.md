@@ -280,6 +280,16 @@ separate assessments."*
 
 1. **Software correctness** — does `ipsae_min.py` reproduce the pinned reference on the
    fixture set? Independent of any biology.
+> **Terminology corrected 2026-10-05.** These ten molecules are described below as
+> "measured non-binders". They are molecules for which **no KD was reported**, i.e.
+> **right-censored** observations whose affinity is known only to be weaker than the
+> assay's quantifiable limit; the class also contains any expression or QC failure. A
+> missing KD bounds affinity from above, not below, and is not a measurement of zero
+> affinity. Read every claim here as separating one quantified binder from ten censored
+> observations, which is weaker than separating binders from non-binders. The original
+> wording is preserved rather than rewritten because this document is the frozen
+> preregistration; see METHODS §4.4 for the corrected statement.
+
 2. **Control recovery** — does the instrument rank the 10 measured non-binders below the
    **one** measured binder? This is answerable *now*, before any new experiment. (The first
    draft wrote "the measured binders", plural, on a panel with a single positive — the exact

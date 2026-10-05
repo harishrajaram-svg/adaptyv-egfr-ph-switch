@@ -1,0 +1,1259 @@
+{
+ "generated": "2026-10-05",
+ "min_n": 5,
+ "worst_finalist_target_only": 2.289,
+ "list_a_names": 23,
+ "list_a_sequences": 15,
+ "list_b_sequences": 60,
+ "overlap": 0,
+ "union": 75,
+ "unresolved_warn_names": [],
+ "molecules": {
+  "AKVLVTLKGVNLSEEELAEVLREILAPFGAKSVEVEVSEDNETATATVTFEDEESAIAAEKYLLEELEEELLKRVPKIKEARVVDVLVVE": {
+   "seq": "AKVLVTLKGVNLSEEELAEVLREILAPFGAKSVEVEVSEDNETATATVTFEDEESAIAAEKYLLEELEEELLKRVPKIKEARVVDVLVVE",
+   "names": [
+    "cons_gap_h370_only__boltzgen_egfr_h370_018",
+    "cons_gap_h370_only__boltzgen_egfr_h370_018",
+    "gap_h370_only__boltzgen_egfr_h370_018",
+    "gap_h370_only__boltzgen_egfr_h370_018"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.478,
+   "ratio_n": 11,
+   "hu_med": 0.456594,
+   "mo_med": 0.215016,
+   "n_human_poses": 11,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "DEAIKNFFKLEIEWWEEYYERKLEHLREINAPEEEIERLEEYKEEDIKPYREGLEIMEKE": {
+   "seq": "DEAIKNFFKLEIEWWEEYYERKLEHLREINAPEEEIERLEEYKEEDIKPYREGLEIMEKE",
+   "names": [
+    "bcd_d3acid3_l60_s632578_mpnn2",
+    "bcd_d3acid3_l60_s632578_mpnn2",
+    "bcr_d3acid3_l60_s632578_mpnn2",
+    "bcr_d3acid3_l60_s632578_mpnn2"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.324,
+   "ratio_n": 6,
+   "hu_med": 0.4510115,
+   "mo_med": 0.6868004999999999,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "DIVMTQSPSSLSVSVGDRVTISCRASQSLGSTGYLYWYQQKPGQEPKLLIYDVSTRASGVPDRFSGSGSGTDFTLTISSVEAEDEATYYCQAVSGAGVYFGGGTKVEIKA": {
+   "seq": "DIVMTQSPSSLSVSVGDRVTISCRASQSLGSTGYLYWYQQKPGQEPKLLIYDVSTRASGVPDRFSGSGSGTDFTLTISSVEAEDEATYYCQAVSGAGVYFGGGTKVEIKA",
+   "names": [
+    "cons_gap_h370_2site__boltzgen_egfr_2site_009",
+    "cons_gap_h370_2site__boltzgen_egfr_2site_009",
+    "gap_h370_2site__boltzgen_egfr_2site_009",
+    "gap_h370_2site__boltzgen_egfr_2site_009"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 4.198,
+   "ratio_n": 11,
+   "hu_med": 0.181762,
+   "mo_med": 0.219766,
+   "n_human_poses": 11,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "EALGSFSDASSLGLGGSSLSGPIPESLGNLTKLGGLGLSYNGLSGPIPDSLGRCTRLGVLDLSYNNLSGPIPEGAGKLEDLGLLDLSHNNLSGPIPPSAGLGGRVEVVDLSNNRLTGAVPALAAELEEVTTCTLEGNLLGGVGASGTCTP": {
+   "seq": "EALGSFSDASSLGLGGSSLSGPIPESLGNLTKLGGLGLSYNGLSGPIPDSLGRCTRLGVLDLSYNNLSGPIPEGAGKLEDLGLLDLSHNNLSGPIPPSAGLGGRVEVVDLSNNRLTGAVPALAAELEEVTTCTLEGNLLGGVGASGTCTP",
+   "names": [
+    "cons_rest_mechAd4_04__boltzgen_egfr_mechA_d4_19",
+    "cons_rest_mechAd4_04__boltzgen_egfr_mechA_d4_19",
+    "rest_mechAd4_04__boltzgen_egfr_mechA_d4_19",
+    "rest_mechAd4_04__boltzgen_egfr_mechA_d4_19"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.855,
+   "ratio_n": 6,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "EIKVIEATASDAAAAAAALRAAYEAGATLAAVTLPDGVVLEFDTSNKEAAEASARVLADAIEGGVTVYKL": {
+   "seq": "EIKVIEATASDAAAAAAALRAAYEAGATLAAVTLPDGVVLEFDTSNKEAAEASARVLADAIEGGVTVYKL",
+   "names": [
+    "c5_cf_short__boltzgen_egfr_cropfree_short_48",
+    "c5_cf_short__boltzgen_egfr_cropfree_short_48",
+    "rest_cf_short__boltzgen_egfr_cropfree_short_48",
+    "rest_cf_short__boltzgen_egfr_cropfree_short_48"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.819,
+   "ratio_n": 6,
+   "hu_med": 0.241453,
+   "mo_med": 0.18116,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "EVQIQGSGGGSVQVGGSLRLSCAASGFTFSSYSMNWGRGTPGKSGEVVASISSDGGGAYYHDSVKGRFTISRDNAKNTLYLQMNSLRAEDSAIYGCGLGCSGGGGDSDCPYCGGSTGVGVSSAG": {
+   "seq": "EVQIQGSGGGSVQVGGSLRLSCAASGFTFSSYSMNWGRGTPGKSGEVVASISSDGGGAYYHDSVKGRFTISRDNAKNTLYLQMNSLRAEDSAIYGCGLGCSGGGGDSDCPYCGGSTGVGVSSAG",
+   "names": [
+    "domIII_1His_r06",
+    "domIII_1His_r06"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.708,
+   "ratio_n": 1,
+   "hu_med": 0.011051,
+   "mo_med": 0.010054,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "EVQLGESGGGGVRVGGTATITCAASGFNVSDYAVAWIRVTPGAPPDIGITDDAVVVGVDDDGGSGEAPPNVTVTEDTSNNSVTLTITNAQPEDTAVYYCARGAYAGGAGGADVLGAGTRVTVS": {
+   "seq": "EVQLGESGGGGVRVGGTATITCAASGFNVSDYAVAWIRVTPGAPPDIGITDDAVVVGVDDDGGSGEAPPNVTVTEDTSNNSVTLTITNAQPEDTAVYYCARGAYAGGAGGADVLGAGTRVTVS",
+   "names": [
+    "rank05_g532mimic_13",
+    "rank05_g532mimic_13"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.701,
+   "ratio_n": 1,
+   "hu_med": 0.0,
+   "mo_med": 0.012539,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "EVQLQESGPGSVSAGQTLTLSCTVSGSSGTGNIFWYRQPPGKPLHLIDVFLNVPLSGTYSMTISNVTLEDSAVYYCAAVDDETGDIYWGQGTQVTVTG": {
+   "seq": "EVQLQESGPGSVSAGQTLTLSCTVSGSSGTGNIFWYRQPPGKPLHLIDVFLNVPLSGTYSMTISNVTLEDSAVYYCAAVDDETGDIYWGQGTQVTVTG",
+   "names": [
+    "ss_h370_020_vhh_T45H_routeA",
+    "ss_h370_020_vhh_T45H_routeA"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.461,
+   "ratio_n": 5,
+   "hu_med": 0.680229,
+   "mo_med": 0.736803,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "EVQLVESGGGLVQAGGSLRLSCAASGFDFSSYGMHWVRQAPGKGREFVAGISSSGSVTYYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCARADVPDSDVKPIGEEAKTRSPDGLFDYWGQGTQVTVSS": {
+   "seq": "EVQLVESGGGLVQAGGSLRLSCAASGFDFSSYGMHWVRQAPGKGREFVAGISSSGSVTYYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCARADVPDSDVKPIGEEAKTRSPDGLFDYWGQGTQVTVSS",
+   "names": [
+    "cons_rest_cf_cropfree__boltzgen_egfr_cropfree_07",
+    "cons_rest_cf_cropfree__boltzgen_egfr_cropfree_07",
+    "rest_cf_cropfree__boltzgen_egfr_cropfree_07",
+    "rest_cf_cropfree__boltzgen_egfr_cropfree_07"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.527,
+   "ratio_n": 6,
+   "hu_med": 0.0685625,
+   "mo_med": 0.0,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "EVQLVESGGGLVQAGGSLRLSCAASGFHFSSYGMGWFRQAPGKGREWVAGISSSGGYTAYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCARAKDSLIVEVSTSLATSDFDYWGQGTQVTVSS": {
+   "seq": "EVQLVESGGGLVQAGGSLRLSCAASGFHFSSYGMGWFRQAPGKGREWVAGISSSGGYTAYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCARAKDSLIVEVSTSLATSDFDYWGQGTQVTVSS",
+   "names": [
+    "ss_rimA02_d3_rimA_14_vhh_T28H_routeA",
+    "ss_rimA02_d3_rimA_14_vhh_T28H_routeA"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 4.966,
+   "ratio_n": 5,
+   "hu_med": 0.46357,
+   "mo_med": 0.444538,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYAMGWFRQAPGKEREFVASISSDGSYTDYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCARAKYSIYGYVPYPGVSDFDYWGQGTQVTVSS": {
+   "seq": "EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYAMGWFRQAPGKEREFVASISSDGSYTDYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCARAKYSIYGYVPYPGVSDFDYWGQGTQVTVSS",
+   "names": [
+    "rimB02_r14_boltzgen_egfr_d3_",
+    "rimB02_r14_boltzgen_egfr_d3_"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.68,
+   "ratio_n": 1,
+   "hu_med": 0.012779,
+   "mo_med": 0.129094,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYDMSWYRQAPGKERELVATISSSGSTSYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCAAADDIYWGQGTQVTVSS": {
+   "seq": "EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYDMSWYRQAPGKERELVATISSSGSTSYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCAAADDIYWGQGTQVTVSS",
+   "names": [
+    "cons_gap_rs_crop6__boltzgen_egfr_cropfree_09_16",
+    "cons_gap_rs_crop6__boltzgen_egfr_cropfree_09_16",
+    "gap_rs_crop6__boltzgen_egfr_cropfree_09_16",
+    "gap_rs_crop6__boltzgen_egfr_cropfree_09_16"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.91,
+   "ratio_n": 6,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYGMGWFRQAPGKEREGVAAISSSGGSTYYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCAATSSETASLVVPDVSLYDYWGQGTQVTVSS": {
+   "seq": "EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYGMGWFRQAPGKEREGVAAISSSGGSTYYADSVKGRFTISRDNAKNTLYLQMNSLKPEDTAVYYCAATSSETASLVVPDVSLYDYWGQGTQVTVSS",
+   "names": [
+    "bg01_r18_boltzgen_egfr_d3_17",
+    "bg01_r18_boltzgen_egfr_d3_17"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 3.476,
+   "ratio_n": 1,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "EVQLVESGGGLVQPGGSLRLSCAASGFTFSNYSMGWFRQAPGKERELVAAISSSGSYTYYADSVKGRFTISRDNAKNTLYLQMNSLKAEDTAVYYCAAAYAPSGALVSTFDYWGQGTQVTVSS": {
+   "seq": "EVQLVESGGGLVQPGGSLRLSCAASGFTFSNYSMGWFRQAPGKERELVAAISSSGSYTYYADSVKGRFTISRDNAKNTLYLQMNSLKAEDTAVYYCAAAYAPSGALVSTFDYWGQGTQVTVSS",
+   "names": [
+    "bg01_r26_boltzgen_egfr_d3_24",
+    "bg01_r26_boltzgen_egfr_d3_24"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.73,
+   "ratio_n": 1,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "EVQLVESGGGLVQPGGSLRLSCAASGFTFSSYAMAWLRQAPGKEREGVAAISSSGGSTAYADSVKGRFTISRDNSKNTLYLQMNSLKAEDTAVYYCARSSLPGYVMETAAKLGSTSGFDYWGQGTQVTVSSAATSLVS": {
+   "seq": "EVQLVESGGGLVQPGGSLRLSCAASGFTFSSYAMAWLRQAPGKEREGVAAISSSGGSTAYADSVKGRFTISRDNSKNTLYLQMNSLKAEDTAVYYCARSSLPGYVMETAAKLGSTSGFDYWGQGTQVTVSSAATSLVS",
+   "names": [
+    "rimB02_r28_boltzgen_egfr_d3_",
+    "rimB02_r28_boltzgen_egfr_d3_"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.646,
+   "ratio_n": 1,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "EVQLVESGGGSVQPGGSLRLSCAASGFTFSSYGMAWVRQAPGKGREGVAGISSSGDGTYYAALVKGRFTISRDNAKNTVYLQMNSLKAEDTAVYYCARDIYPGAAVGGSSSSDFRYWGQGTLVTVSSATPTSHSATGEPV": {
+   "seq": "EVQLVESGGGSVQPGGSLRLSCAASGFTFSSYGMAWVRQAPGKGREGVAGISSSGDGTYYAALVKGRFTISRDNAKNTVYLQMNSLKAEDTAVYYCARDIYPGAAVGGSSSSDFRYWGQGTLVTVSSATPTSHSATGEPV",
+   "names": [
+    "cons_rest_rimB01__boltzgen_egfr_d3_rimB_37",
+    "cons_rest_rimB01__boltzgen_egfr_d3_rimB_37",
+    "rest_rimB01__boltzgen_egfr_d3_rimB_37",
+    "rest_rimB01__boltzgen_egfr_d3_rimB_37"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 4.476,
+   "ratio_n": 6,
+   "hu_med": 0.0125665,
+   "mo_med": 0.011449,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "FKVGDIVRALYDYTAKTPEELSFKKGELLKVLEIVDDSWWKAKSLETGEEGLVPATFVEKVE": {
+   "seq": "FKVGDIVRALYDYTAKTPEELSFKKGELLKVLEIVDDSWWKAKSLETGEEGLVPATFVEKVE",
+   "names": [
+    "cons_gap_h370_2site__boltzgen_egfr_2site_056",
+    "cons_gap_h370_2site__boltzgen_egfr_2site_056",
+    "gap_h370_2site__boltzgen_egfr_2site_056",
+    "gap_h370_2site__boltzgen_egfr_2site_056"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 4.053,
+   "ratio_n": 6,
+   "hu_med": 0.012452999999999999,
+   "mo_med": 0.0,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "GLRLEEVRVTNGSYAGKKAVRLHVAADCTPEEVRRALLEEAVPFIHEAKPKAVIVELEGGVSLEVVEVVAEVLAHHVDVDGIVVTVDDSHTFEKVLKIAEIFAKNCPDKEITIATHGAIADRINGEDGAKLRAELEEKTGVKVETYLRTEPV": {
+   "seq": "GLRLEEVRVTNGSYAGKKAVRLHVAADCTPEEVRRALLEEAVPFIHEAKPKAVIVELEGGVSLEVVEVVAEVLAHHVDVDGIVVTVDDSHTFEKVLKIAEIFAKNCPDKEITIATHGAIADRINGEDGAKLRAELEEKTGVKVETYLRTEPV",
+   "names": [
+    "domII_2His_r06",
+    "domII_2His_r06"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.815,
+   "ratio_n": 2,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 2,
+   "category": "ASSESSMENT",
+   "reason": "only 2 pH poses (< 5)"
+  },
+  "GMTYLERMEELLKEMEELKKKLEATTDPSSLEGVDEELMDKFEEAGNDLASALMYFHKKAGLPWEKVKEMHDLSDMLHILRFAHPDDGPKVFEYMDKLIELGKKMVEELKDDPIAKEKIP": {
+   "seq": "GMTYLERMEELLKEMEELKKKLEATTDPSSLEGVDEELMDKFEEAGNDLASALMYFHKKAGLPWEKVKEMHDLSDMLHILRFAHPDDGPKVFEYMDKLIELGKKMVEELKDDPIAKEKIP",
+   "names": [
+    "sd_d2d_101_l120_s869126_m_S75D",
+    "sd_d2d_101_l120_s869126_m_S75D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.154,
+   "ratio_n": 5,
+   "hu_med": 0.268119,
+   "mo_med": 0.401514,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "GPTVTVSAPVSREGDTRVTIVATVTVPASLKKPVYLGVQIQRVSGPPFSARVTLTWTNLQHGKTETESAILRPGEGLVSSTGIAPGDTATVTVTIEDADIRDVRVTVFAVEGEVPERTTLDELIAAGHPVTFATVDPATGKTSSSSF": {
+   "seq": "GPTVTVSAPVSREGDTRVTIVATVTVPASLKKPVYLGVQIQRVSGPPFSARVTLTWTNLQHGKTETESAILRPGEGLVSSTGIAPGDTATVTVTIEDADIRDVRVTVFAVEGEVPERTTLDELIAAGHPVTFATVDPATGKTSSSSF",
+   "names": [
+    "cons_rest_hf_domIII_1His_ctrl__boltzgen_egfr_hf_domII",
+    "cons_rest_hf_domIII_1His_ctrl__boltzgen_egfr_hf_domII",
+    "rest_hf_domIII_1His_ctrl__boltzgen_egfr_hf_domIII_1His_ctrl_02",
+    "rest_hf_domIII_1His_ctrl__boltzgen_egfr_hf_domIII_1His_ctrl_02"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.319,
+   "ratio_n": 6,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "GPVIAVAAFDYEAKKPDELSFKRGDRLEILEEIDAKWWKAQSLETGEVGKIPKRYVVVVEER": {
+   "seq": "GPVIAVAAFDYEAKKPDELSFKRGDRLEILEEIDAKWWKAQSLETGEVGKIPKRYVVVVEER",
+   "names": [
+    "c5_cf_short__boltzgen_egfr_cropfree_short_38",
+    "c5_cf_short__boltzgen_egfr_cropfree_short_38",
+    "cons_rest_cf_short__boltzgen_egfr_cropfree_short_38",
+    "cons_rest_cf_short__boltzgen_egfr_cropfree_short_38"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 4.216,
+   "ratio_n": 11,
+   "hu_med": 0.149286,
+   "mo_med": 0.0,
+   "n_human_poses": 11,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "IDEEVERLLAMDPDEAITELSERMYKANDPSKSTWEEWREVWEIWDRVMGRMDPSWLDTP": {
+   "seq": "IDEEVERLLAMDPDEAITELSERMYKANDPSKSTWEEWREVWEIWDRVMGRMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn4",
+    "bcr_d3acid3_l60_s647537_mpnn4"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.968,
+   "ratio_n": 6,
+   "hu_med": 0.39095599999999997,
+   "mo_med": 0.102824,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "IDEEVQALLAMDPDEAITLLSERMYEANDPSKSTWEEWRRVWEIWDRVMGNMDPSWLDTP": {
+   "seq": "IDEEVQALLAMDPDEAITLLSERMYEANDPSKSTWEEWRRVWEIWDRVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn2",
+    "bcr_d3acid3_l60_s647537_mpnn2"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.644,
+   "ratio_n": 6,
+   "hu_med": 0.36010149999999996,
+   "mo_med": 0.128045,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "IEEEVQELLSMDPDEAITKLSEMMYEANDPSKSTWEEWRRVWEIWDSVMGNMDPSWLDTP": {
+   "seq": "IEEEVQELLSMDPDEAITKLSEMMYEANDPSKSTWEEWRRVWEIWDSVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn12",
+    "bcr_d3acid3_l60_s647537_mpnn12"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.023,
+   "ratio_n": 6,
+   "hu_med": 0.542197,
+   "mo_med": 0.198064,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "IKEKVEELLSMDPDEAITELSEMMYEANDPSKSTWEEWREVWEIWDSVMGNMDPSWLDTP": {
+   "seq": "IKEKVEELLSMDPDEAITELSEMMYEANDPSKSTWEEWREVWEIWDSVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn11",
+    "bcr_d3acid3_l60_s647537_mpnn11"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.997,
+   "ratio_n": 6,
+   "hu_med": 0.442937,
+   "mo_med": 0.2342015,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "KIEVREGLTVEELYELLKKFKPDAVAVVAGVGGGSGASSSLGAEAAYVLAKELVPEENVVFLVAGEDFESGYRAGREAVETLLKELKPKKVVVALGGSASGATGRGAGEGVADALAEYLKPDQEVLFVAVGAPGDAGAAGAAEGARRAKEALS": {
+   "seq": "KIEVREGLTVEELYELLKKFKPDAVAVVAGVGGGSGASSSLGAEAAYVLAKELVPEENVVFLVAGEDFESGYRAGREAVETLLKELKPKKVVVALGGSASGATGRGAGEGVADALAEYLKPDQEVLFVAVGAPGDAGAAGAAEGARRAKEALS",
+   "names": [
+    "cons_rest_rimB01__boltzgen_egfr_d3_rimB_18",
+    "cons_rest_rimB01__boltzgen_egfr_d3_rimB_18",
+    "rest_rimB01__boltzgen_egfr_d3_rimB_18",
+    "rest_rimB01__boltzgen_egfr_d3_rimB_18"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.224,
+   "ratio_n": 6,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LDLDALRKDLLKALEENGGLISKEEVKEILKKYGVSEETIDEILSELLPGEELDPLDVEYVLGRLFRL": {
+   "seq": "LDLDALRKDLLKALEENGGLISKEEVKEILKKYGVSEETIDEILSELLPGEELDPLDVEYVLGRLFRL",
+   "names": [
+    "cons_gap_h370_2site__boltzgen_egfr_2site_029",
+    "cons_gap_h370_2site__boltzgen_egfr_2site_029",
+    "gap_h370_2site__boltzgen_egfr_2site_029",
+    "gap_h370_2site__boltzgen_egfr_2site_029"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 4.743,
+   "ratio_n": 11,
+   "hu_med": 0.216651,
+   "mo_med": 0.536779,
+   "n_human_poses": 11,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LEAEVEELLAMDPDKAITELSERMYAANDPSKSTWEEWREVWALWDSVMGRMDPSWLDTP": {
+   "seq": "LEAEVEELLAMDPDKAITELSERMYAANDPSKSTWEEWREVWALWDSVMGRMDPSWLDTP",
+   "names": [
+    "bcd_d3acid3_l60_s647537_mpnn15",
+    "bcd_d3acid3_l60_s647537_mpnn15",
+    "bcr_d3acid3_l60_s647537_mpnn15",
+    "bcr_d3acid3_l60_s647537_mpnn15"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.061,
+   "ratio_n": 6,
+   "hu_med": 0.5009675,
+   "mo_med": 0.261788,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LEAEVQELLAMDPDDAITELSERMYEANDPSKSTWEEWRRVWALWDAVMGRMDPSWLDTP": {
+   "seq": "LEAEVQELLAMDPDDAITELSERMYEANDPSKSTWEEWRRVWALWDAVMGRMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn6",
+    "bcr_d3acid3_l60_s647537_mpnn6"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.074,
+   "ratio_n": 6,
+   "hu_med": 0.45042099999999996,
+   "mo_med": 0.1123005,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LEARVEELLAMDPDKAITELSEMMYEANDPSKSTWEEWREVWELWDSVMGRMDPSWLDTP": {
+   "seq": "LEARVEELLAMDPDKAITELSEMMYEANDPSKSTWEEWREVWELWDSVMGRMDPSWLDTP",
+   "names": [
+    "bcd_d3acid3_l60_s647537_mpnn14",
+    "bcd_d3acid3_l60_s647537_mpnn14",
+    "bcr_d3acid3_l60_s647537_mpnn14",
+    "bcr_d3acid3_l60_s647537_mpnn14"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.05,
+   "ratio_n": 6,
+   "hu_med": 0.5406854999999999,
+   "mo_med": 0.31862100000000004,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LEEEVERLLAMDPDEAITELSERMYEANDPSKSTWEEWREVWELWDTVMGRMDPSWLDTP": {
+   "seq": "LEEEVERLLAMDPDEAITELSERMYEANDPSKSTWEEWREVWELWDTVMGRMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn1",
+    "bcr_d3acid3_l60_s647537_mpnn1"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.449,
+   "ratio_n": 6,
+   "hu_med": 0.294217,
+   "mo_med": 0.1429875,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LEEKVQELLAKDPDEAITELSELMYEANDPSKSTWEEWREVWELWDSVMGNMDPSWLDTP": {
+   "seq": "LEEKVQELLAKDPDEAITELSELMYEANDPSKSTWEEWREVWELWDSVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn16",
+    "bcr_d3acid3_l60_s647537_mpnn16"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.462,
+   "ratio_n": 6,
+   "hu_med": 0.3683415,
+   "mo_med": 0.195576,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LEERVQELLSMDPDEAITELSEMMYEANDPSKSTWEEWREVWELWDSVMGNMDPSWLDTP": {
+   "seq": "LEERVQELLSMDPDEAITELSEMMYEANDPSKSTWEEWREVWELWDSVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn20",
+    "bcr_d3acid3_l60_s647537_mpnn20"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.674,
+   "ratio_n": 6,
+   "hu_med": 0.3944985,
+   "mo_med": 0.18711899999999998,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LQEEVERLLSMDPDEAITELSERMYEANDPSKSTWEEWREVWELWDSVMGNMDPSWLDTP": {
+   "seq": "LQEEVERLLSMDPDEAITELSERMYEANDPSKSTWEEWREVWELWDSVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn8",
+    "bcr_d3acid3_l60_s647537_mpnn8"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.661,
+   "ratio_n": 6,
+   "hu_med": 0.4399205,
+   "mo_med": 0.178435,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "LQEKVEEYLAMDPDEAITKLSELMYEANDPSKSTWEEWREVWDLWDSVMGNMDPSWLDTP": {
+   "seq": "LQEKVEEYLAMDPDEAITKLSELMYEANDPSKSTWEEWREVWDLWDSVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn18",
+    "bcr_d3acid3_l60_s647537_mpnn18"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.561,
+   "ratio_n": 6,
+   "hu_med": 0.5698235,
+   "mo_med": 0.12511450000000002,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MKIFVKTPFGRTIEVDANLTIGEIKDIVKEEFGFPDCRLIFDGKELEDDKTPLDYGVKEGDVLHLVPLLK": {
+   "seq": "MKIFVKTPFGRTIEVDANLTIGEIKDIVKEEFGFPDCRLIFDGKELEDDKTPLDYGVKEGDVLHLVPLLK",
+   "names": [
+    "cons_rest_cf_short120__boltzgen_egfr_cropfree_short_0",
+    "cons_rest_cf_short120__boltzgen_egfr_cropfree_short_0",
+    "rest_cf_short120__boltzgen_egfr_cropfree_short_016",
+    "rest_cf_short120__boltzgen_egfr_cropfree_short_016"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.03,
+   "ratio_n": 6,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MLVTVLLDDGSTITIDLNNPDSPFKLFDLKTGKELEPGEARRGMEVIVKNLKTGEEKIGTVTSVEE": {
+   "seq": "MLVTVLLDDGSTITIDLNNPDSPFKLFDLKTGKELEPGEARRGMEVIVKNLKTGEEKIGTVTSVEE",
+   "names": [
+    "c5_cr_crop_patch__boltzgen_egfr_crop_patch_05",
+    "c5_cr_crop_patch__boltzgen_egfr_crop_patch_05",
+    "cons_rest_cr_crop_patch__boltzgen_egfr_crop_patch_05",
+    "cons_rest_cr_crop_patch__boltzgen_egfr_crop_patch_05"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.265,
+   "ratio_n": 11,
+   "hu_med": 0.131965,
+   "mo_med": 0.204126,
+   "n_human_poses": 11,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MQAEVEELLAMDPDEAITLLSERMYEANDPSKSTWEEWRRVWDIWDSVMGNMDPSWLDTP": {
+   "seq": "MQAEVEELLAMDPDEAITLLSERMYEANDPSKSTWEEWRRVWDIWDSVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn9",
+    "bcr_d3acid3_l60_s647537_mpnn9"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 2.921,
+   "ratio_n": 6,
+   "hu_med": 0.42845500000000003,
+   "mo_med": 0.151208,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSKREQARAKLVPMDQEIVKGFNDPSANIDLEEAFKRDHEVMVEAFRLVGPEEYHEIDHELSTAK": {
+   "seq": "MSKREQARAKLVPMDQEIVKGFNDPSANIDLEEAFKRDHEVMVEAFRLVGPEEYHEIDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn18_S15D",
+    "bcr_d3acid_l65_s831683_mpnn18_S15D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.424,
+   "ratio_n": 5,
+   "hu_med": 0.798554,
+   "mo_med": 0.800412,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSKREQARAKLVPMSQEIVKGFNDPSANIDLEEAFKRDHEVMVEAFRLVGPEEYHEIDHELSTAK": {
+   "seq": "MSKREQARAKLVPMSQEIVKGFNDPSANIDLEEAFKRDHEVMVEAFRLVGPEEYHEIDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn18",
+    "bcr_d3acid_l65_s831683_mpnn18"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.819,
+   "ratio_n": 6,
+   "hu_med": 0.7884915,
+   "mo_med": 0.7687474999999999,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSKVEQARSMLKPMDDKIVEGFNDPSAGIDLEKAFKEDHKVMVEAFRLVGPEEYHKIDHELSTAK": {
+   "seq": "MSKVEQARSMLKPMDDKIVEGFNDPSAGIDLEKAFKEDHKVMVEAFRLVGPEEYHKIDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn3_S15D",
+    "bcr_d3acid_l65_s831683_mpnn3_S15D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.467,
+   "ratio_n": 5,
+   "hu_med": 0.759304,
+   "mo_med": 0.753761,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSKVEQARSMLKPMSDKIVEGFNDPSAGIDLEKAFKEDHKVMVEAFRLVGPEEYHKIDHELSTAK": {
+   "seq": "MSKVEQARSMLKPMSDKIVEGFNDPSAGIDLEKAFKEDHKVMVEAFRLVGPEEYHKIDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn3",
+    "bcr_d3acid_l65_s831683_mpnn3"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.113,
+   "ratio_n": 6,
+   "hu_med": 0.795813,
+   "mo_med": 0.8023359999999999,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSKVEQARSMLRPMSERIVKGFNDPSANIDLEKAFKEDHEVMVEAFRLVGPEEYHKIDHELSTAK": {
+   "seq": "MSKVEQARSMLRPMSERIVKGFNDPSANIDLEKAFKEDHEVMVEAFRLVGPEEYHKIDHELSTAK",
+   "names": [
+    "bcd_d3acid_l65_s831683_mpnn2",
+    "bcd_d3acid_l65_s831683_mpnn2",
+    "bcr_d3acid_l65_s831683_mpnn2",
+    "bcr_d3acid_l65_s831683_mpnn2"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.248,
+   "ratio_n": 6,
+   "hu_med": 0.806632,
+   "mo_med": 0.7949,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSKVEQAWSMLEPMDEKIVKGFNDPSAGINLEEAFKEDHKVMVEAFRLVGPEEYHKLDHKLSTAK": {
+   "seq": "MSKVEQAWSMLEPMDEKIVKGFNDPSAGINLEEAFKEDHKVMVEAFRLVGPEEYHKLDHKLSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn17_S15D",
+    "bcr_d3acid_l65_s831683_mpnn17_S15D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.387,
+   "ratio_n": 5,
+   "hu_med": 0.779763,
+   "mo_med": 0.754742,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSKVEQAWSMLEPMSEKIVKGFNDPSAGINLEEAFKEDHKVMVEAFRLVGPEEYHKLDHKLSTAK": {
+   "seq": "MSKVEQAWSMLEPMSEKIVKGFNDPSAGINLEEAFKEDHKVMVEAFRLVGPEEYHKLDHKLSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn17",
+    "bcr_d3acid_l65_s831683_mpnn17"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.538,
+   "ratio_n": 6,
+   "hu_med": 0.7727055,
+   "mo_med": 0.7577050000000001,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPEEQARAMLEPMSQRIVEGFNDPSANIDLEKAFREDHEVMVEAFRLVGPEAYHKIDHELSTAK": {
+   "seq": "MSPEEQARAMLEPMSQRIVEGFNDPSANIDLEKAFREDHEVMVEAFRLVGPEAYHKIDHELSTAK",
+   "names": [
+    "bcd_d3acid_l65_s831683_mpnn8",
+    "bcd_d3acid_l65_s831683_mpnn8",
+    "bcr_d3acid_l65_s831683_mpnn8",
+    "bcr_d3acid_l65_s831683_mpnn8"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.154,
+   "ratio_n": 11,
+   "hu_med": 0.82125,
+   "mo_med": 0.806992,
+   "n_human_poses": 11,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEKARSLLEPMDERIVEGFNNPEANIDLEKAFREDHEVMVEAFRLVGPEEYHKIDHELSTAK": {
+   "seq": "MSPVEKARSLLEPMDERIVEGFNNPEANIDLEKAFREDHEVMVEAFRLVGPEEYHKIDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn4_S15D",
+    "bcr_d3acid_l65_s831683_mpnn4_S15D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.421,
+   "ratio_n": 5,
+   "hu_med": 0.796271,
+   "mo_med": 0.792559,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEKARSLLEPMSERIVEGFNNPEANIDLEKAFREDHEVMVEAFRLVGPEEYHKIDHELSTAK": {
+   "seq": "MSPVEKARSLLEPMSERIVEGFNNPEANIDLEKAFREDHEVMVEAFRLVGPEEYHKIDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn4",
+    "bcr_d3acid_l65_s831683_mpnn4"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.588,
+   "ratio_n": 6,
+   "hu_med": 0.7984979999999999,
+   "mo_med": 0.785754,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEQAEAKLRPMSETIVKGFNDPSANVDLEEAFKRDHEVEVEAFRLVGPEEYHKIDHELSTAK": {
+   "seq": "MSPVEQAEAKLRPMSETIVKGFNDPSANVDLEEAFKRDHEVEVEAFRLVGPEEYHKIDHELSTAK",
+   "names": [
+    "ss_bc_s831683_mpnn9_WT_M42E_routeB",
+    "ss_bc_s831683_mpnn9_WT_M42E_routeB"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.272,
+   "ratio_n": 5,
+   "hu_med": 0.772572,
+   "mo_med": 0.767972,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEQARAKMVPMSEKIVKGFNDPSAGIDLEKAFKEDHEVEVEAFRLVGPEEYHKIDHELSTAK": {
+   "seq": "MSPVEQARAKMVPMSEKIVKGFNDPSAGIDLEKAFKEDHEVEVEAFRLVGPEEYHKIDHELSTAK",
+   "names": [
+    "ss_bc_d3acid_l65_s831683_mpnn11_M42E_routeB",
+    "ss_bc_d3acid_l65_s831683_mpnn11_M42E_routeB"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.853,
+   "ratio_n": 5,
+   "hu_med": 0.772574,
+   "mo_med": 0.753982,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEQARALLVPMDEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELETAK": {
+   "seq": "MSPVEQARALLVPMDEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELETAK",
+   "names": [
+    "ss_bc_s831683_mpnn6_S15D_S62E_routeB",
+    "ss_bc_s831683_mpnn6_S15D_S62E_routeB"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.39,
+   "ratio_n": 5,
+   "hu_med": 0.781213,
+   "mo_med": 0.765036,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEQARALLVPMDEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELHTAK": {
+   "seq": "MSPVEQARALLVPMDEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELHTAK",
+   "names": [
+    "ss_bc_s831683_mpnn6_S15D_S62H_routeA",
+    "ss_bc_s831683_mpnn6_S15D_S62H_routeA"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.386,
+   "ratio_n": 5,
+   "hu_med": 0.765365,
+   "mo_med": 0.7443,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEQARALLVPMSEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELSTAK": {
+   "seq": "MSPVEQARALLVPMSEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn6",
+    "bcr_d3acid_l65_s831683_mpnn6",
+    "sd2_d3acid_l65_s831683_mpnn6_WT",
+    "sd2_d3acid_l65_s831683_mpnn6_WT"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.856,
+   "ratio_n": 6,
+   "hu_med": 0.789285,
+   "mo_med": 0.7686845,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEQARSMLEPMDERIVEGFNDPSANIDLEEAFKEDHRVMVEAFRMVGPEAYHEIDHELETAK": {
+   "seq": "MSPVEQARSMLEPMDERIVEGFNDPSANIDLEEAFKEDHRVMVEAFRMVGPEAYHEIDHELETAK",
+   "names": [
+    "ss_bc_s831683_mpnn19_S15D_S62E_routeB",
+    "ss_bc_s831683_mpnn19_S15D_S62E_routeB"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.504,
+   "ratio_n": 5,
+   "hu_med": 0.678788,
+   "mo_med": 0.662321,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEQARSMLEPMDERIVEGFNDPSANIDLEEAFKEDHRVMVEAFRMVGPEAYHEIDHELHTAK": {
+   "seq": "MSPVEQARSMLEPMDERIVEGFNDPSANIDLEEAFKEDHRVMVEAFRMVGPEAYHEIDHELHTAK",
+   "names": [
+    "ss_bc_s831683_mpnn19_S15D_S62H_routeA",
+    "ss_bc_s831683_mpnn19_S15D_S62H_routeA"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.469,
+   "ratio_n": 5,
+   "hu_med": 0.642357,
+   "mo_med": 0.601298,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVEQARSMLEPMSERIVEGFNDPSANIDLEEAFKEDHRVMVEAFRMVGPEAYHEIDHELSTAK": {
+   "seq": "MSPVEQARSMLEPMSERIVEGFNDPSANIDLEEAFKEDHRVMVEAFRMVGPEAYHEIDHELSTAK",
+   "names": [
+    "bcd_d3acid_l65_s831683_mpnn19",
+    "bcd_d3acid_l65_s831683_mpnn19",
+    "bcr_d3acid_l65_s831683_mpnn19",
+    "bcr_d3acid_l65_s831683_mpnn19"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.68,
+   "ratio_n": 11,
+   "hu_med": 0.827818,
+   "mo_med": 0.81552,
+   "n_human_poses": 11,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVERARALLEPMDERIVKGFNDPSAGIDLEEAFREDHEVMVEAFRLVGPEEYHAIDHRLSTAK": {
+   "seq": "MSPVERARALLEPMDERIVKGFNDPSAGIDLEEAFREDHEVMVEAFRLVGPEEYHAIDHRLSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn12_S15D",
+    "bcr_d3acid_l65_s831683_mpnn12_S15D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.393,
+   "ratio_n": 5,
+   "hu_med": 0.773135,
+   "mo_med": 0.760164,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MSPVERARALLEPMSERIVKGFNDPSAGIDLEEAFREDHEVMVEAFRLVGPEEYHAIDHRLSTAK": {
+   "seq": "MSPVERARALLEPMSERIVKGFNDPSAGIDLEEAFREDHEVMVEAFRLVGPEEYHAIDHRLSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn12",
+    "bcr_d3acid_l65_s831683_mpnn12"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.769,
+   "ratio_n": 6,
+   "hu_med": 0.787857,
+   "mo_med": 0.7741225,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MTPLEEARSKLVPMDEKIVTGFNDPSANIDLEKAFKEDHEVMVEAFRLVGPEEYHKLDHELSTAK": {
+   "seq": "MTPLEEARSKLVPMDEKIVTGFNDPSANIDLEKAFKEDHEVMVEAFRLVGPEEYHKLDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn13_S15D",
+    "bcr_d3acid_l65_s831683_mpnn13_S15D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.392,
+   "ratio_n": 5,
+   "hu_med": 0.787779,
+   "mo_med": 0.784308,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "MTPLEEARSKLVPMSEKIVTGFNDPSANIDLEKAFKEDHEVMVEAFRLVGPEEYHKLDHELSTAK": {
+   "seq": "MTPLEEARSKLVPMSEKIVTGFNDPSANIDLEKAFKEDHEVMVEAFRLVGPEEYHKLDHELSTAK",
+   "names": [
+    "bcr_d3acid_l65_s831683_mpnn13",
+    "bcr_d3acid_l65_s831683_mpnn13"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.769,
+   "ratio_n": 6,
+   "hu_med": 0.7713175,
+   "mo_med": 0.753046,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "QVKLVESGPGLVKPGDSLTLTCAASGFTFSSYAMSWVRQAPGKEREWVAAISGDGSKTYYHDSVKGRFTISRDNAKNTLYLQMNSLKSEDTAVYYCAVADNSTLTSVDTPLSDFDYWGQGILVTVSSSGSSVLQEATSTY": {
+   "seq": "QVKLVESGPGLVKPGDSLTLTCAASGFTFSSYAMSWVRQAPGKEREWVAAISGDGSKTYYHDSVKGRFTISRDNAKNTLYLQMNSLKSEDTAVYYCAVADNSTLTSVDTPLSDFDYWGQGILVTVSSSGSSVLQEATSTY",
+   "names": [
+    "domIII_1His_ctrl_r20",
+    "domIII_1His_ctrl_r20"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 5.724,
+   "ratio_n": 1,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "QVQLQESGPALVPGGGDASVTCSVSGLSSGTWTLGWRSSSGALSSNGVSWYQQRPGQGPKLLIYGNSTRASGVPDRFSGSRSGNTAALTISGAQSEDEADYYCIIGSGGSSASGTYYCAVARGSSASSFDYWGQGTTVTMV": {
+   "seq": "QVQLQESGPALVPGGGDASVTCSVSGLSSGTWTLGWRSSSGALSSNGVSWYQQRPGQGPKLLIYGNSTRASGVPDRFSGSRSGNTAALTISGAQSEDEADYYCIIGSGGSSASGTYYCAVARGSSASSFDYWGQGTTVTMV",
+   "names": [
+    "bg02_r27_boltzgen_egfr_d3_44",
+    "bg02_r27_boltzgen_egfr_d3_44"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.687,
+   "ratio_n": 1,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "QVQLVESGGGLVQAGGSLSLSCAASGYTFSSYAMGWGREAPGGGYGGVAGVSGDSSSSYCQDSAAGRFGVTRSNGGNTVGLGMSSLKPEDTGVYYCGAAGGTTGDPDRGGSHWGQGTLVTVSS": {
+   "seq": "QVQLVESGGGLVQAGGSLSLSCAASGYTFSSYAMGWGREAPGGGYGGVAGVSGDSSSSYCQDSAAGRFGVTRSNGGNTVGLGMSSLKPEDTGVYYCGAAGGTTGDPDRGGSHWGQGTLVTVSS",
+   "names": [
+    "domII_1Gln_r19",
+    "domII_1Gln_r19"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.822,
+   "ratio_n": 2,
+   "hu_med": 0.0,
+   "mo_med": 0.0634095,
+   "n_human_poses": 2,
+   "category": "ASSESSMENT",
+   "reason": "only 2 pH poses (< 5)"
+  },
+  "QVQLVESGPGLVKPSQTLSLTCTVSGGSVSSGDYYWTWIRQPPGKGLEWIGYIYYSGNTNYNPSLKSRLTISRDTSKNQFSLKLNSVTAADTAIYYCARVSIFGVGTFDYWGQGTLVTVSSASTKGPSVFPLAPCSRSSESTAALGCLVKDYFPEPVTVSWNSG": {
+   "seq": "QVQLVESGPGLVKPSQTLSLTCTVSGGSVSSGDYYWTWIRQPPGKGLEWIGYIYYSGNTNYNPSLKSRLTISRDTSKNQFSLKLNSVTAADTAIYYCARVSIFGVGTFDYWGQGTLVTVSSASTKGPSVFPLAPCSRSSESTAALGCLVKDYFPEPVTVSWNSG",
+   "names": [
+    "EXPNEG_gitter-yolo10",
+    "EXPNEG_gitter-yolo10"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.271,
+   "ratio_n": 5,
+   "hu_med": 0.589277,
+   "mo_med": 0.0,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "SAEEELELLEEVIEVMKNNSLEEFFEYIDSLSEEEKWKLVNHLWRMAWRLSKKIPGLSPDDVYWTTYMIVFSKDLEERKFFMTLWSDDVLKVFESHEFGREAIKEVGEEEFYKEYEKLPEEDKPLFKFRYVLEVMVLAYKKIVEEEK": {
+   "seq": "SAEEELELLEEVIEVMKNNSLEEFFEYIDSLSEEEKWKLVNHLWRMAWRLSKKIPGLSPDDVYWTTYMIVFSKDLEERKFFMTLWSDDVLKVFESHEFGREAIKEVGEEEFYKEYEKLPEEDKPLFKFRYVLEVMVLAYKKIVEEEK",
+   "names": [
+    "sd_d2c_101_l147_s144898_m_S88D_S60D",
+    "sd_d2c_101_l147_s144898_m_S88D_S60D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 4.586,
+   "ratio_n": 5,
+   "hu_med": 0.421522,
+   "mo_med": 0.0,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "SAEEELELLEEVIEVMKNNSLEEFFEYIDSLSEEEKWKLVNHLWRMAWRLSKKIPGLSPSDVYWDTYMIVFSKDLEERKFFMTLWSDSVLKVFESHEFGREAIKEVGEEEFYKEYEKLPEEDKPLFKFRYVLEVMVLAYKKIVEEEK": {
+   "seq": "SAEEELELLEEVIEVMKNNSLEEFFEYIDSLSEEEKWKLVNHLWRMAWRLSKKIPGLSPSDVYWDTYMIVFSKDLEERKFFMTLWSDSVLKVFESHEFGREAIKEVGEEEFYKEYEKLPEEDKPLFKFRYVLEVMVLAYKKIVEEEK",
+   "names": [
+    "sd_d2c_101_l147_s144898_m_T65D",
+    "sd_d2c_101_l147_s144898_m_T65D"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 5.185,
+   "ratio_n": 5,
+   "hu_med": 0.585259,
+   "mo_med": 0.366129,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "SCEEEVLEELAGAALLVGTGDAVAGAALATAEELEELVGGEVLGKVTCCDGREGYVVVVIGVGVTVVCDPDGKRCIVEVVVVV": {
+   "seq": "SCEEEVLEELAGAALLVGTGDAVAGAALATAEELEELVGGEVLGKVTCCDGREGYVVVVIGVGVTVVCDPDGKRCIVEVVVVV",
+   "names": [
+    "g532mimic_short_14",
+    "g532mimic_short_14"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.705,
+   "ratio_n": 5,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "SGEVTLVESGPGSVQPGGSLRLSCAASGFTFSSYGMGWWRQAPGKERELVASISSSGGSKTYAPSVAGRFTISRDNAKSTLYLQMNSLRSEDTAVYYCAASSNSSLAANPTAKVSDFDYWGQGIQVTVSSAAPVPQSASSSASY": {
+   "seq": "SGEVTLVESGPGSVQPGGSLRLSCAASGFTFSSYGMGWWRQAPGKERELVASISSSGGSKTYAPSVAGRFTISRDNAKSTLYLQMNSLRSEDTAVYYCAASSNSSLAANPTAKVSDFDYWGQGIQVTVSSAAPVPQSASSSASY",
+   "names": [
+    "bg03_r20_boltzgen_egfr_d3_20",
+    "bg03_r20_boltzgen_egfr_d3_20"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.682,
+   "ratio_n": 1,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "SKSLTVPAGEEKEITIKEKTTSVTVTVTGPPGTTVLVIAYDPETGSSDFTLLKPGETGTLTLSEPSSKVVIRAYNLGEGTATVTVS": {
+   "seq": "SKSLTVPAGEEKEITIKEKTTSVTVTVTGPPGTTVLVIAYDPETGSSDFTLLKPGETGTLTLSEPSSKVVIRAYNLGEGTATVTVS",
+   "names": [
+    "gap_rs_crop6__boltzgen_egfr_cropfree_short_031_15",
+    "gap_rs_crop6__boltzgen_egfr_cropfree_short_031_15",
+    "gc_rs_crop6__boltzgen_egfr_cropfree_short_031_15",
+    "gc_rs_crop6__boltzgen_egfr_cropfree_short_031_15"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.78,
+   "ratio_n": 6,
+   "hu_med": 0.2727465,
+   "mo_med": 0.084088,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "SKSLTVPAGEEKEITITETTTSVTVTVTGPAGTRVLVVAIDPETGSSDYALLEPGETATLTLSEPSSKVVIRAYNLGEGTATVTVS": {
+   "seq": "SKSLTVPAGEEKEITITETTTSVTVTVTGPAGTRVLVVAIDPETGSSDYALLEPGETATLTLSEPSSKVVIRAYNLGEGTATVTVS",
+   "names": [
+    "cf_short120__boltzgen_egfr_cropfree_short_031",
+    "cf_short120__boltzgen_egfr_cropfree_short_031"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.951,
+   "ratio_n": 5,
+   "hu_med": 0.607525,
+   "mo_med": 0.402648,
+   "n_human_poses": 5,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "SQTVTGTLVSGTVPLTLTQTLSSSLVQAGGSVTLTCTFTGLGADETIVDLYVHWYRQAPGHGREFVASIDGITGDTYYADSVKGRFTITVDTSKNSAYLQMNSLKPEDTAVYFCEVRVTVKRPGREPKTSVVRGSGIQLTVSSA": {
+   "seq": "SQTVTGTLVSGTVPLTLTQTLSSSLVQAGGSVTLTCTFTGLGADETIVDLYVHWYRQAPGHGREFVASIDGITGDTYYADSVKGRFTITVDTSKNSAYLQMNSLKPEDTAVYFCEVRVTVKRPGREPKTSVVRGSGIQLTVSSA",
+   "names": [
+    "domIII_1His_ctrl_r17",
+    "domIII_1His_ctrl_r17"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.673,
+   "ratio_n": 1,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 1,
+   "category": "ASSESSMENT",
+   "reason": "only 1 pH poses (< 5)"
+  },
+  "SSFTALGSTLTLTQPPSVSVKEGSSATLTCTITNTGSVPITVYLGLLKNGATPSSLSLKVTYTVYKNGQLVASGDMEVSADLSRNLVTYYLSTGPVTLEPGETYTVEFTIHDLKVSDSGIYYCAVAPVIPGMTKEEALAGMYLGGGTKLTVTS": {
+   "seq": "SSFTALGSTLTLTQPPSVSVKEGSSATLTCTITNTGSVPITVYLGLLKNGATPSSLSLKVTYTVYKNGQLVASGDMEVSADLSRNLVTYYLSTGPVTLEPGETYTVEFTIHDLKVSDSGIYYCAVAPVIPGMTKEEALAGMYLGGGTKLTVTS",
+   "names": [
+    "rimA02_r05_boltzgen_egfr_d3_",
+    "rimA02_r05_boltzgen_egfr_d3_"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 0.69,
+   "ratio_n": 6,
+   "hu_med": 0.43276000000000003,
+   "mo_med": 0.3057065,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "SVTVEVVEGPDIETLIEKTLEVLEKVLRKYKRIAVIILNDPSPRAQELAEALVPEVEKLAKELGKDVEVRLIPDGGTIEGAAEAREEAIKIAKEKDYDAIVFIFALGPDTTALDGITIGQLAVEVAKETGKPVHVIVAMLADASAGARAAVRLIEELCA": {
+   "seq": "SVTVEVVEGPDIETLIEKTLEVLEKVLRKYKRIAVIILNDPSPRAQELAEALVPEVEKLAKELGKDVEVRLIPDGGTIEGAAEAREEAIKIAKEKDYDAIVFIFALGPDTTALDGITIGQLAVEVAKETGKPVHVIVAMLADASAGARAAVRLIEELCA",
+   "names": [
+    "bg04__boltzgen_egfr_d3_00",
+    "bg04__boltzgen_egfr_d3_00",
+    "bg04_r03",
+    "bg04_r03_00"
+   ],
+   "in_list_a": true,
+   "in_list_b": false,
+   "ratio_target_only": 1.937,
+   "ratio_n": 15,
+   "hu_med": 0.0,
+   "mo_med": 0.0,
+   "n_human_poses": 15,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "VEAEVQELLAKDPDEAITELSERMYEANDPSKSTWEEWRRVWEIWDSVMGNMDPSWLDTP": {
+   "seq": "VEAEVQELLAKDPDEAITELSERMYEANDPSKSTWEEWRRVWEIWDSVMGNMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn7",
+    "bcr_d3acid3_l60_s647537_mpnn7"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.154,
+   "ratio_n": 6,
+   "hu_med": 0.3927235,
+   "mo_med": 0.11869199999999999,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  },
+  "VEEEVEKLLSMDPDKAITELSERMYEANDPSKSTWEEWRRVWEIWDSVMGRMDPSWLDTP": {
+   "seq": "VEEEVEKLLSMDPDKAITELSERMYEANDPSKSTWEEWRRVWEIWDSVMGRMDPSWLDTP",
+   "names": [
+    "bcr_d3acid3_l60_s647537_mpnn3",
+    "bcr_d3acid3_l60_s647537_mpnn3"
+   ],
+   "in_list_a": false,
+   "in_list_b": true,
+   "ratio_target_only": 3.154,
+   "ratio_n": 6,
+   "hu_med": 0.573618,
+   "mo_med": 0.1681335,
+   "n_human_poses": 6,
+   "category": "GATE-ONLY",
+   "reason": "eligible and measured; excluded on the pH gate or a judgement call"
+  }
+ }
+}

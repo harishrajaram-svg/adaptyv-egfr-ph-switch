@@ -30,7 +30,25 @@ Usage:
 import csv, glob, json, os, re, sys
 from pathlib import Path
 
-SUB = "analysis/01-egfr/submission_final.json"
+# THE SUBMISSION IS THE GRADED CSV, NOT THE CANDIDATE POOL.
+#
+# Until 2026-10-05 this read analysis/01-egfr/submission_final.json, which holds 31
+# designs: the CANDIDATE POOL that emit_submission_csv.py then cuts to LIMIT = 12. So the
+# gate protecting the submission was comparing against a submission that does not exist,
+# and it was wrong in both directions at once:
+#
+#   OVER-REPORTED. worst_submitted came from the pool, giving 1.263x instead of the real
+#   2.289x, so designs beating nothing we actually ship were flagged. The warn list ran to
+#   45 names where the correct bar gives 25.
+#
+#   UNDER-REPORTED, which is the dangerous half. `stub(d) in sub_stubs` skips any design
+#   whose name-stub matches the pool, so the 19 pool designs we did NOT ship were treated
+#   as "already in the submission" and never checked against the 12 that were. A discarded
+#   design outranking a shipped one could hide behind an unshipped candidate's name.
+#
+# Keyed on SEQUENCE, not name-stub, for the same reason everything else here is.
+SUB_CSV = "submissions/01-egfr.csv"
+SUB = "analysis/01-egfr/submission_final.json"   # retained: source of per-design metadata
 GATE_GLOB = "analysis/01-egfr/phgate_*.tsv"
 SCORE_ROOT = "runs/esmfold2"
 PRIMARY = "pH ratio"
@@ -114,10 +132,19 @@ def stub(name):
     return re.sub(r"^rank\d+_", "", name).split("_boltzgen")[0]
 
 
+def shipped():
+    """The designs actually in the graded CSV: {sequence: row}."""
+    with open(SUB_CSV) as fh:
+        return {r["sequence"].strip().upper(): r for r in csv.DictReader(fh)}
+
+
 def main():
-    sub = json.load(open(SUB))
+    ship = shipped()
+    sub = [x for x in json.load(open(SUB)) if x.get("seq", "").strip().upper() in ship]
     sub_stubs = {stub(x["name"]) for x in sub}
-    sub_primary = [float(x.get("ratio") or 0) for x in sub]
+    # the ratio column of the graded CSV, on the basis the submission is RANKED on
+    rcol = next(c for c in next(iter(ship.values())) if c.startswith("ph_ratio_target_only"))
+    sub_primary = [float(r[rcol] or 0) for r in ship.values()]
     best_other = max(sub_primary)
     # Compare against the worst design we are shipping ON THE STRENGTH OF THIS OBJECTIVE,
     # not against the global minimum. Half the submission has ratio 0.000 and is there for
@@ -134,8 +161,11 @@ def main():
 
     fails, warns = [], []
     for d, v in sorted(prim.items(), key=lambda kv: -kv[1]):
-        if stub(d) in sub_stubs:
-            continue                       # already in the submission
+        q0 = seqs.get(d) or seqs.get(stub(d))
+        if q0 is not None and q0 in ship:
+            continue                       # this IS a shipped design, under some name
+        if q0 is None and stub(d) in sub_stubs:
+            continue                       # unresolvable, but its stub is a shipped name
         if v <= worst_submitted:
             continue                       # does not outrank anything we are shipping
         q = seqs.get(d)

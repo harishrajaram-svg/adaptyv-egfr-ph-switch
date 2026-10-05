@@ -18,7 +18,7 @@ cross-reactive with mouse EGFR.
    best-binding BindCraft backbone took four independent ProteinMPNN sequences from 3.15–3.85×
    to 5.40–5.46× at no cost in predicted affinity. The matched wild-type is submitted alongside
    so the comparison gets made in the laboratory, not in our gate.
-2. **A measured non-binder reads a 5.27× switch.** Of 11 molecules Adaptyv measured on this
+2. **A molecule with no reported KD reads a 5.27× switch.** Of 11 molecules Adaptyv measured on this
    platform, the highest-scoring one on our own ranking metric is a design already measured
    **not to bind** — and it ranks 8th of 2,009 on the competition's primary objective.
 3. **Requiring both species is what catches it.** Both molecules that outrank the measured

@@ -85,11 +85,11 @@ every summary statistic is just "where does that one molecule rank", and an earl
 METHODS §4.4 led with AUC 0.80 / 1.00 before this was corrected. Report ranks.
 
 **Human leg: 8 of 10 MEASURED non-binders rank below the measured binder, 2 rank ABOVE it.**
-The top-scoring molecule in the entire measured panel is a measured non-binder —
+The top-scoring molecule in the entire measured panel is one with no reported KD (right-censored, not a measured zero) —
 `EXPNEG_gitter-yolo10` at 0.5893 against human EGF's 0.3549 — and it reads a **5.27× pH ratio,
 rank 8 of 2,009** on the primary objective.
 
-**Requiring both species: the one measured binder outranks all ten measured non-binders.** Both
+**Requiring both species: the one quantified binder outranks all ten no-KD molecules.** Both
 molecules that beat it on human are at **exactly 0.0000 on mouse, 5 of 5 dead seeds** — no
 interface at all, so the filter does not rest on a margin that a bigger panel could erode.
 That mechanism is the defensible part; the ordering statistic is not. Cross-reactivity came
