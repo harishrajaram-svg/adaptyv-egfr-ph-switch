@@ -957,12 +957,27 @@ mouse** at the median, and the worst two are `cons_gap_h370_only__boltzgen_egfr_
 conservation at the epitope is the relevant quantity, and these are the designs most exposed
 to a species difference the ipSAE columns will not show.
 
-**Receptor state is NOT assessed, and this is a gap rather than a pass.** Every target construct
-in this project derives from **6ARU**, a ligand-bound receptor in the extended conformation.
-EGFR also populates a tethered, autoinhibited state in which domain II–IV packing occludes part
-of the surface. We have not folded against a tethered-state construct, so **whether these
-domain-III footprints are accessible in the autoinhibited receptor is unknown**. Every pH and
-affinity number in this submission is conditional on the extended state.
+**Receptor state: the construct matches the assay, and I had this backwards for an hour.**
+An earlier version of this section said 6ARU was "a ligand-bound receptor in the extended
+conformation" and listed receptor state as unassessed. That was wrong, and wrong in the
+direction of understating the submission's position. **6ARU is the cetuximab-Fab–EGFR
+ectodomain complex** (`HEADER ... 6ARU`, X-ray, 3.20 Å), and cetuximab's mechanism is to bind
+domain III and hold the receptor in the **tethered, autoinhibited** arrangement rather than to
+permit the extended one. Verified from the construct itself: all four ectodomain modules are
+present (domain I 162, II 145, III 170, IV 132 residues, span mature 4–612). The organisers'
+own measurement spec gives the assay targets as the **full ectodomains, tethered** (Sino
+Biological 10001-H08H and 51091-M08H). So the conformational state we folded against is the
+state the assay measures, not a mismatch.
+
+**What remains a real caveat is subtler, and it is new.** The domain-III surface in this
+construct is a surface whose conformation was determined **with an antibody bound to domain
+III**. Every one of the 17 designs binds domain III (above). So all 17 were docked onto a
+geometry templated by a bound antibody in the same region they target, and the Fab was stripped
+before folding without any relaxation of the surface it had been in contact with. We have not
+quantified how much the domain-III backbone in 6ARU differs from an unliganded tethered
+ectodomain, and we are not asserting the overlap between our designs' shared core epitope and
+cetuximab's own epitope at residue level, because the Fab coordinates were removed from the
+construct and we did not re-derive them. Both are checkable and neither was checked.
 
 **The finding the checks surfaced: this submission has nine backbone families and one epitope.**
 Across all 17 designs the union of contacted residues is only **58 distinct positions
@@ -1102,15 +1117,40 @@ before the challenge priorities — not a claim that rimA02 is worse.
 **Effective n is 9 clusters, not 17 designs.** The largest cluster, `d3acid_l65_s831683`, holds 7 designs at ranks 6, 9, 10, 14, 15, 16, 17; 6 families contribute a single design each. Any interval must be computed on families, not designs.
 <!-- /GENERATED:FAMILY-LIST -->
 
-**Two pairs differ by a single residue**: `bc_s831683_mpnn9_S15D` and
-`bc_s831683_mpnn9_WT` (Ser15 vs Asp15), and `rimA01_r15_boltzgen_egfr_d3_rimA_20` and
-`rimA01_r15_L133E` (Leu133 vs Glu133). In both cases the pair is deliberate — the
-unmutated parent is submitted alongside its mutant so the mutation's effect is measured
-in the laboratory rather than inferred from our gate — but neither pair is two
-independent tests. A third near-pair was added 2026-10-05:
-`ss_bc_s831683_mpnn6_S15D_S62H_routeA` is `bc_s831683_mpnn6_S15D` plus Ser62His, and
-`sd_d2c_101_l147_s144898_m_T65D` shares the `d2c_101_l147_s144898` backbone with
-`d2c_mpnn13_S88D_serasp` under a different single mutation.
+**Four pairs of submitted designs exceed 90% sequence identity.** Measured pairwise over all
+17, not asserted:
+
+| identity | pair | difference |
+|---|---|---|
+| 0.993 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` / `rimA01_r15_L133E` | L133E |
+| 0.986 | `d2c_mpnn13_S88D_serasp` / `sd_d2c_101_l147_s144898_m_T65D` | D65T, S88D |
+| 0.985 | `bc_s831683_mpnn6_S15D` / `ss_bc_s831683_mpnn6_S15D_S62H_routeA` | H62S |
+| 0.985 | `bc_s831683_mpnn9_S15D` / `bc_s831683_mpnn9_WT` | D15S |
+
+The first and fourth are deliberate parent/mutant pairs from the original submission — the
+unmutated parent ships alongside its mutant so the mutation's effect is measured in the
+laboratory rather than inferred from our gate. **The second and third were created by the
+2026-10-05 additions** and were not a design choice; they are a consequence of ranking the
+reopened pool on the pH objective, which favoured further point mutants of backbones already
+submitted. Two things follow.
+
+**Effective n is lower than §11.3's family count suggests.** Eight of the seventeen designs —
+47% — sit in a near-duplicate pair. No pair is two independent tests of anything.
+
+**There is an eligibility question here that we flag rather than resolve.** The organisers state
+that *iterating on any previously submitted design is explicitly disallowed*, which is stricter
+than the challenge page's "existing binder" wording. Our reading, and the one under which this
+submission was previously declared clean, is that "previously submitted" means submitted in an
+earlier round or upload — **nothing from this project has been uploaded to the platform**, so
+all 17 are first-time submissions and no design iterates on a submitted one. Under a stricter
+reading, in which two designs *within one submission* may not differ by a point mutation, the
+submission was already non-compliant before these additions (pairs 1 and 4 predate them) and
+would now have four such pairs rather than two. We cannot resolve the organisers' intent from
+the wording we have, so we state the exposure: **the additions double the number of
+near-duplicate pairs, and if the stricter reading holds, pairs 2 and 3 are the removable ones.**
+Three of the twenty permitted slots are unused, and the reopened pool of §10 contains 25
+eligible molecules including a 15-member backbone family with no representation here, so
+substituting non-paired alternatives is available and costs nothing but the ranking.
 
 ### 11.4 Reading conventions
 
@@ -1401,9 +1441,11 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     III — 20 residues are shared by ≥80% of them (§10b). The backbone diversity in §11.3 does
     not buy epitope diversity, so a wrong epitope fails the whole submission at once rather
     than nine partly-independent times.
-12. **Receptor state is unassessed.** Every construct derives from 6ARU, a ligand-bound
-    receptor in the extended conformation. Whether these domain-III footprints are accessible
-    in the tethered, autoinhibited receptor is unknown (§10b).
+12. **The domain-III surface was templated by a bound antibody.** The construct is the full
+    tethered ectodomain from 6ARU — which matches the organisers' assay spec — but 6ARU is the
+    cetuximab-Fab complex, the Fab was stripped without relaxation, and all 17 designs bind the
+    same domain III the Fab occupied. The deviation from an unliganded tethered ectodomain is
+    unquantified (§10b).
 13. **A 0.0000 on this instrument is not "no interface".** On its own co-crystal (4UIP), a
     pose reproducing 72% of the crystal contacts and 93% of the epitope scores ipSAE_min
     0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
