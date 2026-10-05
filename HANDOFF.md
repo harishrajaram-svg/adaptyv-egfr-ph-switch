@@ -92,7 +92,7 @@ They are molecules with no reported KD, not molecules measured not to bind (PK, 
 METHODS §4.1) — this line said "MEASURED non-binders" after that correction had landed.
 The top-scoring molecule in the entire measured panel is one with no reported KD (right-censored, not a measured zero) —
 `EXPNEG_gitter-yolo10` at 0.5893 against human EGF's 0.3549 — and it reads a **5.27× pH ratio,
-rank 8 of 132 rankable molecules**. "Rank 8 of 2,009" appeared here and in README; METHODS §7
+rank 18 of the 246 rankable at n ≥ 5**, the top 7.3%. "Rank 8 of 2,009" appeared here and in README, and "8th of 132" replaced it without reproducing either; METHODS §7
 records it as a ~15× overstatement, because 1,877 of that denominator were never rankable.
 
 **Requiring both species: the one quantified binder outranks all ten no-KD molecules.** Both

@@ -21,7 +21,7 @@ cross-reactive with mouse EGFR.
 2. **A molecule with NO REPORTED KD reads a 5.27× switch.** Of 11 molecules Adaptyv ran on this
    platform, the highest-scoring one on our own ranking metric is a molecule with **no KD
    reported** — which is right-censored, *not* a measurement that it does not bind (PK,
-   2026-10-04; METHODS §4.1). Its rank is **8th of 132 rankable molecules**; an earlier version
+   2026-10-04; METHODS §4.1). Its rank is **18th of the 246 molecules rankable at n ≥ 5** — the top 7.3%. An earlier version of this file said "8th of 132", which does not reproduce from the current artifact either, and an earlier version still
    of this file quoted "8th of 2,009", which METHODS §7 records as a ~15× overstatement because
    1,877 of that denominator were never rankable.
 3. **Requiring both species is what catches it.** Both molecules that outrank the measured

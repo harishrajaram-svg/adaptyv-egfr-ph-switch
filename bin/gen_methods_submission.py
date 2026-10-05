@@ -456,17 +456,25 @@ def perturbation_findings(rows):
                          for x in widest)
              + f". The widest span is {span(widest[0])} of {n} ranks.")
     o.append("")
+    # "the top-ranked design" was ambiguous and wrong on the reading most readers take:
+    # base_rank here is the rank on the pH RATIO ALONE, which is 1 for this design, but its
+    # position in the shipped CSV is different because the shipped order also applies the
+    # pose-spread and antibody penalties. Both ranks are now named.
+    csvrank = {r['name']: r['_rank'] for r in rows}
     o.append(f"**The single most-stable design holds a top-three slot in "
-             f"{best['top3_fraction'] * 100:.0f}% of draws** (`{best['name']}`, base rank "
-             f"{best['base_rank']}, median {best['median_rank']:.0f}). An earlier version of "
-             f"this section claimed no design exceeded 50%; it did, and it is the top-ranked "
-             f"design, so the error ran in the submission's favour. The conclusion does not "
-             f"depend on sigma: it already holds at the optimistic 0.4.")
+             f"{best['top3_fraction'] * 100:.0f}% of draws** (`{best['name']}`: rank "
+             f"{best['base_rank']} on the unperturbed pH ratio, which is the quantity being "
+             f"perturbed, and rank {csvrank[best['name']]} in the shipped CSV, which also "
+             f"applies the pose-spread and antibody penalties; perturbed median "
+             f"{best['median_rank']:.0f}). An earlier version of this section claimed no "
+             f"design exceeded 50%; it did, and it is the design the pH ratio puts first, so "
+             f"the error ran in the submission's favour. The conclusion does not depend on "
+             f"sigma: it already holds at the optimistic 0.4.")
     o.append("")
     o.append(f"**What does survive.** Two things. First, the **bottom group is robustly at "
              f"the bottom**: "
-             + ", ".join(f"`{x['name'][:30]}` never rises above {x['p5_rank']}"
-                         for x in floor_[:3])
+             + ", ".join(f"`{x['name'][:30]}` stays at rank {x['p5_rank']} or worse in 95% "
+                         f"of draws" for x in floor_[:3])
              + f" -- {len(floor_)} designs take a top-three slot in 0% of draws. "
              f"\"These are not switches\" is stable under the noise. Second, a **top set "
              f"exists even though its order does not**: {len(top)} designs "
@@ -593,9 +601,13 @@ def chai_table(rows):
     g532 = next((c for _, c in ref if c['tag'].startswith('g532')), None)
     nano = next((c for _, c in ref if c['tag'].startswith('nano')), None)
     if g532:
+        # COUNT IT. "below three of our six designs" was the SECOND hardcoded literal in
+        # this block; it is four. Writing a count into a generated block defeats the whole
+        # point of generating it.
+        nab = sum(1 for _, c in fin if c['iptm_median'] > g532['iptm_median'])
         txt += (f"\n\n**And the calibration set says not to over-read it.** `g532_ecd` is a "
                 f"PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 "
-                f"scores it **{g532['iptm_median']:.3f}** -- below three of our six designs "
+                f"scores it **{g532['iptm_median']:.3f}** -- below {nab} of our six designs "
                 f"and well below human EGF. ")
         if nano:
             txt += (f"`nano2_ecd` reads {nano['iptm_median']:.3f} on "

@@ -88,10 +88,40 @@ we have, so the 0.702× group is reported as **uninterpretable on this gate**, n
 "no switch detected". Over a 0.9 pH-unit window two sites give 63× and three give 500×; a
 single site cannot exceed 7.94× by any design.
 
+> **NUMBERING CONVENTION — READ THIS BEFORE ANY RESIDUE NUMBER IN THIS DOCUMENT.**
+> This document uses **two** conventions and did not say so until 2026-10-05.
+>
+> | | histidines | glycan sequons | domain boundaries | published structures |
+> |---|---|---|---|---|
+> | convention used | **UniProt P00533 canonical** (precursor) | **mature** | **mature** | **mature** |
+>
+> EGFR's signal peptide is 24 residues, so **mature = canonical − 24**. The five
+> domain-III histidines are therefore:
+>
+> | this document calls it | the structures call it (mature) |
+> |---|---|
+> | **H433** (the switch site) | **H409** |
+> | **H370** (the second site) | **H346** |
+> | H383 | H359 |
+> | H418 | H394 |
+> | H358 | H334 |
+>
+> Every `.cif` in `submissions/structures/`, `targets/egfr/egfr_d3_6aru.pdb` (numbered
+> 311–480), and the contact footprints in `analysis/01-egfr/finalist_footprints.json` use
+> the **mature** numbers. So the footprint of every design contains **409**, not 433, and
+> that is the same residue. A reviewer checking "H433" against our own coordinates would
+> find a different residue there — mature 433 is not a histidine at all.
+>
+> The glycan sequon is quoted the other way round: **Asn420 is mature** (canonical Asn444),
+> and 420 appears in the structures as 420. The mismatch is recorded as limitation 34 rather
+> than corrected in place, because renaming ~110 occurrences hours before a deadline is a
+> larger risk than the mislabel.
+
 The EGFR ectodomain carries **17 histidines** (6ARU, apo). **Five of them lie in the
 domain-III crop** our binders are designed against (mature 311–480); those five are the census
 below. The other twelve are not tabulated because none of them can participate: the nearest
-histidine outside the crop is **H507 at 37.5 Å** from H433's ring nitrogens, against the 8.5 Å
+histidine outside the crop is **H507 (canonical; mature H483) at 37.5 Å** from H433's ring
+nitrogens, against the 8.5 Å
 of the H433–H370 pair, and the farthest is H183 at 83.9 Å. Measured over all sixteen
 non-H433 histidines in the ECD structure, so the "only pair close enough" conclusion below is a
 statement about all 17, not only about the five shown. (This line read "a full PROPKA census of
@@ -446,11 +476,11 @@ from us, and the honest statement is that **no specificity filter in this pipeli
 measured data** — including this one.
 
 **gitter-yolo10 is the entire problem in one molecule.** Pooled over 5 refold poses it reads a
-**5.27× pH ratio** — **8th of the 132 molecules eligible to rank** on our primary objective —
+**5.27× pH ratio** — **18th of the 246 molecules eligible to rank** at the n ≥ 5 bar §6 sets, i.e. the top 7.3% — on our primary objective —
 alongside a human ipSAE above every positive control we have. (An earlier version of this
 document said "rank 8 of 2,009", pairing a rank computed among molecules with ≥5 poses with the
 denominator of every sequence ever scored. That overstated it by about 15× and the derived
-"top 0.4%" was wrong; 2,009 is the scored universe, 132 is the rankable one.) A human-leg-only pipeline would have submitted a
+"top 0.4%" was wrong; 2,009 is the scored universe and 246 is the rankable one at n ≥ 5. A later version said "8th of 132", which does not reproduce from `master_rank.json` either — the rankable pool grew as poses were added, and the figure was never recomputed. 18 of 246 is what the current artifact gives.) A human-leg-only pipeline would have submitted a
 molecule already measured not to bind. One number excludes it, and it is mouse 0.0000.
 
 So the pH ratio does not discriminate binders, and we report it as the primary objective
@@ -511,7 +541,7 @@ Two consequences, both of which constrain how this submission may be read.
    This matters directly, though not in the way this paragraph first claimed: it read
    *"several submitted designs carry 0.0000 on one species, and §12 of this document already
    warns that an absent measurement must not read as a measured zero."* **No** shipped design
-   carries a 0.0000 on either species — the weakest assessable legs are 0.132 and 0.181 — and
+   carries a 0.0000 on either species — the weakest assessable legs are **0.132** (human, `c5_cr_crop_patch…_05`) and **0.168** (mouse, `bcr_d3acid3_l60_s647537_mpnn3`); this read "0.132 and 0.181", which skipped the 0.168 leg — and
    §12 is Declarations and contains no such warning; it is **§4.2** that documents the error,
    cited by limitation 22. What stands is the point itself: here is a *measured,
    crystallographically-solved* interface reading 0.0000, so a zero on this instrument is not
@@ -567,7 +597,7 @@ reporting §13 warns about.
 
 Six of the 18 shipped designs were folded by Chai-1, and it does **not** rate them alike: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` reads 0.838 against `c5_cf_short__boltzgen_egfr_cropfree_short_48` at 0.201, a spread of 0.637 ipTM across designs our own pH objective orders quite differently. 2 of the six sit at or above the cetuximab scFv positive control (0.793): `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `d2c_mpnn13_S88D_serasp`. 3 sit **below human EGF** (0.500): `rimA02_d3_rimA_14_vhh`, `rimA01_r15_boltzgen_egfr_d3_rimA_20`, `c5_cf_short__boltzgen_egfr_cropfree_short_48`. Chai emits no residue-level PAE, so ipSAE cannot be computed on these and ipTM is not comparable to our ranking metric. It is a second opinion on whether an interface forms at all, not a second measurement of the objective.
 
-**And the calibration set says not to over-read it.** `g532_ecd` is a PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 scores it **0.340** -- below three of our six designs and well below human EGF. `nano2_ecd` reads 0.167 on 44 interface residues, the largest interface in the set and the lowest score. So a low Chai ipTM is **not** evidence that a design does not bind: on the one molecule here with a real measured answer, this metric is wrong. The table supports the positive direction only -- three designs form an interface an independent predictor rates at or near the level of the cetuximab control -- and it cannot be used to argue against the designs at the bottom, including rank 1. Reporting it the other way round would be the single most tempting over-read available in this submission.
+**And the calibration set says not to over-read it.** `g532_ecd` is a PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 scores it **0.340** -- below 4 of our six designs and well below human EGF. `nano2_ecd` reads 0.167 on 44 interface residues, the largest interface in the set and the lowest score. So a low Chai ipTM is **not** evidence that a design does not bind: on the one molecule here with a real measured answer, this metric is wrong. The table supports the positive direction only -- three designs form an interface an independent predictor rates at or near the level of the cetuximab control -- and it cannot be used to argue against the designs at the bottom, including rank 1. Reporting it the other way round would be the single most tempting over-read available in this submission.
 <!-- /GENERATED:CHAI-TABLE -->
 
 **What separates the arms is the target construct, and the separation is 5-for-5 rather than a
@@ -766,7 +796,7 @@ Listed because they bound the confidence of everything above.
 | **§3.5's "central result" asserted in prose, never computed** | computed, the correlation is **+0.34**, the opposite sign. Retracted (§3.5) |
 | **affinity columns taken from one run directory, chosen by name sort** | 5 of 10 shipped cells matched neither the pooled median nor max; now read from `master_rank.json` (§11) |
 | an ROC-AUC reported from a control panel with **one** positive | removed; §4.4 reports ranks. The weakness was already recorded weeks earlier as "the gate is n=1 positive" and shipped anyway |
-| a rank among 132 rankable molecules quoted against a denominator of 2,009 | overstated by ~15× (§4.4) |
+| a rank among rankable molecules quoted against a denominator of 2,009 | overstated by ~8×; the rankable pool is 246 at n ≥ 5, and the "132" that replaced 2,009 does not reproduce either (§4.4) |
 | "the four highest-affinity **and** four highest-switching designs" | false on both halves, and it was the justification for 6 of 10 slots on one backbone (§3.7) |
 | a measured pH-calibration ladder folded and never scored | the G532 series, the only molecules here with a published pH ratio, is absent from every analysis file (§13) |
 
@@ -1083,7 +1113,7 @@ it contacts the binder within 5.0 Å in a **majority** of that design's poses �
 mature ECD numbering (canonical P00533 25–645 → mature 1–621) by sequence alignment, so
 d3-crop and full-ECD poses land on one coordinate system.*
 
-| check | result across all 17 |
+| check | result across all 18 |
 |---|---|
 <!-- GENERATED:FOOTPRINT-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 | **domain** | **every design, 100% of contacts, in domain III (L2)** -- no domain-II contact anywhere |
@@ -1127,7 +1157,7 @@ state the assay measures, not a mismatch.
 
 **What remains a real caveat is subtler, and it is new.** The domain-III surface in this
 construct is a surface whose conformation was determined **with an antibody bound to domain
-III**. Every one of the 17 designs binds domain III (above). So all 17 were docked onto a
+III**. Every one of the 18 designs binds domain III (above). So all 18 were docked onto a
 geometry templated by a bound antibody in the same region they target, and the Fab was stripped
 before folding without any relaxation of the surface it had been in contact with. We have not
 quantified how much the domain-III backbone in 6ARU differs from an unliganded tethered
@@ -1397,7 +1427,7 @@ would be the exposure, and they predate every change made on 2026-10-05.
   were their positions in a 12-design submission; naming them instead of their ranks is the
   rule this document states and did not follow.)
 * **`bc_s831683_mpnn9_WT` is a control, not a candidate**: the matched wild-type of
-  `bc_s831683_mpnn9_S15D`, one residue apart. Its all-site product of 0.593× is itself
+  `bc_s831683_mpnn9_S15D`, one residue apart. Its **his-only** product of 0.627× is itself
   informative — the unmutated backbone is predicted to bind *worse* in acid, which is the
   baseline the Ser→Asp install has to beat. The same is true of
   `rimA01_r15_boltzgen_egfr_d3_rimA_20` against `rimA01_r15_L133E`.
@@ -1570,8 +1600,9 @@ not reordering the submission on the strength of that judgement.
 
 **Unassessed sites.** The gate now records, per pose, any titratable site for which a pKa
 is unavailable in either leg, with the reason, instead of skipping it with a bare
-`continue`. Across all **165 poses of the eighteen submitted designs** the count is **0** —
-every site entered or was accounted for. Site-level detail for every pose is retained in
+`continue`. Across all **165 poses of the eighteen submitted designs** the unassessed count is **0** — though **five site-poses are flagged `implausible`**, a different guard: `target:ASP13` on `c5_cf_short…_48`, `binder:ASP45` on `bc_s360518_mpnn9_A22D`, `binder:ASP58` on `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, and `binder:ASP101` on `rimA02_d3_rimA_14_vhh` in two poses. Each has an implied pKa_bound that could not be inverted inside the 0.5–9.0 window the gate allows for aspartate, so the site is reported and excluded rather than silently composed. So every site either entered the product
+or was accounted for with a reason; none was dropped silently, which is the property this guard
+exists to give. Site-level detail for every pose is retained in
 `analysis/01-egfr/ph_sensitivity.json` so no later question requires a re-run.
 
 **pKa-perturbation sensitivity: the pH ratio cannot order this submission.**
@@ -1580,7 +1611,8 @@ moves the answer. The reviewer asked a different question — "compare the delet
 consistently prepared apo/relaxed alternatives **and plausible pKa perturbations**" — and this
 is the pKa half. `bin/ph_pka_perturbation.py` perturbs every site's stored pKa_free and
 pKa_bound by independent Gaussian noise, recomputes each site's linkage, re-takes the
-histidine-only product, re-takes the median over poses, and re-ranks all 17. σ is PROPKA 3's
+histidine-only product, re-takes the median over poses, and re-ranks all 18 (400 draws per
+σ, re-run on 2026-10-05 at σ = 0.4, 0.8 and 1.2 and persisted as three artifacts). σ is PROPKA 3's
 own reported RMSD (~0.8 pKa units, worse for buried residues), not a tuned value.*
 
 <!-- GENERATED:SIGMA-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
@@ -1594,9 +1626,9 @@ own reported RMSD (~0.8 pKa units, worse for buried residues), not a tuned value
 <!-- GENERATED:PERT-FINDINGS do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 **At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp` spans ranks 1-18; `ss_bc_s831683_mpnn6_S15D_S62H_rout` spans ranks 1-17; `bc_s360518_mpnn9_A22D` spans ranks 1-16. The widest span is 17 of 18 ranks.
 
-**The single most-stable design holds a top-three slot in 60% of draws** (`rimA01_r15_L133E`, base rank 1, median 3). An earlier version of this section claimed no design exceeded 50%; it did, and it is the top-ranked design, so the error ran in the submission's favour. The conclusion does not depend on sigma: it already holds at the optimistic 0.4.
+**The single most-stable design holds a top-three slot in 60% of draws** (`rimA01_r15_L133E`: rank 1 on the unperturbed pH ratio, which is the quantity being perturbed, and rank 14 in the shipped CSV, which also applies the pose-spread and antibody penalties; perturbed median 3). An earlier version of this section claimed no design exceeded 50%; it did, and it is the design the pH ratio puts first, so the error ran in the submission's favour. The conclusion does not depend on sigma: it already holds at the optimistic 0.4.
 
-**What does survive.** Two things. First, the **bottom group is robustly at the bottom**: `bc_s831683_mpnn9_S15D` never rises above 10, `bc_d3acid_l65_s831683_mpnn11` never rises above 10, `bc_s831683_mpnn9_WT` never rises above 14 -- 3 designs take a top-three slot in 0% of draws. "These are not switches" is stable under the noise. Second, a **top set exists even though its order does not**: 5 designs `rimA01_r15_L133E` (60%), `c5_cf_short__boltzgen_egfr_cro` (49%), `rimA02_d3_rimA_14_vhh` (43%), `d2c_mpnn13_S88D_serasp` (28%), `rimA01_r15_boltzgen_egfr_d3_ri` (26%) hold a top-three slot in at least 25% of draws, against 0-17% for the other 13.
+**What does survive.** Two things. First, the **bottom group is robustly at the bottom**: `bc_s831683_mpnn9_S15D` stays at rank 10 or worse in 95% of draws, `bc_d3acid_l65_s831683_mpnn11` stays at rank 10 or worse in 95% of draws, `bc_s831683_mpnn9_WT` stays at rank 14 or worse in 95% of draws -- 3 designs take a top-three slot in 0% of draws. "These are not switches" is stable under the noise. Second, a **top set exists even though its order does not**: 5 designs `rimA01_r15_L133E` (60%), `c5_cf_short__boltzgen_egfr_cro` (49%), `rimA02_d3_rimA_14_vhh` (43%), `d2c_mpnn13_S88D_serasp` (28%), `rimA01_r15_boltzgen_egfr_d3_ri` (26%) hold a top-three slot in at least 25% of draws, against 0-17% for the other 13.
 <!-- /GENERATED:PERT-FINDINGS -->
 
 **One thing this understates, in the submission's favour.** The perturbation moves the pH ratio
@@ -1802,7 +1834,7 @@ Of these, **12** were in the submission as it stood on 2026-10-04 and **6** were
 What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC. Measured rather than asserted -- `analysis/01-egfr/express_qc.tsv` joins to **10 of the 18** submitted designs, so 8 have no expression-QC row: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `bc_s360518_mpnn9_A22D`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Novelty IS established for all 18: `bin/check_novelty_coverage.py` is green, and the four designs that had no levelled record were re-run on 2026-10-05 (`analysis/01-egfr/novelty_gap4.tsv`). This sentence said the checker was RED, which it was for about an hour before the gap was closed.
 <!-- /GENERATED:DECL-REVIEW -->
 
-**Provenance.** All seventeen sequences are de novo designs from this project's own generation
+**Provenance.** All eighteen sequences are de novo designs from this project's own generation
 runs; none is a modification of a previously submitted design or of an existing characterised
 binder. This was checked by code over all eighteen, two ways: no submitted design has any
 `g532` ancestry in its generation lineage, and the highest sequence identity of any submitted
@@ -1878,12 +1910,13 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     not model pH" (limitation 4). Separating "the structure is wrong" from "the protonation model
     is wrong" requires scoring that series' interface, which we have not done.
 11. **Ten backbone families, one epitope.** All 18 designs contact the same patch of domain
-    III — 20 residues are shared by ≥80% of them (§10b). The backbone diversity in §11.3 does
+    III — **19** residues are shared by ≥80% of them, over a union of 62 positions (§10b;
+    this read 20, the count before the eighteenth design was added). The backbone diversity in §11.3 does
     not buy epitope diversity, so a wrong epitope fails the whole submission at once rather
-    than nine partly-independent times.
+    than ten partly-independent times.
 12. **The domain-III surface was templated by a bound antibody.** The construct is the full
     tethered ectodomain from 6ARU — which matches the organisers' assay spec — but 6ARU is the
-    cetuximab-Fab complex, the Fab was stripped without relaxation, and all 17 designs bind the
+    cetuximab-Fab complex, the Fab was stripped without relaxation, and all 18 designs bind the
     same domain III the Fab occupied. The deviation from an unliganded tethered ectodomain is
     unquantified (§10b).
 13. **A 0.0000 on this instrument is not "no interface".** On its own co-crystal (4UIP), a
@@ -2012,3 +2045,15 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     submission's sharpest eligibility exposure and it is 0.0076 from rejection.** The two
     antibody-format designs sit *above* 0.80 (0.855, 0.871) and clear anyway, on the CDRH3
     branch, where TM margin is not the cliff.
+34. **The document numbers histidines in canonical coordinates and everything else in mature
+    coordinates, and did not say so for its whole life.** `H433` is UniProt P00533 canonical;
+    the same residue is **H409** in the mature numbering used by the domain boundaries this
+    document states (III = 311–480), by every structure in `submissions/structures/`, by
+    `targets/egfr/egfr_d3_6aru.pdb`, and by the contact footprints — which is why every
+    design's footprint contains 409 and none contains 433. Mature 433 is not a histidine, so
+    a reviewer checking our central claim against our own coordinates would find the wrong
+    residue. The glycan sequon runs the other way: `Asn420` is mature (canonical 444). The
+    mapping is now stated at §1; the ~110 in-place occurrences were not renamed, because
+    doing that hours before a deadline is a larger risk than the mislabel. **Nothing
+    numerical depends on it** — every pKa, distance and ratio was computed on the structures,
+    in mature coordinates, and only the printed labels use the other convention.
