@@ -123,6 +123,17 @@ def main():
                     continue
                 if any(nm in n or n in nm for n, _ in rank.items()):
                     continue      # a truncated or variant name: do not guess
+            # ABBREVIATED NAMES. The prose refers to designs by a short form -- "rimA02"
+            # for rimA02_d3_rimA_14_vhh -- and requiring a full CSV name let
+            # "rimA02 ... sits at rank 6" through while it was actually rank 12. A
+            # distinctive leading token that matches exactly one design is enough.
+            if not hits:
+                import re as _re
+                for tok in set(_re.findall(r'[A-Za-z][A-Za-z0-9]{5,}', pre)):
+                    owners = [(n, i_) for n, i_ in rank.items() if n.startswith(tok)]
+                    if len(owners) == 1:
+                        k = pre.rfind(tok)
+                        hits.append((len(pre) - k, -len(tok), owners[0][0], owners[0][1]))
             hits = [h for h in hits if h[0] <= 120]
             if not hits:
                 continue

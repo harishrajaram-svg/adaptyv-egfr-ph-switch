@@ -20,18 +20,10 @@ non-binder.
 in §7 is a commit rather than a rewrite, and the 20-design build this submission cut in half
 (§11) is in the history.
 
-**What is and is not reproducible from it, stated precisely, because an earlier version of this
-line claimed "everything here is reproducible" and that is false.** The analysis code, the
-submission, every artifact under `analysis/`, and the full ranking table are published. The
+**What is and is not reproducible from it, measured rather than asserted.** The analysis code,
+the submission, every artifact under `analysis/`, and the full ranking table are published. The
 **6,011 cached pose outputs under `runs/` are not** — they are gitignored and run to tens of
-gigabytes. Consequence, and we would rather you read it here than discover it: running the
-documented command `python3 bin/emit_submission_csv.py` on a fresh clone emits a complete,
-plausible CSV in which **every affinity column reads 0.0000 and every `affinity_above_null`
-reads `no`**, with exit code 0 and no warning, because the pose index it needs is absent. That
-is this project's own signature failure — a `0.0000` meaning *absent* being read as *measured* —
-reproduced inside its reproducibility claim. The emitter now raises instead of emitting a
-silently zeroed file when a submitted sequence is missing from the ranking table, but it cannot
-conjure poses it does not have.
+gigabytes.
 
 **MEASURED 2026-10-05, in a fresh `git clone` of the public repository with no local state:**
 
@@ -40,6 +32,13 @@ conjure poses it does not have.
 | `python3 bin/emit_submission_csv.py` | reproduces `submissions/01-egfr.csv` **byte-identically** |
 | `python3 bin/gate_sweep.py` | **12 of 13 gates pass**, including `run_fixtures --check` at 12/12 and all ten fail-closed regressions |
 | the one failure | `check_discards`, which scans for pose files to confirm a design was measured and cannot do that without the cache |
+
+**This paragraph used to say the opposite, and the correction is the point.** Until 2026-10-05
+it read that running the documented emit command on a fresh clone produced "a complete,
+plausible CSV in which every affinity column reads 0.0000", with exit code 0 and no warning —
+this project's own signature failure, a `0.0000` meaning *absent* read as *measured*,
+reproduced inside its reproducibility claim. That was true when written and had never been
+retested. It is now false, because the claim was tested instead of repeated.
 
 Getting there needed two fixes, both found by actually cloning rather than by reasoning about
 it. `bin/ipsae_min.py` hardcoded `ROOT/.venv/bin/python`, so the production scorer died with
@@ -402,15 +401,15 @@ Bars must come from controls folded against the *same* target construct:
 | construct | nonbinder | weakest real binder |
 |---|---|---|
 | full ECD (621 aa) | 0.1493 | 0.6224 |
-
-*(This project writes the full ectodomain as 609 residues in some places and 621 in others —
-against this section's own argument that a bar must come from the matching construct. (This
-sentence blamed §3.1; §3.1 gives patch-recovery counts and no residue figure at all, so the
-pointer was wrong as well as the number.) **621 is correct** for what was actually folded, and it is also what the organisers
-assay: their construct is Met1–Ser645, and with EGFR's 24-residue signal peptide removed that is
-621 residues of mature protein. The 609 figure is a stale earlier crop and appears nowhere in the
-scoring path.)*
 | domain III crop (170 aa) | **0.2218** | **0.4005** |
+
+*(This project writes the full ectodomain as 609 residues in some places and 621 in others,
+against this section's own argument that a bar must come from the matching construct.
+**621 is correct** for what was actually folded, and it is also what the organisers assay:
+their construct is Met1–Ser645, and with EGFR's 24-residue signal peptide removed that is 621
+residues of mature protein. The 609 figure is a stale earlier crop and appears nowhere in the
+scoring path. An earlier note here blamed §3.1 for it; §3.1 gives patch-recovery counts and no
+residue figure at all, so the pointer was wrong as well as the number.)*
 
 The strict ECD bar of 0.6224 is unreachable on the crop, where a construct-matched 1 nM
 binder only reaches 0.4183.
@@ -1378,14 +1377,36 @@ hardest case. The *direction* is consistent across 76 poses and mechanistically 
 | 18 | `bc_s831683_mpnn8_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 8-17 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
 <!-- /GENERATED:RANK-TABLE -->
 
+**Before reading this order, read this about rank 1.** `c5_cf_short__boltzgen_egfr_cropfree_short_48`
+heads the table because `rank_key()` sorts tier 1 on the pH ratio with no affinity term. It
+carries more independent problems than any other row, and they are documented separately in
+five places, so they are collected once here:
+
+- the **weakest assessable interfaces** in the submission — human 0.242, mouse 0.181 (limitation 25)
+- it contacts the **Asn420 glycan sequon** (§10b; limitation 14), as do two other shipped designs
+- the **lowest Chai-1 ipTM** of six finalists folded, 0.201 — though the calibration set forbids
+  reading that against it, since a published pH-switchable binder scores 0.340 (§4.4b)
+- **30.0% alanine**, a 7-residue poly-Ala run and GRAVY +0.46, the only design the expression
+  gate flags (limitation 35)
+- it is the **only design switching on H370** rather than H433 (§1), the site where 9 of 10
+  incidental switchers did not bind and the one deliberate attempt destroyed the interface (§3.4)
+- it has the **worst-folded binder monomer** in the slate, mean pLDDT 0.726, with 9.6% of its
+  residues below 0.50 against a maximum of 2.2% anywhere else
+
+It is not dropped, because the ratio is the stated objective and we rank on it rather than on a
+post-hoc preference. It is flagged here because a reviewer reading only the order would
+otherwise take it for our best design, and it is not.
+
+
 **Assessable designs rank ahead of unassessable ones within tier 1.** On a pure pH ordering
 `rimA02_d3_rimA_14_vhh` leads the submission at 4.838× — on a human ipSAE of 0.219 that we
 cannot interpret, because §4.5 shows this instrument scores a measured 294 nM antibody **below
 its own non-switching comparator**. We neither demote it on the pH axis nor score it at 0.0000
 (the §4.2 error); we place it after the designs where both axes mean something.
 
-**The cost, stated:** rimA02 carries the second-highest honest pH ratio in the submission and
-sits at rank 6, below a design at 1.774×. If the organisers rank strictly on the primary
+**The cost, stated:** `rimA02_d3_rimA_14_vhh` carries the **third-highest** pH ratio in the
+submission at 4.838× and sits at **rank 12**, below designs reading as low as 1.774×. (This
+read "second-highest ... rank 6", both of which were true of a smaller submission.) If the organisers rank strictly on the primary
 objective, this ordering costs us. It is a judgement that credible-interface-first is the more
 defensible frame, following the reviewer instruction to apply eligibility and interface checks
 before the challenge priorities — not a claim that rimA02 is worse.
