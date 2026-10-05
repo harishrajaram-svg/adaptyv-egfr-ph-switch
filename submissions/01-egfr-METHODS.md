@@ -1129,7 +1129,10 @@ the 0.702× steric floor of §6, and the same physics that defeated mechanism A 
 KD(7.4)/KD(6.5). The superseded number ships as its own CSV column so the change is auditable
 rather than silent.
 
-**Four of the seventeen are no longer switches.** The bottom four rows fall below the 1.20× bar that §6 sets
+**Four of the seventeen are no longer switches — on the deletion free leg, and that
+qualification matters.** §11.7 shows this count falls to **one** on a separately-folded apo free
+leg, so it is a property of how the free leg is estimated rather than of the designs. Read the
+four as the weakest on every basis computed, not as designs shown not to switch. The bottom four rows fall below the 1.20× bar that §6 sets
 as PROPKA's noise floor, so they carry no pH claim and are ordered by mouse affinity instead.
 `bc_s831683_mpnn8_S15D` led this submission at 5.461× before the correction and is now rank 11
 at 1.023×.
@@ -1445,6 +1448,59 @@ per-site ratios assumes **independent titration**, which is not a general treatm
 sites, and these draws model pKa error as **noise** — a systematic PROPKA bias on buried
 histidines would move every design together and this analysis would not detect it.
 
+**Apo free leg vs partner-deletion free leg.** *Added 2026-10-05, the remaining half of the
+reviewer's sensitivity request: "compare the deletion estimate with consistently prepared
+apo/relaxed alternatives." `bin/ph_apo_freeleg.py` against `runs/esmfold2/w5_apo` — every
+submitted binder folded ALONE by the same predictor, same 5 seeds, same pipeline (19 monomers,
+95 structures). The **bound leg is identical in both**, so every difference below is
+attributable to the free leg alone.*
+
+This is a comparison of two approximations and the reviewer said so plainly: *"A separately
+predicted apo structure is another approximation, not automatically the correct answer."*
+Deletion holds the side chains in a conformation the free protein does not adopt; the apo fold
+gives a plausible unbound conformation that has no particular relationship to the bound pose,
+so pairing its pKa with the complex's bound pKa mixes two structures. Neither is the free
+protein.
+
+**Internal check first.** All **8** designs carrying binder histidines move; all **9** carrying
+none move by exactly nothing. The free-leg choice affects only the designs whose own histidines
+enter the product, which is what it should do and is evidence the comparison isolates what it
+claims to.
+
+**The ordering is largely preserved — Kendall τ = +0.868**, against τ = +0.000 for the
+partnered composition basis. On this axis the submission is far more stable than on the
+composition axis or under pKa noise.
+
+**What is not preserved is the bottom of the table.**
+
+| | deletion leg | apo leg |
+|---|---|---|
+| designs reading below 1.0× | 2 | **0** |
+| designs reading below the §6 bar of 1.20× | 4 | **1** |
+
+`bc_s831683_mpnn9_WT` goes **0.627 → 1.161** and `bc_d3acid_l65_s831683_mpnn11` goes
+**0.737 → 1.260**: both cross from "not a switch" to "a mild switch" on nothing but the choice
+of free leg. **So the statement elsewhere in this document that four designs are no longer
+switches is not robust.** It holds on the deletion leg and largely dissolves on the apo leg,
+and we cannot say which leg is right. What survives is weaker and should be read instead: those
+four are *the weakest four on every basis we have computed*, not *designs shown not to switch*.
+
+**And the direction of the effect is inconsistent within one backbone.** The six `s831683`
+designs each carry three binder histidines. The apo leg moves four of them **up** by 1.71–2.02×
+(`mpnn8_S15D` 1.023 → 2.065, `mpnn9_S15D` 1.061 → 1.863) and two of them **down** by 0.90–0.91×
+(`mpnn6_S15D` 1.835 → 1.679, `mpnn19_S15D` 1.774 → 1.595). Same backbone, same number of binder
+histidines, same intervention — opposite-signed response to the free-leg change. Whatever the
+apo fold is doing to these histidines' burial, it is not doing it systematically, which is a
+reason to distrust both legs at this level of resolution rather than to prefer one.
+
+The largest single mover is `d2c_mpnn13_S88D_serasp`, **3.526 → 5.041 (+43%)**, which rises
+from fifth to third. It carries two binder histidines and the full 621 aa ECD as its target.
+
+**Note on scope.** The target's free leg is left on the deletion estimate throughout the table
+above, because the target apo structure is one shared fold and mixing it per-pose would confound
+the binder comparison. A bounded target-leg and side-chain-relaxed comparison is reported
+separately in §11.8.
+
 **What this is not.** These three numbers are a sensitivity analysis, not a confidence
 interval. They bound how much the composition rule moves the answer; they say nothing about
 whether PROPKA's pKa values are right, and the partner-deletion free leg remains a
@@ -1566,15 +1622,19 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
 14. **Rank 1 contacts a glycosylation sequon.** `c5_cf_short__boltzgen_egfr_cropfree_short_48`
     contacts Asn420; no structure we folded carries a glycan (§10b).
-15. **The pH ratio cannot order this submission.** Under PROPKA's own reported accuracy
+15. **The "not a switch" verdict is free-leg dependent.** Four designs read below the 1.20×
+    bar on the partner-deletion free leg and only one does on a separately-folded apo free
+    leg; two cross 1.0× on that change alone (§11.7). The two legs order the submission
+    consistently (τ = +0.868) but disagree about its floor.
+16. **The pH ratio cannot order this submission.** Under PROPKA's own reported accuracy
     (±0.8 pKa units) 16 of 17 designs span five or more ranks and no design holds a
     top-three slot in more than half of draws (§11.7). A top set and a bottom set are
     defensible; a rank order is not.
-16. **Two shipped designs are selected successes from a failed arm.** The second-site strategy
+17. **One shipped design is a selected success from a failed arm.** The second-site strategy
     improved 5 of 12 attempts, median fold 0.98 (§10c). Two of the five successes are in this
     submission and none of the seven failures is. Read the S62H and L133E rows as two
     successes out of twelve attempts, not as a working method.
-17. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
+18. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
     (`d3acid_l65_s831683`) and a further two are a parent/point-mutant pair
     (`rimA01_r15_d3_rimA_20` and its `L133E`). Any hit rate or interval computed over designs
     rather than sequence families overstates n by up to six-fold on the arm carrying our only
