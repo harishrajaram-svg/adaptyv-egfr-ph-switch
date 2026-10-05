@@ -1358,24 +1358,24 @@ hardest case. The *direction* is consistent across 76 poses and mechanistically 
 <!-- GENERATED:RANK-TABLE -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
 | rank | design | class | family | aa | **pH his-only (ranked)** | all-site | partnered | rank range | pose spread | target-only | poses | human | mouse | affinity assessable |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `c5_cf_short__boltzgen_egfr_cropfree_short_48` | protein | cf_cropfree_short (c5) | 70 | **5.546** | 5.685 | 5.779 | 2-10 | 0.26 | 5.819 | 6 | 0.241 | 0.181 | yes |
-| 2 | `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05` | protein | cr_crop_patch (c5) | 66 | **4.812** | 4.849 | 5.285 | 4-11 | 0.44 | 5.265 | 11 | 0.132 | 0.204 | yes |
-| 3 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 34.534 | 4.843 | 3-14 | 0.12 | 4.582 | 6 | 0.594 | 0.567 | yes |
-| 4 | `bc_s360518_mpnn9_A22D` | protein | d3acid3_l65_s360518 | 65 | **3.738** | 88.593 | 33.416 | 1-6 | 0.45 | 5.630 | 5 | 0.451 | 0.474 | yes |
-| 5 | `ss_bc_s831683_mpnn6_S15D_S62H_routeA` | protein | d3acid_l65_s831683 | 65 | **3.545** | 3.643 | 8.303 | 4-11 | 0.36 | 5.386 | 5 | 0.765 | 0.744 | yes |
-| 6 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 6.681 | 6.663 | 5-9 | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
-| 7 | `cons_gap_h370_only__boltzgen_egfr_h370_018` | protein | h370_018 (gap) | 90 | **3.180** | 27.774 | 3.859 | 4-15 | 0.17 | 3.478 | 11 | 0.457 | 0.215 | yes |
-| 8 | `bcr_d3acid3_l60_s647537_mpnn3` | protein | d3acid3_l60_s647537 | 60 | **2.914** | 3.037 | 3.106 | 10-16 | 0.09 | 3.154 | 6 | 0.574 | 0.168 | yes |
-| 9 | `bcr_d3acid3_l60_s647537_mpnn11` | protein | d3acid3_l60_s647537 | 60 | **2.747** | 2.918 | 2.960 | 11-17 | 0.06 | 2.997 | 6 | 0.443 | 0.234 | yes |
-| 10 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 5.949 | 12.995 | 2-13 | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
-| 11 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-14 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
+| 1 | `c5_cf_short__boltzgen_egfr_cropfree_short_48` | single_chain | cf_cropfree_short (c5) | 70 | **5.546** | 5.685 | 5.779 | 2-10 | 0.26 | 5.819 | 6 | 0.241 | 0.181 | yes |
+| 2 | `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05` | single_chain | cr_crop_patch (c5) | 66 | **4.812** | 4.849 | 5.285 | 4-11 | 0.44 | 5.265 | 11 | 0.132 | 0.204 | yes |
+| 3 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | single_chain | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 34.534 | 4.843 | 3-14 | 0.12 | 4.582 | 6 | 0.594 | 0.567 | yes |
+| 4 | `bc_s360518_mpnn9_A22D` | single_chain | d3acid3_l65_s360518 | 65 | **3.738** | 88.593 | 33.416 | 1-6 | 0.45 | 5.630 | 5 | 0.451 | 0.474 | yes |
+| 5 | `ss_bc_s831683_mpnn6_S15D_S62H_routeA` | single_chain | d3acid_l65_s831683 | 65 | **3.545** | 3.643 | 8.303 | 4-11 | 0.36 | 5.386 | 5 | 0.765 | 0.744 | yes |
+| 6 | `d2c_mpnn13_S88D_serasp` | single_chain | d2c_101_l147_s144898 | 147 | **3.526** | 6.681 | 6.663 | 5-9 | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
+| 7 | `cons_gap_h370_only__boltzgen_egfr_h370_018` | single_chain | h370_018 (gap) | 90 | **3.180** | 27.774 | 3.859 | 4-15 | 0.17 | 3.478 | 11 | 0.457 | 0.215 | yes |
+| 8 | `bcr_d3acid3_l60_s647537_mpnn3` | single_chain | d3acid3_l60_s647537 | 60 | **2.914** | 3.037 | 3.106 | 10-16 | 0.09 | 3.154 | 6 | 0.574 | 0.168 | yes |
+| 9 | `bcr_d3acid3_l60_s647537_mpnn11` | single_chain | d3acid3_l60_s647537 | 60 | **2.747** | 2.918 | 2.960 | 11-17 | 0.06 | 2.997 | 6 | 0.443 | 0.234 | yes |
+| 10 | `bc_s831683_mpnn6_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.835** | 5.949 | 12.995 | 2-13 | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
+| 11 | `bc_s831683_mpnn19_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-14 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
 | 12 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 4.976 | 5.183 | 3-13 | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
 | 13 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.140 | 2.267 | 12-18 | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
-| 14 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-6 | 4.38 | 4.619 | 20 | 0.598 | 0.434 | yes |
-| 15 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.062** | 1.804 | 6.801 | 7-16 | 1.21 | 5.428 | 20 | 0.804 | 0.804 | yes |
-| 16 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.627** | 1.195 | 5.226 | 12-18 | 1.76 | 3.522 | 26 | 0.786 | 0.784 | yes |
-| 17 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 5-17 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
-| 18 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 8-17 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
+| 14 | `rimA01_r15_L133E` | single_chain | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-6 | 4.38 | 4.619 | 20 | 0.598 | 0.434 | yes |
+| 15 | `bc_s831683_mpnn9_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.062** | 1.804 | 6.801 | 7-16 | 1.21 | 5.428 | 20 | 0.804 | 0.804 | yes |
+| 16 | `bc_s831683_mpnn9_WT` | single_chain | d3acid_l65_s831683 | 65 | **0.627** | 1.195 | 5.226 | 12-18 | 1.76 | 3.522 | 26 | 0.786 | 0.784 | yes |
+| 17 | `bc_d3acid_l65_s831683_mpnn11` | single_chain | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 5-17 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
+| 18 | `bc_s831683_mpnn8_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 8-17 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
 <!-- /GENERATED:RANK-TABLE -->
 
 **Assessable designs rank ahead of unassessable ones within tier 1.** On a pure pH ordering

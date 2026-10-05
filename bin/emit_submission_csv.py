@@ -81,15 +81,22 @@ OUT   = "submissions/01-egfr.csv"
 LIMIT = 18        # 10 cut + A22D + rimA01_r15_L133E. NOT the allowed 20 -- see THE CUT.
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
-MOLECULE_CLASS = "protein"     # DEFAULT only -- per-design `molecule_class` overrides it.
+# PROTEINBASE'S VOCABULARY, NOT OURS. Verified 2026-10-05 against the live submission form
+# and https://proteinbase.com/templates/competition-submission-template.csv, which accepts
+# exactly: single_chain, nanobody, scfv, fab_kappa, fab_lambda. This default was "protein",
+# which is NOT one of them, so 16 of the 18 shipped rows carried a value the platform does
+# not recognise. Four audit passes did not catch it because every one of them checked the
+# file against OUR documentation; the only thing that could catch it was the form itself.
+MOLECULE_CLASS = "single_chain"
 # Was hardcoded for every row. That is a compliance error the moment a non-protein format
 # enters the file: `rimA02_d3_rimA_14_vhh` is a VHH and must ship as `nanobody`, both because
 # the label must be true and because Adaptyv score ANTIBODY novelty by a different rule
 # (CDRH3 < 70% AND global >= 70% = Level 3). Under the general-protein rule that design reads
 # 77.5% identity and looks rejected; under the correct rule it is Level 3 and eligible.
-VALID_CLASSES = ("protein", "nanobody", "scfv", "fab_kappa", "fab_lambda")
 # Formats whose affinity this instrument cannot read -- see METHODS 4.5 and the G532 inversion.
 ANTIBODY_CLASSES = {"nanobody", "scfv", "fab_kappa", "fab_lambda"}
+# The full accepted set, which the emitter asserts against before writing.
+VALID_CLASSES = {"single_chain"} | ANTIBODY_CLASSES
 
 
 def load_scores():
@@ -416,7 +423,9 @@ def main():
     for x in rows:
         hu, mo = pooled[x["seq"]]
         scored.append(dict(name=x["name"], sequence=x["seq"],
-                           molecule_class=x.get("molecule_class", MOLECULE_CLASS),
+                           molecule_class=({"protein": "single_chain"}.get(
+                               x.get("molecule_class"), x.get("molecule_class"))
+                               or MOLECULE_CLASS),
                            # target-only, joined on SEQUENCE; the record's own `ratio`
                            # field is a fallback only, and it is wrong for at least one
                            # design (see target_only()'s docstring).
