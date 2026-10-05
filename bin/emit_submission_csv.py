@@ -75,7 +75,10 @@ OUT   = "submissions/01-egfr.csv"
 # are the same backbone, which would have defeated the cap.
 #
 # Nothing is displaced: the submission was at 12 of 20 permitted, so this uses free slots.
-LIMIT = 17        # 10 cut + A22D + rimA01_r15_L133E. NOT the allowed 20 -- see THE CUT.
+# 17 -> 18 on 2026-10-05: ss_bc_s831683_mpnn6_S15D_S62H_routeA restored as a DECLARED
+# parent/mutant pair with bc_s831683_mpnn6_S15D (see its assessment column). 18 of the 20
+# permitted; two slots remain deliberately unused.
+LIMIT = 18        # 10 cut + A22D + rimA01_r15_L133E. NOT the allowed 20 -- see THE CUT.
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
 MOLECULE_CLASS = "protein"     # DEFAULT only -- per-design `molecule_class` overrides it.

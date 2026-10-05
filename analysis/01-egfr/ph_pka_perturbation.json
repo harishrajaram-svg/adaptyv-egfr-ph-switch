@@ -8,8 +8,8 @@
    "base_rank": 1,
    "median_rank": 3.0,
    "p5_rank": 1,
-   "p95_rank": 7,
-   "top3_fraction": 0.578
+   "p95_rank": 8,
+   "top3_fraction": 0.6
   },
   {
    "name": "c5_cf_short__boltzgen_egfr_cropfree_short_48",
@@ -18,7 +18,7 @@
    "median_rank": 4.0,
    "p5_rank": 1,
    "p95_rank": 11,
-   "top3_fraction": 0.497
+   "top3_fraction": 0.487
   },
   {
    "name": "rimA02_d3_rimA_14_vhh",
@@ -27,132 +27,141 @@
    "median_rank": 4.0,
    "p5_rank": 1,
    "p95_rank": 11,
-   "top3_fraction": 0.453
+   "top3_fraction": 0.427
   },
   {
    "name": "c5_cr_crop_patch__boltzgen_egfr_crop_patch_05",
    "base_ratio": 4.8125,
    "base_rank": 4,
-   "median_rank": 6.0,
+   "median_rank": 7.0,
    "p5_rank": 2,
-   "p95_rank": 11,
-   "top3_fraction": 0.22
+   "p95_rank": 12,
+   "top3_fraction": 0.163
   },
   {
    "name": "rimA01_r15_boltzgen_egfr_d3_rimA_20",
    "base_ratio": 4.2561,
    "base_rank": 5,
-   "median_rank": 5.5,
+   "median_rank": 6.0,
    "p5_rank": 1,
    "p95_rank": 12,
-   "top3_fraction": 0.29
+   "top3_fraction": 0.263
   },
   {
    "name": "bc_s360518_mpnn9_A22D",
    "base_ratio": 3.7377,
    "base_rank": 6,
-   "median_rank": 8.0,
-   "p5_rank": 2,
-   "p95_rank": 15,
-   "top3_fraction": 0.163
+   "median_rank": 9.0,
+   "p5_rank": 1,
+   "p95_rank": 16,
+   "top3_fraction": 0.168
+  },
+  {
+   "name": "ss_bc_s831683_mpnn6_S15D_S62H_routeA",
+   "base_ratio": 3.5445,
+   "base_rank": 7,
+   "median_rank": 9.0,
+   "p5_rank": 1,
+   "p95_rank": 17,
+   "top3_fraction": 0.16
   },
   {
    "name": "d2c_mpnn13_S88D_serasp",
    "base_ratio": 3.5262,
-   "base_rank": 7,
-   "median_rank": 8.0,
+   "base_rank": 8,
+   "median_rank": 10.0,
    "p5_rank": 1,
-   "p95_rank": 17,
-   "top3_fraction": 0.323
+   "p95_rank": 18,
+   "top3_fraction": 0.275
   },
   {
    "name": "cons_gap_h370_only__boltzgen_egfr_h370_018",
    "base_ratio": 3.1796,
-   "base_rank": 8,
+   "base_rank": 9,
    "median_rank": 8.0,
-   "p5_rank": 2,
-   "p95_rank": 12,
-   "top3_fraction": 0.098
+   "p5_rank": 3,
+   "p95_rank": 13,
+   "top3_fraction": 0.09
   },
   {
    "name": "bcr_d3acid3_l60_s647537_mpnn3",
    "base_ratio": 2.914,
-   "base_rank": 9,
+   "base_rank": 10,
    "median_rank": 8.0,
    "p5_rank": 2,
-   "p95_rank": 14,
-   "top3_fraction": 0.135
+   "p95_rank": 15,
+   "top3_fraction": 0.122
   },
   {
    "name": "bcr_d3acid3_l60_s647537_mpnn11",
    "base_ratio": 2.7466,
-   "base_rank": 10,
+   "base_rank": 11,
    "median_rank": 8.0,
    "p5_rank": 2,
    "p95_rank": 14,
-   "top3_fraction": 0.11
+   "top3_fraction": 0.138
   },
   {
    "name": "h370_020_vhh",
    "base_ratio": 2.1013,
-   "base_rank": 11,
+   "base_rank": 12,
    "median_rank": 10.0,
    "p5_rank": 5,
-   "p95_rank": 14,
-   "top3_fraction": 0.022
+   "p95_rank": 15,
+   "top3_fraction": 0.025
   },
   {
    "name": "bc_s831683_mpnn6_S15D",
    "base_ratio": 1.8353,
-   "base_rank": 12,
-   "median_rank": 12.0,
-   "p5_rank": 4,
-   "p95_rank": 17,
-   "top3_fraction": 0.04
+   "base_rank": 13,
+   "median_rank": 13.0,
+   "p5_rank": 5,
+   "p95_rank": 18,
+   "top3_fraction": 0.022
   },
   {
    "name": "bc_s831683_mpnn19_S15D",
    "base_ratio": 1.7743,
-   "base_rank": 13,
-   "median_rank": 13.0,
-   "p5_rank": 4,
-   "p95_rank": 17,
-   "top3_fraction": 0.04
+   "base_rank": 14,
+   "median_rank": 14.0,
+   "p5_rank": 5,
+   "p95_rank": 18,
+   "top3_fraction": 0.035
   },
   {
    "name": "bc_s831683_mpnn9_S15D",
    "base_ratio": 1.0614,
-   "base_rank": 14,
-   "median_rank": 13.0,
-   "p5_rank": 9,
-   "p95_rank": 16,
+   "base_rank": 15,
+   "median_rank": 14.0,
+   "p5_rank": 10,
+   "p95_rank": 17,
    "top3_fraction": 0.0
   },
   {
    "name": "bc_s831683_mpnn8_S15D",
    "base_ratio": 1.023,
-   "base_rank": 15,
+   "base_rank": 16,
    "median_rank": 14.0,
    "p5_rank": 6,
-   "p95_rank": 17,
-   "top3_fraction": 0.03
+   "p95_rank": 18,
+   "top3_fraction": 0.025
   },
   {
    "name": "bc_d3acid_l65_s831683_mpnn11",
    "base_ratio": 0.7372,
-   "base_rank": 16,
-   "median_rank": 15.0,
-   "p5_rank": 9,
-   "p95_rank": 17,
-   "top3_fraction": 0.003
+   "base_rank": 17,
+   "median_rank": 16.0,
+   "p5_rank": 10,
+   "p95_rank": 18,
+   "top3_fraction": 0.0
   },
   {
    "name": "bc_s831683_mpnn9_WT",
    "base_ratio": 0.6266,
-   "base_rank": 17,
-   "median_rank": 16.0,
-   "p5_rank": 13,
-   "p95_rank": 17,
+   "base_rank": 18,
+   "median_rank": 17.0,
+   "p5_rank": 14,
+   "p95_rank": 18,
    "top3_fraction": 0.0
   }
  ]

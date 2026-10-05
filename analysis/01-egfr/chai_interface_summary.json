@@ -75,6 +75,66 @@
     27
    ],
    "note": "FINALIST rank 1: c5_cf_short__boltzgen_egfr_cropfree_short_48"
+  },
+  {
+   "tag": "fin_d2c_mpnn13_S88D_serasp",
+   "n_models": 5,
+   "iptm_median": 0.8175,
+   "clash_models": 0,
+   "iface_residues_median": 30,
+   "iface_residues_all": [
+    27,
+    30,
+    30,
+    31,
+    31
+   ],
+   "note": "FINALIST rank 7: d2c_mpnn13_S88D_serasp"
+  },
+  {
+   "tag": "fin_rimA01_r15_boltzgen_egfr_d3_rimA_20",
+   "n_models": 5,
+   "iptm_median": 0.332,
+   "clash_models": 0,
+   "iface_residues_median": 24,
+   "iface_residues_all": [
+    24,
+    24,
+    28,
+    25,
+    24
+   ],
+   "note": "FINALIST rank 4: rimA01_r15_boltzgen_egfr_d3_rimA_20"
+  },
+  {
+   "tag": "fin_rimA02_d3_rimA_14_vhh",
+   "n_models": 5,
+   "iptm_median": 0.4402,
+   "clash_models": 0,
+   "iface_residues_median": 22,
+   "iface_residues_all": [
+    24,
+    22,
+    19,
+    20,
+    25
+   ],
+   "note": "FINALIST rank 11: rimA02_d3_rimA_14_vhh"
+  },
+  {
+   "tag": "fin_ss_bc_s831683_mpnn6_S15D_S62H_routeA",
+   "n_models": 5,
+   "iptm_median": 0.8379,
+   "clash_models": 0,
+   "iface_residues_median": 39,
+   "iface_residues_all": [
+    41,
+    40,
+    39,
+    38,
+    39
+   ],
+   "note": "FINALIST rank 6: ss_bc_s831683_mpnn6_S15D_S62H_routeA"
   }
  ]
 }

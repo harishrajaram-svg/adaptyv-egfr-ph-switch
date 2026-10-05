@@ -33,6 +33,10 @@
    "apo_seeds": 5
   },
   {
+   "name": "ss_bc_s831683_mpnn6_S15D_S62H_routeA",
+   "error": "no apo structure for apo_ss_bc_s831683_mpnn6_S15D_S62H_routeA"
+  },
+  {
    "name": "d2c_mpnn13_S88D_serasp",
    "deletion": 3.5262,
    "apo": 5.0412,

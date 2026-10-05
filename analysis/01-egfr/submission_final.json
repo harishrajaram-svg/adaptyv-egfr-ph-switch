@@ -540,5 +540,17 @@
   "src": "reopened-exclusion-pool-2026-10-05-swap",
   "dir": "analysis/01-egfr",
   "real": "1"
+ },
+ {
+  "name": "ss_bc_s831683_mpnn6_S15D_S62H_routeA",
+  "seq": "MSPVEQARALLVPMDEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELHTAK",
+  "ratio": 5.386,
+  "ratio_n": 5,
+  "ratio_site": "H433",
+  "molecule_class": "protein",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 65 aa. RESTORED 2026-10-05 as a DELIBERATE PARENT/MUTANT PAIR with bc_s831683_mpnn6_S15D, which ships alongside it. It is that design plus Ser62His and is 0.985 identical to it. It was added earlier the same day on pH ranking alone, removed as a 'nearly identical variant', and is restored on a different and stated basis: the pair exists so the S62H effect is MEASURED in the laboratory rather than inferred from our gate, which is the same reason the rimA01_r15/L133E and mpnn9_S15D/mpnn9_WT pairs ship. The review asked for both -- 'keep the experimental WT/mutant comparisons AND avoid filling available slots with nearly identical variants' -- and a declared parent/mutant pair is the first, not the second. Why this mutation: S62H is the only REPLICATED result of the 12-design second-site arm (METHODS 10c), raising its parent 1.93x here and 1.80x at the same position on the sister sequence mpnn19_S15D, against an arm median of 0.98x. pH 3.545x over 5 poses, spread 0.358. Predicted affinity 0.765 human / 0.744 mouse, indistinguishable from its parent's 0.780/0.751. Independent Chai-1 check: ipTM 0.838 with a 39-residue interface, the joint-largest in the validation set and above both working positives (cetuximab scFv 0.793, human EGF 0.500) -- the best-corroborated design in this submission. Novelty Level 3. Expression QC NOT RUN. All pH tiers PROVISIONAL per METHODS 11.7.",
+  "src": "second-site-arm-restored-as-declared-pair-2026-10-05",
+  "dir": "analysis/01-egfr",
+  "real": "1"
  }
 ]

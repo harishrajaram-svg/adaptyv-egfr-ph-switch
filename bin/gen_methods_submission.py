@@ -54,6 +54,7 @@ FAMILY = {
     # submitted and open a backbone family that had no representation.
     "bcr_d3acid3_l60_s647537_mpnn3":                 "d3acid3_l60_s647537",
     "bcr_d3acid3_l60_s647537_mpnn11":                "d3acid3_l60_s647537",
+    "ss_bc_s831683_mpnn6_S15D_S62H_routeA":          "d3acid_l65_s831683",
     # The six that previously relied on DEFAULT_FAMILY. Listing them is the point:
     # the default was correct for exactly these and silently wrong for anything new.
     "bc_s831683_mpnn6_S15D":                           "d3acid_l65_s831683",

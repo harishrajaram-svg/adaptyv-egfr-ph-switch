@@ -1047,19 +1047,23 @@ parent. Burying a charge with no counter-charge in reach is the failure mode of 
 appears here twice.
 
 **The selection effect this creates, stated because it is ours.** This submission contains
-**one of the twelve** second-site designs — `rimA01_r15_L133E` — and it is **one of the five
-that improved**. We do not submit the seven that did not. That is selection on the outcome, and
-the correct reading of that row is *one success out of twelve attempts at the same strategy*,
-not *a strategy that works*. The arm's own median says it does not, and anyone grading `L133E`
-should know that its sister `L133D` — the same position, one methylene shorter — halved the
-parent.
+**two of the twelve** second-site designs — `rimA01_r15_L133E` and
+`ss_bc_s831683_mpnn6_S15D_S62H_routeA` — and **both are among the five that improved**. We do not
+submit the seven that did not. That is selection on the outcome, and the correct reading of those
+two rows is *two successes out of twelve attempts at the same strategy*, not *a strategy that
+works*. The arm's own median says it does not.
 
-*This was briefly two of twelve.* `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, the arm's single best
-result at 1.93× over its parent, was added on 2026-10-05 and removed the same day because it is
-0.985 identical to a design already shipped (§11.3). Its removal was on near-duplicate grounds,
-not because the result was doubted — the S62H effect is the one replicated finding in the arm,
-1.93× and 1.80× at the same position on two sister sequences — and it is the strongest
-second-site result this project has and is not in the submission.
+**So read each of the two against its own siblings.** Whoever grades `L133E` should know that
+`L133D` — the same position, one methylene shorter — **halved** the parent (§11.6). Whoever grades
+the S62H row should know that the same substitution **reduced** the ratio on three other
+scaffolds, all of them VHH (0.66, 0.77, 0.96), and that the acid route at the identical position
+(`S62E`) did nothing on either sister sequence (0.97×, 0.98×). S62H is the arm's one replicated
+success — 1.93× and 1.80× at the same position on two sister sequences — and it is submitted
+*with its parent* precisely so that claim is tested rather than taken on our gate's word (§11.3).
+
+*Both of these rows moved during 2026-10-05.* `ss_bc_..._S62H_routeA` was added on pH rank,
+removed as a near-identical variant, and restored as a declared parent/mutant pair; §11.3 records
+the distinction that makes the third of those defensible where the first was not.
 
 ## 11. The submission
 
@@ -1107,6 +1111,7 @@ design:
 | c5_cr_crop_patch__boltzgen_egfr_crop_patch_05 | 5.265 | **4.812** | — | — |
 | rimA01_r15_boltzgen_egfr_d3_rimA_20 | 4.582 | **4.256** | 0 | — |
 | bc_s360518_mpnn9_A22D | 5.630 | **3.738** | 1 | 0.776 |
+| ss_bc_s831683_mpnn6_S15D_S62H_routeA | 5.386 | **3.545** | — | — |
 | d2c_mpnn13_S88D_serasp | 4.572 | **3.526** | 2 | 0.983 |
 | cons_gap_h370_only__boltzgen_egfr_h370_018 | 3.478 | **3.180** | — | — |
 | bcr_d3acid3_l60_s647537_mpnn3 | 3.154 | **2.914** | — | — |
@@ -1148,23 +1153,24 @@ hardest case. The *direction* is consistent across 76 poses and mechanistically 
 <!-- GENERATED:RANK-TABLE -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
 | rank | design | class | family | aa | **pH his-only (ranked)** | all-site | partnered | rank range | pose spread | target-only | poses | human | mouse | affinity assessable |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `c5_cf_short__boltzgen_egfr_cropfree_short_48` | protein | cf_cropfree_short (c5) | 70 | **5.546** | 5.685 | 5.779 | 2-9 | 0.26 | 5.819 | 6 | 0.241 | 0.181 | yes |
-| 2 | `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05` | protein | cr_crop_patch (c5) | 66 | **4.812** | 4.849 | 5.285 | 4-10 | 0.44 | 5.265 | 11 | 0.132 | 0.204 | yes |
-| 3 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 34.534 | 4.843 | 3-13 | 0.12 | 4.582 | 6 | 0.594 | 0.567 | yes |
+| 1 | `c5_cf_short__boltzgen_egfr_cropfree_short_48` | protein | cf_cropfree_short (c5) | 70 | **5.546** | 5.685 | 5.779 | 2-10 | 0.26 | 5.819 | 6 | 0.241 | 0.181 | yes |
+| 2 | `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05` | protein | cr_crop_patch (c5) | 66 | **4.812** | 4.849 | 5.285 | 4-11 | 0.44 | 5.265 | 11 | 0.132 | 0.204 | yes |
+| 3 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 34.534 | 4.843 | 3-14 | 0.12 | 4.582 | 6 | 0.594 | 0.567 | yes |
 | 4 | `bc_s360518_mpnn9_A22D` | protein | d3acid3_l65_s360518 | 65 | **3.738** | 88.593 | 33.416 | 1-6 | 0.45 | 5.630 | 5 | 0.451 | 0.474 | yes |
-| 5 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 6.681 | 6.663 | 5-8 | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
-| 6 | `cons_gap_h370_only__boltzgen_egfr_h370_018` | protein | h370_018 (gap) | 90 | **3.180** | 27.774 | 3.859 | 4-14 | 0.17 | 3.478 | 11 | 0.457 | 0.215 | yes |
-| 7 | `bcr_d3acid3_l60_s647537_mpnn3` | protein | d3acid3_l60_s647537 | 60 | **2.914** | 3.037 | 3.106 | 9-15 | 0.09 | 3.154 | 6 | 0.574 | 0.168 | yes |
-| 8 | `bcr_d3acid3_l60_s647537_mpnn11` | protein | d3acid3_l60_s647537 | 60 | **2.747** | 2.918 | 2.960 | 10-16 | 0.06 | 2.997 | 6 | 0.443 | 0.234 | yes |
-| 9 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 5.949 | 12.995 | 2-12 | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
-| 10 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-13 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
-| 11 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 4.976 | 5.183 | 3-12 | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
-| 12 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.140 | 2.267 | 11-17 | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
-| 13 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-5 | 4.38 | 4.582 | 20 | 0.598 | 0.434 | yes |
-| 14 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.062** | 1.804 | 6.801 | 6-15 | 1.21 | 5.428 | 20 | 0.804 | 0.804 | yes |
-| 15 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.627** | 1.195 | 5.226 | 11-17 | 1.76 | 3.522 | 26 | 0.786 | 0.784 | yes |
-| 16 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 4-16 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
-| 17 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 7-16 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
+| 5 | `ss_bc_s831683_mpnn6_S15D_S62H_routeA` | protein | d3acid_l65_s831683 | 65 | **3.545** | 3.643 | 8.303 | 4-11 | 0.36 | 5.386 | 5 | 0.765 | 0.744 | yes |
+| 6 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 6.681 | 6.663 | 5-9 | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
+| 7 | `cons_gap_h370_only__boltzgen_egfr_h370_018` | protein | h370_018 (gap) | 90 | **3.180** | 27.774 | 3.859 | 4-15 | 0.17 | 3.478 | 11 | 0.457 | 0.215 | yes |
+| 8 | `bcr_d3acid3_l60_s647537_mpnn3` | protein | d3acid3_l60_s647537 | 60 | **2.914** | 3.037 | 3.106 | 10-16 | 0.09 | 3.154 | 6 | 0.574 | 0.168 | yes |
+| 9 | `bcr_d3acid3_l60_s647537_mpnn11` | protein | d3acid3_l60_s647537 | 60 | **2.747** | 2.918 | 2.960 | 11-17 | 0.06 | 2.997 | 6 | 0.443 | 0.234 | yes |
+| 10 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 5.949 | 12.995 | 2-13 | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
+| 11 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-14 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
+| 12 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 4.976 | 5.183 | 3-13 | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
+| 13 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.140 | 2.267 | 12-18 | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
+| 14 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-6 | 4.38 | 4.582 | 20 | 0.598 | 0.434 | yes |
+| 15 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.062** | 1.804 | 6.801 | 7-16 | 1.21 | 5.428 | 20 | 0.804 | 0.804 | yes |
+| 16 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.627** | 1.195 | 5.226 | 12-18 | 1.76 | 3.522 | 26 | 0.786 | 0.784 | yes |
+| 17 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 5-17 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
+| 18 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 8-17 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
 <!-- /GENERATED:RANK-TABLE -->
 
 **Assessable designs rank ahead of unassessable ones within tier 1.** On a pure pH ordering
@@ -1182,37 +1188,46 @@ before the challenge priorities — not a claim that rimA02 is worse.
 ### 11.3 Nine families, seventeen designs
 
 <!-- GENERATED:FAMILY-LIST -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
-`d3acid_l65_s831683` **x6** (ranks 9, 10, 14, 15, 16, 17) - `rimA01_r15_d3_rimA_20` **x2** (ranks 3, 13) - `d3acid3_l60_s647537` **x2** (ranks 7, 8) - `cf_cropfree_short (c5)` (rank 1) - `cr_crop_patch (c5)` (rank 2) - `d3acid3_l65_s360518` (rank 4) - `d2c_101_l147_s144898` (rank 5) - `h370_018 (gap)` (rank 6) - `rimA02_d3_rimA_14 (VHH)` (rank 11) - `h370_020 (VHH)` (rank 12)
+`d3acid_l65_s831683` **x7** (ranks 5, 10, 11, 15, 16, 17, 18) - `rimA01_r15_d3_rimA_20` **x2** (ranks 3, 14) - `d3acid3_l60_s647537` **x2** (ranks 8, 9) - `cf_cropfree_short (c5)` (rank 1) - `cr_crop_patch (c5)` (rank 2) - `d3acid3_l65_s360518` (rank 4) - `d2c_101_l147_s144898` (rank 6) - `h370_018 (gap)` (rank 7) - `rimA02_d3_rimA_14 (VHH)` (rank 12) - `h370_020 (VHH)` (rank 13)
 
-**Effective n is 10 clusters, not 17 designs.** The largest cluster, `d3acid_l65_s831683`, holds 6 designs at ranks 9, 10, 14, 15, 16, 17; 7 families contribute a single design each. Any interval must be computed on families, not designs.
+**Effective n is 10 clusters, not 18 designs.** The largest cluster, `d3acid_l65_s831683`, holds 7 designs at ranks 5, 10, 11, 15, 16, 17, 18; 7 families contribute a single design each. Any interval must be computed on families, not designs.
 <!-- /GENERATED:FAMILY-LIST -->
 
-**Two pairs of submitted designs exceed 90% sequence identity, and both are deliberate.**
-Measured pairwise over all 17:
+**Three pairs of submitted designs exceed 90% sequence identity, and all three are declared
+parent/mutant comparisons.** Measured pairwise over all 18:
 
-| identity | pair | difference |
-|---|---|---|
-| 0.993 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` / `rimA01_r15_L133E` | L133E |
-| 0.985 | `bc_s831683_mpnn9_S15D` / `bc_s831683_mpnn9_WT` | D15S |
+| identity | pair | mutation | why both ship |
+|---|---|---|---|
+| 0.993 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` / `rimA01_r15_L133E` | L133E | measure the L133E effect in the laboratory (§11.6) |
+| 0.985 | `bc_s831683_mpnn6_S15D` / `ss_bc_s831683_mpnn6_S15D_S62H_routeA` | S62H | measure the S62H effect — the second-site arm's only replicated result (§10c) |
+| 0.985 | `bc_s831683_mpnn9_S15D` / `bc_s831683_mpnn9_WT` | S15D | measure the S15D effect; the WT is the matched parent |
 
-Both are parent/mutant pairs: the unmutated parent ships alongside its mutant so the mutation's
-effect is measured in the laboratory rather than inferred from our gate. Neither pair is two
-independent tests, and that is the point of them.
+In every case the parent ships alongside its mutant **so the mutation's effect is measured rather
+than inferred from our gate**. Six of the eighteen designs sit in such a pair, and no pair is two
+independent tests — that is what they are for.
 
-**This was briefly worse and was corrected the same day.** The first five additions of
-2026-10-05 included `sd_d2c_101_l147_s144898_m_T65D` (0.986 to shipped `d2c_mpnn13_S88D_serasp`)
-and `ss_bc_s831683_mpnn6_S15D_S62H_routeA` (0.985 to shipped `bc_s831683_mpnn6_S15D`), taking
-the count to four pairs and putting eight of seventeen designs — 47% — in a near-duplicate pair.
-That was not a design choice: ranking the reopened pool on the pH objective favours further
-point mutants of backbones already submitted, and a backbone-family cap cannot catch it because
-a point mutant *is* the same family. The review had said plainly: *"avoid filling available
-slots with nearly identical variants"*, and we had done exactly that.
+**The distinction this rests on, because it was got wrong once today.** The review asked for both
+halves of one sentence: *"Keep the experimental WT/mutant comparisons **and** avoid filling
+available slots with nearly identical variants."* A near-identical variant is the first thing when
+it ships as a declared comparison and the second thing when it is padding. On 2026-10-05 five
+designs were added from the reopened pool of §10 ranked on the pH objective, and two of them —
+`sd_d2c_101_l147_s144898_m_T65D` (0.986 to shipped `d2c_mpnn13_S88D_serasp`) and
+`ss_bc_s831683_mpnn6_S15D_S62H_routeA` (0.985 to shipped `bc_s831683_mpnn6_S15D`) — were padding
+by that test: they entered on rank alone, with no stated reason for the near-duplication. That
+took the count to four pairs, two of them unintended. Both were removed and replaced by
+`bcr_d3acid3_l60_s647537_mpnn3` and `_mpnn11`, which are at most 0.467 identical to anything else
+submitted and open a backbone family that had no representation.
 
-Both were replaced by `bcr_d3acid3_l60_s647537_mpnn3` and `bcr_d3acid3_l60_s647537_mpnn11`,
-selected under a rule requiring **<90% identity to every shipped design and to each other**.
-Their highest identity to anything else submitted is **0.467** and **0.450**; they are 0.867 to
-each other; and they open the `d3acid3_l60_s647537` backbone, which had no representation. Pairs
-returned to two, designs-in-a-pair to four of seventeen.
+`ss_bc_s831683_mpnn6_S15D_S62H_routeA` was then **restored on a different and stated basis**: as a
+declared parent/mutant pair, for the same reason the other two pairs ship. The mutation is worth
+a wet-lab test specifically — S62H is the only replicated result of the twelve-design second-site
+arm, raising its parent **1.93×** here and **1.80×** at the same position on the sister sequence
+`mpnn19_S15D`, against an arm median of 0.98× (§10c). It also carries the strongest independent
+corroboration in the submission: Chai-1 ipTM **0.838** with a **39-residue** interface, the
+joint-largest in the validation set and above both working positives (cetuximab scFv 0.793, human
+EGF 0.500), while its predicted affinity is indistinguishable from its parent's (0.765/0.744
+against 0.780/0.751). The submission therefore stands at **18 of the 20 permitted**, with two
+slots deliberately unused rather than filled.
 
 **On the eligibility rule.** The organisers state that *iterating on any previously submitted
 design is explicitly disallowed*, stricter than the challenge page's "existing binder" wording.
@@ -1630,7 +1645,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     (±0.8 pKa units) 16 of 17 designs span five or more ranks and no design holds a
     top-three slot in more than half of draws (§11.7). A top set and a bottom set are
     defensible; a rank order is not.
-17. **One shipped design is a selected success from a failed arm.** The second-site strategy
+17. **Two shipped designs are selected successes from a failed arm.** The second-site strategy
     improved 5 of 12 attempts, median fold 0.98 (§10c). Two of the five successes are in this
     submission and none of the seven failures is. Read the S62H and L133E rows as two
     successes out of twelve attempts, not as a working method.
