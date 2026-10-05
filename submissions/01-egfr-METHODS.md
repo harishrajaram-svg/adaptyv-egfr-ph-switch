@@ -211,7 +211,9 @@ never have been written without the table underneath it.
 **What survives, and it is narrower and site-specific.** The trade-off is real at **H370** and
 only there. Of the 23 designs that reached H370 incidentally, **9 of the 10 that switched did not
 bind** (§3.4); the one design built deliberately to put a carboxylate on H370, `S60D`, returned
-1.11× — inside PROPKA's noise — while dropping human ipSAE from 0.654 to **0.012** (§3.7). H370
+1.11× — inside PROPKA's noise — while dropping human ipSAE from 0.654 to **0.012** (§3.4; this
+cited §3.7, which does not mention `S60D` — the design appears at this line, in §8.1 and in
+§11.7, and nowhere else). H370
 carries 153 heavy atoms within 10 Å of its ring against H433's 57, so reaching it costs the
 interface area binding needs. That is a statement about one cleft, not about the pool, and it is
 what §3.4's conclusion actually rests on.
@@ -244,7 +246,9 @@ validation.
 This is the only causal result in the project, and the only one where we changed one thing and
 measured the consequence.
 
-`d2c_mpnn13` binds and does not switch (0.70×). A single Ser→Asp at position 88 gives
+`d2c_mpnn13` is a **predicted** binding candidate with no supported pH switch (0.70×) — PK's
+own phrasing, 2026-10-03, which this sentence previously shortened to "binds and does not
+switch". A single Ser→Asp at position 88 gives
 **4.57×** over 5 poses. Truncating that Asp back to Ala in the same coordinates returns
 **0.72×**. Knockout effect **+5.20 pKa units**, the largest in the project.
 
@@ -348,8 +352,9 @@ Bars must come from controls folded against the *same* target construct:
 | full ECD (621 aa) | 0.1493 | 0.6224 |
 
 *(This project writes the full ectodomain as 609 residues in some places and 621 in others —
-including §3.1 above, against this section's own argument that a bar must come from the matching
-construct. **621 is correct** for what was actually folded, and it is also what the organisers
+against this section's own argument that a bar must come from the matching construct. (This
+sentence blamed §3.1; §3.1 gives patch-recovery counts and no residue figure at all, so the
+pointer was wrong as well as the number.) **621 is correct** for what was actually folded, and it is also what the organisers
 assay: their construct is Met1–Ser645, and with EGFR's 24-residue signal peptide removed that is
 621 residues of mature protein. The 609 figure is a stale earlier crop and appears nowhere in the
 scoring path.)*
@@ -528,7 +533,10 @@ comparison is possible; this is contacts against contacts.*
 **ESMFold2 is not the weak link here.** An architecturally independent model — different
 weights, different training, diffusion co-folding rather than a folding trunk — reproduces its
 crop failure to within rounding on every column. Whatever is wrong is not specific to
-ESMFold2-Fast, which removes the most convenient explanation for the zero-scoring positives.
+ESMFold2, which removes the most convenient explanation for the zero-scoring positives. (This
+read "ESMFold2-Fast". `biomodals/modal_esmfold2.py:41` defaults `ESMFOLD2_HF_REPO` to
+`biohub/ESMFold2` — the **Full** model — and `bin/score-esmfold2.sh` sets no override, so every
+pose in this project is Full. Naming the Fast model understated the arm.)
 
 **Chai-1 also folded six of the shipped finalists, and all eleven complexes it ran are
 reported here.** The arm produced results for six submitted designs and five calibration
@@ -685,10 +693,28 @@ interval above is optimistic.
 Agreement between two methods is evidence, not validation. Neither has experimental ground
 truth on this target.
 
-The controls validate it independently of us: all six positive controls fall in the lower
-half of the design distribution, and both EGF-derived "nonbinders" fall in the **top 14%** —
-a model that never saw this target says protonating H433 is maximally bad for an EGF-like
-complex, which is exactly right for a neutral-pH agonist.
+**WITHDRAWN 2026-10-05: the control-validation claim.** This paragraph read: *"The controls
+validate it independently of us: all six positive controls fall in the lower half of the design
+distribution, and both EGF-derived 'nonbinders' fall in the top 14% — a model that never saw this
+target says protonating H433 is maximally bad for an EGF-like complex, which is exactly right
+for a neutral-pH agonist."* It is withdrawn for three reasons, each sufficient on its own:
+
+1. **The reviewer ruled it out by name.** PK, 2026-10-04 §5: *"The EGF-derived sequences' Potts
+   ranks cannot independently establish their binding or agonism."* And §1: *"Relabel both
+   EGF-derived controls as activity-unknown, document their provenance gap, and withdraw claims
+   based on their supposed negative status."* §4.1 carried out the relabelling; this paragraph
+   then kept arguing from the status that had just been withdrawn.
+2. **It contradicts the two sentences immediately above it**, which say *"Agreement between two
+   methods is evidence, not validation. Neither has experimental ground truth on this target."*
+   A paragraph cannot disclaim validation and then claim it four lines later.
+3. **No published artifact supports the numbers.** `potts_ddg_pool.json` and
+   `potts_ddg_extra.json` hold 2,092 records between them and contain **no control molecule** —
+   no positive control, no cetuximab, no EXPNEG molecule. The only `g532` labels are our own
+   mimic designs. So neither "lower half" nor "top 14%" is reproducible from the repository,
+   which is the standard every other number in this document is held to.
+
+What remains, and it is the weaker claim: the Potts model and the PROPKA refold gate agree at
+an odds ratio of 6.32, on our own designs, with no experimental ground truth on either side.
 
 ---
 
@@ -1019,8 +1045,7 @@ design already shipped** — 0.985 and 0.986 respectively. The review's instruct
 filling available slots with nearly identical variants"*, so ranking the reopened pool on the
 objective produced precisely what we had been told not to do. They were replaced by
 `bcr_d3acid3_l60_s647537_mpnn3` (2.914×) and `bcr_d3acid3_l60_s647537_mpnn11` (2.747×), which
-are at most 0.467 identical to anything else submitted and open a backbone family that had no
-representation. The rows above are left in place because they are what the reopened ledger
+open a backbone family that had no representation. **Correction 2026-10-05:** these two are **0.867 identical to each other** — both 60 aa, differing at 8 positions — so they are MPNN redesigns of one backbone, not two independent designs. 0.467 is their identity to everything *else* submitted. The same false figure shipped in both CSV rows and is corrected there. The rows above are left in place because they are what the reopened ledger
 found; they are no longer what the submission contains. §11.3 records the swap.
 
 Note also the family composition: **15 of the 25 are the `d3acid3_l60_s647537` backbone**, a
@@ -1181,8 +1206,11 @@ the distinction that makes the third of those defensible where the first was not
 Twelve were submitted on 2026-10-04; **five were added on 2026-10-05 from the reopened
 exclusion pool of §10**, by a rule fixed before the result was examined (this file's own
 `rank_key` over the 25 eligible reopened molecules, capped at 2 additions per backbone and
-7 of 17 per backbone). They occupy ranks 1, 2, 3, 6 and 8. Nothing was displaced — the
-submission was at 12 of 20 and the five use free slots. Three slots remain unused.
+7 of 17 per backbone). They occupy ranks 1, 2, 5, 7, 8 and 9. Nothing was displaced — the
+submission was at 12 of 20 and the six additions use free slots. **Two** slots remain unused.
+(This read "five additions at ranks 1, 2, 3, 6 and 8" with "three slots" left: there are six
+additions, rank 3 is one of the original twelve, and §11.3 of this same document already said
+two.)
 
 *The tables and counts in this section are GENERATED from the emitted CSV by `bin/gen_methods_submission.py` (self-tested). They were hand-maintained through three submission changes in one evening and drifted badly — an audit found this section still describing eleven designs, its rank table omitting the twelfth, every rank above 7 off by one, and §12 attesting review of "all ten" sequences. The interpretive text is still written by hand; the numbers are not.*
 
@@ -1320,8 +1348,8 @@ designs were added from the reopened pool of §10 ranked on the pH objective, an
 `ss_bc_s831683_mpnn6_S15D_S62H_routeA` (0.985 to shipped `bc_s831683_mpnn6_S15D`) — were padding
 by that test: they entered on rank alone, with no stated reason for the near-duplication. That
 took the count to four pairs, two of them unintended. Both were removed and replaced by
-`bcr_d3acid3_l60_s647537_mpnn3` and `_mpnn11`, which are at most 0.467 identical to anything else
-submitted and open a backbone family that had no representation.
+`bcr_d3acid3_l60_s647537_mpnn3` and `_mpnn11`, which open a backbone family that had no
+representation. **Correction 2026-10-05:** these two are **0.867 identical to each other** — both 60 aa, differing at 8 positions — so they are MPNN redesigns of one backbone, not two independent designs. 0.467 is their identity to everything *else* submitted. The same false figure shipped in both CSV rows and is corrected there.
 
 `ss_bc_s831683_mpnn6_S15D_S62H_routeA` was then **restored on a different and stated basis**: as a
 declared parent/mutant pair, for the same reason the other two pairs ship. The mutation is worth
@@ -1462,7 +1490,7 @@ and Mechanism B (a binder carboxylate reading a target histidine) is invisible t
 histidine-only product by construction.
 
 **Three bases, same poses, same code path.** `bin/ph_sensitivity_multisite.py` recomputes
-every submitted design on the same 75 human-leg poses through one code path, so the
+every submitted design on the same 165 human-leg poses through one code path, so the
 differences below are attributable to the composition rule alone:
 
 - **his-only** — histidines on both partners. The shipped basis.
@@ -1471,10 +1499,10 @@ differences below are attributable to the composition rule alone:
   6 Å. `PARTNER_CUT` was fixed before this analysis, not tuned to it.
 
 The histidine-only values reproduced the shipped CSV exactly on all twelve designs then
-submitted, which confirms the join and the characterisation above. The five designs added on
-2026-10-05 were scored through the same three bases before being added, so all **17** are on
-one footing; across the 17 the analysis covers **158 human-leg poses** with **0 unassessed
-titratable sites**.
+submitted, which confirms the join and the characterisation above. The six designs added on
+2026-10-05 were scored through the same three bases before being added, so all **18**
+are on one footing; across the 18 the analysis covers **165 human-leg poses** with
+**0 unassessed titratable sites**. (This read "the five designs ... all 17 ... 158 poses".)
 
 **The ordering is not stable.** Kendall τ between the shipped basis and the partnered basis
 is **+0.000** — the two orderings are uncorrelated. Designs move by up to **12 ranks** (`bc_d3acid_l65_s831683_mpnn11`, 5-17 across the three bases)
@@ -1483,8 +1511,10 @@ the §11 table. **Every tier in this submission is therefore marked `provisional
 order here should be read as established.**
 
 **Why the shipped order is nevertheless retained.** The histidine-only value is the
-**minimum of the three bases for all seventeen designs** — re-checked by the emitter on every
-run rather than remembered, and it reports 17 of 17. Ranking on it is ranking on the
+**minimum of the three bases for all 18 designs** — re-checked by the emitter on every
+run rather than remembered, and it reports 18 of 18. (This read "all seventeen
+designs ... 17 of 17"; the emitter computes the count over every scored row, which is
+18.) Ranking on it is ranking on the
 conservative envelope `min(his-only, all-site, partnered)` under a single uniform rule,
 rather than on a basis chosen after seeing which order it produced. We did not revert to
 the target-only ratio, and we did not promote either wider basis.
@@ -1531,11 +1561,13 @@ pKa_bound by independent Gaussian noise, recomputes each site's linkage, re-take
 histidine-only product, re-takes the median over poses, and re-ranks all 17. σ is PROPKA 3's
 own reported RMSD (~0.8 pKa units, worse for buried residues), not a tuned value.*
 
-| σ (pKa units) | designs keeping their baseline rank | designs spanning ≥5 ranks (central 90%) |
+<!-- GENERATED:SIGMA-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+| sigma (pKa units) | keep baseline rank | span >= 5 ranks |
 |---|---|---|
-| 0.4 (optimistic) | 6 of 17 | **13 of 17** |
-| **0.8 (PROPKA's own RMSD)** | **4 of 17** | **16 of 17** |
-| 1.2 (buried residues) | 4 of 17 | **17 of 17** |
+| 0.4 | 6 of 18 | 14 of 18 |
+| **0.8 (PROPKA's own RMSD)** | **2 of 18** | **17 of 18** |
+| 1.2 | 1 of 18 | 18 of 18 |
+<!-- /GENERATED:SIGMA-TABLE -->
 
 <!-- GENERATED:PERT-FINDINGS do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 **At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp` spans ranks 1-18; `ss_bc_s831683_mpnn6_S15D_S62H_rout` spans ranks 1-17; `bc_s360518_mpnn9_A22D` spans ranks 1-16. The widest span is 17 of 18 ranks.
@@ -1882,10 +1914,51 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     because none of the three legs is the free protein and picking one post hoc would be the
     reshaping §11.8 was published early to prevent. The ordering is unaffected (Kendall
     τ = +0.956); the magnitudes are not reliable to better than about 1.4×.
-24. **The relaxed arm reaches 10 of 18 designs, and the gap is not random.** Seven designs carry
-    no binder histidine — their switch is target-borne — and a binder-only relaxation cannot
-    move them, so the eight designs whose signal sits on EGFR's own H370/H433 are exactly the
-    ones this sensitivity check cannot cover. One further design
+24. **The relaxed arm reaches 10 of 18 designs, and the gap is not random.** **Nine** of the
+    eighteen designs carry no binder histidine (§11.1) — their switch is target-borne — and a
+    binder-only relaxation cannot move them, so seven of those nine are outside this check's
+    reach entirely. (This limitation said "seven designs" and then "the eight designs" for the
+    same set, in one sentence; the count of designs with no binder histidine is nine.) One
+    further design
     (`ss_bc_s831683_mpnn6_S15D_S62H_routeA`) entered the submission after the relax queue was
     built and has no relaxed structure at all. The 0.842× median therefore describes the
     binder-borne designs, not the submission.
+
+25. **The pH objective puts the two weakest predicted interfaces at the top.** Ranks 1 and 2
+    read ipSAE human/mouse of 0.242/0.181 and 0.132/0.204 — the two weakest assessable
+    interfaces in the submission. `rank_key()` orders tier 1 by the pH ratio alone, with no
+    affinity term, so this is the ranking rule working as specified rather than a bug. It
+    means the submission's own top of table is where its structural evidence is thinnest.
+26. **The one two-site causal claim rests on a shift inside PROPKA's own error.** L133E's
+    H370 shift is **+0.540 pKa units at the median** over 20 poses (range −0.40 to +2.56),
+    and only **5 of 20** poses exceed the ±0.8 unit accuracy §11.7 adopts for the
+    perturbation study. The two-site reading (§11.6) is therefore supported by a minority of
+    poses on a median effect smaller than the instrument's stated error. We report it because
+    the mechanism is specifically controlled — Glu reaches, Asp does not — not because the
+    magnitude is resolved.
+27. **PK's tethered-versus-extended footprint comparison was never run.** He asked for the
+    complete binder footprint compared across tethered and ligand-bound extended assemblies,
+    including the second receptor, glycans and membrane-facing orientation, and said
+    explicitly that distance from one tether contact cannot settle it. §10b runs four other
+    checks and does not run this one. The receptor state we model (6ARU, tethered) matches
+    the assay construct, which is why the gap is tolerable, but it is a gap.
+28. **"The crop is adequate" is argued from crop-docked poses.** §10b concludes no footprint
+    required the full ECD because 0 of 18 contact outside the domain-III crop — but those
+    footprints are computed on poses docked against that same crop, which cannot place a
+    contact outside it. §4.4b's rAC1 result points the other way: on the full ectodomain the
+    paratope recall is 0.37–0.96 and on the crop 0.00–0.07. The honest statement is that the
+    crop is adequate *for the poses we generated*, which is not the same claim.
+29. **No solvent-accessible surface area was computed.** PK: *"The burial atom count is a
+    useful proxy, not a substitute for solvent-accessible surface area."* It is still the sole
+    support for the H370 burial conclusion. `biomodals/modal_sasa.py` exists and was never
+    run; "SASA" appears in no deliverable.
+30. **The seed-instability pilot PK specified was never run.** He asked for 20–30 diverse
+    candidates enriched near decision boundaries at ~10 seeds each, assessing rank changes,
+    pose consistency and threshold crossings. What exists instead is 5 seeds per design on the
+    shipped set and a 15-seed triad on one design (§11.6). The pKa-perturbation study (§11.7)
+    answers a different question — instrument noise, not seed noise.
+31. **Mechanism A was never tested, and was twice asserted to be ruled out.** PK's 2026-09-29
+    answer 3 was to give mechanism A most of the initial design effort conditional on finding
+    a suitable local acidic surface, retaining B as a smaller branch. §1 records that we used
+    mechanism B. No mechanism-A result is reported anywhere in this document, so the two
+    statements that A was ruled out are not supported by an experiment we ran.

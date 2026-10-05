@@ -581,6 +581,37 @@ def chai_table(rows):
     return txt
 
 
+def sigma_table(rows):
+    """SS 11.7's sigma sweep, generated from the three persisted runs.
+
+    The table was a 17-design run ("4 of 17", "16 of 17") and limitation 17 cited it for a
+    figure it did not contain. The three sigmas now live in
+    analysis/01-egfr/ph_pka_perturbation_sigma{0.4,0.8,1.2}.json so the sweep is an
+    artifact rather than a memory of three separate invocations."""
+    import glob as _g
+    out = ["| sigma (pKa units) | keep baseline rank | span >= 5 ranks |", "|---|---|---|"]
+    found = 0
+    for sg in ('0.4', '0.8', '1.2'):
+        f = f'analysis/01-egfr/ph_pka_perturbation_sigma{sg}.json'
+        if not os.path.exists(f):
+            continue
+        d = json.load(open(f))
+        ds = [x for x in d['designs'] if x['name'] in {r['name'] for r in rows}]
+        if len(ds) != len(rows):
+            raise SystemExit(f"{f} covers {len(ds)} of {len(rows)} shipped designs")
+        keep = sum(1 for x in ds if x['median_rank'] == x['base_rank'])
+        wide = sum(1 for x in ds if x['p95_rank'] - x['p5_rank'] >= 5)
+        label = (f"**{sg} (PROPKA's own RMSD)**" if sg == '0.8' else sg)
+        bold = '**' if sg == '0.8' else ''
+        out.append(f"| {label} | {bold}{keep} of {len(ds)}{bold} | "
+                   f"{bold}{wide} of {len(ds)}{bold} |")
+        found += 1
+    if found < 3:
+        raise SystemExit("sigma sweep incomplete; re-run bin/ph_pka_perturbation.py at "
+                         "--sigma 0.4, 0.8 and 1.2 and persist each")
+    return "\n".join(out)
+
+
 def basis_table(rows):
     out = ["| design | target-only | **all-site** | binder histidines | worst drag |",
            "|---|---|---|---|---|"]
@@ -656,7 +687,8 @@ def write_into_methods(rows):
               "DECL-STRUCT": declaration_structures(rows),
               "PERT-FINDINGS": perturbation_findings(rows),
               "FOOTPRINT-TABLE": footprint_table(rows),
-              "CHAI-TABLE": chai_table(rows)}
+              "CHAI-TABLE": chai_table(rows),
+              "SIGMA-TABLE": sigma_table(rows)}
     for tag, body in blocks.items():
         pat = re.compile(rf"(<!-- GENERATED:{tag}[^>]*-->\n).*?(<!-- /GENERATED:{tag} -->)",
                          re.S)
@@ -682,7 +714,8 @@ def check_methods(rows):
               "DECL-STRUCT": declaration_structures(rows),
               "PERT-FINDINGS": perturbation_findings(rows),
               "FOOTPRINT-TABLE": footprint_table(rows),
-              "CHAI-TABLE": chai_table(rows)}.items():
+              "CHAI-TABLE": chai_table(rows),
+              "SIGMA-TABLE": sigma_table(rows)}.items():
         m = re.search(rf"<!-- GENERATED:{tag}[^>]*-->\n(.*?)<!-- /GENERATED:{tag} -->", src, re.S)
         if not m:
             bad.append(f"{tag}: block missing")
