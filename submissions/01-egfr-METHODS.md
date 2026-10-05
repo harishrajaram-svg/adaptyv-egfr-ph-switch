@@ -923,6 +923,61 @@ of the 25. The original exclusion list and this amendment are both preserved and
 and every number here was produced before any outcome was examined.
 
 
+## 10b. Finalist epitope footprints: the four checks, and one finding they surface
+
+*Added 2026-10-05 at the reviewer's request: "apply full-ECD, glycan, receptor-state and
+human/mouse contact checks to the actual finalist footprints — my earlier domain-II assessment
+does not clear these designs." He was right that it does not. `bin/finalist_footprints.py`
+computes each design's footprint from its own human-leg poses — a residue is in the footprint if
+it contacts the binder within 5.0 Å in a **majority** of that design's poses — and maps it to
+mature ECD numbering (canonical P00533 25–645 → mature 1–621) by sequence alignment, so
+d3-crop and full-ECD poses land on one coordinate system.*
+
+| check | result across all 17 |
+|---|---|
+| **domain** | **every design, 100% of contacts, in domain III (L2)** — no domain-II contact anywhere |
+| **full-ECD** | **0 of 17** have any contact outside the 170 aa domain-III crop (mature 311–480), so the crop is adequate and no footprint required the full ECD to assess |
+| **glycan** | **1 of 17** touches an N-glycosylation sequon — and it is the top-ranked design |
+| **human/mouse** | median identity **at the contacted positions** is **0.86**; range 0.77–0.92 |
+
+**Domain II is not in play.** The earlier assessment concerned domain II; these binders do not
+touch it. That resolves the question in the designs' favour but by irrelevance, not by passing.
+
+**The glycan flag is on rank 1.** `c5_cf_short__boltzgen_egfr_cropfree_short_48` contacts
+**Asn420**, one of eleven N-X-S/T sequons in the human ectodomain and one of four in domain III
+(N328, N337, N389, N420). None of our folded structures carries a glycan, so that contact is
+made against a surface that is glycosylated in a real cell and bare in every structure we
+scored. This is a liability on the design the pH objective ranks first, and it was not visible
+before the footprints were computed.
+
+**Cross-reactivity is weaker at the epitope than whole-protein identity suggests.** The two
+ECDs are highly similar overall, but **14% of contacted positions differ between human and
+mouse** at the median, and the worst two are `cons_gap_h370_only__boltzgen_egfr_h370_018`
+(0.77) and `bc_s360518_mpnn9_A22D` (0.78). Since the submission requires both species,
+conservation at the epitope is the relevant quantity, and these are the designs most exposed
+to a species difference the ipSAE columns will not show.
+
+**Receptor state is NOT assessed, and this is a gap rather than a pass.** Every target construct
+in this project derives from **6ARU**, a ligand-bound receptor in the extended conformation.
+EGFR also populates a tethered, autoinhibited state in which domain II–IV packing occludes part
+of the surface. We have not folded against a tethered-state construct, so **whether these
+domain-III footprints are accessible in the autoinhibited receptor is unknown**. Every pH and
+affinity number in this submission is conditional on the extended state.
+
+**The finding the checks surfaced: this submission has nine backbone families and one epitope.**
+Across all 17 designs the union of contacted residues is only **58 distinct positions
+(mature 316–474)**, and **20 residues are contacted by at least 80% of the designs**: 323, 325,
+348, 349, 350, 353, 355, 357, 382, 384, 408, 409, 411, 412, 417, 418, 438, 440, 465, 467. The
+backbone diversity reported in §11.3 is real and the epitope diversity is close to nil — every
+design is a different scaffold presented to the same patch of domain III.
+
+That is a correlated-failure risk the family counts conceal. If this patch is the wrong patch —
+glycan-shielded in vivo, occluded in the tethered state, or simply not a site where a pH switch
+can be built — the submission does not fail in nine partly-independent ways, it fails once. We
+are stating it rather than diversifying, because the deadline does not permit generating and
+assessing a second epitope, and because the one thing worse than a concentrated submission is a
+concentrated submission presented as a diverse one.
+
 ## 11. The submission
 
 **17 designs, ranked on the two-partner histidine-only pH product.** Track 3 allows 20.
@@ -1342,7 +1397,19 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     an instrument with no validation against measured pH data** — not merely on one that "does
     not model pH" (limitation 4). Separating "the structure is wrong" from "the protonation model
     is wrong" requires scoring that series' interface, which we have not done.
-11. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
+11. **Nine backbone families, one epitope.** All 17 designs contact the same patch of domain
+    III — 20 residues are shared by ≥80% of them (§10b). The backbone diversity in §11.3 does
+    not buy epitope diversity, so a wrong epitope fails the whole submission at once rather
+    than nine partly-independent times.
+12. **Receptor state is unassessed.** Every construct derives from 6ARU, a ligand-bound
+    receptor in the extended conformation. Whether these domain-III footprints are accessible
+    in the tethered, autoinhibited receptor is unknown (§10b).
+13. **A 0.0000 on this instrument is not "no interface".** On its own co-crystal (4UIP), a
+    pose reproducing 72% of the crystal contacts and 93% of the epitope scores ipSAE_min
+    0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
+14. **Rank 1 contacts a glycosylation sequon.** `c5_cf_short__boltzgen_egfr_cropfree_short_48`
+    contacts Asn420; no structure we folded carries a glycan (§10b).
+15. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
     (`d3acid_l65_s831683`) and a further two are a parent/point-mutant pair
     (`rimA01_r15_d3_rimA_20` and its `L133E`). Any hit rate or interval computed over designs
     rather than sequence families overstates n by up to six-fold on the arm carrying our only
