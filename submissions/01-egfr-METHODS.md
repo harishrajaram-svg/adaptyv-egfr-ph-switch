@@ -1977,3 +1977,25 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     a suitable local acidic surface, retaining B as a smaller branch. §1 records that we used
     mechanism B. No mechanism-A result is reported anywhere in this document, so the two
     statements that A was ruled out are not supported by an experiment we ran.
+32. **The novelty gate is unresolved for four shipped designs, and rank 4's measurement is
+    recorded but not reproducible.** `bin/check_novelty_coverage.py` is RED: 14 of 18 designs
+    have a levelled record that clears Level ≥ 3, and four do not. Three are safe by
+    inference from a scanned relative with wide margin to the Level-2 cliff at TM 0.80
+    (+0.1996, +0.0998, +0.0607); a single point mutation cannot close those. The fourth,
+    `bc_s360518_mpnn9_A22D` at rank 4, is not. Its own assessment string in the graded CSV
+    states *"Novelty re-measured on the MUTANT pose, not the wild-type backbone: TM 0.792,
+    identity 15.2%, Level 3 — it clears"*, and the commit that added it (332b09e, 2026-10-04
+    19:53) says the same and adds *"clears by 0.008, so it is also the row most exposed to a
+    domain-wise novelty rejection"* — a warning that then disappeared from this document for
+    a day. **The run happened; its output was never persisted.** No novelty TSV at any commit
+    contains TM 0.792 for this design, and foldseek and the FoldSeek database are both absent
+    from the machine, so it cannot be re-run here. An unreproducible number is not evidence
+    in a document where every other number is reproducible, so the gate treats rank 4 as
+    unresolved rather than as clearing. It must go through the organisers' own novelty check
+    before this submission is nominated.
+33. **Five more designs clear novelty with less than 0.04 TM of margin** — ranks 15, 18, 9, 8
+    and 16, the tightest at +0.0283 (§bin/check_novelty_coverage.py `--margins`). Their
+    verdicts are not robust to a re-scan against a database larger than ours. The two
+    antibody-format designs sit *above* the 0.80 TM line (0.855 and 0.871) and clear anyway,
+    because antibodies are levelled on CDRH3 identity rather than whole-chain TM — a
+    different rule branch, and the TM margin is not their cliff.
