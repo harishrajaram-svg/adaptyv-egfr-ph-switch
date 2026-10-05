@@ -1247,8 +1247,10 @@ the distinction that makes the third of those defensible where the first was not
 **18 designs, ranked on the two-partner histidine-only pH product.** Track 3 allows 20.
 Twelve were submitted on 2026-10-04; **five were added on 2026-10-05 from the reopened
 exclusion pool of §10**, by a rule fixed before the result was examined (this file's own
-`rank_key` over the 25 eligible reopened molecules, capped at 2 additions per backbone and
-7 of 17 per backbone). They occupy ranks 1, 2, 5, 7, 8 and 9. Nothing was displaced — the
+`rank_key` over the 25 eligible reopened molecules, capped at 2 additions per backbone and a
+ceiling of 7 designs per backbone across the submission). They occupy ranks 1, 2, 5, 7, 8 and 9.
+(The cap read "7 of 17 per backbone", which stated the then-current submission size rather than
+the rule; the rule is the 7-design ceiling, and `d3acid_l65_s831683` sits exactly at it.) Nothing was displaced — the
 submission was at 12 of 20 and the six additions use free slots. **Two** slots remain unused.
 (This read "five additions at ranks 1, 2, 3, 6 and 8" with "three slots" left: there are six
 additions, rank 3 is one of the original twelve, and §11.3 of this same document already said
@@ -1315,7 +1317,7 @@ the 0.702× steric floor of §6, and the same physics that defeated mechanism A 
 KD(7.4)/KD(6.5). The superseded number ships as its own CSV column so the change is auditable
 rather than silent.
 
-**Four of the seventeen are no longer switches — on the deletion free leg, and that
+**Four of the eighteen are no longer switches — on the deletion free leg, and that
 qualification matters.** §11.7 shows this count falls to **one** on a separately-folded apo free
 leg, so it is a property of how the free leg is estimated rather than of the designs. Read the
 four as the weakest on every basis computed, not as designs shown not to switch. The bottom four rows fall below the 1.20× bar that §6 sets
@@ -1770,7 +1772,8 @@ data show.
 **+0.956**, and the largest single-design rank shift is **1**.
 
 This is the opposite of §11.7's perturbation result, and the contrast is the point. Perturbing
-the pKa values at PROPKA's own accuracy moves 16 of 17 designs by ≥5 ranks. Changing the
+the pKa values at PROPKA's own accuracy moves 17 of 18 designs by ≥5 ranks (§11.7's
+generated σ table; this read "16 of 17", the pre-addition figure). Changing the
 free-leg definition — a much larger conceptual change — barely moves the ordering at all. So the
 ranking is fragile with respect to **pKa accuracy** and robust with respect to **free-leg
 choice**. Those are two distinct axes, and only one of them scrambles the table. §11.7's
