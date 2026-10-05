@@ -565,9 +565,9 @@ reporting §13 warns about.
 | `g532_ecd` | 0.340 | 35 | 0 |
 | `nano2_ecd` | 0.167 | 44 | 0 |
 
-Six of the 18 shipped designs were folded by Chai-1, and it does **not** rate them alike: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` reads 0.838 against `c5_cf_short__boltzgen_egfr_cropfree_short_48` at 0.201, a spread of 0.637 ipTM across designs our own pH objective orders quite differently. Three of the six sit at or above the cetuximab scFv positive control (0.793); 3 sit **below human EGF** (0.500): `rimA02_d3_rimA_14_vhh`, `rimA01_r15_boltzgen_egfr_d3_rimA_20`, `c5_cf_short__boltzgen_egfr_cropfree_short_48`. Chai emits no residue-level PAE, so ipSAE cannot be computed on these and ipTM is not comparable to our ranking metric. It is a second opinion on whether an interface forms at all, not a second measurement of the objective.
+Six of the 18 shipped designs were folded by Chai-1, and it does **not** rate them alike: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` reads 0.838 against `c5_cf_short__boltzgen_egfr_cropfree_short_48` at 0.201, a spread of 0.637 ipTM across designs our own pH objective orders quite differently. 2 of the six sit at or above the cetuximab scFv positive control (0.793): `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `d2c_mpnn13_S88D_serasp`. 3 sit **below human EGF** (0.500): `rimA02_d3_rimA_14_vhh`, `rimA01_r15_boltzgen_egfr_d3_rimA_20`, `c5_cf_short__boltzgen_egfr_cropfree_short_48`. Chai emits no residue-level PAE, so ipSAE cannot be computed on these and ipTM is not comparable to our ranking metric. It is a second opinion on whether an interface forms at all, not a second measurement of the objective.
 
-**And the calibration set says not to over-read it.** `g532_ecd` is a PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 scores it **0.340** -- below three of our six designs and well below human EGF. `nano2_ecd` reads 0.167 on 44 interface residues, the largest interface in the set and the lowest score. So a low Chai ipTM is **not** evidence that a design does not bind: on the one molecule here with a real measured answer, this metric is wrong. The table supports the positive direction only -- three designs form an interface an independent predictor rates at the level of the cetuximab control -- and it cannot be used to argue against the designs at the bottom, including rank 1. Reporting it the other way round would be the single most tempting over-read available in this submission.
+**And the calibration set says not to over-read it.** `g532_ecd` is a PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 scores it **0.340** -- below three of our six designs and well below human EGF. `nano2_ecd` reads 0.167 on 44 interface residues, the largest interface in the set and the lowest score. So a low Chai ipTM is **not** evidence that a design does not bind: on the one molecule here with a real measured answer, this metric is wrong. The table supports the positive direction only -- three designs form an interface an independent predictor rates at or near the level of the cetuximab control -- and it cannot be used to argue against the designs at the bottom, including rank 1. Reporting it the other way round would be the single most tempting over-read available in this submission.
 <!-- /GENERATED:CHAI-TABLE -->
 
 **What separates the arms is the target construct, and the separation is 5-for-5 rather than a
@@ -1068,7 +1068,7 @@ now, and six of the molecules below were subsequently added. Three things are kn
 recorded: the exclusion of 63 molecules rested on a gate that cannot carry that weight; 25 of
 them are eligible and outrank a shipped tier-1 design on the submission's own basis; and all of
 these comparisons inherit the provisional status of that basis, since §11.7 measures Kendall
-τ = +0.000 between it and the partnered alternative. Expression QC remains unrun for every one
+τ = +0.046 between it and the partnered alternative. Expression QC remains unrun for every one
 of the 25. The original exclusion list and this amendment are both preserved and timestamped,
 and every number here was produced before any outcome was examined.
 
@@ -1248,7 +1248,7 @@ all-site and partnered alternatives, the resulting ranking instability, and why 
 histidine-only order is nevertheless the one retained.* Measured over 165 poses, n = 5–26 per design (this read "75 poses, n = 5–11", which was the 12-design pose set):
 
 <!-- GENERATED:BASIS-TABLE -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
-| design | target-only | **all-site** | binder histidines | worst drag |
+| design | target-only | **his-only (graded)** | binder histidines | worst drag |
 |---|---|---|---|---|
 | rimA01_r15_L133E | 4.582 | **5.656** | 0 | — |
 | c5_cf_short__boltzgen_egfr_cropfree_short_48 | 5.819 | **5.546** | 0 | — |
@@ -1270,7 +1270,13 @@ histidine-only order is nevertheless the one retained.* Measured over 165 poses,
 | bc_s831683_mpnn9_WT | 3.522 | **0.627** | 3 | 0.338 |
 <!-- /GENERATED:BASIS-TABLE -->
 
-**Every binder histidine moves down — 0.33 to 0.98, none up.** PROPKA noise would scatter both
+**Every binder histidine moves down except the one we designed to move up.** Of **236**
+binder-histidine site-pose readings across all eighteen designs, **231 sit below 1.0** (0.33 to
+0.98) and **5 are above it — all five of them `ss_bc_s831683_mpnn6_S15D_S62H_routeA`'s
+`binder:HIS62`, in every one of its five poses, at 1.647 to 2.303×.** That is the site the S62H
+install was built to create, and it is the only binder histidine in the submission that favours
+the acid state. An earlier version of this sentence read "0.33 to 0.98, none up", which was
+wrong in the submission's own disfavour: it suppressed the one engineered site that worked. PROPKA noise would scatter both
 ways. The gate's counter-charge guard fires on nearly all of them (nearest opposite charge
 6.9–8.8 Å), so these are desolvation shifts with no electrostatic partner: the same mechanism as
 the 0.702× steric floor of §6, and the same physics that defeated mechanism A (§3.5).
@@ -1518,7 +1524,9 @@ are on one footing; across the 18 the analysis covers **165 human-leg poses** wi
 **0 unassessed titratable sites**. (This read "the five designs ... all 17 ... 158 poses".)
 
 **The ordering is not stable.** Kendall τ between the shipped basis and the partnered basis
-is **+0.000** — the two orderings are uncorrelated. Designs move by up to **12 ranks** (`bc_d3acid_l65_s831683_mpnn11`, 5-17 across the three bases)
+is **+0.046** over the eighteen shipped designs (80 concordant pairs against 73 discordant of
+153) — the two orderings are effectively uncorrelated. This read **+0.000**, which was the
+figure over the twelve designs submitted at the time. Designs move by up to **12 ranks** (`bc_d3acid_l65_s831683_mpnn11`, 5-17 across the three bases)
 (`rimA02_d3_rimA_14_vhh`: 2nd on his-only, 10th on partnered). Per-design rank ranges are in
 the §11 table. **Every tier in this submission is therefore marked `provisional`, and no
 order here should be read as established.**
@@ -1791,7 +1799,7 @@ collaboration. The errors in §7 were found the same way.
 
 Of these, **12** were in the submission as it stood on 2026-10-04 and **6** were added on 2026-10-05. The additions are `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`.
 
-What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC. Measured rather than asserted -- `analysis/01-egfr/express_qc.tsv` joins to **11 of the 18** submitted designs, so 7 have no expression-QC row: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `bc_s360518_mpnn9_A22D`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Novelty is **not** uniformly established either -- see `bin/check_novelty_coverage.py`, which is RED.
+What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC. Measured rather than asserted -- `analysis/01-egfr/express_qc.tsv` joins to **10 of the 18** submitted designs, so 8 have no expression-QC row: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `bc_s360518_mpnn9_A22D`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Novelty IS established for all 18: `bin/check_novelty_coverage.py` is green, and the four designs that had no levelled record were re-run on 2026-10-05 (`analysis/01-egfr/novelty_gap4.tsv`). This sentence said the checker was RED, which it was for about an hour before the gap was closed.
 <!-- /GENERATED:DECL-REVIEW -->
 
 **Provenance.** All seventeen sequences are de novo designs from this project's own generation

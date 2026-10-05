@@ -37,6 +37,22 @@ CSV = 'submissions/01-egfr.csv'
 METHODS = 'submissions/01-egfr-METHODS.md'
 TOL = 0.011          # rounding slack for a 2-3 d.p. quote
 
+# A count may be written as a digit or as a word; both must mean the same thing.
+WORDS = {0: 'zero', 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six',
+         7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten', 11: 'eleven', 12: 'twelve',
+         13: 'thirteen', 14: 'fourteen', 15: 'fifteen', 16: 'sixteen', 17: 'seventeen',
+         18: 'eighteen', 19: 'nineteen', 20: 'twenty'}
+
+
+def _eq(got, expected):
+    g = str(got).strip().lower()
+    try:
+        if abs(float(g) - float(expected)) < 1e-9:
+            return True
+    except ValueError:
+        pass
+    return g == WORDS.get(int(expected))
+
 BASIS_COLS = {
     'ph_ratio_6p5_over_7p4_his_only_CONSERVATIVE': 'his-only (headline)',
     'ph_ratio_allsite_SENSITIVITY': 'all-site',
@@ -164,6 +180,40 @@ def main():
                             f"claims <{claim} identity to anything else submitted; "
                             f"measured max is {real:.3f}"))
 
+        # ---- SCOPE ------------------------------------------------------------------
+        # The first version of this gate only checked numbers that MATCHED a column, so
+        # stale SCOPE sailed through: rank 17 shipped "Six of the twelve submitted rows"
+        # long after the submission reached eighteen. A denominator describing the
+        # submission must be the submission's size.
+        for m in re.finditer(r'(?:of the|the)\s+(' + '|'.join(
+                [r'\d+'] + sorted(set(WORDS.values()), key=len, reverse=True)) +
+                r')\s+(?:submitted|shipped)\s+(?:rows?|designs?)', a, re.I):
+            pre = a[max(0, m.start() - 170):m.start()].lower()
+            if any(w in pre for w in ('read ', 'previously', 'earlier', 'withdraw')):
+                continue
+            if not _eq(m.group(1), len(rows)):
+                bad.append((i, r['name'], 'SCOPE',
+                            f"says {m.group(1)!r} submitted rows/designs; "
+                            f"the submission has {len(rows)}"))
+
+        # ---- BASIS MISLABEL ---------------------------------------------------------
+        # A sentence may not name a non-headline basis while quoting the headline value.
+        # rank 4 shipped 'On the all-titratable-site basis ... it reads 3.738x' where
+        # 3.738 IS its his-only column and its all-site column reads 88.593 -- the
+        # headline number presented a second time as an independent multi-site check.
+        for m in re.finditer(r'(all-titratable[- ]site|all-site|multi-site)\s*basis'
+                             r'[^.]{0,140}?(\d+\.\d+)\s*[x\u00d7]', a, re.I):
+            v = float(m.group(2))
+            ctx = a[max(0, m.start() - 170):m.start()].lower()
+            if any(w in ctx for w in ('read ', 'previously', 'mislabel', 'is not')):
+                continue
+            if head is not None and abs(v - head) <= TOL:
+                allsite = cols.get('all-site')
+                bad.append((i, r['name'], 'BASIS-LABEL',
+                            f"names the all-site basis and quotes {v}x, which is this "
+                            f"row's HIS-ONLY column"
+                            + (f" (its all-site column reads {allsite})" if allsite else "")))
+
         # ---- WITHDRAWN -------------------------------------------------------------
         for v, claims in wd.items():
             # A withdrawn literal that still equals one of THIS row's live column values
@@ -196,6 +246,31 @@ def main():
         if verbose:
             print(f"rank {i:>2} {r['name'][:40]:<42} "
                   f"{len(floats(a))} ratio token(s), headline {head}")
+
+    # ---- SUPERLATIVE UNIQUENESS -----------------------------------------------------
+    # Two rows both shipped "the closest agreement of any submitted design". A superlative
+    # is by definition claimable by one row; two rows asserting it is a contradiction a
+    # reviewer can see without leaving the CSV.
+    SUPER = ('the closest agreement of any submitted design',
+             'the largest in the submission', 'the largest causal swing',
+             'the most reproducible', 'the tightest seed reproducibility',
+             'the least reproducible row in this submission',
+             'the only design', 'the highest pH ratio in the submission')
+    for phrase in SUPER:
+        holders = []
+        for i, r in enumerate(rows, 1):
+            a = r.get('assessment', '')
+            k = a.lower().find(phrase)
+            if k == -1:
+                continue
+            pre = a[max(0, k - 170):k].lower()
+            if any(w in pre for w in ('read ', 'previously', 'earlier', 'both claimed')):
+                continue
+            holders.append((i, r['name']))
+        if len(holders) > 1:
+            bad.append((holders[0][0], holders[0][1], 'SUPERLATIVE',
+                        f"{len(holders)} rows all claim {phrase!r}: "
+                        + ", ".join(f"rank {i} {n}" for i, n in holders)))
 
     if bad:
         print(f"{'rank':>4}  {'check':<10} design / problem")

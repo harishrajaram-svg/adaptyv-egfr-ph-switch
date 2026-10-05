@@ -100,7 +100,8 @@ S88D, S15D, L133E, T65D), so the gate was blind to the residue each design was b
 The shipped column is renamed to say so. Three bases are now reported side by side
 (histidine-only, all-site, and sites with a counter-charge within 6 Å), computed from the same
 poses through one code path. **Kendall τ between the shipped basis and the partnered basis is
-+0.000** — the orderings are uncorrelated, designs move by up to 8 ranks — so **every tier in
++0.046** over the eighteen shipped designs — effectively uncorrelated, and designs move by up
+to 12 ranks across the three bases — so **every tier in
 the CSV is now marked `provisional`**. The shipped order is retained because the
 histidine-only value is the minimum of the three for all twelve designs, making it the
 conservative envelope under one uniform rule; neither wider basis can rank, because the matched

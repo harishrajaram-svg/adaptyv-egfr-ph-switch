@@ -360,8 +360,12 @@ def declaration_review(rows):
         import csv as _c
         have = {(r.get('name') or '').strip()
                 for r in _c.DictReader(open(qcf), delimiter='\t')}
-        noqc = [n for n in names
-                if not any(n == h or n in h or h in n for h in have if h)]
+        # EXACT match only. A substring test (`n in h or h in n`) credited
+        # `ss_bc_s831683_mpnn6_S15D_S62H_routeA` with the QC row belonging to its parent
+        # `bc_s831683_mpnn6_S15D`, which is a substring of it -- so the block published
+        # "11 of 18" where the real coverage is 10 of 18. Eighth substring/name join to
+        # produce a wrong number on this problem.
+        noqc = [n for n in names if n not in have]
     nqc = len(names) - len(noqc)
     base = [n for n in names if n in BASELINE_1004]
     added = [n for n in names if n not in BASELINE_1004]
@@ -387,8 +391,11 @@ def declaration_review(rows):
                f"`analysis/01-egfr/express_qc.tsv` joins to **{nqc} of the {len(names)}** "
                f"submitted designs, so {len(names) - nqc} have no expression-QC row"
                + (": " + ", ".join(f"`{n}`" for n in noqc) if noqc else "")
-               + f". Novelty is **not** uniformly established either -- see "
-               f"`bin/check_novelty_coverage.py`, which is RED.")
+               + f". Novelty IS established for all {len(names)}: "
+               f"`bin/check_novelty_coverage.py` is green, and the four designs that had no "
+               f"levelled record were re-run on 2026-10-05 "
+               f"(`analysis/01-egfr/novelty_gap4.tsv`). This sentence said the checker was "
+               f"RED, which it was for about an hour before the gap was closed.")
     return "\n".join(out).replace("SS ", "\u00a7")
 
 
@@ -567,10 +574,18 @@ def chai_table(rows):
             f"`{lo[0]}` at {lo[1]['iptm_median']:.3f}, a spread of "
             f"{hi[1]['iptm_median'] - lo[1]['iptm_median']:.3f} ipTM across designs our own "
             f"pH objective orders quite differently.")
+    # COUNT IT, DO NOT WRITE IT. "Three of the six sit at or above the cetuximab scFv
+    # positive control" was hardcoded here and was wrong: `bc_s360518_mpnn9_A22D` reads
+    # 0.7880 against cetuximab's 0.7926, below by 0.0046. The error ran in the submission's
+    # favour, in a block written to fix exactly this class of error.
+    cet = next((c for _, c in ref if c['tag'].startswith('cetuximab')), None)
+    if cet:
+        atv = [n for n, c in fin if c['iptm_median'] >= cet['iptm_median']]
+        txt += (f" {len(atv)} of the six sit at or above the cetuximab scFv positive control "
+                f"({cet['iptm_median']:.3f}): " + ", ".join(f"`{n}`" for n in atv) + ".")
     if egf:
         below = [n for n, c in fin if c['iptm_median'] < egf['iptm_median']]
-        txt += (f" Three of the six sit at or above the cetuximab scFv positive control "
-                f"(0.793); {len(below)} sit **below human EGF** "
+        txt += (f" {len(below)} sit **below human EGF** "
                 f"({egf['iptm_median']:.3f}): " + ", ".join(f"`{n}`" for n in below) + ".")
     txt += (" Chai emits no residue-level PAE, so ipSAE cannot be computed on these and "
             "ipTM is not comparable to our ranking metric. It is a second opinion on whether "
@@ -589,8 +604,9 @@ def chai_table(rows):
         txt += ("So a low Chai ipTM is **not** evidence that a design does not bind: on the "
                 "one molecule here with a real measured answer, this metric is wrong. The "
                 "table supports the positive direction only -- three designs form an "
-                "interface an independent predictor rates at the level of the cetuximab "
-                "control -- and it cannot be used to argue against the designs at the bottom, "
+                "interface an independent predictor rates at or near the level of the "
+                "cetuximab control -- and it cannot be used to argue against the designs at "
+                "the bottom, "
                 "including rank 1. Reporting it the other way round would be the "
                 "single most tempting over-read available in this submission.")
     return txt
@@ -628,7 +644,10 @@ def sigma_table(rows):
 
 
 def basis_table(rows):
-    out = ["| design | target-only | **all-site** | binder histidines | worst drag |",
+    # The header read "**all-site**" over a column whose body is `float(r[headcol(rows)])`,
+    # i.e. the HIS-ONLY graded value. §11.7 exists to distinguish those two bases and this
+    # table's own header conflated them.
+    out = ["| design | target-only | **his-only (graded)** | binder histidines | worst drag |",
            "|---|---|---|---|---|"]
     HC = headcol(rows)
     for r in sorted(rows, key=lambda x: -float(x[HC])):
