@@ -152,9 +152,42 @@ SPREAD_BAR = 1.0
 
 
 def multisite():
-    """seq -> (all-site pH product, spread/median). Both pooled over poses."""
+    """seq -> (ranked pH ratio, spread/median, n). ONE source for all three.
+
+    SOURCE CHANGED 2026-10-05: ph_sensitivity.json, not multisite_pooled.json.
+    Two reasons, both of them this project's recurring failure mode.
+
+    1. TWO SOURCES FOR ONE QUANTITY. multisite_pooled.json held the ratio and the
+       spread; ph_sensitivity.json recomputes the same ratio (its `hisonly_median`
+       reproduces every shipped value exactly) over a larger pose set. Keeping both
+       means the CSV's ratio and its spread could come from different n. They now
+       come from one file, pooled the same way, with the same n reported in
+       `ph_poses_n`.
+
+    2. THE OLD POSE SET WAS INCOMPLETE. multisite_pooled.json was built through the
+       .faa join, which misses any run nobody wrote a .faa for. Three submitted
+       designs had more poses on disk than the submission was counting:
+         rimA01_r15_L133E       n=5  -> 20
+         bc_s831683_mpnn9_S15D  n=5  -> 20
+         bc_s831683_mpnn9_WT    n=11 -> 26
+       The medians barely moved (5.659->5.656, 1.057->1.062, 0.593->0.627), which is
+       a real reproducibility result. The SPREADS moved a lot, because n=5 could not
+       see them: 1.31->4.38, 0.90->1.21, 0.74->1.76. Two designs cross SPREAD_BAR on
+       evidence that was already on disk.
+
+    Note the direction of this change: it demotes designs. It was not adopted because
+    it improved the submission.
+    """
     import json as _j
-    return {k: (v["allsite"], v.get("spread_ratio")) for k, v in _j.load(open(MULTISITE)).items()}
+    out = {}
+    for v in _j.load(open(SENSITIVITY)).values():
+        if "hisonly_median" not in v or "seq" not in v:
+            continue
+        med = v["hisonly_median"]
+        spread = ((v["hisonly_max"] - v["hisonly_min"]) / med) if med else None
+        # keyed on the binder SEQUENCE, never the name -- the project rule
+        out[v["seq"].strip().upper()] = (med, spread, v["n_poses"])
+    return out
 
 
 def sensitivity():
@@ -310,13 +343,22 @@ def main():
         scored.append(dict(name=x["name"], sequence=x["seq"],
                            molecule_class=x.get("molecule_class", MOLECULE_CLASS),
                            ratio=float(x["ratio"]),
-                           allsite=(ms.get(x["seq"]) or (None, None))[0],
-                           spread_ratio=(ms.get(x["seq"]) or (None, None))[1],
+                           allsite=(ms.get(x["seq"]) or (None, None, None))[0],
+                           spread_ratio=(ms.get(x["seq"]) or (None, None, None))[1],
                            hu=hu or 0.0, mo=mo or 0.0,
                            # ratio_n must be carried through: rank_key fails CLOSED without
                            # it, so dropping it here silently emptied tier 1 and put a
                            # non-switching binder at rank 1.
-                           ratio_n=int(x.get("ratio_n", 0)),
+                           #
+                           # It now comes from the SAME record as the ratio and the spread
+                           # (ph_sensitivity.json), falling back to submission_final.json
+                           # only if absent. Previously submission_final.json carried its
+                           # own ratio_n, so the reported n could describe a different pose
+                           # set than the ratio beside it -- which is exactly what happened:
+                           # three designs reported n=5/n=11 for ratios that are available
+                           # over n=20/n=26.
+                           ratio_n=int((ms.get(x["seq"]) or (None, None, None))[2]
+                                       or x.get("ratio_n", 0)),
                            # per-design assessment text must be carried through, or PK's
                            # uncertainty column silently collapses to one default string.
                            # Same class of bug as ratio_n, which emptied tier 1 earlier today.

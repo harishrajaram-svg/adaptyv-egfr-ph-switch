@@ -810,7 +810,7 @@ design:
 <!-- GENERATED:BASIS-TABLE -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
 | design | target-only | **all-site** | binder histidines | worst drag |
 |---|---|---|---|---|
-| rimA01_r15_L133E | 4.582 | **5.659** | 0 | — |
+| rimA01_r15_L133E | 4.582 | **5.656** | 0 | — |
 | rimA02_d3_rimA_14_vhh | 5.186 | **4.838** | 0 | — |
 | rimA01_r15_boltzgen_egfr_d3_rimA_20 | 4.582 | **4.256** | 0 | — |
 | bc_s360518_mpnn9_A22D | 5.630 | **3.738** | 1 | 0.776 |
@@ -818,10 +818,10 @@ design:
 | h370_020_vhh | 2.289 | **2.101** | 0 | — |
 | bc_s831683_mpnn6_S15D | 5.397 | **1.835** | 3 | 0.661 |
 | bc_s831683_mpnn19_S15D | 5.435 | **1.774** | 3 | 0.66 |
-| bc_s831683_mpnn9_S15D | 5.428 | **1.057** | 3 | 0.344 |
+| bc_s831683_mpnn9_S15D | 5.428 | **1.062** | 3 | 0.344 |
 | bc_s831683_mpnn8_S15D | 5.461 | **1.023** | 3 | 0.333 |
 | bc_d3acid_l65_s831683_mpnn11 | 4.010 | **0.737** | 3 | 0.359 |
-| bc_s831683_mpnn9_WT | 3.522 | **0.593** | 3 | 0.338 |
+| bc_s831683_mpnn9_WT | 3.522 | **0.627** | 3 | 0.338 |
 <!-- /GENERATED:BASIS-TABLE -->
 
 **Every binder histidine moves down — 0.33 to 0.98, none up.** PROPKA noise would scatter both
@@ -856,10 +856,10 @@ hardest case. The *direction* is consistent across 76 poses and mechanistically 
 | 5 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-8 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
 | 6 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 4.976 | 5.183 | 2-10 | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
 | 7 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.140 | 2.267 | 6-12 | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
-| 8 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.659** | 53.492 | 7.341 | 1-5 | 1.31 | 4.582 | 5 | 0.616 | 0.435 | yes |
-| 9 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.057** | 1.790 | 6.809 | 6-10 | 0.90 | 5.428 | 5 | 0.802 | 0.803 | yes |
-| 10 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 4-11 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
-| 11 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.593** | 1.171 | 5.344 | 9-12 | 0.74 | 3.522 | 11 | 0.783 | 0.783 | yes |
+| 8 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-5 | 4.38 | 4.582 | 20 | 0.598 | 0.434 | yes |
+| 9 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.062** | 1.804 | 6.801 | 6-10 | 1.21 | 5.428 | 20 | 0.804 | 0.804 | yes |
+| 10 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.627** | 1.195 | 5.226 | 9-12 | 1.76 | 3.522 | 26 | 0.786 | 0.784 | yes |
+| 11 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 4-11 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
 | 12 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 7-11 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
 <!-- /GENERATED:RANK-TABLE -->
 
@@ -921,50 +921,74 @@ One consistency note recorded rather than papered over: `bin/check_discards.py` 
 therefore flags a superset of what the shipped bar would flag — the safe direction — and we left
 it alone rather than edit a gate at submission time.
 
-### 11.6 `rimA01_r15_L133E` — the one two-site result, and why it ranks 8th
+### 11.6 `rimA01_r15_L133E` — a specific mechanism with an unreproducible magnitude
 
-The submission's only novel scientific claim, and the only design here with evidence of **two
-coupled sites**. It is a single Leu→Glu at position 133 of rank 1, which is submitted unmodified
-alongside it as the matched parent.
+*Rewritten 2026-10-05 after a 15-seed-per-variant L133 triad landed (`runs/esmfold2/w3_triad`).
+Three numbers in the previous version of this section were measured on five poses and did not
+survive deeper sampling. They are corrected below and the old values named.*
 
-| | all-site | H433 across poses | H370 across poses | human | mouse |
-|---|---|---|---|---|---|
-| `rimA01_r15` (parent) | 4.256× | — | 0.92–0.94× | 0.594 | 0.567 |
-| **`L133E`** | **5.659×** | 4.458–4.675× | **0.921–2.584×** | **0.616** | 0.435 |
-| `L133D` (same position) | 0.723× | — | — | **0.000** | 0.426 |
+A single Leu→Glu at position 133 of rank 1, which is submitted unmodified alongside it as the
+matched parent. We folded **Gln** and **Asp** at the same position as controls, 15 seeds each,
+human and mouse legs. The triad's L133E binder sequence is byte-identical to the submitted one,
+so its poses are pooled with the original five: **n = 20**, not 5.
 
-**Why this is a two-site reading.** 5.659× is above the **5.55×** thermodynamic ceiling for H433
-alone (§1), so one site cannot produce it. H433 is steady across all five poses while H370 —
-which reads 0.92–0.94× in *every other design in this submission* — swings up to 2.584×. Two of
-the five poses exceed the **7.94×** one-proton bound. And affinity held: human went **up**,
-0.594 → 0.616.
+| at position 133 | side chain | residue 133's own ratio | nearest counter-charge | H433 | H370 | his-only pH | human | mouse |
+|---|---|---|---|---|---|---|---|---|
+| — (parent) | Leu | not titratable | — | — | 0.92–0.94× | 4.256× | 0.594 | 0.567 |
+| **Gln** | neutral, Glu-sized | not titratable | — | 4.668× | **0.926×** (0.912–0.968) | **4.229×** | 0.714 | 0.720 |
+| **Glu** (submitted) | acid, reaches | **1.141×** | **4.26 Å** (2.98–5.35) | 4.633× | **1.327×** (0.921–**6.229**) | **5.656×** | 0.598 | 0.434 |
+| **Asp** | acid, one CH₂ shorter | 1.005× | **7.33 Å** (5.15–25.91) | 2.267× | 0.955× (0.890–1.121) | 2.221× | **0.000** | 0.420 |
 
-**Why Glu and not Asp is the mechanism.** LEU133 sits **6.28 Å** from H370's ring nitrogen.
-Glutamate reaches ~3.9 Å from CB, aspartate ~2.5 Å. So Glu can span it and Asp cannot — and
-`L133D` at the identical position reads 0.723× with **human affinity 0.000**, i.e. it buries a
-charge with no counter-charge and destroys the interface. That is the same failure mode as
-`S60D` at H370 (§3.7) and it is what makes the Glu result interpretable rather than lucky.
+*Per-site and H433/H370 figures are from the 15 triad poses of each variant; the his-only
+column for L133E is the pooled n = 20.*
 
-**Why it ranks 8th and not 1st.** Its pose spread is **4.24–11.64, i.e. 1.31× its median**,
-against 0.04–0.90 for every other row. §6 of this document says that a median over poses that
-scattered is not a measurement, and the effect over its parent (1.33×) sits inside the scatter.
-What varies pose to pose is whether the glutamate reaches H370 at all. The emitter enforces this
-as `SPREAD_BAR = 1.0`: a design whose spread exceeds its own median ranks below every
-reproducible tier-1 design regardless of its ratio. **This is the only design the bar catches**,
-and the CSV carries `ph_pose_spread_over_median` so the demotion is visible without reading this
-section.
+**The mechanism is specific, on two independent controls.** Gln is the same size as Glu and
+carries no titratable group: it leaves H370 at **0.926×**, exactly where the parent and every
+other design in this submission sit, and leaves the overall ratio at 4.229× against the parent's
+4.256×. So the gate is not responding to "a substitution happened at 133" — the position
+tolerates substitution with no pH effect at all. Asp is an acid but one methylene shorter: its
+nearest counter-charge sits at **7.33 Å** where Glu's sits at **4.26 Å**, it contributes
+**1.005×** — nothing — and the overall ratio *falls* to 2.221×. Only the variant whose side
+chain can physically reach H370 moves H370, and it is the only one of the three that does.
+Length specificity across a one-methylene difference is the strongest mechanistic evidence in
+this submission.
 
-**What would settle it**, and it is running as this is written: `L133E`, `L133D` and **`L133Q`**
-at 15 seeds each. Glutamine is isosteric with glutamate and **non-ionisable** — if Q also shifts
-H370, the effect is packing rather than protonation and this design should come out. If only E
-does, it is thermodynamic linkage. Either answer is better than the n=5 behind the number above,
-and we will report the numbers rather than a conclusion.
+**It is still a two-site reading.** Over the 15 triad poses, **9 of 15 exceed the 5.55×
+single-site ceiling** for H433 alone (§1) and **3 of 15 exceed the 7.94× one-proton bound**.
+With two sites moving the ceiling is 7.94² = 63×, so these are not ceiling violations — they are
+values one site cannot produce. H433 holds steady at 4.633× while H370 does the swinging.
 
-**Novelty** on the mutant pose: TM 0.702, identity 19.2%, **Level 3**, margin 0.098.
-**Expression QC**: 0 cysteines, GRAVY +0.188 — the most hydrophobic row in the submission —
-longest hydrophobic run 5.
+**What did not survive the deeper sampling.** Three claims in the previous version are
+withdrawn or corrected:
 
----
+1. *"affinity held: human went **up**, 0.594 → 0.616."* At n = 20 the human leg is **0.598**
+   against the parent's 0.594 — **flat, not up**. The apparent gain was five-pose noise. Note
+   also that Gln reads 0.714, *better* than both, so position 133 is not where this binder's
+   predicted affinity is limited.
+2. *`L133D` his-only "0.723×".* At n = 15 it is **2.221×**. The earlier figure came from too
+   few poses to estimate; L133D's own spread is 1.78.
+3. *The Glu/Asp reach argument was geometric inference* — "Glu reaches ~3.9 Å from CB,
+   aspartate ~2.5 Å", from LEU133's 6.28 Å to H370's ring nitrogen. It is now **measured** per
+   pose: 4.26 Å median for Glu, 7.33 Å for Asp. The conclusion is unchanged and the basis is
+   better.
+
+**Why it ranks 8th and not 1st, now more firmly.** Its pose spread was reported as **1.31×** its
+median on five poses. On twenty it is **4.38×**, range **3.838 to 28.629**. Quadrupling the
+sampling left the median almost exactly where it was (5.659 → 5.656) and more than tripled the
+measured scatter — the central estimate is reproducible, the magnitude is not. What varies pose
+to pose is whether the glutamate reaches H370 at all, and the effect over its parent (1.33×)
+sits well inside that scatter. `SPREAD_BAR = 1.0` therefore keeps it below every reproducible
+tier-1 design, which is where it belongs: a real and specifically-controlled mechanism whose
+size we cannot quote.
+
+**What this is not.** The ipSAE differences across the triad are changes in a *confidence*
+score, not measured retained affinity, and L133D's human 0.000 means the predictor found no
+confident interface — not that the design was measured not to bind. The pH numbers remain
+PROPKA estimates on fixed ESMFold2 conformations with the free leg taken by partner deletion.
+Per §11.7 this design's all-site value (52.2×) is dominated by `binder:ASP33` at 7.37× with its
+nearest counter-charge **9.84 Å** away, a desolvation artefact present in the parent too; the
+designed GLU133 contributes 1.141×. The claim here rests on the Gln/Asp controls, not on the
+size of any single number.
 
 ### 11.7 pH sensitivity analysis: the ranking basis is not established
 

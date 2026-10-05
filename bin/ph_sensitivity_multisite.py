@@ -27,6 +27,7 @@ import argparse, glob, json, math, os, re, statistics as st, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ph_gate_multisite import score_pose
 from master_rank import faa_binder
+import pose_seq_index
 
 CSV = 'submissions/01-egfr.csv'
 
@@ -41,8 +42,13 @@ def submitted():
     return [(r[namecol], r[seqcol].strip().upper()) for r in rows]
 
 
-def human_leg_poses():
-    """binder sequence -> [pose .cif paths], human leg only, pooled across runs."""
+def human_leg_poses_via_faa():
+    """The ORIGINAL join: sequence -> poses via analysis/01-egfr/score_*/*.faa.
+
+    Kept only as a cross-check on the structure-derived index below. It is incomplete by
+    construction: a pose directory is found only if a .faa of a matching basename exists,
+    so any run nobody wrote a .faa for is silently dropped and the design's n is quietly
+    too small."""
     posedirs = {}
     for d in glob.glob('runs/esmfold2/*/**/', recursive=True):
         posedirs.setdefault(os.path.basename(d.rstrip('/')), []).append(d)
@@ -61,6 +67,30 @@ def human_leg_poses():
     return {k: sorted(set(v)) for k, v in out.items()}
 
 
+def human_leg_poses():
+    """binder sequence -> [human-leg pose .cif paths], pooled across every run.
+
+    Joins on the binder SEQUENCE READ FROM THE STRUCTURE (bin/pose_seq_index.py), not on
+    a .faa file that may not exist. This is the project's own stated rule -- "pool every
+    pose of a binder SEQUENCE across all runs; joining on a run name has broken six
+    analyses" -- applied to pose discovery as well as to scoring.
+
+    It found poses the .faa join did not: runs/esmfold2/w3_triad holds 15 human-leg poses
+    of a sequence byte-identical to the submitted rimA01_r15_L133E, and the submission was
+    reporting n=5 for it. The human leg is selected by the `_hu`/`_human` suffix on the
+    pose directory, the same convention the rest of the pipeline uses."""
+    idx = pose_seq_index.load()
+    out = {}
+    for seq, dirs in idx.items():
+        for d in dirs:
+            base = os.path.basename(d.rstrip('/'))
+            if not (base.endswith('_hu') or base.endswith('_human')):
+                continue
+            for cif in sorted(glob.glob(os.path.join(d, '*.cif'))):
+                out.setdefault(seq.upper(), []).append(cif)
+    return {k: sorted(set(v)) for k, v in out.items()}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', default='analysis/01-egfr/ph_sensitivity.json')
@@ -68,13 +98,18 @@ def main():
     a = ap.parse_args()
 
     poses = human_leg_poses()
+    old = human_leg_poses_via_faa()
+    for _n, _s in submitted():
+        _new, _prev = len(poses.get(_s, [])), len(old.get(_s, []))
+        if _new != _prev:
+            print(f"  pose count {_n}: {_prev} (.faa join) -> {_new} (sequence index)", flush=True)
     rows, t0 = {}, time.time()
     for name, seq in submitted():
         cifs = poses.get(seq, [])
         if a.limit:
             cifs = cifs[:a.limit]
         if not cifs:
-            rows[name] = {'name': name, 'error': 'no human-leg pose matched this sequence'}
+            rows[name] = {'name': name, 'seq': seq, 'error': 'no human-leg pose matched this sequence'}
             print(f"{name}: NO POSES", flush=True)
             continue
         per = []
@@ -85,7 +120,7 @@ def main():
             else:
                 print(f"    {os.path.basename(cif)}: {r.get('error') if r else 'None'}", flush=True)
         if not per:
-            rows[name] = {'name': name, 'error': 'every pose failed to score'}
+            rows[name] = {'name': name, 'seq': seq, 'error': 'every pose failed to score'}
             continue
         allsite = [p['product'] for p in per]
         hisonly = [p['product_his_only'] for p in per]
@@ -108,7 +143,7 @@ def main():
         med_a, med_h = st.median(allsite), st.median(hisonly)
         med_p = st.median(partner)
         rows[name] = dict(
-            name=name, n_poses=len(per),
+            name=name, seq=seq, n_poses=len(per),
             allsite_median=round(med_a, 4), allsite_min=round(min(allsite), 4),
             allsite_max=round(max(allsite), 4),
             allsite_spread_over_median=round((max(allsite) - min(allsite)) / med_a, 3) if med_a else None,
