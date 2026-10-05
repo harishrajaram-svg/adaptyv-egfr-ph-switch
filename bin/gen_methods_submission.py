@@ -123,6 +123,47 @@ def rank_table(rows):
     return "\n".join(out)
 
 
+def binder_his_sentence(rows):
+    """The binder-histidine census of SS 11.1, generated.
+
+    This count has been wrong FIVE times by hand: "six of the eleven", "seven of twelve",
+    "eight of the seventeen" (a pre-addition count carried forward), "ten of seventeen"
+    (correct for five additions, two of which were then swapped out), and "eight of the
+    seventeen" again after the swap. It is derived here and never typed.
+
+    The target construct contributes its own histidines to n_his, so a binder carries
+    histidines when n_his exceeds the target's count; that baseline is read from the
+    designs that have none rather than hard-coded.
+    """
+    import json as _j
+    sens = _j.load(open('analysis/01-egfr/ph_sensitivity.json'))
+    ship = {r["sequence"].strip().upper(): r["name"] for r in rows}
+    per = {}
+    for v in sens.values():
+        q = v.get("seq", "").strip().upper()
+        if q in ship and "n_his" in v:
+            per[ship[q]] = v["n_his"]
+    if not per:
+        raise SystemExit("no n_his data in ph_sensitivity.json; re-run ph_sensitivity_multisite.py")
+    base = min(per.values())                      # target-only histidine count
+    carry = {k: v - base for k, v in per.items() if v > base}
+    WORDS = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
+             7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve",
+             13: "thirteen", 14: "fourteen", 15: "fifteen", 16: "sixteen",
+             17: "seventeen", 18: "eighteen", 19: "nineteen", 20: "twenty"}
+    n, tot = len(carry), len(rows)
+    groups = {}
+    for k, v in sorted(carry.items(), key=lambda kv: (-kv[1], kv[0])):
+        groups.setdefault(v, []).append(k)
+    parts = []
+    for cnt, names in sorted(groups.items(), reverse=True):
+        lst = ", ".join(f"`{x}`" for x in names)
+        parts.append(f"{lst} ({cnt} each)" if len(names) > 1 else f"{lst} ({cnt})")
+    return (f"**{WORDS.get(n, n)} of the {WORDS.get(tot, tot)} submitted designs carry at "
+            f"least one histidine of their own**: " + "; ".join(parts) +
+            f". The other {WORDS.get(tot - n, tot - n)} carry none.")
+
+
 def family_list(rows):
     """The family breakdown of SS 11.3, generated.
 
@@ -219,7 +260,7 @@ def write_into_methods(rows):
     import re
     src = Path(METHODS).read_text()
     blocks = {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows),
-              "FAMILY-LIST": family_list(rows)}
+              "FAMILY-LIST": family_list(rows), "BINDER-HIS": binder_his_sentence(rows)}
     for tag, body in blocks.items():
         pat = re.compile(rf"(<!-- GENERATED:{tag}[^>]*-->\n).*?(<!-- /GENERATED:{tag} -->)",
                          re.S)
@@ -236,7 +277,8 @@ def check_methods(rows):
     src = Path(METHODS).read_text()
     bad = []
     for tag, body in {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows),
-                      "FAMILY-LIST": family_list(rows)}.items():
+                      "FAMILY-LIST": family_list(rows),
+                      "BINDER-HIS": binder_his_sentence(rows)}.items():
         m = re.search(rf"<!-- GENERATED:{tag}[^>]*-->\n(.*?)<!-- /GENERATED:{tag} -->", src, re.S)
         if not m:
             bad.append(f"{tag}: block missing")
@@ -262,3 +304,4 @@ if __name__ == "__main__":
     print("\n=== RANK TABLE ==="); print(rank_table(rows))
     print("\n=== BASIS TABLE ==="); print(basis_table(rows))
     print("\n=== FAMILY LIST ==="); print(family_list(rows))
+    print("\n=== BINDER-HIS ==="); print(binder_his_sentence(rows))

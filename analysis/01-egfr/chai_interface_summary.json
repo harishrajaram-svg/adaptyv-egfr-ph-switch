@@ -135,6 +135,36 @@
     39
    ],
    "note": "FINALIST rank 6: ss_bc_s831683_mpnn6_S15D_S62H_routeA"
+  },
+  {
+   "tag": "g532_ecd",
+   "n_models": 5,
+   "iptm_median": 0.3399,
+   "clash_models": 0,
+   "iface_residues_median": 35,
+   "iface_residues_all": [
+    43,
+    25,
+    28,
+    35,
+    45
+   ],
+   "note": "FAILED POSITIVE: G532 Fv, measured 294 nM / 13.26x pH switch, ESMFold2 0.0000 on both target interfaces"
+  },
+  {
+   "tag": "nano2_ecd",
+   "n_models": 5,
+   "iptm_median": 0.1665,
+   "clash_models": 0,
+   "iface_residues_median": 44,
+   "iface_residues_all": [
+    41,
+    44,
+    48,
+    47,
+    43
+   ],
+   "note": "FAILED POSITIVE: 5 nM VHH on full ECD, ESMFold2 0.0000"
   }
  ]
 }

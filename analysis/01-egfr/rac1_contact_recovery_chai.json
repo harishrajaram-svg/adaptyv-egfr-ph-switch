@@ -1,0 +1,55 @@
+{
+ "crystal": "targets/egfr/controls/4UIP.pdb",
+ "cut": 5.0,
+ "pose_glob": "runs/chai1/w4_indep/rac1_d3/pred.model_idx_*.cif",
+ "n_xtal_contacts": 65,
+ "n_epitope": 28,
+ "n_paratope": 27,
+ "poses": [
+  {
+   "pose": "pred.model_idx_0.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.037,
+   "n_pred": 77,
+   "n_dropped_unaligned": 6
+  },
+  {
+   "pose": "pred.model_idx_1.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.0,
+   "n_pred": 53,
+   "n_dropped_unaligned": 5
+  },
+  {
+   "pose": "pred.model_idx_2.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.0741,
+   "n_pred": 61,
+   "n_dropped_unaligned": 6
+  },
+  {
+   "pose": "pred.model_idx_3.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.0741,
+   "n_pred": 78,
+   "n_dropped_unaligned": 4
+  },
+  {
+   "pose": "pred.model_idx_4.cif",
+   "recall": 0.0,
+   "precision": 0.0,
+   "epitope_recall": 0.0,
+   "paratope_recall": 0.037,
+   "n_pred": 89,
+   "n_dropped_unaligned": 4
+  }
+ ]
+}

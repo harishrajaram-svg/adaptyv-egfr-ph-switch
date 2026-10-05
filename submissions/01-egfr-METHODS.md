@@ -499,9 +499,46 @@ Two consequences, both of which constrain how this submission may be read.
    attributed to the pose" cannot be made here, because in this case the pose is **right** in
    one of ten tries and the score is zero anyway.
 
-What this does not establish: n = 1 molecule and 10 poses cannot estimate how often the
-predictor docks correctly, and rAC1 is a non-antibody scaffold, so this does not generalise to
-the antibody-blindness finding by itself.
+**The independent check: Chai-1 reproduces the failure exactly, and the CONSTRUCT turns out to
+matter more than the predictor.** *Added 2026-10-05. Chai-1 (`runs/chai1/w4_indep/rac1_d3`,
+5 models) folded the same rAC1 complex against the same domain-III crop, and the identical
+geometric test was run on its structures. Chai emits no residue-level PAE, so no score
+comparison is possible; this is contacts against contacts.*
+
+| | contact recall | epitope recall | **paratope recall** |
+|---|---|---|---|
+| ESMFold2, d3 crop (5 poses) | 0.000 ×5 | 0.000–0.036 | **0.000–0.074** |
+| **Chai-1, d3 crop (5 models)** | **0.000 ×5** | **0.000 ×5** | **0.000–0.074** |
+| ESMFold2, full ECD (5 poses) | **0.723**, then 0.000 ×4 | **0.929**, then 0.000 ×4 | **0.370–0.963** |
+
+**ESMFold2 is not the weak link here.** An architecturally independent model — different
+weights, different training, diffusion co-folding rather than a folding trunk — reproduces its
+crop failure to within rounding on every column. Whatever is wrong is not specific to
+ESMFold2-Fast, which removes the most convenient explanation for the zero-scoring positives.
+
+**What separates the arms is the target construct, and the separation is 5-for-5 rather than a
+lucky draw.** On the full ectodomain every pose presents **37–96% of the correct binder face**,
+and one pose gets the whole interface right. On the crop, paratope recall never exceeds **7%** in
+either predictor — the binder is docking by a different face entirely. The single 72%-recall
+success is the weaker evidence here; the consistent, non-overlapping paratope-recall separation
+between crop and ECD is the stronger.
+
+**And it is not because the epitope is missing from the crop.** Measured: the 4UIP epitope is
+28 residues spanning mature 411–489, of which **26 (92%) lie inside the crop's 311–480 window**
+and 2 fall in domain IV. The crop contains almost the whole epitope and both predictors still
+miss it.
+
+**Why this matters to the submission: 16 of the 18 submitted designs were scored against that
+crop.** The one molecule in this project with a solved complex is never docked correctly on the
+crop by either predictor, while the full ectodomain recovers it once in five and gets the binder
+face approximately right every time. We are not able to rescore the submission on full ECD
+before the deadline — one design already uses it, the other seventeen would need refolding and
+re-gating — so this is recorded as a limitation on the construct rather than fixed.
+
+What none of this establishes: **n = 1 molecule.** One co-crystal cannot measure how often either
+predictor docks correctly, cannot establish a general crop effect, and rAC1 is a 238 aa
+non-antibody scaffold unlike most designs here. The paratope-recall separation is consistent
+across ten poses but they are ten poses of one molecule.
 
 ### 4.5 The matched null is degenerate, so the screening flag does almost nothing.
 
@@ -1085,7 +1122,7 @@ the distinction that makes the third of those defensible where the first was not
 
 ## 11. The submission
 
-**17 designs, ranked on the two-partner histidine-only pH product.** Track 3 allows 20.
+**18 designs, ranked on the two-partner histidine-only pH product.** Track 3 allows 20.
 Twelve were submitted on 2026-10-04; **five were added on 2026-10-05 from the reopened
 exclusion pool of §10**, by a rule fixed before the result was examined (this file's own
 `rank_key` over the 25 eligible reopened molecules, capped at 2 additions per backbone and
@@ -1097,17 +1134,13 @@ submission was at 12 of 20 and the five use free slots. Three slots remain unuse
 ### 11.1 The ranking basis changed, and it reordered everything
 
 Until 2026-10-04 we estimated the pH ratio with a gate that measures only the **target's**
-histidines. It never measured our own binders' titratable groups — and **eight of the seventeen
-submitted designs carry at least one histidine of their own**. (This count has been wrong
-repeatedly and is now derived rather than carried forward: earlier versions said "six of the
-eleven", then "seven of twelve", then "eight of the seventeen" — that last one by carrying a
-pre-addition count forward without recounting — then "ten of seventeen", correct for the five
-additions before two of them were swapped out. Counted from `ph_sensitivity.json`, by **name**
-rather than by rank, since rank citations here have gone stale every time the submission
-changed: `d2c_mpnn13_S88D_serasp` (14 binder histidines), the six `s831683` designs
-`bc_s831683_mpnn6_S15D`, `bc_s831683_mpnn19_S15D`, `bc_s831683_mpnn9_S15D`,
-`bc_s831683_mpnn9_WT`, `bc_d3acid_l65_s831683_mpnn11` and `bc_s831683_mpnn8_S15D` (3 each), and
-`bc_s360518_mpnn9_A22D` (1). The other nine carry none.) Those get buried at the interface
+histidines. It never measured our own binders' titratable groups — and <!-- GENERATED:BINDER-HIS -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
+**nine of the eighteen submitted designs carry at least one histidine of their own**: `d2c_mpnn13_S88D_serasp` (14); `ss_bc_s831683_mpnn6_S15D_S62H_routeA` (4); `bc_d3acid_l65_s831683_mpnn11`, `bc_s831683_mpnn19_S15D`, `bc_s831683_mpnn6_S15D`, `bc_s831683_mpnn8_S15D`, `bc_s831683_mpnn9_S15D`, `bc_s831683_mpnn9_WT` (3 each); `bc_s360518_mpnn9_A22D` (1). The other nine carry none.
+<!-- /GENERATED:BINDER-HIS -->
+(This count was wrong five times by hand — "six of the eleven", "seven of twelve",
+"eight of the seventeen" from a pre-addition count carried forward, "ten of seventeen",
+then "eight of the seventeen" again after the swap — so it is generated from
+`ph_sensitivity.json` and stated by **name** rather than by rank.) Those get buried at the interface
 and lose 1.5–2.5 pKa units, and by the same thermodynamic linkage of §1 that **opposes**
 acid-tightening. We were counting the target's sites and ignoring ours.
 
@@ -1203,7 +1236,7 @@ objective, this ordering costs us. It is a judgement that credible-interface-fir
 defensible frame, following the reviewer instruction to apply eligibility and interface checks
 before the challenge priorities — not a claim that rimA02 is worse.
 
-### 11.3 Nine families, seventeen designs
+### 11.3 Ten families, eighteen designs
 
 <!-- GENERATED:FAMILY-LIST -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
 `d3acid_l65_s831683` **x7** (ranks 5, 10, 11, 15, 16, 17, 18) - `rimA01_r15_d3_rimA_20` **x2** (ranks 3, 14) - `d3acid3_l60_s647537` **x2** (ranks 8, 9) - `cf_cropfree_short (c5)` (rank 1) - `cr_crop_patch (c5)` (rank 2) - `d3acid3_l65_s360518` (rank 4) - `d2c_101_l147_s144898` (rank 6) - `h370_018 (gap)` (rank 7) - `rimA02_d3_rimA_14 (VHH)` (rank 12) - `h370_020 (VHH)` (rank 13)
@@ -1655,19 +1688,25 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
 14. **Rank 1 contacts a glycosylation sequon.** `c5_cf_short__boltzgen_egfr_cropfree_short_48`
     contacts Asn420; no structure we folded carries a glycan (§10b).
-15. **The "not a switch" verdict is free-leg dependent.** Four designs read below the 1.20×
+15. **The domain-III crop may be the wrong construct, and most of the submission uses it.**
+    On the only molecule here with a solved complex, neither ESMFold2 nor an architecturally
+    independent model (Chai-1) recovers a single crystallographic contact on the crop, while
+    the full ectodomain recovers 72% of them once in five poses and gets 37–96% of the correct
+    binder face in all five. 92% of that epitope is inside the crop, so absence is not the
+    explanation. 16 of 18 submitted designs are scored on the crop (§4.4b).
+16. **The "not a switch" verdict is free-leg dependent.** Four designs read below the 1.20×
     bar on the partner-deletion free leg and only one does on a separately-folded apo free
     leg; two cross 1.0× on that change alone (§11.7). The two legs order the submission
     consistently (τ = +0.868) but disagree about its floor.
-16. **The pH ratio cannot order this submission.** Under PROPKA's own reported accuracy
-    (±0.8 pKa units) 16 of 17 designs span five or more ranks and no design holds a
+17. **The pH ratio cannot order this submission.** Under PROPKA's own reported accuracy
+    (±0.8 pKa units) 17 of 18 designs span five or more ranks and no design holds a
     top-three slot in more than half of draws (§11.7). A top set and a bottom set are
     defensible; a rank order is not.
-17. **Two shipped designs are selected successes from a failed arm.** The second-site strategy
+18. **Two shipped designs are selected successes from a failed arm.** The second-site strategy
     improved 5 of 12 attempts, median fold 0.98 (§10c). Two of the five successes are in this
     submission and none of the seven failures is. Read the S62H and L133E rows as two
     successes out of twelve attempts, not as a working method.
-18. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
+19. **Effective n is 10, not 18.** Seven of the seventeen submitted designs sit on one backbone
     (`d3acid_l65_s831683`) and a further two are a parent/point-mutant pair
     (`rimA01_r15_d3_rimA_20` and its `L133E`). Any hit rate or interval computed over designs
     rather than sequence families overstates n by up to six-fold on the arm carrying our only
