@@ -145,8 +145,14 @@ told to hit.
 0/60 engaged, closest approach 13.6 Å. It is 26.2 Å from H433. We selected it before
 measuring the pairwise distances; the distance matrix would have ruled it out for free.
 
-### 3.4 We could not build the two-site route — but it exists. See §8.1.
-**This section previously read "the two-site route is closed." It is not; we failed at it.**
+### 3.4 We could not build the two-site route from scratch. One point mutation may have. See §8.1 and §11.6.
+**This section has been wrong twice.** It first read "the two-site route is closed" — it is not.
+It was then corrected to "we could not build it" — which was true of our *generative* search and
+is no longer true of the submission: `rimA01_r15_L133E`, a single Leu→Glu at position 133 of our
+rank-1 design, reads **5.659× all-site, above H433's 5.55× single-site ceiling**, with H370
+contributing 0.921–2.584× while H433 holds steady (§11.6). That is one molecule with a wide pose
+spread, not a demonstration — but it is no longer nothing, and this section should not be read as
+saying the route failed.
 G532, a published antibody, achieves **13.26×** on human EGFR using carboxylate contacts with
 **H433 and H370** — this exact pair (§8.1). Everything below is an accurate account of our own
 failure and should be read that way.
@@ -697,11 +703,23 @@ names and 38 distinct molecules** — the gate is name-keyed on the discard side
 pairs are double-counted. The ledger built to catch this project's keystone trap is itself keyed
 on names. Second, and more seriously, the gate reads 69 rows out of the `phgate_*.tsv` files
 rather than the 2,009-row sequence-keyed `master_rank.json` that this document elsewhere calls
-canonical — **and no `phgate_*.tsv` exists for the `sd`/`sd2` arms that supplied five of the ten
-shipped designs.** Joined properly by sequence, **28 molecules with n ≥ 5 poses outrank the
-weakest shipped design** and were never candidates, two of them outranking the best shipped
-design (5.819× and 5.630×). The gate prints PASS. Those 28 are *not* accounted for below; they
-are a known, unclosed gap, recorded here rather than left for a reader to find.
+canonical — **and no `phgate_*.tsv` exists for the `sd`/`sd2` arms that supply six of the twelve
+shipped designs.** Joined properly by sequence, **59 molecules with n ≥ 5 poses outrank the
+weakest shipped design on the target-only ratio** and were never candidates. **One** of them
+outranks the best shipped design: `c5_cf_short__boltzgen_egfr_cropfree_short_48` at 5.819×
+(human ipSAE 0.242, mouse 0.181 — weak on both species). The gate prints PASS.
+
+Two corrections to an earlier version of this paragraph. It said "28 molecules", which was the
+count before tonight's 60 re-folded BindCraft designs entered the ranking table; it is now 59.
+And it named **5.630×** as a second molecule outranking the submission — 5.630× is
+`bc_s360518_mpnn9_A22D`, which is **shipped at rank 2**. Citing a submitted design as an
+exclusion was the kind of error this section exists to prevent.
+
+Those 59 are *not* accounted for below; they are a known, unclosed gap, recorded here rather than
+left for a reader to find. Note also that all 59 are ranked on the **superseded** target-only
+basis — the all-site product was computed only for the twelve submitted designs, so we cannot say
+how they would rank on the basis this submission actually uses. That is the more serious half of
+the gap and §13 states it.
 
 Our pre-submission gate (`bin/check_discards.py`) fails the build if any design that beats a
 submitted one on the primary objective was never measured on the ranking instrument — that is
@@ -755,13 +773,18 @@ entries in the 45 we would want back, and what they need is poses, not an argume
 
 ## 11. The submission
 
-**11 designs, ranked on the all-titratable-site pH product.** Track 3 allows 20.
+**12 designs, ranked on the all-titratable-site pH product.** Track 3 allows 20.
+
+*The tables and counts in this section are GENERATED from the emitted CSV by `bin/gen_methods_submission.py` (self-tested). They were hand-maintained through three submission changes in one evening and drifted badly — an audit found this section still describing eleven designs, its rank table omitting the twelfth, every rank above 7 off by one, and §12 attesting review of "all ten" sequences. The interpretive text is still written by hand; the numbers are not.*
 
 ### 11.1 The ranking basis changed, and it reordered everything
 
 Until 2026-10-04 we estimated the pH ratio with a gate that measures only the **target's**
-histidines. It never measured our own binders' titratable groups — and six of the eleven
-submitted designs carry two or three histidines of their own. Those get buried at the interface
+histidines. It never measured our own binders' titratable groups — and **eight of the twelve
+submitted designs carry between one and three histidines of their own**. (An earlier version of
+this sentence said "six of the eleven", which was wrong on both numbers; an audit then proposed
+"seven of twelve", which was also wrong. Counted from `multisite_pooled.json`: ranks 2, 3, 4, 5,
+9, 10, 11 and 12 carry at least one, and ranks 1, 6, 7 and 8 carry none.) Those get buried at the interface
 and lose 1.5–2.5 pKa units, and by the same thermodynamic linkage of §1 that **opposes**
 acid-tightening. We were counting the target's sites and ignoring ours.
 
@@ -771,13 +794,14 @@ the target leg. Measured over 76 poses, n = 5–11 per design:
 
 | design | target-only | **all-site** | binder histidines | worst drag |
 |---|---|---|---|---|
+| rimA01_r15_L133E | 4.582 | **5.659** | 0 | — |
 | rimA02_d3_rimA_14_vhh | 5.186 | **4.838** | 0 | — |
-| rimA01_r15 | 4.582 | **4.256** | 0 | — |
+| rimA01_r15_boltzgen_egfr_d3_rimA_20 | 4.582 | **4.256** | 0 | — |
 | bc_s360518_mpnn9_A22D | 5.630 | **3.738** | 1 | 0.776 |
-| d2c_mpnn13_S88D | 4.572 | **3.526** | 2 | 0.983 |
+| d2c_mpnn13_S88D_serasp | 4.572 | **3.526** | 2 | 0.983 |
 | h370_020_vhh | 2.289 | **2.101** | 0 | — |
 | bc_s831683_mpnn6_S15D | 5.397 | **1.835** | 3 | 0.661 |
-| bc_s831683_mpnn19_S15D | 5.435 | **1.774** | 3 | 0.660 |
+| bc_s831683_mpnn19_S15D | 5.435 | **1.774** | 3 | 0.66 |
 | bc_s831683_mpnn9_S15D | 5.428 | **1.057** | 3 | 0.344 |
 | bc_s831683_mpnn8_S15D | 5.461 | **1.023** | 3 | 0.333 |
 | bc_d3acid_l65_s831683_mpnn11 | 4.010 | **0.737** | 3 | 0.359 |
@@ -792,7 +816,7 @@ the 0.702× steric floor of §6, and the same physics that defeated mechanism A 
 KD(7.4)/KD(6.5). The superseded number ships as its own CSV column so the change is auditable
 rather than silent.
 
-**Four of the eleven are no longer switches.** Ranks 8–11 fall below the 1.20× bar that §6 sets
+**Four of the twelve are no longer switches.** The bottom four rows fall below the 1.20× bar that §6 sets
 as PROPKA's noise floor, so they carry no pH claim and are ordered by mouse affinity instead.
 `bc_s831683_mpnn8_S15D` led this submission at 5.461× before the correction and is now rank 11
 at 1.023×.
@@ -805,19 +829,20 @@ hardest case. The *direction* is consistent across 76 poses and mechanistically 
 
 ### 11.2 Final ranks
 
-| rank | design | class | family | aa | **all-site pH** | target-only | poses | human | mouse | affinity assessable |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 4.582 | 6 | 0.594 | 0.567 | yes |
-| 2 | `bc_s360518_mpnn9_A22D` | protein | d3acid3_l65_s360518 | 65 | **3.738** | 5.630 | 5 | 0.451 | 0.474 | yes |
-| 3 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 4.572 | 5 | 0.603 | 0.528 | yes |
-| 4 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 5.397 | 5 | 0.780 | 0.751 | yes |
-| 5 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.435 | 5 | 0.808 | 0.786 | yes |
-| 6 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 5.186 | 6 | 0.219 | 0.447 | **no** |
-| 7 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.289 | 11 | 0.417 | 0.709 | **no** |
-| 8 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.057** | 5.428 | 5 | 0.802 | 0.803 | yes |
-| 9 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 4.010 | 6 | 0.796 | 0.784 | yes |
-| 10 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.593** | 3.522 | 11 | 0.783 | 0.783 | yes |
-| 11 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 5.461 | 5 | 0.776 | 0.764 | yes |
+| rank | design | class | family | aa | **all-site pH** | pose spread | target-only | poses | human | mouse | affinity assessable |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 0.12 | 4.582 | 6 | 0.594 | 0.567 | yes |
+| 2 | `bc_s360518_mpnn9_A22D` | protein | d3acid3_l65_s360518 | 65 | **3.738** | 0.45 | 5.630 | 5 | 0.451 | 0.474 | yes |
+| 3 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
+| 4 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
+| 5 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
+| 6 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
+| 7 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
+| 8 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.659** | 1.31 | 4.582 | 5 | 0.616 | 0.435 | yes |
+| 9 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.057** | 0.90 | 5.428 | 5 | 0.802 | 0.803 | yes |
+| 10 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
+| 11 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.593** | 0.74 | 3.522 | 11 | 0.783 | 0.783 | yes |
+| 12 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
 
 **Assessable designs rank ahead of unassessable ones within tier 1.** On a pure pH ordering
 `rimA02_d3_rimA_14_vhh` leads the submission at 4.838× — on a human ipSAE of 0.219 that we
@@ -831,14 +856,21 @@ objective, this ordering costs us. It is a judgement that credible-interface-fir
 defensible frame, following the reviewer instruction to apply eligibility and interface checks
 before the challenge priorities — not a claim that rimA02 is worse.
 
-### 11.3 Six families, eleven designs
+### 11.3 Six families, twelve designs
 
-`d3acid_l65_s831683` ×6 (ranks 4, 5, 8, 9, 10, 11) · `rimA01_r15` · `d3acid3_l65_s360518`
-(A22D) · `d2c_101_l147_s144898` · `rimA02_d3_rimA_14` (VHH) · `h370_020` (VHH).
+`d3acid_l65_s831683` **×6** (ranks 4, 5, 9, 10, 11, 12) · `rimA01_r15_d3_rimA_20` **×2**
+(ranks 1 and 8 — rank 8 is `L133E`, a single-residue mutant of rank 1, so it is the **same
+family**, not a new one) · `d3acid3_l65_s360518` (A22D) · `d2c_101_l147_s144898` ·
+`rimA02_d3_rimA_14` (VHH) · `h370_020` (VHH).
 
-**Effective n is 6 clusters, not 11 designs**, and the 6-member cluster is now entirely in
-ranks 4–11 — the correction moved it out of the top three. Any interval must be computed on
-families. Ranks 8 and 10 differ by **one residue** (Ser15 vs Asp15).
+**Effective n is 6 clusters, not 12 designs.** The 6-member cluster occupies ranks 4, 5, 9, 10,
+11 and 12 — the basis correction moved it out of the top three entirely. Any interval must be
+computed on families, not designs. **Two pairs differ by a single residue**:
+`bc_s831683_mpnn9_S15D` and `bc_s831683_mpnn9_WT` (Ser15 vs Asp15), and
+`rimA01_r15_boltzgen_egfr_d3_rimA_20` and `rimA01_r15_L133E` (Leu133 vs Glu133). In both cases
+the pair is deliberate — the unmutated parent is submitted alongside its mutant so the mutation's
+effect is measured in the laboratory rather than inferred from our gate — but neither pair is two
+independent tests.
 
 ### 11.4 Reading conventions
 
@@ -846,9 +878,14 @@ families. Ranks 8 and 10 differ by **one residue** (Ser15 vs Asp15).
   composed over all titratable sites on both partners. A prediction, not a measurement.
 * **ipSAE human / mouse** — median of 5 seeds, pooled by sequence from `master_rank.json`.
   **pH-agnostic.** For ranks 6 and 7 not interpretable at all.
-* **Rank 10 is a control**, not a candidate: the matched wild-type of rank 8, one residue apart.
-  Its all-site product of 0.593× is itself informative — the unmutated backbone is predicted to
-  bind *worse* in acid, which is the baseline the S15D install has to beat.
+* **`bc_s831683_mpnn9_WT` is a control, not a candidate**: the matched wild-type of
+  `bc_s831683_mpnn9_S15D`, one residue apart. Its all-site product of 0.593× is itself
+  informative — the unmutated backbone is predicted to bind *worse* in acid, which is the
+  baseline the Ser→Asp install has to beat. The same is true of
+  `rimA01_r15_boltzgen_egfr_d3_rimA_20` against `rimA01_r15_L133E`.
+  *(Designs are referred to here by NAME rather than by rank. Rank references inside a
+  rank-ordered file drift every time the file changes, and an audit found six of the twelve
+  assessment strings citing the wrong design by rank for exactly that reason.)*
 * `affinity_above_null` means `max(hu, mo) ≥ 0.2218`, a retained legacy threshold. See §4.5.
 
 ### 11.5 Why not 20
@@ -865,6 +902,49 @@ One consistency note recorded rather than papered over: `bin/check_discards.py` 
 therefore flags a superset of what the shipped bar would flag — the safe direction — and we left
 it alone rather than edit a gate at submission time.
 
+### 11.6 `rimA01_r15_L133E` — the one two-site result, and why it ranks 8th
+
+The submission's only novel scientific claim, and the only design here with evidence of **two
+coupled sites**. It is a single Leu→Glu at position 133 of rank 1, which is submitted unmodified
+alongside it as the matched parent.
+
+| | all-site | H433 across poses | H370 across poses | human | mouse |
+|---|---|---|---|---|---|
+| `rimA01_r15` (parent) | 4.256× | — | 0.92–0.94× | 0.594 | 0.567 |
+| **`L133E`** | **5.659×** | 4.458–4.675× | **0.921–2.584×** | **0.616** | 0.435 |
+| `L133D` (same position) | 0.723× | — | — | **0.000** | 0.426 |
+
+**Why this is a two-site reading.** 5.659× is above the **5.55×** thermodynamic ceiling for H433
+alone (§1), so one site cannot produce it. H433 is steady across all five poses while H370 —
+which reads 0.92–0.94× in *every other design in this submission* — swings up to 2.584×. Two of
+the five poses exceed the **7.94×** one-proton bound. And affinity held: human went **up**,
+0.594 → 0.616.
+
+**Why Glu and not Asp is the mechanism.** LEU133 sits **6.28 Å** from H370's ring nitrogen.
+Glutamate reaches ~3.9 Å from CB, aspartate ~2.5 Å. So Glu can span it and Asp cannot — and
+`L133D` at the identical position reads 0.723× with **human affinity 0.000**, i.e. it buries a
+charge with no counter-charge and destroys the interface. That is the same failure mode as
+`S60D` at H370 (§3.7) and it is what makes the Glu result interpretable rather than lucky.
+
+**Why it ranks 8th and not 1st.** Its pose spread is **4.24–11.64, i.e. 1.31× its median**,
+against 0.04–0.90 for every other row. §6 of this document says that a median over poses that
+scattered is not a measurement, and the effect over its parent (1.33×) sits inside the scatter.
+What varies pose to pose is whether the glutamate reaches H370 at all. The emitter enforces this
+as `SPREAD_BAR = 1.0`: a design whose spread exceeds its own median ranks below every
+reproducible tier-1 design regardless of its ratio. **This is the only design the bar catches**,
+and the CSV carries `ph_pose_spread_over_median` so the demotion is visible without reading this
+section.
+
+**What would settle it**, and it is running as this is written: `L133E`, `L133D` and **`L133Q`**
+at 15 seeds each. Glutamine is isosteric with glutamate and **non-ionisable** — if Q also shifts
+H370, the effect is packing rather than protonation and this design should come out. If only E
+does, it is thermodynamic linkage. Either answer is better than the n=5 behind the number above,
+and we will report the numbers rather than a conclusion.
+
+**Novelty** on the mutant pose: TM 0.702, identity 19.2%, **Level 3**, margin 0.098.
+**Expression QC**: 0 cysteines, GRAVY +0.188 — the most hydrophobic row in the submission —
+longest hydrophobic run 5.
+
 ---
 
 ## 12. Declarations
@@ -876,7 +956,7 @@ throughout: design generation, scoring, analysis code, and the drafting of this 
 number here was computed by code in the published repository, and the code was written in that
 collaboration. The errors in §7 were found the same way.
 
-**Human review.** The submitting researcher has reviewed all ten submitted sequences, their
+**Human review.** The submitting researcher has reviewed all **twelve** submitted sequences, their
 molecule_class labels, their lengths, and the claims made about them in this document and in the
 CSV. The sequences are de novo designs from this project's own generation runs; none is a
 modification of a previously submitted design or of an existing characterised binder. The two
@@ -890,9 +970,12 @@ model; FoldSeek against PDB for novelty; HBPLUS v3.06. All open-source and used 
 licences. The vendored reference implementation in `outbox/ipsae-fixtures/vendor/` carries its
 MIT licence file.
 
-**Structures.** Predicted complexes for all ten designs are published at
-`submissions/structures/`, one median-ipSAE pose each — not the best pose, which would be
-selection on the outcome.
+**Structures.** Predicted complexes are published at `submissions/structures/`, one
+median-ipSAE pose each — not the best pose, which would be selection on the outcome.
+**Coverage is 10 of 12**: the two designs added latest, `bc_s360518_mpnn9_A22D` and
+`rimA01_r15_L133E`, have no published structure yet. Their poses exist and are scored; they are
+simply not exported. Stated rather than implied, because an earlier version of this line claimed
+full coverage of "all ten designs" when the submission held twelve.
 
 **Funding and compute.** Self-funded. $503 of personal Modal spend on this target. No
 institutional affiliation, no grant, no commercial interest in the outcome.
@@ -946,10 +1029,11 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     an instrument with no validation against measured pH data** — not merely on one that "does
     not model pH" (limitation 4). Separating "the structure is wrong" from "the protonation model
     is wrong" requires scoring that series' interface, which we have not done.
-11. **Effective n is 5, not 10.** Six of the ten submitted designs sit on one backbone
-    (`d3acid_l65_s831683`), four of those differing only in the ProteinMPNN sequence and two by a
-    single residue. Any hit rate or interval computed over designs rather than sequence families
-    overstates n by up to six-fold on the arm carrying our only causal claim.
+11. **Effective n is 6, not 12.** Six of the twelve submitted designs sit on one backbone
+    (`d3acid_l65_s831683`) and a further two are a parent/point-mutant pair
+    (`rimA01_r15_d3_rimA_20` and its `L133E`). Any hit rate or interval computed over designs
+    rather than sequence families overstates n by up to six-fold on the arm carrying our only
+    causal claim. See §11.3 for the partition.
 12. **The reproducibility claim has a boundary** — see the Repository note above. The pose cache
     is not published, and the documented emit command returns zeroed affinity columns without it.
 13. **The design family with the best measured prior is the one we scored least.** 60 of the 71

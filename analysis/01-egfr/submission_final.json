@@ -356,7 +356,7 @@
   "dir": "runs/esmfold2/bcd*",
   "sim": "",
   "sim_hit": "",
-  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Unmutated ProteinMPNN sequence on the same d3acid_l65_s831683 backbone as ranks 1-4 and 9, carrying a native Asp at the equivalent position. pH 4.01x as the median over 6 refold poses; target's native H433. Predicted affinity 0.796 human / 0.784 mouse -- among the highest in the pool. No cysteine. Six of these ten rows share this backbone: that is a deliberate trade of panel diversity for wet-lab replication of the only causal result we have."
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Unmutated ProteinMPNN sequence on the d3acid_l65_s831683 backbone -- the same backbone as the four S15D designs and the matched wild-type -- carrying a native Asp at the equivalent position. pH 4.01x as the median over 6 refold poses; target's native H433. Predicted affinity 0.796 human / 0.784 mouse -- among the highest in the pool. No cysteine. Six of the twelve submitted rows share this backbone: that is a deliberate trade of panel diversity for wet-lab replication of the only causal result we have."
  },
  {
   "src": "rimA02",
@@ -385,7 +385,7 @@
   "ratio_site": "H433",
   "iptm": "",
   "rmsd": "",
-  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Same single Ser15->Asp install, independent ProteinMPNN sequence. Matched wild-type 3.52x -> 5.43x, and that wild-type is SUBMITTED at rank 9 so the mutation's effect is measured in the assay rather than inferred from our gate. Predicted affinity 0.783->0.803 human / 0.782->0.803 mouse. Target's native H433. Median over 5 refold poses."
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Same single Ser15->Asp install, independent ProteinMPNN sequence. Matched wild-type 3.52x -> 5.43x, and that wild-type (`bc_s831683_mpnn9_WT`) is SUBMITTED so the mutation's effect is measured in the assay rather than inferred from our gate. Predicted affinity 0.783->0.803 human / 0.782->0.803 mouse. Target's native H433. Median over 5 refold poses."
  },
  {
   "src": "bindcraft-serasp",
@@ -397,7 +397,7 @@
   "ratio_site": "H433",
   "iptm": "",
   "rmsd": "",
-  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Single Ser->Asp installed at position 15 on the best-binding BindCraft backbone (d3acid_l65_s831683). Matched wild-type, same batch, same gate: 3.15x -> 5.46x. Predicted affinity 0.821->0.776 human / 0.807->0.764 mouse, i.e. the switch is installed at a small affinity cost, not free. Switching residue is the TARGET's own H433 (native domain III, conserved in mouse) -- not an affinity tag. pH = median over 5 ESMFold2 refold poses. 5.46x is 98% of H433's single-site thermodynamic ceiling (5.55x), so ranks 1-4 span 0.22 pKa units and are NOT distinguishable from one another."
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Single Ser->Asp installed at position 15 on the best-binding BindCraft backbone (d3acid_l65_s831683). Matched wild-type, same batch, same gate: 3.15x -> 5.46x. Predicted affinity 0.821->0.776 human / 0.807->0.764 mouse, i.e. the switch is installed at a small affinity cost, not free. Switching residue is the TARGET's own H433 (native domain III, conserved in mouse) -- not an affinity tag. pH = median over 5 ESMFold2 refold poses. 5.46x is 98% of H433's single-site thermodynamic ceiling (5.55x), so the four S15D designs span 0.22 pKa units and are NOT distinguishable from one another."
  },
  {
   "src": "bindcraft-serasp",
@@ -409,7 +409,7 @@
   "ratio_site": "H433",
   "iptm": "",
   "rmsd": "",
-  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Same single Ser15->Asp install, independent ProteinMPNN sequence on the same backbone. Matched wild-type 3.68x -> 5.43x. Predicted affinity 0.828->0.808 human / 0.815->0.786 mouse. Switching residue is the target's native H433. pH = median over 5 refold poses. One of four replicates of one result; see rank 1 on the ceiling."
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Same single Ser15->Asp install, independent ProteinMPNN sequence on the same backbone. Matched wild-type 3.68x -> 5.43x. Predicted affinity 0.828->0.808 human / 0.815->0.786 mouse. Switching residue is the target's native H433. pH = median over 5 refold poses. One of four replicates of one result; see `bc_s831683_mpnn8_S15D` on the ceiling."
  },
  {
   "src": "bindcraft-serasp",
@@ -433,7 +433,7 @@
   "ratio_site": "H433",
   "iptm": "",
   "rmsd": "",
-  "assessment": "MATCHED WILD-TYPE CONTROL, submitted on purpose and not as a candidate. Identical to rank 3 except position 15 (Ser vs Asp). It reads 3.52x as the median over 11 refold poses against rank 3's 5.43x. If rank 3 switches and this does not, the Ser->Asp mechanism is established in the laboratory independently of every threshold in our methods document; if both switch equally, the mutation is not the cause and that is equally informative. Predicted affinity 0.783 human / 0.783 mouse."
+  "assessment": "MATCHED WILD-TYPE CONTROL, submitted on purpose and not as a candidate. Identical to `bc_s831683_mpnn9_S15D` except position 15 (Ser vs Asp). It reads 3.52x as the median over 11 refold poses against that design's 5.43x (both on the superseded target-only basis; on the all-site basis 0.593x against 1.057x). If `bc_s831683_mpnn9_S15D` switches and this does not, the Ser->Asp mechanism is established in the laboratory independently of every threshold in our methods document; if both switch equally, the mutation is not the cause and that is equally informative. Predicted affinity 0.783 human / 0.783 mouse."
  },
  {
   "src": "boltzgen-h370",
@@ -445,7 +445,7 @@
   "ratio_site": "H433",
   "iptm": "",
   "rmsd": "",
-  "assessment": "COMPUTATIONAL CANDIDATE. VHH format: antibody-rule Level 4 (CDRH3 27.3%, global 52.6%) -- the only de novo design in this set under that rule. Note it is Level 2 under the general-protein rule (TM 0.914), so its eligibility depends on being classified as an antibody. CDR3 AAVDDETGDIY is carboxylate-rich and pairs with the target's native H433. pH 2.29x pooled over 11 refold poses in two independent arms. AFFINITY INADEQUATELY ASSESSED -- VHH format, see rank 5."
+  "assessment": "COMPUTATIONAL CANDIDATE. VHH format: antibody-rule Level 4 (CDRH3 27.3%, global 52.6%) -- the only de novo design in this set under that rule. Note it is Level 2 under the general-protein rule (TM 0.914), so its eligibility depends on being classified as an antibody. CDR3 AAVDDETGDIY is carboxylate-rich and pairs with the target's native H433. pH 2.29x pooled over 11 refold poses in two independent arms. AFFINITY INADEQUATELY ASSESSED -- VHH format, see `rimA02_d3_rimA_14_vhh`."
  },
  {
   "src": "sd2_d3acid3",
@@ -463,5 +463,22 @@
   "sim": "",
   "sim_hit": "",
   "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. Single Ala->Asp at position 22 on a backbone not otherwise represented in this submission (d3acid3_l65_s360518). Matched wild-type, same gate, same pose count: 0.826x -> 5.630x, a 6.82x causal swing -- the largest in the submission, and larger than any of the four S15D pairs. Tightest seed reproducibility in the project: 5.616 / 5.626 / 5.630 / 5.631 / 5.662 over 5 poses, no dead seeds on either species. The install costs affinity: -0.165 human, -0.119 mouse against its wild-type. Switching residue is the TARGET's native H433. Novelty re-measured on the MUTANT pose, not the wild-type backbone: TM 0.792, identity 15.2%, Level 3 -- it clears, but by 0.008, and the organisers' rule is domain-wise where splitting can only raise TM, so this is the row most exposed to a novelty rejection at upload. Expression QC clean: 0 Cys, GRAVY -1.225, longest hydrophobic run 2, no deamidation motif. On the all-titratable-site basis (both partners, see METHODS) it reads 3.738x against a wild-type 0.574x -- swing 6.51x, i.e. the result survives the honest multi-site accounting, which most of this submission does not."
+ },
+ {
+  "src": "w2_ss_d3",
+  "name": "rimA01_r15_L133E",
+  "seq": "MITVTLSGPTSVKEGGTITVTATVTNTSDTVQDVLVRLTFEADQPASPGTVTVTISGPSGLTFSLVDSLPPAVLDEANRTVSFELLGGTTYEVVLLLQNLKPGETVTFTLTIPNATTSDSGTYRVAARTSLDENAPWEAESAGLTVTVLS",
+  "ratio": 4.582,
+  "ratio_n": 5,
+  "ratio_site": "H433+H370",
+  "molecule_class": "protein",
+  "real": 1,
+  "dir": "runs/esmfold2/w2_ss_d3",
+  "iptm": "",
+  "rmsd": "",
+  "cont": "",
+  "sim": "",
+  "sim_hit": "",
+  "assessment": "COMPUTATIONAL CANDIDATE, AND THE LEAST REPRODUCIBLE ROW IN THIS SUBMISSION -- ranked last in tier 1 for that reason, not for its ratio. Single Leu->Glu at position 133 of `rimA01_r15_boltzgen_egfr_d3_rimA_20`, which is submitted unmodified as its matched parent. It is the only design here with evidence of TWO coupled sites: all-site median 5.659x, above the 5.55x thermodynamic ceiling for H433 alone, with H433 steady at 4.458-4.675x across all five poses while H370 -- which reads 0.92-0.94x in every other design in this submission -- pulls 0.921 to 2.584x. Two of five poses exceed the 7.94x one-proton bound, which is multi-site by arithmetic. Affinity HELD: human 0.594 -> 0.616, mouse 0.567 -> 0.435. WHY IT IS RANKED LAST: the pose spread is 4.24-11.64, i.e. 1.31x the median, against 0.04-0.90 for every other row. By our own standard (METHODS 6) a median over poses that scattered is not a measurement, and the effect over its parent (1.33x) sits inside that scatter. What varies pose to pose is whether the glutamate reaches H370 at all. The Glu/Asp distinction is the mechanism and it is testable: L133D at the same position reads 0.723x with human affinity 0.000 -- Asp spans ~2.5A from CB and LEU133 sits 6.28A from H370, so Asp buries a charge with no partner and destroys the interface, while Glu (~3.9A) reaches. Novelty on the mutant pose: TM 0.702, identity 19.2%, Level 3, margin 0.098. QC: 0 Cys, GRAVY +0.188 (the most hydrophobic row here), longest hydrophobic run 5. Submitted because a two-sided mechanism with its negative control measured is worth testing even at n=1; it needs 10-15 seeds and an isosteric L133Q control to be a result."
  }
 ]

@@ -33,6 +33,64 @@ if not PY_EXE.exists(): PY_EXE = sys.executable
 PAE_CUT, DIST_CUT = 10, 10
 
 
+# ---------------------------------------------------------------------------
+# THE PRODUCTION PARSERS, loaded from bin/ and exercised on every case.
+#
+# PK, 2026-10-05: "The runner invokes the reference and does its own parsing --
+# it does NOT exercise bin/ipsae_min.py." That was correct, and it was the whole
+# weakness of this bundle: it proved the REFERENCE reproduces, not that OUR code
+# reads it correctly. Three separate copies of the parse logic existed (bin/
+# ipsae_min.py for live scoring, bin/instrument_v2.py for seed aggregation, and
+# bin/master_rank.py for the canonical file the submission is built from), and
+# the two faults PK found lived in the copies, not in this runner's.
+#
+# Every case is now scored FOUR ways -- the reference, plus all three production
+# parsers -- and --check requires all four to agree. A divergence between the
+# copies is now a test failure instead of an invisible inconsistency.
+import importlib.util
+
+def _load(name):
+    """Load a production parser. The repo checkout is preferred so a reviewer sees the
+    live code; vendor/bin/ is the self-contained fallback for the standalone bundle.
+
+    This HARD-FAILS when neither exists. Returning None would make --check quietly
+    skip the production comparison and still print "11/11 cases reproduce" -- the
+    exact fail-open shape of the two faults this bundle was rebuilt to catch."""
+    path = REPO / "bin" / f"{name}.py"
+    if not path.exists():
+        path = HERE / "vendor" / "bin" / f"{name}.py"
+    if not path.exists():
+        sys.exit(f"production parser {name}.py not found in {REPO/'bin'} or "
+                 f"{HERE/'vendor'/'bin'} -- refusing to run a check that would skip it")
+    spec = importlib.util.spec_from_file_location(f"_prod_{name}", path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)          # safe: all three are __main__-guarded
+    return mod
+
+PROD_LIVE     = _load("ipsae_min")        # .score(pae, cif)  -- runs the reference itself
+PROD_SEEDAGG  = _load("instrument_v2")    # .read_cached(txt)
+PROD_CANONICAL= _load("master_rank")      # .ipsae_min(txt)   -- feeds master_rank.json
+
+
+def production_scores(cif: Path, pae: Path, out: Path):
+    """Score one case through each production code path. None = that path refused."""
+    got = {}
+    if True:
+        try:
+            r = PROD_LIVE.score(pae, cif, PAE_CUT, DIST_CUT)   # regenerates `out`
+            got["bin/ipsae_min.py"] = None if r is None else r[0]
+        except SystemExit as e:
+            got["bin/ipsae_min.py"] = f"refused: {str(e).splitlines()[0][:80]}"
+    if True:
+        got["bin/instrument_v2.py"] = (PROD_SEEDAGG.read_cached(out)[0]
+                                       if out.exists() else None)
+    if True:
+        got["bin/master_rank.py"] = (PROD_CANONICAL.ipsae_min(out)
+                                     if out.exists() else None)
+    return got
+
+
 def score_case(d: Path):
     cif = next(iter(sorted(d.glob("*.cif"))), None)
     pae = next(iter(sorted(d.glob("*_ipsae.json"))), None)
@@ -60,25 +118,60 @@ def score_case(d: Path):
         a, b = k.split("->"); pairs.setdefault(frozenset((a, b)), []).append(v)
     if len(pairs) != 1:
         return {"error": f"{len(pairs)} inter-chain pairs; ipSAE_min is undefined without "
-                         "naming the binder:target pair", "asym": asym}
-    import gemmi
-    st = gemmi.read_structure(str(cif)); st.setup_entities()
+                         "naming the binder:target pair", "asym": asym,
+                "production": production_scores(cif, pae, out)}
+    # gemmi is used only to report chain sizes in the printout. It is NOT on the
+    # scoring path, so a reviewer without it still reproduces every number.
+    try:
+        import gemmi
+        st = gemmi.read_structure(str(cif)); st.setup_entities()
+        chains = {c.name: len(c) for c in st[0]}
+    except ImportError:
+        chains = {"(gemmi not installed; chain sizes omitted)": 0}
     return {"structure": cif.name,
-            "chains": {c.name: len(c) for c in st[0]},
+            "chains": chains,
             "asym": asym,
             "n_interface_residues": nres,
             "n_chainpair_residues": ntot,
-            "ipsae_min": min(next(iter(pairs.values())))}
+            "ipsae_min": min(next(iter(pairs.values()))),
+            "production": production_scores(cif, pae, out)}
+
+
+def check_vendor_drift():
+    """vendor/bin/ must be byte-identical to bin/ when both are present.
+
+    A vendored copy that drifts is how outbox/ipsae-fixtures/ipsae_min.py came to be a
+    stale fork of bin/ipsae_min.py: the bundle tested one file while the submission was
+    built by another. Fail loudly rather than test the wrong code."""
+    import hashlib
+    drift = []
+    for name in ("ipsae_min", "instrument_v2", "master_rank"):
+        live, vend = REPO / "bin" / f"{name}.py", HERE / "vendor" / "bin" / f"{name}.py"
+        if live.exists() and vend.exists():
+            h = lambda f: hashlib.sha256(f.read_bytes()).hexdigest()
+            if h(live) != h(vend):
+                drift.append(f"  {name}.py: bin/={h(live)[:12]} vendor/bin/={h(vend)[:12]}")
+    if drift:
+        sys.exit("vendor/bin has drifted from bin/:\n" + "\n".join(drift) +
+                 "\n  Re-copy before trusting this bundle:\n"
+                 "    cp bin/{ipsae_min,instrument_v2,master_rank}.py "
+                 "outbox/ipsae-fixtures/vendor/bin/")
 
 
 def main():
+    check_vendor_drift()
     res = {}
     for d in sorted(p for p in (HERE / "cases").iterdir() if p.is_dir()):
         res[d.name] = score_case(d)
         r = res[d.name]
         print(f"\n=== {d.name}")
         if "error" in r:
-            print(f"    ERROR: {r['error']}"); continue
+            print(f"    ERROR: {r['error']}")
+            for path, val in (r.get("production") or {}).items():
+                shown = f"{val:.6f}" if isinstance(val, float) else repr(val)
+                mark = "refuses too" if val is None or isinstance(val, str) else "RETURNED A NUMBER -- fail-open"
+                print(f"      via {path:<24} {shown:>12}   {mark}")
+            continue
         print(f"    {r['structure']}")
         print(f"    chains {r['chains']}")
         for k, v in r["asym"].items():
@@ -87,6 +180,10 @@ def main():
             note = "   <-- ZERO interface residues: no confident interface, not a crash" if ni == "0" else ""
             print(f"    {k:>8}  ipSAE {v:.6f}   n0res (interface) {ni:>5}  of n0chn {nt}{note}")
         print(f"    ipSAE_min (min over DIRECTIONS) = {r['ipsae_min']:.6f}")
+        for path, val in (r.get("production") or {}).items():
+            mark = "agrees" if isinstance(val, float) and abs(val - r["ipsae_min"]) < 1e-9 else "DIVERGES"
+            shown = f"{val:.6f}" if isinstance(val, float) else repr(val)
+            print(f"      via {path:<24} {shown:>12}   {mark}")
     exp = HERE / "expected.json"
     if "--check" in sys.argv:
         want = json.loads(exp.read_text()); bad = 0
@@ -108,6 +205,20 @@ def main():
                 g = got.get("ipsae_min")
                 ok = g is not None and abs(g - v["ipsae_min"]) < 1e-6
                 print(f"{'OK  ' if ok else 'FAIL'} {k}: expected {v['ipsae_min']:.6f} got {g}")
+            # EVERY production parser must land on the reference answer. A case that
+            # reproduces against the reference while our own code reads it differently
+            # is not a passing case -- that gap is what this bundle exists to close.
+            want_num = v.get("ipsae_min")
+            for path, val in (got.get("production") or {}).items():
+                if want_num is None:                  # refusal expected
+                    pok = val is None or isinstance(val, str)
+                    detail = "refused" if pok else f"returned {val!r} (fail-open)"
+                else:
+                    pok = isinstance(val, float) and abs(val - want_num) < 1e-6
+                    detail = (f"{val:.6f}" if isinstance(val, float) else repr(val))
+                if not pok:
+                    print(f"     FAIL {k} via {path}: {detail}")
+                    ok = False
             bad += (not ok)
         print(f"\n{len(want) - bad}/{len(want)} cases reproduce.")
         sys.exit(1 if bad else 0)

@@ -9,7 +9,7 @@ Usage:
   ipsae_min.py <pae_json_or_npz> <structure.cif> [pae_cutoff] [dist_cutoff]
   ipsae_min.py --dir <dir>     # every *_ipsae.json next to its *.cif
 """
-import subprocess, sys, glob, os, statistics
+import subprocess, sys, glob, os, math, statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -18,21 +18,46 @@ PY = ROOT / ".venv" / "bin" / "python"
 
 
 def score(pae_file: Path, struct: Path, pae_cut=10, dist_cut=10):
-    """Run ipsae.py and return (ipsae_min, per_direction dict) or None."""
+    """Run ipsae.py and return (ipsae_min, per_direction dict) or None.
+
+    Fails closed: a score comes back only when ALL of these hold.
+      1. the scoring process exits 0;
+      2. the output file was written by THIS invocation -- any earlier output is
+         deleted first, so a crashed run cannot resurrect a previous score;
+      3. exactly one inter-chain pair is present (see the pair note below);
+      4. that pair carries BOTH reciprocal directions, each finite.
+    (4) matters because ipSAE_min is the min over two alignment directions. A
+    file holding only one direction used to pass, reporting that single
+    direction as if it were a minimum.
+    """
     # BUGFIX: resolve to absolute paths -- ipsae.py is run with cwd=struct.parent,
     # so relative paths from the caller's cwd would not resolve and it exits silently.
     pae_file, struct = pae_file.resolve(), struct.resolve()
+    out = struct.with_name(f"{struct.stem}_{pae_cut}_{dist_cut}.txt")
+    if out.exists():
+        out.unlink()                      # (2) invalidate before running
     r = subprocess.run([str(PY), str(IPSAE), str(pae_file), str(struct),
                         str(pae_cut), str(dist_cut)],
                        capture_output=True, text=True, cwd=struct.parent)
-    out = struct.with_name(f"{struct.stem}_{pae_cut}_{dist_cut}.txt")
-    if not out.exists() and r.stderr:
-        print(f"  ipsae stderr: {r.stderr.strip()[:300]}")
+    if r.returncode != 0:                 # (1) non-zero exit is a failure, period
+        msg = (r.stderr or r.stdout or "").strip()[:300]
+        print(f"  ipsae exit {r.returncode}: {msg}")
+        return None
     if not out.exists():
+        if r.stderr:
+            print(f"  ipsae stderr: {r.stderr.strip()[:300]}")
         return None
     rows = [l.split() for l in out.read_text().splitlines()
             if l.strip() and not l.startswith("Chn1")]
-    asym = {f"{r[0]}->{r[1]}": float(r[5]) for r in rows if len(r) > 5 and r[4] == "asym"}
+    asym = {}
+    for row in rows:
+        if len(row) > 5 and row[4] == "asym":
+            try:
+                v = float(row[5])
+            except ValueError:
+                continue
+            if math.isfinite(v):
+                asym[f"{row[0]}->{row[1]}"] = v
     if not asym:
         return None
     # ipSAE_min is the min over the TWO ALIGNMENT DIRECTIONS of ONE interface.
@@ -51,7 +76,13 @@ def score(pae_file: Path, struct: Path, pae_cut=10, dist_cut=10):
             f"{struct}: {len(pairs)} inter-chain pairs ({pretty}).\n"
             "  ipSAE_min is undefined without naming the binder:target pair; refusing\n"
             "  to let min() collapse across interfaces. Score the pair explicitly.")
-    return min(next(iter(pairs.values()))), asym
+    pair, vals = next(iter(pairs.items()))
+    if len(pair) != 2 or len(vals) != 2:  # (4) exactly two reciprocal directions
+        c = ":".join(sorted(pair))
+        print(f"  {struct.name}: pair {c} has {len(vals)} finite asym direction(s), "
+              f"need 2 -- ipSAE_min is a min over two directions, not a single one")
+        return None
+    return min(vals), asym
 
 
 def main():

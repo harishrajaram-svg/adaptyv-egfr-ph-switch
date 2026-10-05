@@ -17,7 +17,12 @@
    "A->B": "199",
    "B->A": "199"
   },
-  "ipsae_min": 0.888672
+  "ipsae_min": 0.888672,
+  "production": {
+   "bin/ipsae_min.py": 0.888672,
+   "bin/instrument_v2.py": 0.888672,
+   "bin/master_rank.py": 0.888672
+  }
  },
  "02_vhh_ecd_targetA_scores_zero": {
   "structure": "POS_nano2_5nM_seed1_sample_5.cif",
@@ -37,7 +42,12 @@
    "A->B": "748",
    "B->A": "748"
   },
-  "ipsae_min": 0.0
+  "ipsae_min": 0.0,
+  "production": {
+   "bin/ipsae_min.py": 0.0,
+   "bin/instrument_v2.py": 0.0,
+   "bin/master_rank.py": 0.0
+  }
  },
  "03_vhh_crop_directional_asymmetry": {
   "structure": "POSd3_nanobody_5nM_seed1_sample_5.cif",
@@ -57,7 +67,12 @@
    "A->B": "297",
    "B->A": "297"
   },
-  "ipsae_min": 0.0
+  "ipsae_min": 0.0,
+  "production": {
+   "bin/ipsae_min.py": 0.0,
+   "bin/instrument_v2.py": 0.0,
+   "bin/master_rank.py": 0.0
+  }
  },
  "04_scfv_ecd_positive": {
   "structure": "POS_cetuximab_scfv_seed1_sample_0.cif",
@@ -77,7 +92,12 @@
    "A->B": "862",
    "B->A": "862"
   },
-  "ipsae_min": 0.639298
+  "ipsae_min": 0.639298,
+  "production": {
+   "bin/ipsae_min.py": 0.639298,
+   "bin/instrument_v2.py": 0.639298,
+   "bin/master_rank.py": 0.639298
+  }
  },
  "05_scfv_crop_positive": {
   "structure": "POSd3_cetuximab_scfv_seed1_sample_0.cif",
@@ -97,9 +117,14 @@
    "A->B": "411",
    "B->A": "411"
   },
-  "ipsae_min": 0.400501
+  "ipsae_min": 0.400501,
+  "production": {
+   "bin/ipsae_min.py": 0.400501,
+   "bin/instrument_v2.py": 0.400501,
+   "bin/master_rank.py": 0.400501
+  }
  },
- "06_binderA_chain_order_swap": {
+ "06_binder_first_chain_order": {
   "structure": "bg01__boltzgen_egfr_d3_52_hu_seed42_sample_0.cif",
   "chains": {
    "A": 131,
@@ -117,7 +142,12 @@
    "A->B": "301",
    "B->A": "301"
   },
-  "ipsae_min": 0.0
+  "ipsae_min": 0.0,
+  "production": {
+   "bin/ipsae_min.py": 0.0,
+   "bin/instrument_v2.py": 0.0,
+   "bin/master_rank.py": 0.0
+  }
  },
  "07_EGF_derived_control_activity_unknown": {
   "structure": "NEG_nonbinder_seed1_sample_0.cif",
@@ -137,7 +167,12 @@
    "A->B": "755",
    "B->A": "755"
   },
-  "ipsae_min": 0.14024
+  "ipsae_min": 0.14024,
+  "production": {
+   "bin/ipsae_min.py": 0.14024,
+   "bin/instrument_v2.py": 0.14024,
+   "bin/master_rank.py": 0.14024
+  }
  },
  "08_rank1_rimA01_r15": {
   "structure": "rimA01_r15_boltzgen_egfr_d3__hu_seed1_sample_0.cif",
@@ -157,7 +192,12 @@
    "A->B": "320",
    "B->A": "320"
   },
-  "ipsae_min": 0.576505
+  "ipsae_min": 0.576505,
+  "production": {
+   "bin/ipsae_min.py": 0.576505,
+   "bin/instrument_v2.py": 0.576505,
+   "bin/master_rank.py": 0.576505
+  }
  },
  "09_empty_interface_shuffled_null": {
   "structure": "SHUF_bg04_r03_boltzgen_egfr_d3__r1_hu_seed1_sample_10.cif",
@@ -177,7 +217,12 @@
    "A->B": "780",
    "B->A": "780"
   },
-  "ipsae_min": 0.0
+  "ipsae_min": 0.0,
+  "production": {
+   "bin/ipsae_min.py": 0.0,
+   "bin/instrument_v2.py": 0.0,
+   "bin/master_rank.py": 0.0
+  }
  },
  "10_three_chain_refusal_path": {
   "error": "3 inter-chain pairs; ipSAE_min is undefined without naming the binder:target pair",
@@ -188,6 +233,11 @@
    "C->A": 0.428755,
    "B->C": 0.865618,
    "C->B": 0.865877
+  },
+  "production": {
+   "bin/ipsae_min.py": "refused: /Users/harish/code/adaptyv-2026/outbox/ipsae-fixtures/cases/10_three_chain_refus",
+   "bin/instrument_v2.py": null,
+   "bin/master_rank.py": null
   }
  },
  "11_residue_renumbering_offset": {
@@ -208,6 +258,36 @@
    "A->B": "199",
    "B->A": "199"
   },
-  "ipsae_min": 0.888672
+  "ipsae_min": 0.888672,
+  "production": {
+   "bin/ipsae_min.py": 0.888672,
+   "bin/instrument_v2.py": 0.888672,
+   "bin/master_rank.py": 0.888672
+  }
+ },
+ "12_matched_chain_order_swap": {
+  "structure": "swap_barnase_barstar_sample_0.cif",
+  "chains": {
+   "A": 89,
+   "B": 110
+  },
+  "asym": {
+   "A->B": 0.939795,
+   "B->A": 0.888672
+  },
+  "n_interface_residues": {
+   "A->B": "110",
+   "B->A": "89"
+  },
+  "n_chainpair_residues": {
+   "A->B": "199",
+   "B->A": "199"
+  },
+  "ipsae_min": 0.888672,
+  "production": {
+   "bin/ipsae_min.py": 0.888672,
+   "bin/instrument_v2.py": 0.888672,
+   "bin/master_rank.py": 0.888672
+  }
  }
 }

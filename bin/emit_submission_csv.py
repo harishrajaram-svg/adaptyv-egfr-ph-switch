@@ -49,7 +49,7 @@ import csv, json, os, sys, importlib.util
 
 SUB   = "analysis/01-egfr/submission_final.json"
 OUT   = "submissions/01-egfr.csv"
-LIMIT = 11        # 10 cut designs + A22D added 2026-10-04. NOT the allowed 20 -- see THE CUT.
+LIMIT = 12        # 10 cut + A22D + rimA01_r15_L133E. NOT the allowed 20 -- see THE CUT.
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
 MOLECULE_CLASS = "protein"     # DEFAULT only -- per-design `molecule_class` overrides it.
@@ -130,10 +130,21 @@ MULTISITE = "analysis/01-egfr/multisite_pooled.json"
 # compatibility, pH hypothesis and uncertainty." The uncertainty is a column, not a demotion.
 
 
+# A pose-to-pose spread WIDER THAN THE MEDIAN ITSELF is not a measurement. METHODS 6 already
+# says so in words -- "a median of 1.5 over poses of [0.78, 1.01, 1.03, 1.99, 4.39, 4.81] is not
+# a measurement" -- but nothing enforced it, so a design could rank on a number it could not
+# reproduce. Measured across the submission, spread/median runs 0.04 to 0.90; rimA01_r15_L133E
+# runs 1.31, which is 1.5x the worst shipped design and the only value above 1.0. A design over
+# this bar still ships and still reports its ratio, but it ranks BELOW every reproducible tier-1
+# design, because an unstable estimate of the ranked quantity is a worse defect than an
+# uninterpretable estimate of a secondary one.
+SPREAD_BAR = 1.0
+
+
 def multisite():
-    """seq -> all-site pH product, pooled as the median over poses. The ranking key."""
+    """seq -> (all-site pH product, spread/median). Both pooled over poses."""
     import json as _j
-    return {k: v["allsite"] for k, v in _j.load(open(MULTISITE)).items()}
+    return {k: (v["allsite"], v.get("spread_ratio")) for k, v in _j.load(open(MULTISITE)).items()}
 
 
 def pooled_affinity():
@@ -225,7 +236,14 @@ def rank_key(r):
     # Adaptyv rank strictly by the primary objective, this ordering costs us. It is a judgement
     # that credible-interface-first is the more defensible frame, not a claim that rimA02 is worse.
     unassessable = r.get("molecule_class") in ANTIBODY_CLASSES
+    sr = r.get("spread_ratio")
+    unreproducible = sr is not None and sr > SPREAD_BAR
+    # Within tier 1: reproducible before unreproducible, then assessable before unassessable,
+    # then by the all-site product. Reproducibility outranks interpretability because the pH
+    # ratio is the quantity being ranked -- an unstable value fails on the ranked axis itself,
+    # while an unreadable affinity fails on a secondary one.
     return (0 if tier1 else 1,
+            (1 if unreproducible else 0) if tier1 else 0,
             (1 if unassessable else 0) if tier1 else 0,
             -key_ratio if tier1 else 0,
             -r["mo"], -r["hu"])
@@ -249,7 +267,9 @@ def main():
         hu, mo = pooled[x["seq"]]
         scored.append(dict(name=x["name"], sequence=x["seq"],
                            molecule_class=x.get("molecule_class", MOLECULE_CLASS),
-                           ratio=float(x["ratio"]), allsite=ms.get(x["seq"]),
+                           ratio=float(x["ratio"]),
+                           allsite=(ms.get(x["seq"]) or (None, None))[0],
+                           spread_ratio=(ms.get(x["seq"]) or (None, None))[1],
                            hu=hu or 0.0, mo=mo or 0.0,
                            # ratio_n must be carried through: rank_key fails CLOSED without
                            # it, so dropping it here silently emptied tier 1 and put a
@@ -299,8 +319,8 @@ def main():
     # than shipping neither, so it is dropped and the finding goes in the methods doc.
     cols = ["name", "sequence", "molecule_class",
             "ph_ratio_6p5_over_7p4", "ipsae_min_human", "ipsae_min_mouse",
-            "ph_poses_n", "ph_ratio_target_only_SUPERSEDED", "affinity_assessable",
-            "affinity_above_null", "assessment"]
+            "ph_poses_n", "ph_pose_spread_over_median", "ph_ratio_target_only_SUPERSEDED",
+            "affinity_assessable", "affinity_above_null", "assessment"]
     with open(OUT, "w", newline="") as fh:
         w = csv.writer(fh); w.writerow(cols)
         for r in scored:
@@ -311,6 +331,7 @@ def main():
             w.writerow([r["name"], r["sequence"], r["molecule_class"],
                         f"{head:.3f}", f"{r['hu']:.4f}", f"{r['mo']:.4f}",
                         r.get("ratio_n", 0),
+                        f"{r['spread_ratio']:.2f}" if r.get("spread_ratio") is not None else "",
                         f"{r['ratio']:.3f}",
                         # PK: "a failed run must not silently become a valid score of zero" --
                         # a VHH affinity reading here is not low, it is UNINTERPRETABLE. METHODS
@@ -324,9 +345,17 @@ def main():
                         "yes" if max(r["hu"], r["mo"]) >= AFFINITY_FLAG else "no",
                         r.get("assessment", "computational candidate")])
     print(f"\nwrote {OUT}: {len(scored)} designs, {len(cols)} columns")
-    print(f"{'#':>3} {'ratio':>7} {'mouse':>7} {'human':>7}  name")
+    # Print the ratio the designs are RANKED on (all-site), not the superseded
+    # target-only column. The two differ by up to 4.9x and the old line printed the
+    # superseded one next to an order it did not produce -- a reader checking the
+    # ranking against this output would find it inconsistent and be right.
+    print(f"{'#':>3} {'allsite':>8} {'tgtonly':>8} {'mouse':>7} {'human':>7}  name")
     for i, r in enumerate(scored, 1):
-        print(f"{i:>3} {r['ratio']:>7.3f} {r['mo']:>7.4f} {r['hu']:>7.4f}  {r['name'][:44]}")
+        a = r.get("allsite")
+        a_s = f"{a:>8.3f}" if a is not None else f"{'n/a':>8}"
+        print(f"{i:>3} {a_s} {r['ratio']:>8.3f} {r['mo']:>7.4f} {r['hu']:>7.4f}  {r['name'][:44]}")
+    print("  allsite = two-partner histidine-only pH gate (the RANKING basis); "
+          "tgtonly = superseded target-only ratio")
 
 
 def selftest():
