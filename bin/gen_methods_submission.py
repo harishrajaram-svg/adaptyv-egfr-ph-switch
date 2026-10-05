@@ -46,9 +46,14 @@ FAMILY = {
     # thing these five were selected to improve.
     "c5_cf_short__boltzgen_egfr_cropfree_short_48":  "cf_cropfree_short (c5)",
     "c5_cr_crop_patch__boltzgen_egfr_crop_patch_05": "cr_crop_patch (c5)",
-    "sd_d2c_101_l147_s144898_m_T65D":                "d2c_101_l147_s144898",
-    "ss_bc_s831683_mpnn6_S15D_S62H_routeA":          "d3acid_l65_s831683",
     "cons_gap_h370_only__boltzgen_egfr_h370_018":    "h370_018 (gap)",
+    # SWAPPED IN 2026-10-05, replacing sd_d2c_..._m_T65D and
+    # ss_bc_s831683_mpnn6_S15D_S62H_routeA. Those two were 0.986 and 0.985 identical to
+    # designs already shipped -- "nearly identical variants", which the review explicitly
+    # said not to fill slots with. These two are at most 0.467 identical to anything else
+    # submitted and open a backbone family that had no representation.
+    "bcr_d3acid3_l60_s647537_mpnn3":                 "d3acid3_l60_s647537",
+    "bcr_d3acid3_l60_s647537_mpnn11":                "d3acid3_l60_s647537",
     # The six that previously relied on DEFAULT_FAMILY. Listing them is the point:
     # the default was correct for exactly these and silently wrong for anything new.
     "bc_s831683_mpnn6_S15D":                           "d3acid_l65_s831683",

@@ -506,30 +506,6 @@
   "real": "1"
  },
  {
-  "name": "sd_d2c_101_l147_s144898_m_T65D",
-  "seq": "SAEEELELLEEVIEVMKNNSLEEFFEYIDSLSEEEKWKLVNHLWRMAWRLSKKIPGLSPSDVYWDTYMIVFSKDLEERKFFMTLWSDSVLKVFESHEFGREAIKEVGEEEFYKEYEKLPEEDKPLFKFRYVLEVMVLAYKKIVEEEK",
-  "ratio": 5.185,
-  "ratio_n": 5,
-  "ratio_site": "H433",
-  "molecule_class": "protein",
-  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 147 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10): it was excluded on the pH gate alone, which is not a validated selection rule, and on re-scoring with the SAME two-partner histidine-only gate as the original finalists it reads 4.735x over 5 human-leg poses (pose spread 0.944 of the median). Predicted affinity 0.585 human / 0.366 mouse (pooled medians). Novelty Level 3 (FoldSeek vs PDB, same gate as the finalists). Expression QC NOT RUN. All pH tiers in this submission are PROVISIONAL: Kendall tau between this ranking basis and the partnered alternative is +0.000 (METHODS 11.7).",
-  "src": "reopened-exclusion-pool-2026-10-05",
-  "dir": "analysis/01-egfr",
-  "real": "1"
- },
- {
-  "name": "ss_bc_s831683_mpnn6_S15D_S62H_routeA",
-  "seq": "MSPVEQARALLVPMDEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELHTAK",
-  "ratio": 5.386,
-  "ratio_n": 5,
-  "ratio_site": "H433",
-  "molecule_class": "protein",
-  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 65 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10): it was excluded on the pH gate alone, which is not a validated selection rule, and on re-scoring with the SAME two-partner histidine-only gate as the original finalists it reads 3.545x over 5 human-leg poses (pose spread 0.358 of the median). Predicted affinity 0.765 human / 0.744 mouse (pooled medians). Novelty Level 3 (FoldSeek vs PDB, same gate as the finalists). Expression QC NOT RUN. All pH tiers in this submission are PROVISIONAL: Kendall tau between this ranking basis and the partnered alternative is +0.000 (METHODS 11.7).",
-  "src": "reopened-exclusion-pool-2026-10-05",
-  "dir": "analysis/01-egfr",
-  "real": "1"
- },
- {
   "name": "cons_gap_h370_only__boltzgen_egfr_h370_018",
   "seq": "AKVLVTLKGVNLSEEELAEVLREILAPFGAKSVEVEVSEDNETATATVTFEDEESAIAAEKYLLEELEEELLKRVPKIKEARVVDVLVVE",
   "ratio": 3.478,
@@ -538,6 +514,30 @@
   "molecule_class": "protein",
   "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 90 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10): it was excluded on the pH gate alone, which is not a validated selection rule, and on re-scoring with the SAME two-partner histidine-only gate as the original finalists it reads 3.180x over 11 human-leg poses (pose spread 0.166 of the median). Predicted affinity 0.457 human / 0.215 mouse (pooled medians). Novelty Level 3 (FoldSeek vs PDB, same gate as the finalists). Expression QC NOT RUN. All pH tiers in this submission are PROVISIONAL: Kendall tau between this ranking basis and the partnered alternative is +0.000 (METHODS 11.7).",
   "src": "reopened-exclusion-pool-2026-10-05",
+  "dir": "analysis/01-egfr",
+  "real": "1"
+ },
+ {
+  "name": "bcr_d3acid3_l60_s647537_mpnn11",
+  "seq": "IKEKVEELLSMDPDEAITELSEMMYEANDPSKSTWEEWREVWEIWDSVMGNMDPSWLDTP",
+  "ratio": 2.997,
+  "ratio_n": 6,
+  "ratio_site": "H433",
+  "molecule_class": "protein",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 60 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10), REPLACING a near-duplicate addition. On the same two-partner histidine-only gate as every other row it reads 2.747x over 6 human-leg poses, pose spread 0.057 of the median -- among the tightest in the submission. Predicted affinity 0.443 human / 0.234 mouse (pooled medians). Novelty Level 3 on the same FoldSeek gate as the originals. Highest sequence identity to any other submitted design: <0.47. Its three pH bases agree to within 8% (his-only / all-site / partnered), the closest agreement of any submitted design. Expression QC NOT RUN. All pH tiers are PROVISIONAL: METHODS 11.7 shows that under PROPKA's own +/-0.8 pKa accuracy the pH ratio cannot order this submission, so read this as a member of a top set, not as a rank.",
+  "src": "reopened-exclusion-pool-2026-10-05-swap",
+  "dir": "analysis/01-egfr",
+  "real": "1"
+ },
+ {
+  "name": "bcr_d3acid3_l60_s647537_mpnn3",
+  "seq": "VEEEVEKLLSMDPDKAITELSERMYEANDPSKSTWEEWRRVWEIWDSVMGRMDPSWLDTP",
+  "ratio": 3.154,
+  "ratio_n": 6,
+  "ratio_site": "H433",
+  "molecule_class": "protein",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 60 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10), REPLACING a near-duplicate addition. On the same two-partner histidine-only gate as every other row it reads 2.914x over 6 human-leg poses, pose spread 0.089 of the median -- among the tightest in the submission. Predicted affinity 0.574 human / 0.168 mouse (pooled medians). Novelty Level 3 on the same FoldSeek gate as the originals. Highest sequence identity to any other submitted design: <0.47. Its three pH bases agree to within 8% (his-only / all-site / partnered), the closest agreement of any submitted design. Expression QC NOT RUN. All pH tiers are PROVISIONAL: METHODS 11.7 shows that under PROPKA's own +/-0.8 pKa accuracy the pH ratio cannot order this submission, so read this as a member of a top set, not as a rank.",
+  "src": "reopened-exclusion-pool-2026-10-05-swap",
   "dir": "analysis/01-egfr",
   "real": "1"
  }
