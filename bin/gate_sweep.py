@@ -51,6 +51,10 @@ GATES = [
     # The graded CSV's `assessment` column is prose and was the one part of the upload
     # with no mechanical check. The 2026-10-05 audit found 13 problems in it.
     ('assessment_strings',       [PY, 'bin/check_assessment_strings.py'], None),
+    # METHODS states a rule against citing ranks in prose and never enforced it, so the
+    # citations rotted at every reorder. The 2026-10-05 audit raised 7 findings of this
+    # one shape.
+    ('rank_citations',           [PY, 'bin/check_rank_citations.py'], None),
 ]
 
 

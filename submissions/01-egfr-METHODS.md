@@ -530,6 +530,32 @@ weights, different training, diffusion co-folding rather than a folding trunk �
 crop failure to within rounding on every column. Whatever is wrong is not specific to
 ESMFold2-Fast, which removes the most convenient explanation for the zero-scoring positives.
 
+**Chai-1 also folded six of the shipped finalists, and all eleven complexes it ran are
+reported here.** The arm produced results for six submitted designs and five calibration
+complexes; an earlier version of this document reported one of the six, which is the selective
+reporting §13 warns about.
+
+<!-- GENERATED:CHAI-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
+| complex | Chai-1 ipTM (median of 5) | interface residues | clashing models |
+|---|---|---|---|
+| **`ss_bc_s831683_mpnn6_S15D_S62H_routeA`** (rank 5) | **0.838** | 39 | 0 |
+| **`d2c_mpnn13_S88D_serasp`** (rank 6) | **0.818** | 30 | 0 |
+| **`bc_s360518_mpnn9_A22D`** (rank 4) | **0.788** | 39 | 0 |
+| **`rimA02_d3_rimA_14_vhh`** (rank 12) | **0.440** | 22 | 0 |
+| **`rimA01_r15_boltzgen_egfr_d3_rimA_20`** (rank 3) | **0.332** | 24 | 0 |
+| **`c5_cf_short__boltzgen_egfr_cropfree_short_48`** (rank 1) | **0.201** | 22 | 0 |
+| *— calibration and reference complexes —* | | | |
+| `barnase_barstar` | 0.877 | 22 | 0 |
+| `cetuximab_scfv_ecd` | 0.793 | 29 | 0 |
+| `egf_hu` | 0.500 | 25 | 0 |
+| `g532_ecd` | 0.340 | 35 | 0 |
+| `nano2_ecd` | 0.167 | 44 | 0 |
+
+Six of the 18 shipped designs were folded by Chai-1, and it does **not** rate them alike: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` reads 0.838 against `c5_cf_short__boltzgen_egfr_cropfree_short_48` at 0.201, a spread of 0.637 ipTM across designs our own pH objective orders quite differently. Three of the six sit at or above the cetuximab scFv positive control (0.793); 3 sit **below human EGF** (0.500): `rimA02_d3_rimA_14_vhh`, `rimA01_r15_boltzgen_egfr_d3_rimA_20`, `c5_cf_short__boltzgen_egfr_cropfree_short_48`. Chai emits no residue-level PAE, so ipSAE cannot be computed on these and ipTM is not comparable to our ranking metric. It is a second opinion on whether an interface forms at all, not a second measurement of the objective.
+
+**And the calibration set says not to over-read it.** `g532_ecd` is a PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 scores it **0.340** -- below three of our six designs and well below human EGF. `nano2_ecd` reads 0.167 on 44 interface residues, the largest interface in the set and the lowest score. So a low Chai ipTM is **not** evidence that a design does not bind: on the one molecule here with a real measured answer, this metric is wrong. The table supports the positive direction only -- three designs form an interface an independent predictor rates at the level of the cetuximab control -- and it cannot be used to argue against the designs at the bottom, including rank 1. Reporting it the other way round would be the single most tempting over-read available in this submission.
+<!-- /GENERATED:CHAI-TABLE -->
+
 **What separates the arms is the target construct, and the separation is 5-for-5 rather than a
 lucky draw.** On the full ectodomain every pose presents **37–96% of the correct binder face**,
 and one pose gets the whole interface right. On the crop, paratope recall never exceeds **7%** in
@@ -542,8 +568,10 @@ between crop and ECD is the stronger.
 and 2 fall in domain IV. The crop contains almost the whole epitope and both predictors still
 miss it.
 
-**Why this matters to the submission: 16 of the 18 submitted designs were scored against that
-crop.** The one molecule in this project with a solved complex is never docked correctly on the
+**Why this matters to the submission: 17 of the 18 submitted designs were scored against that
+crop** — every design except `d2c_mpnn13_S88D_serasp`, which is scored against the full
+ectodomain and sees all 17 target histidines rather than the crop's 5. (This read "16 of the
+18"; the count is derived from each design's own target-histidine census.) The one molecule in this project with a solved complex is never docked correctly on the
 crop by either predictor, while the full ectodomain recovers it once in five and gets the binder
 face approximately right every time. We are not able to rescore the submission on full ECD
 before the deadline — one design already uses it, the other seventeen would need refolding and
@@ -806,7 +834,7 @@ Re-levelled on FoldSeek-vs-PDB results for every design we hold structures for:
 | 4 De Novo | 0 |
 
 **114 of 238 clear Level ≥ 3. The old single bar passed 0 of 238** — including the entire
-BindCraft pool, which supplies ranks 1–4, 8 and 9 of this submission. Nothing in the pool
+BindCraft pool, which supplies 11 of the 18 submitted designs. Nothing in the pool
 reaches Level 4 under the general-protein rule; every design that clears does so through the
 Level 3 clause (moderate structural similarity *or* >30% sequence identity, exactly one of
 them), which is worth saying plainly: **this is a pool of partly novel designs, not de novo
@@ -816,8 +844,8 @@ ones.**
 general-rule FoldSeek TSVs deduplicate to **238 distinct designs, 114 clearing**, keying on the
 design basename. Stripping a trailing `_modelN` collapses two more, giving 236/113; no key gives
 233/109. That figure is reproducible but stale — it is this same count computed **before
-`novelty_s15d.tsv` existed**, and that file holds the five S15D designs supplying ranks 1–4 and 9
-of this submission. 22 designs appear in more than one TSV, and 2 of those carry slightly
+`novelty_s15d.tsv` existed**, and that file holds the five S15D-family designs (`bc_s831683_mpnn19_S15D`, `bc_s831683_mpnn6_S15D`, `bc_s831683_mpnn8_S15D`, `bc_s831683_mpnn9_S15D`, `bc_s831683_mpnn9_WT`)
+that are in this submission. 22 designs appear in more than one TSV, and 2 of those carry slightly
 different TM or identity values between FoldSeek runs (`bg01_r02` at fid 0.127 vs 0.143;
 `bg04_r03` at TM 0.7169 vs 0.7114) — **no design's level differs between rows**, so the
 levelling is stable even where the underlying search is not.
@@ -956,27 +984,34 @@ the finalists (`analysis/01-egfr/novelty_reopened.tsv`):
 | Level 4 (fully de novo) | 0 — Adaptyv's round-2 baseline was 2.8% |
 
 **25 of the 35 are eligible.** The blocker named above is removed for most of them, and the
-submission was carrying **12 of the 20 permitted designs**, so eight slots were unused. Three of
-the ten failures are flagged ANTIBODY and were scored by the general-protein rule, which §9
-notes is *stricter* than the antibody rule — including `ss_rimA02_d3_rimA_14_vhh_T28H_routeA`
-at 3.209×, a variant of shipped rank 6 — so those three need an ANARCI re-check before being
-treated as excluded.
+submission was carrying **12 of the 20 permitted designs** when this was written, so eight slots
+were unused. It now carries **18 of 20** — two of the molecules tabulated below were
+subsequently shipped, which is what this section was for. Three of the ten failures are flagged
+ANTIBODY and were scored by the general-protein rule, which §9 notes is *stricter* than the
+antibody rule — including `ss_rimA02_d3_rimA_14_vhh_T28H_routeA` at 3.209×, a variant of
+`rimA02_d3_rimA_14_vhh` (shipped, now rank 12) — so those three
+need an ANARCI re-check before being treated as excluded.
 
-The cases that most directly contradict the current ranking, all Level 3:
+The cases that most directly contradicted the ranking as it stood on 2026-10-04, all Level 3.
+**Two were acted on and are now in the submission**, marked ✔ with their current rank; the
+other four remain excluded and the contradiction they pose stands:
 
 | molecule | pH (his-only) | human | mouse | spread | compare |
 |---|---|---|---|---|---|
-| `ss_bc_s831683_mpnn6_S15D_S62H_routeA` † | **3.545×** | 0.765 | 0.744 | 0.358 | shipped `mpnn6_S15D`: 1.835×, 0.780, 0.751 |
+| ✔ `ss_bc_s831683_mpnn6_S15D_S62H_routeA` **(now shipped, rank 5)** | **3.545×** | 0.765 | 0.744 | 0.358 | shipped alongside its parent `mpnn6_S15D` (1.835×) as a declared pair |
 | `sd_d2c_101_l147_s144898_m_T65D` † | **4.735×** | 0.585 | 0.366 | 0.944 | shipped `d2c_mpnn13_S88D`: 3.526×, 0.603, 0.528 |
 | `ss_bc_s831683_mpnn19_S15D_S62H_routeA` | **3.189×** | 0.642 | 0.601 | 0.591 | shipped `mpnn19_S15D`: 1.774×, 0.808, 0.786 |
 | `bcr_d3acid_l65_s831683_mpnn3_S15D` | 2.035× | 0.759 | 0.754 | 0.512 | beats shipped `mpnn6_S15D` at matched affinity |
 | `bcr_d3acid_l65_s831683_mpnn17_S15D` | 1.814× | 0.780 | 0.755 | **0.019** | the most reproducible pH measurement in the project |
-| `c5_cf_short__boltzgen_egfr_cropfree_short_48` | **5.546×** | 0.241 | 0.181 | 0.262 | would rank 2nd of everything; weak on both species |
+| ✔ `c5_cf_short__boltzgen_egfr_cropfree_short_48` **(now shipped, rank 1)** | **5.546×** | 0.241 | 0.181 | 0.262 | weak on both species, and §11 records four independent strikes against it |
 
-`ss_bc_s831683_mpnn6_S15D_S62H_routeA` is the clearest: it is a shipped design plus one further
+`ss_bc_s831683_mpnn6_S15D_S62H_routeA` was the clearest: a shipped design plus one further
 mutation, with predicted affinity indistinguishable from it (0.765/0.744 against 0.780/0.751)
 and **1.9× the pH ratio**, at an acceptable spread and Level 3. On this submission's own
-criteria it dominates a design we shipped.
+criteria it dominated a design we shipped — **so it was added**, at rank
+5, with its parent retained beside it as a declared
+parent/mutant pair (§11.3). This paragraph argued for a change that has since been made; it is
+left in because the reasoning is the record of why.
 
 **† Both of these were added and then removed the same day, and the reason matters.** They
 were the top two of the five additions on the pH objective, and both are **near-identical to a
@@ -1155,7 +1190,7 @@ submission was at 12 of 20 and the five use free slots. Three slots remain unuse
 
 Until 2026-10-04 we estimated the pH ratio with a gate that measures only the **target's**
 histidines. It never measured our own binders' titratable groups — and <!-- GENERATED:BINDER-HIS -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
-**nine of the eighteen submitted designs carry at least one histidine of their own**: `d2c_mpnn13_S88D_serasp` (14); `ss_bc_s831683_mpnn6_S15D_S62H_routeA` (4); `bc_d3acid_l65_s831683_mpnn11`, `bc_s831683_mpnn19_S15D`, `bc_s831683_mpnn6_S15D`, `bc_s831683_mpnn8_S15D`, `bc_s831683_mpnn9_S15D`, `bc_s831683_mpnn9_WT` (3 each); `bc_s360518_mpnn9_A22D` (1). The other nine carry none.
+**nine of the eighteen submitted designs carry at least one histidine of their own**: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` (4); `bc_d3acid_l65_s831683_mpnn11`, `bc_s831683_mpnn19_S15D`, `bc_s831683_mpnn6_S15D`, `bc_s831683_mpnn8_S15D`, `bc_s831683_mpnn9_S15D`, `bc_s831683_mpnn9_WT` (3 each); `d2c_mpnn13_S88D_serasp` (2); `bc_s360518_mpnn9_A22D` (1). The other nine carry none.
 <!-- /GENERATED:BINDER-HIS -->
 (This count was wrong five times by hand — "six of the eleven", "seven of twelve",
 "eight of the seventeen" from a pre-addition count carried forward, "ten of seventeen",
@@ -1170,8 +1205,7 @@ target leg. *Corrected 2026-10-05: an earlier version of this sentence said "eve
 site", which the code did not do — it parsed HIS/ASP/GLU but added only histidines to the
 product. The shipped column is a **two-partner histidine-only approximation**. §11.7 gives the
 all-site and partnered alternatives, the resulting ranking instability, and why the
-histidine-only order is nevertheless the one retained.* Measured over 75 poses, n = 5–11 per
-design:
+histidine-only order is nevertheless the one retained.* Measured over 165 poses, n = 5–26 per design (this read "75 poses, n = 5–11", which was the 12-design pose set):
 
 <!-- GENERATED:BASIS-TABLE -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
 | design | target-only | **all-site** | binder histidines | worst drag |
@@ -1210,8 +1244,8 @@ qualification matters.** §11.7 shows this count falls to **one** on a separatel
 leg, so it is a property of how the free leg is estimated rather than of the designs. Read the
 four as the weakest on every basis computed, not as designs shown not to switch. The bottom four rows fall below the 1.20× bar that §6 sets
 as PROPKA's noise floor, so they carry no pH claim and are ordered by mouse affinity instead.
-`bc_s831683_mpnn8_S15D` led this submission at 5.461× before the correction and is now rank 11
-at 1.023×.
+`bc_s831683_mpnn8_S15D` led this submission at 5.461× on the superseded target-only basis and
+is now last, at 1.023× on the graded his-only basis.
 
 **What we are NOT claiming.** The binder's free leg comes from deleting the target in place, so
 the isolated binder is not relaxed — a histidine buried in the complex may be solvent-exposed in
@@ -1312,7 +1346,10 @@ would be the exposure, and they predate every change made on 2026-10-05.
 * **all-site pH ratio** — median over every ESMFold2 refold pose of that exact binder sequence,
   composed over all titratable sites on both partners. A prediction, not a measurement.
 * **ipSAE human / mouse** — median of 5 seeds, pooled by sequence from `master_rank.json`.
-  **pH-agnostic.** For ranks 6 and 7 not interpretable at all.
+  **pH-agnostic.** Not interpretable at all for the two antibody-format designs,
+  `rimA02_d3_rimA_14_vhh` and `h370_020_vhh` — see §4.5. (This read "for ranks 6 and 7", which
+  were their positions in a 12-design submission; naming them instead of their ranks is the
+  rule this document states and did not follow.)
 * **`bc_s831683_mpnn9_WT` is a control, not a candidate**: the matched wild-type of
   `bc_s831683_mpnn9_S15D`, one residue apart. Its all-site product of 0.593× is itself
   informative — the unmutated backbone is predicted to bind *worse* in acid, which is the
@@ -1440,7 +1477,7 @@ one footing; across the 17 the analysis covers **158 human-leg poses** with **0 
 titratable sites**.
 
 **The ordering is not stable.** Kendall τ between the shipped basis and the partnered basis
-is **+0.000** — the two orderings are uncorrelated. Designs move by up to **8 ranks**
+is **+0.000** — the two orderings are uncorrelated. Designs move by up to **12 ranks** (`bc_d3acid_l65_s831683_mpnn11`, 5-17 across the three bases)
 (`rimA02_d3_rimA_14_vhh`: 2nd on his-only, 10th on partnered). Per-design rank ranges are in
 the §11 table. **Every tier in this submission is therefore marked `provisional`, and no
 order here should be read as established.**

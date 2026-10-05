@@ -179,18 +179,20 @@ def binder_his_sentence(rows):
     histidines when n_his exceeds the target's count; that baseline is read from the
     designs that have none rather than hard-coded.
     """
-    import json as _j
-    sens = _j.load(open('analysis/01-egfr/ph_sensitivity.json'))
-    ship = {r["sequence"].strip().upper(): r["name"] for r in rows}
-    per = {}
-    for v in sens.values():
-        q = v.get("seq", "").strip().upper()
-        if q in ship and "n_his" in v:
-            per[ship[q]] = v["n_his"]
-    if not per:
-        raise SystemExit("no n_his data in ph_sensitivity.json; re-run ph_sensitivity_multisite.py")
-    base = min(per.values())                      # target-only histidine count
-    carry = {k: v - base for k, v in per.items() if v > base}
+    # COUNT THE BINDER'S OWN HISTIDINES DIRECTLY.
+    #
+    # This used to compute `n_his - min(n_his)`, treating the global minimum as "the
+    # target's contribution". That is invalid, because the target's contribution is NOT
+    # constant: designs docked against the domain-III crop see 5 target histidines, but
+    # `d2c_mpnn13_S88D_serasp` is scored against the FULL ectodomain and sees 17. So the
+    # block published "d2c_mpnn13_S88D_serasp (14)" for a 147 aa design whose sequence
+    # contains exactly 2 histidines -- 19 total minus a 5 that did not apply to it.
+    #
+    # `_ms['n_his']` is the per-design count of binder-partner HIS sites read straight from
+    # sites_all_poses, so there is no baseline to get wrong.
+    carry = {r["name"]: r["_ms"]["n_his"] for r in rows if r["_ms"].get("n_his")}
+    if not carry and rows:
+        raise SystemExit("no binder histidine data; re-run bin/ph_sensitivity_multisite.py")
     WORDS = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
              7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve",
              13: "thirteen", 14: "fourteen", 15: "fifteen", 16: "sixteen",
@@ -500,6 +502,85 @@ def footprint_table(rows):
     return "\n".join(rowsout)
 
 
+CHAI = 'analysis/01-egfr/chai_interface_summary.json'
+
+
+def chai_table(rows):
+    """Chai-1's verdict on the shipped finalists plus its calibration set, generated.
+
+    The Chai arm ran ELEVEN complexes -- five calibration/reference complexes and SIX
+    shipped finalists -- and the document reported one of them (SS 11.2's note on
+    `ss_bc_s831683_mpnn6_S15D_S62H_routeA` at 0.838). Reporting one of six finalists from
+    an independent predictor, when that predictor disagrees sharply across them, is
+    selective in the way SS 13's own arm-accountability limitation warns about. So the
+    whole set is tabulated and the comparison against the calibration complexes is stated.
+    """
+    d = json.load(open(CHAI))
+    cx = d['complexes']
+    byname = {r['name']: r for r in rows}
+
+    def match(tag):
+        t = tag[4:] if tag.startswith('fin_') else tag
+        best = None
+        for n in byname:
+            if n.startswith(t) or t.startswith(n) or n.replace('__', '_').startswith(t):
+                if best is None or len(n) > len(best):
+                    best = n
+        return best
+
+    fin, ref = [], []
+    for c in cx:
+        n = match(c['tag']) if c['tag'].startswith('fin_') else None
+        (fin if n else ref).append((n, c))
+    fin.sort(key=lambda t: -t[1]['iptm_median'])
+    ref.sort(key=lambda t: -t[1]['iptm_median'])
+    out = ["| complex | Chai-1 ipTM (median of 5) | interface residues | clashing models |",
+           "|---|---|---|---|"]
+    for n, c in fin:
+        out.append(f"| **`{n}`** (rank {byname[n]['_rank']}) | **{c['iptm_median']:.3f}** | "
+                   f"{c['iface_residues_median']} | {c['clash_models']} |")
+    out.append("| *— calibration and reference complexes —* | | | |")
+    for _, c in ref:
+        out.append(f"| `{c['tag']}` | {c['iptm_median']:.3f} | "
+                   f"{c['iface_residues_median']} | {c['clash_models']} |")
+    hi = fin[0]
+    lo = fin[-1]
+    egf = next((c for _, c in ref if c['tag'].startswith('egf')), None)
+    txt = "\n".join(out)
+    txt += (f"\n\nSix of the {len(rows)} shipped designs were folded by Chai-1, and it does "
+            f"**not** rate them alike: `{hi[0]}` reads {hi[1]['iptm_median']:.3f} against "
+            f"`{lo[0]}` at {lo[1]['iptm_median']:.3f}, a spread of "
+            f"{hi[1]['iptm_median'] - lo[1]['iptm_median']:.3f} ipTM across designs our own "
+            f"pH objective orders quite differently.")
+    if egf:
+        below = [n for n, c in fin if c['iptm_median'] < egf['iptm_median']]
+        txt += (f" Three of the six sit at or above the cetuximab scFv positive control "
+                f"(0.793); {len(below)} sit **below human EGF** "
+                f"({egf['iptm_median']:.3f}): " + ", ".join(f"`{n}`" for n in below) + ".")
+    txt += (" Chai emits no residue-level PAE, so ipSAE cannot be computed on these and "
+            "ipTM is not comparable to our ranking metric. It is a second opinion on whether "
+            "an interface forms at all, not a second measurement of the objective.")
+    g532 = next((c for _, c in ref if c['tag'].startswith('g532')), None)
+    nano = next((c for _, c in ref if c['tag'].startswith('nano')), None)
+    if g532:
+        txt += (f"\n\n**And the calibration set says not to over-read it.** `g532_ecd` is a "
+                f"PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 "
+                f"scores it **{g532['iptm_median']:.3f}** -- below three of our six designs "
+                f"and well below human EGF. ")
+        if nano:
+            txt += (f"`nano2_ecd` reads {nano['iptm_median']:.3f} on "
+                    f"{nano['iface_residues_median']} interface residues, the largest "
+                    f"interface in the set and the lowest score. ")
+        txt += ("So a low Chai ipTM is **not** evidence that a design does not bind: on the "
+                "one molecule here with a real measured answer, this metric is wrong. The "
+                "table supports the positive direction only -- three designs form an "
+                "interface an independent predictor rates at the level of the cetuximab "
+                "control -- and it cannot be used to argue against the designs at the bottom, "
+                "including rank 1. Reporting it the other way round would be the "
+                "single most tempting over-read available in this submission.")
+    return txt
+
+
 def basis_table(rows):
     out = ["| design | target-only | **all-site** | binder histidines | worst drag |",
            "|---|---|---|---|---|"]
@@ -574,7 +655,8 @@ def write_into_methods(rows):
               "DECL-REVIEW": declaration_review(rows),
               "DECL-STRUCT": declaration_structures(rows),
               "PERT-FINDINGS": perturbation_findings(rows),
-              "FOOTPRINT-TABLE": footprint_table(rows)}
+              "FOOTPRINT-TABLE": footprint_table(rows),
+              "CHAI-TABLE": chai_table(rows)}
     for tag, body in blocks.items():
         pat = re.compile(rf"(<!-- GENERATED:{tag}[^>]*-->\n).*?(<!-- /GENERATED:{tag} -->)",
                          re.S)
@@ -599,7 +681,8 @@ def check_methods(rows):
               "DECL-REVIEW": declaration_review(rows),
               "DECL-STRUCT": declaration_structures(rows),
               "PERT-FINDINGS": perturbation_findings(rows),
-              "FOOTPRINT-TABLE": footprint_table(rows)}.items():
+              "FOOTPRINT-TABLE": footprint_table(rows),
+              "CHAI-TABLE": chai_table(rows)}.items():
         m = re.search(rf"<!-- GENERATED:{tag}[^>]*-->\n(.*?)<!-- /GENERATED:{tag} -->", src, re.S)
         if not m:
             bad.append(f"{tag}: block missing")
