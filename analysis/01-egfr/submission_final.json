@@ -480,5 +480,65 @@
   "sim": "",
   "sim_hit": "",
   "assessment": "COMPUTATIONAL CANDIDATE, AND THE LEAST REPRODUCIBLE ROW IN THIS SUBMISSION -- ranked last in tier 1 for that reason, not for its ratio. Single Leu->Glu at position 133 of `rimA01_r15_boltzgen_egfr_d3_rimA_20`, which is submitted unmodified as its matched parent. It is the only design here with evidence of TWO coupled sites: all-site median 5.659x, above the 5.55x thermodynamic ceiling for H433 alone, with H433 steady at 4.458-4.675x across all five poses while H370 -- which reads 0.92-0.94x in every other design in this submission -- pulls 0.921 to 2.584x. Two of five poses exceed the 7.94x one-proton bound, which is multi-site by arithmetic. Affinity HELD: human 0.594 -> 0.616, mouse 0.567 -> 0.435. WHY IT IS RANKED LAST: the pose spread is 4.24-11.64, i.e. 1.31x the median, against 0.04-0.90 for every other row. By our own standard (METHODS 6) a median over poses that scattered is not a measurement, and the effect over its parent (1.33x) sits inside that scatter. What varies pose to pose is whether the glutamate reaches H370 at all. The Glu/Asp distinction is the mechanism and it is testable: L133D at the same position reads 0.723x with human affinity 0.000 -- Asp spans ~2.5A from CB and LEU133 sits 6.28A from H370, so Asp buries a charge with no partner and destroys the interface, while Glu (~3.9A) reaches. Novelty on the mutant pose: TM 0.702, identity 19.2%, Level 3, margin 0.098. QC: 0 Cys, GRAVY +0.188 (the most hydrophobic row here), longest hydrophobic run 5. Submitted because a two-sided mechanism with its negative control measured is worth testing even at n=1; it needs 10-15 seeds and an isosteric L133Q control to be a result."
+ },
+ {
+  "name": "c5_cf_short__boltzgen_egfr_cropfree_short_48",
+  "seq": "EIKVIEATASDAAAAAAALRAAYEAGATLAAVTLPDGVVLEFDTSNKEAAEASARVLADAIEGGVTVYKL",
+  "ratio": 5.819,
+  "ratio_n": 6,
+  "ratio_site": "H370",
+  "molecule_class": "protein",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 70 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10): it was excluded on the pH gate alone, which is not a validated selection rule, and on re-scoring with the SAME two-partner histidine-only gate as the original finalists it reads 5.546x over 6 human-leg poses (pose spread 0.262 of the median). Predicted affinity 0.241 human / 0.181 mouse (pooled medians). Novelty Level 3 (FoldSeek vs PDB, same gate as the finalists). Expression QC NOT RUN. All pH tiers in this submission are PROVISIONAL: Kendall tau between this ranking basis and the partnered alternative is +0.000 (METHODS 11.7).",
+  "src": "reopened-exclusion-pool-2026-10-05",
+  "dir": "analysis/01-egfr",
+  "real": "1"
+ },
+ {
+  "name": "c5_cr_crop_patch__boltzgen_egfr_crop_patch_05",
+  "seq": "MLVTVLLDDGSTITIDLNNPDSPFKLFDLKTGKELEPGEARRGMEVIVKNLKTGEEKIGTVTSVEE",
+  "ratio": 5.265,
+  "ratio_n": 11,
+  "ratio_site": "H433",
+  "molecule_class": "protein",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 66 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10): it was excluded on the pH gate alone, which is not a validated selection rule, and on re-scoring with the SAME two-partner histidine-only gate as the original finalists it reads 4.812x over 11 human-leg poses (pose spread 0.444 of the median). Predicted affinity 0.132 human / 0.204 mouse (pooled medians). Novelty Level 3 (FoldSeek vs PDB, same gate as the finalists). Expression QC NOT RUN. All pH tiers in this submission are PROVISIONAL: Kendall tau between this ranking basis and the partnered alternative is +0.000 (METHODS 11.7).",
+  "src": "reopened-exclusion-pool-2026-10-05",
+  "dir": "analysis/01-egfr",
+  "real": "1"
+ },
+ {
+  "name": "sd_d2c_101_l147_s144898_m_T65D",
+  "seq": "SAEEELELLEEVIEVMKNNSLEEFFEYIDSLSEEEKWKLVNHLWRMAWRLSKKIPGLSPSDVYWDTYMIVFSKDLEERKFFMTLWSDSVLKVFESHEFGREAIKEVGEEEFYKEYEKLPEEDKPLFKFRYVLEVMVLAYKKIVEEEK",
+  "ratio": 5.185,
+  "ratio_n": 5,
+  "ratio_site": "H433",
+  "molecule_class": "protein",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 147 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10): it was excluded on the pH gate alone, which is not a validated selection rule, and on re-scoring with the SAME two-partner histidine-only gate as the original finalists it reads 4.735x over 5 human-leg poses (pose spread 0.944 of the median). Predicted affinity 0.585 human / 0.366 mouse (pooled medians). Novelty Level 3 (FoldSeek vs PDB, same gate as the finalists). Expression QC NOT RUN. All pH tiers in this submission are PROVISIONAL: Kendall tau between this ranking basis and the partnered alternative is +0.000 (METHODS 11.7).",
+  "src": "reopened-exclusion-pool-2026-10-05",
+  "dir": "analysis/01-egfr",
+  "real": "1"
+ },
+ {
+  "name": "ss_bc_s831683_mpnn6_S15D_S62H_routeA",
+  "seq": "MSPVEQARALLVPMDEKIVTGFNDPSAGIDLEKAFAEDHKVMVEAFRMVGPEEYHKIDHELHTAK",
+  "ratio": 5.386,
+  "ratio_n": 5,
+  "ratio_site": "H433",
+  "molecule_class": "protein",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 65 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10): it was excluded on the pH gate alone, which is not a validated selection rule, and on re-scoring with the SAME two-partner histidine-only gate as the original finalists it reads 3.545x over 5 human-leg poses (pose spread 0.358 of the median). Predicted affinity 0.765 human / 0.744 mouse (pooled medians). Novelty Level 3 (FoldSeek vs PDB, same gate as the finalists). Expression QC NOT RUN. All pH tiers in this submission are PROVISIONAL: Kendall tau between this ranking basis and the partnered alternative is +0.000 (METHODS 11.7).",
+  "src": "reopened-exclusion-pool-2026-10-05",
+  "dir": "analysis/01-egfr",
+  "real": "1"
+ },
+ {
+  "name": "cons_gap_h370_only__boltzgen_egfr_h370_018",
+  "seq": "AKVLVTLKGVNLSEEELAEVLREILAPFGAKSVEVEVSEDNETATATVTFEDEESAIAAEKYLLEELEEELLKRVPKIKEARVVDVLVVE",
+  "ratio": 3.478,
+  "ratio_n": 11,
+  "ratio_site": "H433",
+  "molecule_class": "protein",
+  "assessment": "COMPUTATIONAL CANDIDATE -- not shown to bind. 90 aa. ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10): it was excluded on the pH gate alone, which is not a validated selection rule, and on re-scoring with the SAME two-partner histidine-only gate as the original finalists it reads 3.180x over 11 human-leg poses (pose spread 0.166 of the median). Predicted affinity 0.457 human / 0.215 mouse (pooled medians). Novelty Level 3 (FoldSeek vs PDB, same gate as the finalists). Expression QC NOT RUN. All pH tiers in this submission are PROVISIONAL: Kendall tau between this ranking basis and the partnered alternative is +0.000 (METHODS 11.7).",
+  "src": "reopened-exclusion-pool-2026-10-05",
+  "dir": "analysis/01-egfr",
+  "real": "1"
  }
 ]

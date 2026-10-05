@@ -33,13 +33,27 @@ CSV = 'submissions/01-egfr.csv'
 
 
 def submitted():
-    """[(name, sequence)] in submission order, from the graded file itself."""
+    """[(name, sequence)] in submission order, from the graded file itself.
+
+    --extra FILE adds candidates not yet in the CSV, so a design can be scored on all
+    three bases BEFORE it is added to the submission. Without that the emitter would see
+    no multisite record for it, fall to tier 2, and the addition would look worse than the
+    rows it is being compared against -- an artefact of ordering, not a measurement.
+    """
     import csv
     with open(CSV) as f:
         rows = list(csv.DictReader(f))
     seqcol = next(c for c in rows[0] if 'seq' in c.lower())
     namecol = next(c for c in rows[0] if 'name' in c.lower() or 'id' in c.lower())
-    return [(r[namecol], r[seqcol].strip().upper()) for r in rows]
+    out = [(r[namecol], r[seqcol].strip().upper()) for r in rows]
+    if '--extra' in sys.argv:
+        extra = json.load(open(sys.argv[sys.argv.index('--extra') + 1]))
+        have = {q for _, q in out}
+        for e in extra:
+            q = e['seq'].strip().upper()
+            if q not in have:
+                out.append((e['name'], q)); have.add(q)
+    return out
 
 
 def human_leg_poses_via_faa():
@@ -95,6 +109,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', default='analysis/01-egfr/ph_sensitivity.json')
     ap.add_argument('--limit', type=int, default=0, help='poses per design (0 = all)')
+    ap.add_argument('--extra', help='JSON list of {name, seq} candidates not yet in the CSV')
     a = ap.parse_args()
 
     poses = human_leg_poses()

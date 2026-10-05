@@ -39,8 +39,28 @@ FAMILY = {
     "d2c_mpnn13_S88D_serasp":              "d2c_101_l147_s144898",
     "rimA02_d3_rimA_14_vhh":               "rimA02_d3_rimA_14 (VHH)",
     "h370_020_vhh":                        "h370_020 (VHH)",
+    # ADDED 2026-10-05 from the reopened exclusion pool (METHODS 10). These must be listed
+    # explicitly: DEFAULT_FAMILY is the s831683 backbone, so an unmapped name was silently
+    # reported as belonging to the family that already holds six designs -- which would
+    # have made the submission look MORE concentrated than it is and misstated the one
+    # thing these five were selected to improve.
+    "c5_cf_short__boltzgen_egfr_cropfree_short_48":  "cf_cropfree_short (c5)",
+    "c5_cr_crop_patch__boltzgen_egfr_crop_patch_05": "cr_crop_patch (c5)",
+    "sd_d2c_101_l147_s144898_m_T65D":                "d2c_101_l147_s144898",
+    "ss_bc_s831683_mpnn6_S15D_S62H_routeA":          "d3acid_l65_s831683",
+    "cons_gap_h370_only__boltzgen_egfr_h370_018":    "h370_018 (gap)",
+    # The six that previously relied on DEFAULT_FAMILY. Listing them is the point:
+    # the default was correct for exactly these and silently wrong for anything new.
+    "bc_s831683_mpnn6_S15D":                           "d3acid_l65_s831683",
+    "bc_s831683_mpnn19_S15D":                          "d3acid_l65_s831683",
+    "bc_s831683_mpnn9_S15D":                           "d3acid_l65_s831683",
+    "bc_s831683_mpnn9_WT":                             "d3acid_l65_s831683",
+    "bc_d3acid_l65_s831683_mpnn11":                    "d3acid_l65_s831683",
+    "bc_s831683_mpnn8_S15D":                           "d3acid_l65_s831683",
 }
-DEFAULT_FAMILY = "d3acid_l65_s831683"
+# No silent default. An unmapped design used to be reported as the s831683 backbone, so a
+# newly added design would quietly inherit the wrong family in the graded methods table.
+DEFAULT_FAMILY = None
 ANTIBODY = {"nanobody", "scfv", "fab_kappa", "fab_lambda"}
 
 
@@ -67,7 +87,14 @@ def load():
     ms = {v["name"]: v for v in json.load(open(MS)).values()}
     for i, r in enumerate(rows, 1):
         r["_rank"] = i
-        r["_family"] = FAMILY.get(r["name"], DEFAULT_FAMILY)
+        fam = FAMILY.get(r["name"], DEFAULT_FAMILY)
+        if fam is None:
+            raise SystemExit(
+                f"{r['name']} has no FAMILY entry in bin/gen_methods_submission.py.\n"
+                "  Add it. There is deliberately no default: the old one silently assigned\n"
+                "  the s831683 backbone, so an unmapped design misreported the submission's\n"
+                "  family concentration in the graded methods table.")
+        r["_family"] = fam
         r["_aa"] = len(r["sequence"])
         r["_ms"] = ms.get(r["name"], {})
     return rows
@@ -88,6 +115,35 @@ def rank_table(rows):
             f"{float(r['ipsae_min_human']):.3f} | {float(r['ipsae_min_mouse']):.3f} | "
             f"{'**no**' if r['affinity_assessable'].startswith('no') else 'yes'} |")
     return "\n".join(out)
+
+
+def family_list(rows):
+    """The family breakdown of SS 11.3, generated.
+
+    This paragraph was hand-maintained and went stale the moment the submission changed:
+    after five designs were added it still read "Six families, twelve designs" and listed
+    ranks from the previous build. The family map, the counts and the ranks are all
+    derivable from the CSV, so they are derived."""
+    from collections import defaultdict
+    fams = defaultdict(list)
+    for r in rows:
+        fams[r["_family"]].append(r["_rank"])
+    out = []
+    for fam, ranks in sorted(fams.items(), key=lambda kv: (-len(kv[1]), min(kv[1]))):
+        rs = ", ".join(str(x) for x in sorted(ranks))
+        if len(ranks) > 1:
+            out.append(f"`{fam}` **x{len(ranks)}** (ranks {rs})")
+        else:
+            out.append(f"`{fam}` (rank {rs})")
+    body = " - ".join(out)
+    big = max(fams.items(), key=lambda kv: len(kv[1]))
+    singles = sum(1 for v in fams.values() if len(v) == 1)
+    return (body + "\n\n**Effective n is " + str(len(fams)) + " clusters, not " +
+            str(len(rows)) + " designs.** The largest cluster, `" + big[0] + "`, holds " +
+            str(len(big[1])) + " designs at ranks " +
+            ", ".join(str(x) for x in sorted(big[1])) + "; " + str(singles) +
+            " families contribute a single design each. Any interval must be computed on "
+            "families, not designs.")
 
 
 def basis_table(rows):
@@ -156,7 +212,8 @@ def write_into_methods(rows):
     --check reports it if they do."""
     import re
     src = Path(METHODS).read_text()
-    blocks = {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows)}
+    blocks = {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows),
+              "FAMILY-LIST": family_list(rows)}
     for tag, body in blocks.items():
         pat = re.compile(rf"(<!-- GENERATED:{tag}[^>]*-->\n).*?(<!-- /GENERATED:{tag} -->)",
                          re.S)
@@ -172,7 +229,8 @@ def check_methods(rows):
     import re
     src = Path(METHODS).read_text()
     bad = []
-    for tag, body in {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows)}.items():
+    for tag, body in {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows),
+                      "FAMILY-LIST": family_list(rows)}.items():
         m = re.search(rf"<!-- GENERATED:{tag}[^>]*-->\n(.*?)<!-- /GENERATED:{tag} -->", src, re.S)
         if not m:
             bad.append(f"{tag}: block missing")
@@ -197,3 +255,4 @@ if __name__ == "__main__":
     print("\n=== FAMILIES ==="); print(json.dumps(f["fams"], indent=1))
     print("\n=== RANK TABLE ==="); print(rank_table(rows))
     print("\n=== BASIS TABLE ==="); print(basis_table(rows))
+    print("\n=== FAMILY LIST ==="); print(family_list(rows))

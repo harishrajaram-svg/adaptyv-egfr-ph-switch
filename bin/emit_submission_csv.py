@@ -55,7 +55,27 @@ import csv, json, os, sys, importlib.util
 
 SUB   = "analysis/01-egfr/submission_final.json"
 OUT   = "submissions/01-egfr.csv"
-LIMIT = 12        # 10 cut + A22D + rimA01_r15_L133E. NOT the allowed 20 -- see THE CUT.
+# RAISED 12 -> 17 on 2026-10-05, with Harish, after the exclusion ledger was rebuilt.
+#
+# PK's advice -- "I would not fill the allocation simply to reach twenty" -- was about
+# padding the submission with designs that did not stand on a measurement. These five do
+# not pad it. They come from the 63 gate-only exclusions that METHODS 10 reopened, they
+# were re-scored on the SAME histidine-only gate as the original finalists over their own
+# human-leg poses, they clear the same tier-1 rule, they clear novelty Level 3 on the same
+# FoldSeek gate, and each one outranks the weakest shipped tier-1 design on the basis this
+# submission is ranked by.
+#
+# They were chosen by a rule fixed BEFORE the result was looked at: rank the 25 eligible
+# reopened molecules by this file's own rank_key, then take the top 5 subject to at most 2
+# additions per backbone family and no family exceeding 7 of the final 17. The cap bound
+# twice -- it dropped ss_bc_s831683_mpnn19_S15D_S62H_routeA (3.189x) because s831683 would
+# have reached 8 of 17, and it is why the five sit on five distinct backbones. Backbone
+# identity is taken from the design seed token (sNNNNNN); matching on descriptive prefixes
+# first put ss_bc_s831683_* and bcr_d3acid_l65_s831683_* in different families when they
+# are the same backbone, which would have defeated the cap.
+#
+# Nothing is displaced: the submission was at 12 of 20 permitted, so this uses free slots.
+LIMIT = 17        # 10 cut + A22D + rimA01_r15_L133E. NOT the allowed 20 -- see THE CUT.
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
 MOLECULE_CLASS = "protein"     # DEFAULT only -- per-design `molecule_class` overrides it.
@@ -461,13 +481,29 @@ def main():
     # target-only column. The two differ by up to 4.9x and the old line printed the
     # superseded one next to an order it did not produce -- a reader checking the
     # ranking against this output would find it inconsistent and be right.
+    # Is the ranked basis actually the minimum of the three, for every shipped design?
+    # The claim that this ranking is the "conservative envelope" has to be re-checked
+    # whenever the submission changes; it was true for the original 12 and is asserted
+    # here rather than remembered.
+    _sv = sensitivity()
+    n_env = 0
+    for r in scored:
+        _r = next((v for v in _sv.values() if v.get("seq", "").strip().upper()
+                   == r["sequence"].strip().upper()), None)
+        if not _r or "hisonly_median" not in _r:
+            continue
+        _three = [_r["hisonly_median"], _r.get("allsite_median"), _r.get("partnered_median")]
+        _three = [x for x in _three if x is not None]
+        if abs(_r["hisonly_median"] - min(_three)) < 1e-9:
+            n_env += 1
     print(f"{'#':>3} {'his_only':>8} {'tgtonly':>8} {'mouse':>7} {'human':>7}  name")
     for i, r in enumerate(scored, 1):
         a = r.get("allsite")
         a_s = f"{a:>8.3f}" if a is not None else f"{'n/a':>8}"
         print(f"{i:>3} {a_s} {r['ratio']:>8.3f} {r['mo']:>7.4f} {r['hu']:>7.4f}  {r['name'][:44]}")
-    print("  his_only = two-partner HISTIDINE-ONLY pH gate; the RANKING basis, and the\n"
-          "             conservative envelope min(his_only, allsite, partnered) for all 12.\n"
+    print(f"  his_only = two-partner HISTIDINE-ONLY pH gate; the RANKING basis, and the\n"
+          f"             conservative envelope min(his_only, allsite, partnered) for "
+          f"{n_env} of {len(scored)}.\n"
           "  tgtonly  = superseded target-only ratio. All tiers are PROVISIONAL:\n"
           "             Kendall tau(his_only, partnered) = 0.000. See ph_sensitivity.json.")
 
