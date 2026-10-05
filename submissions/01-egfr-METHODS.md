@@ -160,6 +160,88 @@ of overstating it.)
 H433 + H370 is the only pair close enough for one binder to bridge: a two-site ceiling of
 **43.1×**. Everything in §3 is an attempt to reach it.
 
+### 1.1 What "no detectable binding at pH 7.4" actually requires, and why we did not get there
+
+*The competition asks for a binder that works at pH 6.5 and shows **no detectable binding** at
+7.4. This section states what that costs, because it is the clearest negative result this
+project has and it is the thing a future attempt most needs before starting.*
+
+**The ceiling is set by proton count, not by design skill.** Wyman linkage gives
+d(ln K)/d(pH) = −Δν(H⁺): the enhancement over a pH window is bounded by the number of protons
+taken up on binding. Over 7.4 → 6.5, that is 0.9 units:
+
+| protons exchanged | maximum ratio |
+|---|---|
+| 1 | **7.94×** |
+| 2 | 63.1× |
+| 3 | 501× |
+
+This is thermodynamics, not a property of our model. Coupling between sites cannot exceed it;
+positive cooperativity sharpens the transition and helps you approach the bound, it does not
+raise it.
+
+**A single site's practical ceiling is set by its own free pKa, and ours was poor.** The 7.94×
+limit is reached only when the site is already deprotonated at both pHs in the free state:
+
+| pKa_free | best achievable |
+|---|---|
+| 4.0 | 7.92× |
+| 5.0 | 7.73× |
+| 6.0 | 6.28× |
+| **6.22 (H433, the site we used)** | **5.55×** |
+| 7.0 | 2.67× |
+
+So our 5.55× ceiling was H433's, not the physics'. A target histidine sitting near pKa 5 would
+have given us 7.7× from the same single-site strategy.
+
+**But whether 7.94× is *enough* depends entirely on how tight the binder is**, because "no
+detectable" is a statement about the assay's upper limit, not about the ratio. Taking a typical
+10 µM quantification ceiling:
+
+| KD at pH 6.5 | ratio needed to reach 10 µM | protons required |
+|---|---|---|
+| 1 nM | 10,000× | 4.4 |
+| 100 nM | 100× | 2.2 |
+| 500 nM | 20× | 1.5 |
+| **1,259 nM** | **7.94×** | **1.0** |
+
+**A single site can satisfy the stated criterion — but only for a binder weaker than about
+1,259 nM at pH 6.5**, or 1,801 nM at H433's actual pKa. The criterion therefore rewards weak
+binders: a good 100 nM binder needs two to three protons to be switched off, while a mediocre
+micromolar one needs one. We did not design against that, and in hindsight it is the single
+most important thing we failed to exploit.
+
+**And adding a histidine does not buy you the two-proton ceiling.** We built that design —
+`ss_bc_s831683_mpnn6_S15D_S62H_routeA`, the native target H433 plus an engineered binder
+HIS62. Every moving histidine in it, median over its 5 poses:
+
+| site | contribution |
+|---|---|
+| `target:H433` | **5.386×** |
+| `binder:HIS62` (installed) | **1.776×** |
+| `binder:HIS39` | 0.660× |
+| `binder:HIS55` | 0.712× |
+| `target:H370` | 0.880× |
+| `binder:HIS59` | 0.902× |
+| **product** | **3.569×** |
+
+The installed histidine worked — 1.776×, and it is the only binder histidine in the whole
+submission that favours the acid state (§11.1). The design still came out at **3.5×, worse
+than the single-site designs**, because the backbone carried three pre-existing histidines
+that each pull the other way and the product consumed the gain.
+
+**That is the lesson, and it is not in the thermodynamics.** You do not get the n-proton
+ceiling by adding a site. You get the **product of every titratable group on both partners**,
+including the ones you did not design and that oppose you. Multi-site is not an additive
+problem; it is a problem of controlling the whole titration landscape, and a backbone must be
+selected for having no opposing sites before a new one is installed. We selected backbones on
+affinity and then installed chemistry into whatever histidines they happened to carry.
+
+**G532 is the existence proof.** Its published SPR ratio is **13.26×** on human EGFR, which
+exceeds the one-proton bound of 7.94×, so it must exchange more than one proton — it is
+multi-site by arithmetic alone, independent of any structural claim. The route we failed to
+build is real and someone has already walked it.
+
 ---
 
 ## 2. Pipeline

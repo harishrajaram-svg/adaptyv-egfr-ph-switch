@@ -63,6 +63,8 @@ GATES = [
     # The submission's central causal claim is a set of point mutations. Nothing verified
     # they are actually present in the sequences being uploaded until 2026-10-05.
     ('mutation_identity',        [PY, 'bin/check_mutations.py'], None),
+    # §1.1's linkage tables are computed, not typed. The script reproduces them.
+    ('linkage_limits',           [PY, 'bin/linkage_limits.py'], None),
 ]
 
 
