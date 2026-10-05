@@ -993,6 +993,58 @@ are stating it rather than diversifying, because the deadline does not permit ge
 assessing a second epitope, and because the one thing worse than a concentrated submission is a
 concentrated submission presented as a diverse one.
 
+## 10c. The second-site arm: 12 paired attempts, and it does not work
+
+*Added 2026-10-05. `runs/esmfold2/w2_ss_d3` and `w2_ss_ecd` (120 poses) were run to answer one
+question — can a second titratable site be engineered into a design we already have? — and the
+paired analysis had not been done. Twelve designs, each a single point mutation on a parent
+that is in this submission. **routeA adds a histidine to the binder; routeB adds an acid.** Both
+parent and child are scored on the same histidine-only gate over their own human-leg poses, so
+the fold change is attributable to the mutation.*
+
+| route | mutation | parent | child | fold | design |
+|---|---|---|---|---|---|
+| A | S62H | 1.835 | **3.545** | **1.93** | `ss_bc_s831683_mpnn6_S15D_S62H_routeA` |
+| A | S62H | 1.774 | **3.189** | **1.80** | `ss_bc_s831683_mpnn19_S15D_S62H_routeA` |
+| A | N65H | 2.101 | 2.014 | 0.96 | `ss_h370_020_vhh_N65H_routeA` |
+| A | T45H | 2.101 | 1.628 | 0.77 | `ss_h370_020_vhh_T45H_routeA` |
+| A | T28H | 4.838 | 3.209 | 0.66 | `ss_rimA02_d3_rimA_14_vhh_T28H_routeA` |
+| B | L133E | 4.256 | **5.656** | 1.33 | `ss_rimA01_r15_..._L133E_routeB` |
+| B | M42E | 0.627 | 0.814 | 1.30 | `ss_bc_s831683_mpnn9_WT_M42E_routeB` |
+| B | M42E | 0.737 | 0.949 | 1.29 | `ss_bc_d3acid_l65_s831683_mpnn11_M42E_routeB` |
+| B | S62E | 1.774 | 1.739 | 0.98 | `ss_bc_s831683_mpnn19_S15D_S62E_routeB` |
+| B | S62E | 1.835 | 1.781 | 0.97 | `ss_bc_s831683_mpnn6_S15D_S62E_routeB` |
+| B | L133D | 4.256 | 2.116 | 0.50 | `ss_rimA01_r15_..._L133D_routeB` |
+| B | S60E | 3.526 | **0.747** | **0.21** | `ss_d2c_mpnn13_S88D_serasp_S60E_routeB` |
+
+**The headline is negative. Median fold change 0.98 over 12 attempts; 5 of 12 improved at all.**
+Adding a titratable site to a finished design is, on this evidence, a coin flip centred on no
+effect. routeA: median 0.96, 2 of 5. routeB: median 0.98, 3 of 7. Neither route is better than
+the other and neither is better than doing nothing.
+
+**Two pieces of real structure inside that null.**
+
+*Histidine addition works on protein scaffolds and failed on every antibody scaffold.* The two
+successes are **the same mutation at the same position on two sister sequences** — S62H on
+`s831683` `mpnn6` and `mpnn19`, giving **1.93×** and **1.80×**. That is a replicated effect, the
+strongest form available without a wet lab. All three routeA failures are VHH scaffolds (0.66,
+0.77, 0.96), consistent with §4.2 and §4.5 on antibody blindness, though here the failure is in
+the pH gate rather than the affinity instrument.
+
+*Acid addition can destroy a working switch.* `S60E` on `d2c_mpnn13_S88D_serasp` took a 3.526×
+switch to **0.747×** — a 79% loss, and the single largest effect in the arm. `L133D` halved its
+parent. Burying a charge with no counter-charge in reach is the failure mode of §11.6, and it
+appears here twice.
+
+**The selection effect this creates, stated because it is ours.** This submission contains
+**two of the twelve** second-site designs — `rimA01_r15_L133E` and, added 2026-10-05,
+`ss_bc_s831683_mpnn6_S15D_S62H_routeA` — and **both are among the five that improved**. We did
+not submit the ten that did not. That is selection on the outcome, and the correct reading of
+the two shipped rows is *two successes out of twelve attempts at the same strategy*, not *a
+strategy that works*. The arm's own median says it does not. Anyone grading the S62H row should
+know that the same mutation reduced the ratio on three other scaffolds, and anyone grading
+`L133E` should know its sister `L133D` halved the parent.
+
 ## 11. The submission
 
 **17 designs, ranked on the two-partner histidine-only pH product.** Track 3 allows 20.
@@ -1451,7 +1503,11 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
 14. **Rank 1 contacts a glycosylation sequon.** `c5_cf_short__boltzgen_egfr_cropfree_short_48`
     contacts Asn420; no structure we folded carries a glycan (§10b).
-15. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
+15. **Two shipped designs are selected successes from a failed arm.** The second-site strategy
+    improved 5 of 12 attempts, median fold 0.98 (§10c). Two of the five successes are in this
+    submission and none of the seven failures is. Read the S62H and L133E rows as two
+    successes out of twelve attempts, not as a working method.
+16. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
     (`d3acid_l65_s831683`) and a further two are a parent/point-mutant pair
     (`rimA01_r15_d3_rimA_20` and its `L133E`). Any hit rate or interval computed over designs
     rather than sequence families overstates n by up to six-fold on the arm carrying our only

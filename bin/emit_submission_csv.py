@@ -461,10 +461,19 @@ def main():
     # rank each design on all three bases, to report how far it moves
     import math as _m
     _b = {"his": "hisonly_median", "all": "allsite_median", "part": "partnered_median"}
+    # RANK ONLY OVER THE SUBMITTED SET. ph_sensitivity.json is a working file -- the
+    # --extra flag adds candidates to it that are NOT in the submission (second-site arm,
+    # reopened-pool candidates). Ranking over whatever happens to be in the file makes
+    # `ph_rank_range_across_bases` a function of unrelated analysis work: scoring four
+    # extra molecules would silently move a column in the graded CSV. The rank range is a
+    # statement about the submission, so the pool is the submission.
+    _ship = {x["seq"].strip().upper() for x in rows}
     _ranks = {}
     if sens:
+        _pool = {n: v for n, v in sens.items()
+                 if v.get("seq", "").strip().upper() in _ship}
         for _k, _f in _b.items():
-            _ordered = sorted((n for n in sens if _f in sens[n]), key=lambda n: -sens[n][_f])
+            _ordered = sorted((n for n in _pool if _f in _pool[n]), key=lambda n: -_pool[n][_f])
             for _i, _n in enumerate(_ordered, 1):
                 _ranks.setdefault(_n, {})[_k] = _i
     with open(OUT, "w", newline="") as fh:

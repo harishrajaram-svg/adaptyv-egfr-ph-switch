@@ -237,7 +237,20 @@ that pH**, not as a measured non-binder, and not as a KD of infinity.
 ## 2.3 Human and mouse assessed separately, then jointly
 
 Human and mouse are separate endpoints. Joint success (both species) is a third, prespecified
-endpoint. **Mouse may be measured at pH 7.4 only** (per Anthropic, Oct 3, unconfirmed). If so,
+endpoint.
+
+> **Amended 2026-10-05 — the premise below was retired and this document had not caught up.**
+> The text that follows records "**Mouse may be measured at pH 7.4 only** (per Anthropic,
+> Oct 3, unconfirmed)". That is **wrong**, and the organisers' measurement spec settles it:
+> **human EGFR at pH 6.5 AND 7.4; mouse EGFR at pH 6.5 only.** Mouse is not 7.4-only. The
+> consequence recorded below — that a design switching off at 7.4 would have an undefined
+> mouse/human ratio and unassessable cross-reactivity — therefore **does not arise**, and the
+> open question this document was holding (what happens to mouse for a design that switches
+> fully off) is closed rather than unanswered. HANDOFF.md carries the spec and notes that it
+> "retires a decision recorded below"; that retirement is now applied here. The original
+> wording is preserved because this is the frozen preregistration.
+
+**Mouse may be measured at pH 7.4 only** (per Anthropic, Oct 3, unconfirmed). If so,
 a design that genuinely switches off at 7.4 has an undefined mouse/human ratio, and mouse
 cross-reactivity is **not assessable** for that design. This is recorded now so it cannot be
 reinterpreted later.
