@@ -67,14 +67,24 @@ submitted designs switch on H433. We designed against a tag-free crystal structu
 was not available to optimise against even accidentally.
 - **Mechanism A** — the inverse: histidine on the binder, carboxylate on the target.
 
-**The ceiling, and why it set the strategy.** The general one-proton upper bound over this pH
-pair is **7.94×** per site; with H433's measured free pKa of 6.22 the single-site model spans
-**0.699× to 5.55×**. Both figures were independently confirmed by our collaborator's review.
-Worth noting that our empirically measured non-switch floor, **0.702×** over n=570 designs
-(§6), lands on the analytic lower bound of 0.699× — the floor is the model's own minimum, not
-a property of those designs. For EGFR's H433, whose free pKa we measure at 6.22,
-the attainable ceiling is **5.55×**. Over a 0.9 pH-unit window two sites give 63× and three
-give 500×; a single site cannot exceed 7.94× by any design.
+**What a ratio of 1.0 means, and what 0.699× does not.** *Corrected 2026-10-05 after
+review; the earlier wording in this section was wrong.* The general one-proton upper bound over
+this pH pair is **7.94×** per site. For a site with pKa_free = 6.22 the single-site model spans
+**0.699× to 5.55×**, where 0.699× is the limit as pKa_bound → −∞ (proton binding abolished on
+complex formation) and 5.55× the limit as pKa_bound → +∞. **No linkage gives a ratio of exactly
+1.0, not 0.699×** — `link(pKa_free, pKa_free) = 1` for every pKa, which the selftest now
+asserts. 0.699× is therefore not a "no-switch floor": it is the opposite extreme, maximal
+*acid-weakening* linkage, a reverse switch that binds more weakly as pH falls.
+
+This matters for how §6 reads. Our empirical floor of **0.702×** over n=570 designs sits within
+0.003 of an analytic limit. We previously offered that agreement as reassurance that the method
+was well-calibrated. It is better read as a warning: a large group of designs piling up on an
+analytic extreme is the signature of **protonation-model saturation** — PROPKA driving
+pKa_bound off-scale so the linkage term collapses to its bound — rather than evidence that
+those designs genuinely occupy a physical extreme. We cannot distinguish the two with the data
+we have, so the 0.702× group is reported as **uninterpretable on this gate**, not as
+"no switch detected". Over a 0.9 pH-unit window two sites give 63× and three give 500×; a
+single site cannot exceed 7.94× by any design.
 
 A full PROPKA census of all 17 histidines in the EGFR ectodomain (6ARU, apo):
 
@@ -788,10 +798,16 @@ this sentence said "six of the eleven", which was wrong on both numbers; an audi
 and lose 1.5–2.5 pKa units, and by the same thermodynamic linkage of §1 that **opposes**
 acid-tightening. We were counting the target's sites and ignoring ours.
 
-`bin/ph_gate_multisite.py` composes over every titratable site on **both** partners, with the
-free leg taken by deleting the other chain in place — the mirror of the argument §2 makes for
-the target leg. Measured over 76 poses, n = 5–11 per design:
+`bin/ph_gate_multisite.py` composes over the **histidines** of both partners, with the free
+leg taken by deleting the other chain in place — the mirror of the argument §2 makes for the
+target leg. *Corrected 2026-10-05: an earlier version of this sentence said "every titratable
+site", which the code did not do — it parsed HIS/ASP/GLU but added only histidines to the
+product. The shipped column is a **two-partner histidine-only approximation**. §11.7 gives the
+all-site and partnered alternatives, the resulting ranking instability, and why the
+histidine-only order is nevertheless the one retained.* Measured over 75 poses, n = 5–11 per
+design:
 
+<!-- GENERATED:BASIS-TABLE -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
 | design | target-only | **all-site** | binder histidines | worst drag |
 |---|---|---|---|---|
 | rimA01_r15_L133E | 4.582 | **5.659** | 0 | — |
@@ -806,6 +822,7 @@ the target leg. Measured over 76 poses, n = 5–11 per design:
 | bc_s831683_mpnn8_S15D | 5.461 | **1.023** | 3 | 0.333 |
 | bc_d3acid_l65_s831683_mpnn11 | 4.010 | **0.737** | 3 | 0.359 |
 | bc_s831683_mpnn9_WT | 3.522 | **0.593** | 3 | 0.338 |
+<!-- /GENERATED:BASIS-TABLE -->
 
 **Every binder histidine moves down — 0.33 to 0.98, none up.** PROPKA noise would scatter both
 ways. The gate's counter-charge guard fires on nearly all of them (nearest opposite charge
@@ -829,20 +846,22 @@ hardest case. The *direction* is consistent across 76 poses and mechanistically 
 
 ### 11.2 Final ranks
 
-| rank | design | class | family | aa | **all-site pH** | pose spread | target-only | poses | human | mouse | affinity assessable |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 0.12 | 4.582 | 6 | 0.594 | 0.567 | yes |
-| 2 | `bc_s360518_mpnn9_A22D` | protein | d3acid3_l65_s360518 | 65 | **3.738** | 0.45 | 5.630 | 5 | 0.451 | 0.474 | yes |
-| 3 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
-| 4 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
-| 5 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
-| 6 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
-| 7 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
-| 8 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.659** | 1.31 | 4.582 | 5 | 0.616 | 0.435 | yes |
-| 9 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.057** | 0.90 | 5.428 | 5 | 0.802 | 0.803 | yes |
-| 10 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
-| 11 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.593** | 0.74 | 3.522 | 11 | 0.783 | 0.783 | yes |
-| 12 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
+<!-- GENERATED:RANK-TABLE -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
+| rank | design | class | family | aa | **pH his-only (ranked)** | all-site | partnered | rank range | pose spread | target-only | poses | human | mouse | affinity assessable |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | protein | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 34.534 | 4.843 | 3-11 | 0.12 | 4.582 | 6 | 0.594 | 0.567 | yes |
+| 2 | `bc_s360518_mpnn9_A22D` | protein | d3acid3_l65_s360518 | 65 | **3.738** | 88.593 | 33.416 | 1-4 | 0.45 | 5.630 | 5 | 0.451 | 0.474 | yes |
+| 3 | `d2c_mpnn13_S88D_serasp` | protein | d2c_101_l147_s144898 | 147 | **3.526** | 6.681 | 6.663 | 4-8 | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
+| 4 | `bc_s831683_mpnn6_S15D` | protein | d3acid_l65_s831683 | 65 | **1.835** | 5.949 | 12.995 | 2-7 | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
+| 5 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-8 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
+| 6 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 4.976 | 5.183 | 2-10 | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
+| 7 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.140 | 2.267 | 6-12 | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
+| 8 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.659** | 53.492 | 7.341 | 1-5 | 1.31 | 4.582 | 5 | 0.616 | 0.435 | yes |
+| 9 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.057** | 1.790 | 6.809 | 6-10 | 0.90 | 5.428 | 5 | 0.802 | 0.803 | yes |
+| 10 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 4-11 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
+| 11 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.593** | 1.171 | 5.344 | 9-12 | 0.74 | 3.522 | 11 | 0.783 | 0.783 | yes |
+| 12 | `bc_s831683_mpnn8_S15D` | protein | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 7-11 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
+<!-- /GENERATED:RANK-TABLE -->
 
 **Assessable designs rank ahead of unassessable ones within tier 1.** On a pure pH ordering
 `rimA02_d3_rimA_14_vhh` leads the submission at 4.838× — on a human ipSAE of 0.219 that we
@@ -946,6 +965,83 @@ and we will report the numbers rather than a conclusion.
 longest hydrophobic run 5.
 
 ---
+
+### 11.7 pH sensitivity analysis: the ranking basis is not established
+
+*Added 2026-10-05 after review. This section exists because the basis we ranked on is not
+the one §11.1 said it was.*
+
+**What the shipped column actually measures.** `bin/ph_gate_multisite.py` was described
+here and in the preregistration as composing "every titratable site on both partners". It
+does not. It computes PROPKA pKa values for HIS, ASP and GLU in both legs and then adds
+**only histidines** to the product; the acids are parsed and discarded. The shipped
+`ph_ratio_*` column is therefore a **two-partner histidine-only approximation**, and the
+column is now named that way. This gap mattered more than a missing term usually would,
+because the designed intervention in most submitted families *is* an acid — A22D, S88D,
+S15D, L133E, T65D, S60D. The gate was blind to the residue each design was built around,
+and Mechanism B (a binder carboxylate reading a target histidine) is invisible to a
+histidine-only product by construction.
+
+**Three bases, same poses, same code path.** `bin/ph_sensitivity_multisite.py` recomputes
+every submitted design on the same 75 human-leg poses through one code path, so the
+differences below are attributable to the composition rule alone:
+
+- **his-only** — histidines on both partners. The shipped basis.
+- **all-site** — every HIS/ASP/GLU on both partners, which is what §11.1 claimed.
+- **partnered** — every site whose nearest opposite charge on the other chain is within
+  6 Å. `PARTNER_CUT` was fixed before this analysis, not tuned to it.
+
+The histidine-only values reproduce the shipped CSV exactly on all twelve designs, which
+confirms the join and the characterisation above.
+
+**The ordering is not stable.** Kendall τ between the shipped basis and the partnered basis
+is **+0.000** — the two orderings are uncorrelated. Designs move by up to **8 ranks**
+(`rimA02_d3_rimA_14_vhh`: 2nd on his-only, 10th on partnered). Per-design rank ranges are in
+the §11 table. **Every tier in this submission is therefore marked `provisional`, and no
+order here should be read as established.**
+
+**Why the shipped order is nevertheless retained.** The histidine-only value is the
+**minimum of the three bases for all twelve designs**. Ranking on it is ranking on the
+conservative envelope `min(his-only, all-site, partnered)` under a single uniform rule,
+rather than on a basis chosen after seeing which order it produced. We did not revert to
+the target-only ratio, and we did not promote either wider basis.
+
+**Why neither wider basis can rank.** The only matched negative control we have —
+`bc_s831683_mpnn9_WT`, the parent of `mpnn9_S15D`, carrying no designed acid — reads
+**5.344× on the partnered basis**, above two shipped designs. A basis on which the
+do-nothing parent looks like a 5× switch does not discriminate designs from their parents.
+The all-site basis has a related defect: the largest single contributor to
+`rimA01_r15_L133E`'s 53× is `binder:ASP33` at ratio 7.37 with its nearest counter-charge
+**9.84 Å** away — a desolvation shift with no electrostatic partner, the same artefact class
+this project used to rule out Mechanism A — while the actual designed `GLU133` contributes
+only **1.30×**. This is independent support for the reviewer's point that L133E's
+5.659 vs 5.554 is not evidence of a second site.
+
+**Noise does not accumulate.** With 30–123 titratable sites per complex, a multiplicative
+product invites the objection that it compounds PROPKA noise. Measured: the product over
+sites the gate itself calls unmoved (|ratio−1| < 0.05) sits at **0.946–1.020** across all
+twelve. Sub-threshold noise cancels; the products are driven by genuinely shifted sites.
+
+**The one design with a mechanism you can point at.** On the all-site and partnered bases
+`bc_s360518_mpnn9_A22D` ranks 1st, and it is the only submitted design whose two dominant
+sites are mutually partnered: `binder:ASP22` (pKa 6.05 → 8.76, ratio 5.90) and
+`target:H433` (6.19 → 9.61, ratio 5.63), **2.78 Å apart**, both shifting in the
+switch-favouring direction with implied pKa_bound values inside the plausible window. That
+is the designed Mechanism B, and the histidine-only gate scored it 3.738× because ASP22 —
+the designed residue — never entered the product. It ranks 4th here only because we rank on
+the conservative envelope. We flag it as the design most worth wet-lab attention, and we are
+not reordering the submission on the strength of that judgement.
+
+**Unassessed sites.** The gate now records, per pose, any titratable site for which a pKa
+is unavailable in either leg, with the reason, instead of skipping it with a bare
+`continue`. Across all 75 poses of the twelve submitted designs the count is **0** — every
+site entered or was accounted for. Site-level detail for every pose is retained in
+`analysis/01-egfr/ph_sensitivity.json` so no later question requires a re-run.
+
+**What this is not.** These three numbers are a sensitivity analysis, not a confidence
+interval. They bound how much the composition rule moves the answer; they say nothing about
+whether PROPKA's pKa values are right, and the partner-deletion free leg remains a
+fixed-conformation diagnostic rather than a measurement of the apo state.
 
 ## 12. Declarations
 

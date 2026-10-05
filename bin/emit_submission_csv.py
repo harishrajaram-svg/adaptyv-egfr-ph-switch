@@ -23,9 +23,15 @@ THE CUT -- settled 2026-10-04 with Harish, on PK's advice ("I would not fill the
 allocation simply to reach twenty"). LIMIT is 10, not the allowed 20.
 
 Ranks 11-20 of the 20-design build did not stand on a measurement. Eight of them read
-BELOW 1.0x -- no switch at all -- sitting on the 0.702x steric floor that every design
-touching a histidine without a nearby carboxylate returns. That floor is a constant of
-the method, so those rows reported the method back to itself. The weakest, bg04_r03,
+BELOW 1.0x, on the 0.702x value a large share of designs return.
+
+CORRECTED 2026-10-05, after review: calling that "no switch at all" was wrong. NO LINKAGE
+GIVES EXACTLY 1.0 -- link(pKa_free, pKa_free) = 1 for every pKa. 0.702x is the opposite
+extreme: the analytic limit as pKa_bound -> -inf, i.e. maximal ACID-WEAKENING linkage.
+Eight designs landing within 0.003 of an analytic bound is the signature of PROPKA
+saturation rather than a measured physical extreme, so those rows carry no usable pH
+information in either direction. Still a sound reason not to submit them -- but because
+they are uninterpretable, not because they were measured flat. The weakest, bg04_r03,
 was 1.94x pooled with 0.0000/0.0000 on both species and three expression-QC flags
 including an unpaired cysteine.
 
@@ -89,6 +95,7 @@ def load_scores():
 # METHODS agree, and removes the last run-name-keyed join on the submission path.
 MASTER = "analysis/01-egfr/master_rank.json"
 MULTISITE = "analysis/01-egfr/multisite_pooled.json"
+SENSITIVITY = "analysis/01-egfr/ph_sensitivity.json"   # three pH bases, bin/ph_sensitivity_multisite.py
 
 # RANKING BASIS CHANGED 2026-10-04 19:50 EDT, with Harish, from the target-only pH ratio to the
 # ALL-TITRATABLE-SITE product over BOTH partners.
@@ -112,10 +119,13 @@ MULTISITE = "analysis/01-egfr/multisite_pooled.json"
 #   bc_d3acid_..._mpnn11    4.010 -> 0.737     three, worst 0.359
 #   bc_s831683_mpnn9_WT     3.522 -> 0.593     three, worst 0.338
 #
-# Every binder histidine moves DOWN, 0.33 to 0.98, none up -- PROPKA noise would scatter both
-# ways. Guard 4 of the combined gate fires on nearly all of them (nearest counter-charge 6.9-8.8
-# A), so these are desolvation shifts with no electrostatic partner: the same mechanism as the
-# 0.702x steric floor of METHODS 6 and the same physics that killed mechanism A.
+# Every binder histidine moves DOWN, 0.33 to 0.98, none up. The earlier note here argued that
+# "PROPKA noise would scatter both ways", so a one-sided shift had to be real. PK rejected that
+# and he is right: it is not a validation argument, because a consistent one-sided shift is
+# exactly what a SYSTEMATIC model bias produces. A uniform downward shift is equally consistent
+# with desolvation physics and with the protonation model being biased on buried histidines, and
+# this data cannot separate them. Guard 4 fires on nearly all of them (nearest counter-charge
+# 6.9-8.8 A), so whatever the cause, these sites have no electrostatic partner.
 #
 # This is NOT a different objective. It is a less wrong estimate of the same one. The old number
 # is retained as `ph_ratio_target_only_SUPERSEDED` so the change is auditable rather than silent.
@@ -145,6 +155,38 @@ def multisite():
     """seq -> (all-site pH product, spread/median). Both pooled over poses."""
     import json as _j
     return {k: (v["allsite"], v.get("spread_ratio")) for k, v in _j.load(open(MULTISITE)).items()}
+
+
+def sensitivity():
+    """name -> the three pH bases for the SAME poses and the SAME code path.
+
+    PK, 2026-10-05: the gate behind the shipped column composes HISTIDINES only; the
+    acids it parses never enter the product, which matters most here because the
+    designed intervention IS an acid in most families. He asked for the alternatives
+    to be reported "as a SENSITIVITY ANALYSIS, not a CI", with provisional tiers if the
+    ranking moves, and explicitly not to present a new order as established.
+
+    It moves. Kendall tau between the shipped basis and the partnered basis is +0.000
+    -- the two orderings are uncorrelated -- and designs shift by up to 8 ranks.
+
+    WHY THE SHIPPED ORDER IS NEVERTHELESS KEPT. The histidine-only value is the MINIMUM
+    of the three bases for all 12 designs, so ranking on it is ranking on the
+    conservative envelope min(hisonly, allsite, partnered) under one uniform rule --
+    not a basis selected after seeing which order it produced. The two wider bases are
+    reported beside it rather than replacing it.
+
+    WHY NEITHER WIDER BASIS CAN RANK. The matched negative control (bc_s831683_mpnn9_WT,
+    the parent of mpnn9_S15D with no designed acid) reads 5.344x on the partnered basis
+    -- above two shipped designs. A basis on which the do-nothing parent looks like a 5x
+    switch does not discriminate. On the all-site basis it reads 1.171x, and the largest
+    single contributor to rimA01_r15_L133E's 53x is binder:ASP33 at ratio 7.37 with its
+    nearest counter-charge 9.84 A away, i.e. desolvation, while the designed GLU133
+    contributes 1.30x.
+    """
+    import json as _j, os as _os
+    if not _os.path.exists(SENSITIVITY):
+        return {}
+    return _j.load(open(SENSITIVITY))
 
 
 def pooled_affinity():
@@ -317,10 +359,29 @@ def main():
     # undefined for them and a uniform column is not available before the deadline.
     # The column is optional metadata; shipping one name for two quantities is worse
     # than shipping neither, so it is dropped and the finding goes in the methods doc.
+    # The headline pH column is renamed to say what it actually measures. It was
+    # `ph_ratio_6p5_over_7p4`, which implies a single settled quantity; it is one of
+    # three defensible compositions, and the conservative one. The two alternatives
+    # ride alongside so a grader can see the sensitivity without reading the methods,
+    # and `ph_tier_provisional` marks that the ordering is not established.
     cols = ["name", "sequence", "molecule_class",
-            "ph_ratio_6p5_over_7p4", "ipsae_min_human", "ipsae_min_mouse",
-            "ph_poses_n", "ph_pose_spread_over_median", "ph_ratio_target_only_SUPERSEDED",
+            "ph_ratio_6p5_over_7p4_his_only_CONSERVATIVE",
+            "ipsae_min_human", "ipsae_min_mouse",
+            "ph_poses_n", "ph_pose_spread_over_median",
+            "ph_ratio_allsite_SENSITIVITY", "ph_ratio_partnered_SENSITIVITY",
+            "ph_rank_range_across_bases", "ph_tier_provisional",
+            "ph_ratio_target_only_SUPERSEDED",
             "affinity_assessable", "affinity_above_null", "assessment"]
+    sens = sensitivity()
+    # rank each design on all three bases, to report how far it moves
+    import math as _m
+    _b = {"his": "hisonly_median", "all": "allsite_median", "part": "partnered_median"}
+    _ranks = {}
+    if sens:
+        for _k, _f in _b.items():
+            _ordered = sorted((n for n in sens if _f in sens[n]), key=lambda n: -sens[n][_f])
+            for _i, _n in enumerate(_ordered, 1):
+                _ranks.setdefault(_n, {})[_k] = _i
     with open(OUT, "w", newline="") as fh:
         w = csv.writer(fh); w.writerow(cols)
         for r in scored:
@@ -328,10 +389,19 @@ def main():
             # target-only number rides alongside as _SUPERSEDED so the re-rank is auditable.
             head = r.get("allsite")
             if head is None: head = r["ratio"]
+            _s = sens.get(r["name"], {})
+            _rk = _ranks.get(r["name"], {})
+            _rng = (f"{min(_rk.values())}-{max(_rk.values())}" if len(_rk) == 3 else "")
             w.writerow([r["name"], r["sequence"], r["molecule_class"],
                         f"{head:.3f}", f"{r['hu']:.4f}", f"{r['mo']:.4f}",
                         r.get("ratio_n", 0),
                         f"{r['spread_ratio']:.2f}" if r.get("spread_ratio") is not None else "",
+                        f"{_s['allsite_median']:.3f}" if "allsite_median" in _s else "",
+                        f"{_s['partnered_median']:.3f}" if "partnered_median" in _s else "",
+                        _rng,
+                        # Every tier is provisional: the shipped basis and the partnered
+                        # basis rank these designs with Kendall tau = 0.000.
+                        "provisional" if _rk else "",
                         f"{r['ratio']:.3f}",
                         # PK: "a failed run must not silently become a valid score of zero" --
                         # a VHH affinity reading here is not low, it is UNINTERPRETABLE. METHODS
@@ -349,13 +419,15 @@ def main():
     # target-only column. The two differ by up to 4.9x and the old line printed the
     # superseded one next to an order it did not produce -- a reader checking the
     # ranking against this output would find it inconsistent and be right.
-    print(f"{'#':>3} {'allsite':>8} {'tgtonly':>8} {'mouse':>7} {'human':>7}  name")
+    print(f"{'#':>3} {'his_only':>8} {'tgtonly':>8} {'mouse':>7} {'human':>7}  name")
     for i, r in enumerate(scored, 1):
         a = r.get("allsite")
         a_s = f"{a:>8.3f}" if a is not None else f"{'n/a':>8}"
         print(f"{i:>3} {a_s} {r['ratio']:>8.3f} {r['mo']:>7.4f} {r['hu']:>7.4f}  {r['name'][:44]}")
-    print("  allsite = two-partner histidine-only pH gate (the RANKING basis); "
-          "tgtonly = superseded target-only ratio")
+    print("  his_only = two-partner HISTIDINE-ONLY pH gate; the RANKING basis, and the\n"
+          "             conservative envelope min(his_only, allsite, partnered) for all 12.\n"
+          "  tgtonly  = superseded target-only ratio. All tiers are PROVISIONAL:\n"
+          "             Kendall tau(his_only, partnered) = 0.000. See ph_sensitivity.json.")
 
 
 def selftest():

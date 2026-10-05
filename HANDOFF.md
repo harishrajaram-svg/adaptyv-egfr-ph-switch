@@ -107,7 +107,10 @@ Artifacts: `analysis/01-egfr/control_recovery.{json,tsv}`. Written up as METHODS
 ## 3. DECISIONS MADE TODAY — do not relitigate
 
 - **Submission cut 20 → 10** (Harish, 3:30 PM). Ranks 11–20 did not stand on a measurement:
-  8 read below 1.0× on the 0.702× steric floor, which is a constant of the method. `bg04_r03`
+  8 read below 1.0× on the 0.702× analytic acid-weakening extreme. (Corrected 2026-10-05:
+  that is NOT a "no switch" reading — no linkage gives 1.0 — and a pile-up on an analytic
+  extreme indicates protonation-model saturation, so those 8 are uninterpretable on this
+  gate, which is still a reason not to submit them but a different reason.) `bg04_r03`
   was 1.94× with 0.0000/0.0000 and an unpaired cysteine. `LIMIT = 10` in
   `bin/emit_submission_csv.py`, reasoning recorded in the docstring.
 - **Six of ten slots on one backbone** (`d3acid_l65_s831683`) — four S15D sequences, mpnn11, and

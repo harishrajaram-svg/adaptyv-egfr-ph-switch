@@ -119,8 +119,14 @@ comparator for our KD-ratio objective. The two are kept separate here.
 **Where the control check stands, honestly.** The ladder was folded into 20 ESMFold2 poses and
 never scored or pH-gated. Recovered, the gate returns **0.677 / 0.689 / 0.677 / 0.697** for
 G532 / G532V / G532Ctrl / G5V2 — wrong direction on a measured 13× switch, and no separation
-from its own negative comparator. All four land on the 0.699× analytic lower bound of the
-single-site model, i.e. the gate is returning its own floor.
+from its own negative comparator. All four land on the 0.699× analytic **lower extreme** of the
+single-site model (the limit as pKa_bound → −∞), i.e. the gate is returning its own bound.
+
+*Corrected 2026-10-05:* this is not "no linkage detected" — no linkage would read **1.0**.
+Four controls landing within 0.025 of an analytic extreme is the signature of
+protonation-model saturation, which means the gate returns no usable information on these
+four rather than returning a reverse switch. Read as a failure of the measurement, not as a
+measured property of G532.
 
 **We are not reporting that as a falsified gate, because you told us how to read it:** *"A
 failure to recover this control could arise from the predicted pose or the protonation model.

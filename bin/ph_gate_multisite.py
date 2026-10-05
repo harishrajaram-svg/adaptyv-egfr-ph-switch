@@ -82,7 +82,10 @@ from pathlib import Path
 PH_LO, PH_HI = 6.5, 7.4
 ONE_PROTON_BOUND = 10 ** (PH_HI - PH_LO)      # 7.943x, the general one-proton maximum
 NOISE = 0.05                                   # |ratio-1| below this is PROPKA noise
-PKA_PLAUSIBLE = (2.0, 10.5)                    # a histidine's pKa_bound outside this is suspect
+# A pKa_bound outside the window for that residue's chemistry is suspect. Acids get
+# their own window: a carboxylate cannot titrate at a histidine's pKa.
+PKA_PLAUSIBLE_BY_RES = {'HIS': (2.0, 10.5), 'ASP': (0.5, 9.0), 'GLU': (0.5, 9.0)}
+PKA_PLAUSIBLE = PKA_PLAUSIBLE_BY_RES['HIS']    # kept: referenced by the selftest
 PARTNER_CUT = 6.0                              # A, titratable atom -> nearest counter-charge
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -167,30 +170,62 @@ def score_pose(cif):
             b.setup_entities()
             free_b = propka_his_and_acids(b, wd, 'apo_b', bnd)
 
-        sites = {}
-        # TARGET histidines, named from the construct's fingerprint
+        # COMPOSE OVER EVERY TITRATABLE SITE ON BOTH PARTNERS -- HIS, ASP and GLU.
+        #
+        # PK, 2026-10-05: "it does NOT compose every titratable site: it parses HIS/ASP/GLU
+        # but adds only HISTIDINES to `sites`; the acids never enter the product [...] This
+        # matters particularly when the design intervention introduces Asp or Glu."
+        #
+        # He was right, and it was the worst possible place for that gap: the designed
+        # intervention in this submission IS an acid introduction in most families (A22D,
+        # S88D, S15D, L133E, T65D, S60D). propka already returned the acid pKa values in
+        # both legs and this function discarded them, so the gate was blind to the very
+        # residue each design was built around. Mechanism B -- a binder carboxylate reading
+        # a target histidine -- cannot be seen by a histidine-only product at all.
+        #
+        # `product` is now the all-site product. `product_his_only` is kept alongside it as
+        # the previous basis so the two can be compared directly rather than swapped
+        # silently; that comparison is the pH sensitivity analysis, not a confidence interval.
+        #
+        # A site whose pKa is missing in either leg is now RECORDED in `unassessed` instead
+        # of being skipped by a bare `continue`. A silent skip makes an unmeasured site
+        # indistinguishable from an absent one, and makes the product's site count a lie.
+        sites, unassessed = {}, {}
+
+        def add(partner, label, rn, num, f, bo):
+            if f is None or bo is None:
+                unassessed[f'{partner}:{label}'] = dict(
+                    partner=partner, resname=rn, resnum=num,
+                    free=None if f is None else round(f, 2),
+                    bound=None if bo is None else round(bo, 2),
+                    reason=('no pKa in either leg' if f is None and bo is None else
+                            'no free-leg pKa' if f is None else 'no bound-leg pKa'))
+                return
+            sites[f'{partner}:{label}'] = dict(partner=partner, resname=rn, resnum=num,
+                                               free=round(f, 2), bound=round(bo, 2),
+                                               ratio=round(link(f, bo), 4))
+
+        # TARGET: histidines first, named from the construct's fingerprint, then its acids
         for num, nm in names.items():
-            f, bo = free_t.get(('HIS', num)), bound_t.get(('HIS', num))
-            if f is None or bo is None: continue
-            sites[f'target:{nm}'] = dict(partner='target', resname='HIS', resnum=num,
-                                         free=round(f, 2), bound=round(bo, 2),
-                                         ratio=round(link(f, bo), 4))
-        # BINDER histidines -- every one, not a curated list
-        for (rn, num), f in free_b.items():
-            if rn != 'HIS': continue
-            bo = bound_b.get((rn, num))
-            if bo is None: continue
-            sites[f'binder:HIS{num}'] = dict(partner='binder', resname='HIS', resnum=num,
-                                             free=round(f, 2), bound=round(bo, 2),
-                                             ratio=round(link(f, bo), 4))
+            add('target', nm, 'HIS', num, free_t.get(('HIS', num)), bound_t.get(('HIS', num)))
+        for (rn, num) in sorted(set(free_t) | set(bound_t)):
+            if rn == 'HIS' and num in names: continue          # already added under its name
+            add('target', f'{rn}{num}', rn, num, free_t.get((rn, num)), bound_t.get((rn, num)))
+        # BINDER: every titratable residue, not a curated list
+        for (rn, num) in sorted(set(free_b) | set(bound_b)):
+            add('binder', f'{rn}{num}', rn, num, free_b.get((rn, num)), bound_b.get((rn, num)))
+
         if not sites:
-            return {'file': os.path.basename(cif), 'error': 'no titratable site measured'}
+            return {'file': os.path.basename(cif), 'error': 'no titratable site measured',
+                    'unassessed': unassessed, 'n_unassessed': len(unassessed)}
 
         # Guard 3 + 4, per site
         for k, v in sites.items():
             v['implied_pka_bound'] = implied_pka_bound(v['ratio'], v['free'])
+            lo_p, hi_p = PKA_PLAUSIBLE_BY_RES.get(v['resname'], PKA_PLAUSIBLE)
+            v['plausible_window'] = [lo_p, hi_p]
             v['implausible'] = (v['implied_pka_bound'] is None or
-                                not (PKA_PLAUSIBLE[0] <= v['implied_pka_bound'] <= PKA_PLAUSIBLE[1]))
+                                not (lo_p <= v['implied_pka_bound'] <= hi_p))
             other = bnd if v['partner'] == 'target' else tgt
             mine = tgt if v['partner'] == 'target' else bnd
             d = cross_partner_distance(st[0], mine, v['resnum'], v['resname'], other)
@@ -203,17 +238,26 @@ def score_pose(cif):
         for v in sites.values(): prod *= v['ratio']
         helpful = [v['ratio'] for v in sites.values() if v['ratio'] > 1.0]
         k_moved = sum(1 for v in sites.values() if v['moved'])
+        # The previous basis, kept for a side-by-side comparison rather than replaced
+        # silently. Any difference between these two IS the effect of the acids.
+        his = [v['ratio'] for v in sites.values() if v['resname'] == 'HIS']
+        prod_his = math.prod(his) if his else 1.0
+        acids = [v for v in sites.values() if v['resname'] in ('ASP', 'GLU')]
         # Guard 2: ceiling
         ceiling = ONE_PROTON_BOUND ** max(k_moved, 1)
         verdict = 'IMPOSSIBLE' if prod > ceiling * 1.001 else 'ok'
         contributing = {k: v for k, v in sites.items() if v['moved']}
         return dict(file=os.path.basename(cif)[:-4], path=cif, target_chain=tgt, binder_chain=bnd,
                     product=round(prod, 4),
+                    product_his_only=round(prod_his, 4),
                     product_helpful_only_DO_NOT_USE=round(math.prod(helpful) if helpful else 1.0, 4),
-                    n_sites=len(sites), n_moved=k_moved, ceiling_for_n_moved=round(ceiling, 2),
+                    n_sites=len(sites), n_his=len(his), n_acid=len(acids),
+                    n_acid_moved=sum(1 for v in acids if v['moved']),
+                    n_moved=k_moved, ceiling_for_n_moved=round(ceiling, 2),
                     verdict=verdict,
                     n_implausible=sum(1 for v in sites.values() if v['moved'] and v['implausible']),
                     n_no_partner=sum(1 for v in sites.values() if v['moved'] and v['no_partner']),
+                    n_unassessed=len(unassessed), unassessed=unassessed,
                     contributing=contributing, sites=sites)
     except Exception as e:
         return {'file': os.path.basename(cif), 'error': f'{type(e).__name__}: {e}'}

@@ -31,8 +31,7 @@ are **not** eligible and are not nonbinders; they were never candidates.
 **Amended 2026-10-04, 18:00 EDT, and the amendment is itself part of the selection history.**
 The first draft of this document (13:18 EDT) froze a **20-design** submission. At 15:32 the
 submission was cut to **10**, and at 19:45 `bc_s360518_mpnn9_A22D` was added as an eleventh — ranks 11–20 of that build did not stand on a measurement: eight
-read *below* 1.0×, i.e. on the 0.702× steric floor that any design touching a histidine with no
-carboxylate nearby returns. That cut is a post-freeze selection change and is recorded here
+read *below* 1.0×, i.e. on the 0.702× value that a large share of designs return — **not** a no-switch floor, since no linkage reads 1.0; it is the analytic acid-weakening extreme, and a pile-up there indicates protonation-model saturation, so those rows are uninterpretable on this gate rather than measured non-switchers (corrected 2026-10-05). That cut is a post-freeze selection change and is recorded here
 rather than silently absorbed, on your own standard: *"A correction does not invalidate
 December's analysis if every candidate can be rescored consistently before outcomes are
 examined; silent selective changes would."* Every candidate was rescored consistently; no
@@ -164,9 +163,18 @@ material post-freeze change recorded in full rather than absorbed.**
 The first freeze ranked on the pH ratio measured over the **target's** histidines only. That gate
 never measured our own binders' titratable groups, and six of the eleven designs carry two or
 three histidines of their own which lose 1.5–2.5 pKa units on burial — opposing acid-tightening
-by the same linkage. `bin/ph_gate_multisite.py` now composes over **every** titratable site on
-**both** partners (76 poses, n = 5–11 per design). It is the same objective, estimated less
-wrongly, and it reordered the submission:
+by the same linkage. `bin/ph_gate_multisite.py` now composes over the **histidines** of
+**both** partners (75 poses, n = 5–11 per design). It is the same objective, estimated less
+wrongly, and it reordered the submission.
+
+*Corrected 2026-10-05, before any outcome was examined:* this paragraph previously claimed
+"**every** titratable site". The code parsed HIS/ASP/GLU but added only histidines to the
+product, so the shipped basis is a **two-partner histidine-only approximation**. The
+all-site and partnered alternatives are reported in METHODS §11.7. Kendall τ between the
+shipped basis and the partnered basis is +0.000, so **all tiers below are provisional**;
+the histidine-only basis is retained because it is the minimum of the three for all twelve
+designs, i.e. the conservative envelope under one uniform rule. The amendment is timestamped
+here rather than silently absorbed, on the same standard as the 20→10 cut above.
 
 | rank | design | class | family | aa | **all-site pH** | target-only | poses | human | mouse | affinity assessable |
 |---|---|---|---|---|---|---|---|---|---|---|

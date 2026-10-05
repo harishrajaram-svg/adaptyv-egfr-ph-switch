@@ -21,6 +21,7 @@ Usage:
     gen_methods_submission.py --apply    # splice them into the methods document
     gen_methods_submission.py --selftest
 """
+from pathlib import Path
 import csv, json, os, re, sys
 
 CSV = "submissions/01-egfr.csv"
@@ -43,6 +44,24 @@ DEFAULT_FAMILY = "d3acid_l65_s831683"
 ANTIBODY = {"nanobody", "scfv", "fab_kappa", "fab_lambda"}
 
 
+HEAD_PREFIX = "ph_ratio_6p5_over_7p4"
+
+
+def headcol(rows):
+    """The headline pH column, resolved by PREFIX rather than by exact name.
+
+    The column was renamed to ph_ratio_6p5_over_7p4_his_only_CONSERVATIVE when the
+    three-basis sensitivity analysis landed, because the old name implied a single
+    settled quantity. This generator exists so the methods document cannot drift from
+    the CSV, so it resolves the column instead of hardcoding a spelling -- and raises
+    if it cannot, rather than falling back to something that looks similar."""
+    cands = [c for c in rows[0] if c.startswith(HEAD_PREFIX)]
+    if len(cands) != 1:
+        raise SystemExit(f"expected exactly one column starting {HEAD_PREFIX!r}, "
+                         f"found {cands!r} in {list(rows[0])!r}")
+    return cands[0]
+
+
 def load():
     rows = list(csv.DictReader(open(CSV)))
     ms = {v["name"]: v for v in json.load(open(MS)).values()}
@@ -55,13 +74,16 @@ def load():
 
 
 def rank_table(rows):
-    out = ["| rank | design | class | family | aa | **all-site pH** | pose spread | target-only | poses | human | mouse | affinity assessable |",
-           "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    out = ["| rank | design | class | family | aa | **pH his-only (ranked)** | all-site | partnered | rank range | pose spread | target-only | poses | human | mouse | affinity assessable |",
+           "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         sp = r.get("ph_pose_spread_over_median", "") or "—"
         out.append(
             f"| {r['_rank']} | `{r['name']}` | {r['molecule_class']} | {r['_family']} | {r['_aa']} | "
-            f"**{float(r['ph_ratio_6p5_over_7p4']):.3f}** | {sp} | "
+            f"**{float(r[headcol(rows)]):.3f}** | "
+            f"{r.get('ph_ratio_allsite_SENSITIVITY') or '—'} | "
+            f"{r.get('ph_ratio_partnered_SENSITIVITY') or '—'} | "
+            f"{r.get('ph_rank_range_across_bases') or '—'} | {sp} | "
             f"{float(r['ph_ratio_target_only_SUPERSEDED']):.3f} | {r['ph_poses_n']} | "
             f"{float(r['ipsae_min_human']):.3f} | {float(r['ipsae_min_mouse']):.3f} | "
             f"{'**no**' if r['affinity_assessable'].startswith('no') else 'yes'} |")
@@ -71,11 +93,12 @@ def rank_table(rows):
 def basis_table(rows):
     out = ["| design | target-only | **all-site** | binder histidines | worst drag |",
            "|---|---|---|---|---|"]
-    for r in sorted(rows, key=lambda x: -float(x["ph_ratio_6p5_over_7p4"])):
+    HC = headcol(rows)
+    for r in sorted(rows, key=lambda x: -float(x[HC])):
         m = r["_ms"]
         nh = m.get("n_his")
         out.append(f"| {r['name']} | {float(r['ph_ratio_target_only_SUPERSEDED']):.3f} | "
-                   f"**{float(r['ph_ratio_6p5_over_7p4']):.3f}** | "
+                   f"**{float(r[HC]):.3f}** | "
                    f"{nh if nh is not None else '—'} | "
                    f"{m.get('worst') if nh else '—'} |")
     return "\n".join(out)
@@ -87,7 +110,7 @@ def facts(rows):
     for r in rows:
         fams.setdefault(r["_family"], []).append(r["_rank"])
     big = max(fams.items(), key=lambda kv: len(kv[1]))
-    tier1 = [r for r in rows if float(r["ph_ratio_6p5_over_7p4"]) >= 1.20]
+    tier1 = [r for r in rows if float(r[headcol(rows)]) >= 1.20]
     with_his = [r for r in rows if (r["_ms"].get("n_his") or 0) > 0]
     unassess = [r for r in rows if r["molecule_class"] in ANTIBODY]
     unrepro = [r for r in rows
@@ -120,9 +143,55 @@ def selftest():
           f"{f['n_tier1']} in tier 1, {f['nstruct']} structures")
 
 
+METHODS = "submissions/01-egfr-METHODS.md"
+
+
+def write_into_methods(rows):
+    """Replace the marked generated blocks in METHODS, in place.
+
+    Before this, the generator PRINTED the tables and a human pasted them. That is the
+    drift channel it was built to close -- §11 had already gone stale once that way,
+    describing eleven designs with a rank table missing the twelfth. Now the tables
+    cannot disagree with the CSV unless someone edits between the markers, and
+    --check reports it if they do."""
+    import re
+    src = Path(METHODS).read_text()
+    blocks = {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows)}
+    for tag, body in blocks.items():
+        pat = re.compile(rf"(<!-- GENERATED:{tag}[^>]*-->\n).*?(<!-- /GENERATED:{tag} -->)",
+                         re.S)
+        if not pat.search(src):
+            raise SystemExit(f"no GENERATED:{tag} block found in {METHODS}")
+        src = pat.sub(lambda m: m.group(1) + body + "\n" + m.group(2), src)
+    Path(METHODS).write_text(src)
+    print(f"wrote {len(blocks)} generated blocks into {METHODS}")
+
+
+def check_methods(rows):
+    """Exit non-zero if a generated block in METHODS differs from what the CSV implies."""
+    import re
+    src = Path(METHODS).read_text()
+    bad = []
+    for tag, body in {"BASIS-TABLE": basis_table(rows), "RANK-TABLE": rank_table(rows)}.items():
+        m = re.search(rf"<!-- GENERATED:{tag}[^>]*-->\n(.*?)<!-- /GENERATED:{tag} -->", src, re.S)
+        if not m:
+            bad.append(f"{tag}: block missing")
+        elif m.group(1).strip() != body.strip():
+            bad.append(f"{tag}: differs from the CSV")
+    if bad:
+        print("METHODS is STALE: " + "; ".join(bad))
+        print("  fix with: python3 bin/gen_methods_submission.py --write")
+        sys.exit(1)
+    print("METHODS generated blocks match the CSV")
+
+
 if __name__ == "__main__":
     if "--selftest" in sys.argv:
         selftest(); sys.exit(0)
+    if "--write" in sys.argv:
+        write_into_methods(load()); sys.exit(0)
+    if "--check" in sys.argv:
+        check_methods(load()); sys.exit(0)
     rows = load(); f = facts(rows)
     print("=== FACTS ==="); print(json.dumps({k: v for k, v in f.items() if k != "fams"}, indent=1))
     print("\n=== FAMILIES ==="); print(json.dumps(f["fams"], indent=1))

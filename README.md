@@ -32,8 +32,11 @@ cross-reactive with mouse EGFR.
    all by accident, and 9 of 10 that switched there did not bind.
 
 We submitted **10 designs of the 20 allowed**. The other ten did not stand on a measurement —
-eight read *below* 1.0× and sat on the 0.702× steric floor that any design touching a histidine
-returns. [§11](submissions/01-egfr-METHODS.md) explains the cut.
+eight read *below* 1.0× and sat on the 0.702× value that a large share of designs return.
+(That value is **not** a "no-switch floor" — no linkage reads 1.0. 0.702× is the analytic
+*acid-weakening* extreme, and a pile-up there indicates protonation-model saturation, so those
+eight are uninterpretable on this gate rather than measured non-switchers. Corrected
+2026-10-05.) [§11](submissions/01-egfr-METHODS.md) explains the cut.
 
 ## Reproducing it
 
