@@ -65,6 +65,9 @@ GATES = [
     ('mutation_identity',        [PY, 'bin/check_mutations.py'], None),
     # §1.1's linkage tables are computed, not typed. The script reproduces them.
     ('linkage_limits',           [PY, 'bin/linkage_limits.py'], None),
+    # The external reviewer asked for his feedback paraphrased, not quoted. This keeps a
+    # future edit from reintroducing his words.
+    ('no_verbatim',              [PY, 'bin/check_no_verbatim.py'], None),
 ]
 
 

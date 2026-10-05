@@ -454,7 +454,7 @@ provenance for this sequence anywhere in the project.
 
 **What this does and does not establish.** It is sufficient to stop treating the molecule as
 an established nonbinder. It does **not** establish that the altered sequence retains EGF's
-affinity or agonist activity, and the higher domain III score (0.2218 crop vs 0.1493 ECD) is
+affinity, nor whether it is still an agonist, and the higher domain III score (0.2218 crop vs 0.1493 ECD) is
 not proof of binding either — changing the target crop changes prediction and scoring
 behaviour. Both EGF-derived controls are therefore relabelled **activity-unknown**. Every
 claim that rested on their supposed negative status is withdrawn; the original numbers are
@@ -509,8 +509,8 @@ experimental outcome rather than against itself.**
 
 **How the ten are labelled, corrected 2026-10-05.** Earlier versions of this section called
 them "measured non-binders". That is not what the data says and the distinction was put to us
-directly: *"Distinguish assay failure and missing KD from no binding detected. Weak binding
-beyond the quantifiable limit is right-censored, not below."* A molecule with no reported KD is
+directly: the reviewer required a missing KD to be treated as right-censored rather than as a
+measurement of no binding, and assay failure kept separate from both A molecule with no reported KD is
 one whose affinity is **right-censored** — known only to be weaker than the assay's
 quantifiable limit — and that class also contains molecules that failed to express or failed QC
 for reasons unrelated to affinity. It is not a measurement of zero affinity. Throughout this
@@ -546,10 +546,10 @@ first" is not established — what is established is that the instrument ranks a
 
 **The cross-reactivity requirement does NOT rescue this control.** *Corrected 2026-10-05; the
 previous heading here read "what rescues it" and the paragraph below it argued the opposite of
-what the data supports.* The reviewer's correction was explicit: *"The mouse scores improve
-separation in this panel, but a zero predicted interface is not an experimentally demonstrated
-specificity mechanism. Without matched mouse outcomes, this does not validate mouse binding or
-rescue the failed human control criterion."*
+what the data supports.* The reviewer's correction was explicit: the reviewer's position was that although the mouse scores do separate this panel better,
+a predicted interface of zero is not an experimentally demonstrated specificity mechanism,
+and that without matched mouse outcomes it neither validates mouse binding nor rescues the
+failed human criterion.*
 
 What is true: both molecules that outrank the binder on the human leg score exactly **0.0000 on
 the mouse leg**, so scored as the submission is scored — requiring both species — the one
@@ -785,7 +785,7 @@ for the two VHH-format rows in this submission at all, which is how they are rep
 
 **Our two PROPKA readings agree at odds ratio 1.55** — weak concordance. We previously wrote
 that at most one of them measures something real; that does not follow, and we withdraw it.
-Two noisy predictors can disagree while both carry signal. Of 21 designs both call switches,
+Two imperfect predictors can disagree and still both be informative. Of 21 designs both call switches,
 only 14 agree on *which* histidine.
 
 We therefore added a third, from a different family. Proton-PottsMPNN (Jacobsen, Ovchinnikov
@@ -819,13 +819,13 @@ than the truth**, and we report it as the arithmetic of the 2×2 rather than as 
 designs. A family-clustered interval would be the correct object and we have not computed one.
 
 An important correction to our own earlier reading. Median ΔΔG is +0.11 for PROPKA-called
-switches against +3.20 for non-switches — **both positive**. That is a lower relative penalty,
+switches against +3.20 for non-switches — **both positive**. That is a smaller relative penalty,
 not demonstrated acid-favoured binding. Only **47% of PROPKA-called switches, and 17% of the
 whole pool, actually have ΔΔG < 0.**
 
-Three further limits. A learned Potts score is not automatically a calibrated physical free
+Three further limits. A learned Potts score is not, in itself, a calibrated physical free
 energy, so the units are model-internal. Fixing H433's protonation state does not give the
-population-weighted affinity change between pH 6.5 and 7.4. And the 1,693 complexes are not
+affinity change averaged over the populations at the two pHs. And the 1,693 complexes are not
 1,693 independent designs — they include repeated backbones and sequence families, so the
 interval above is optimistic.
 
@@ -838,10 +838,10 @@ distribution, and both EGF-derived 'nonbinders' fall in the top 14% — a model 
 target says protonating H433 is maximally bad for an EGF-like complex, which is exactly right
 for a neutral-pH agonist."* It is withdrawn for three reasons, each sufficient on its own:
 
-1. **The reviewer ruled it out by name**, 2026-10-04 §5: *"The EGF-derived sequences' Potts
-   ranks cannot independently establish their binding or agonism."* And §1: *"Relabel both
-   EGF-derived controls as activity-unknown, document their provenance gap, and withdraw claims
-   based on their supposed negative status."* §4.1 carried out the relabelling; this paragraph
+1. **The reviewer ruled it out by name**, 2026-10-04 §5: the reviewer held that the Potts ranks of the EGF-derived sequences cannot on their own
+   establish either binding or agonism And §1: and instructed that both EGF-derived controls be relabelled
+   activity-unknown, their provenance gap documented, and any claim resting on their supposed
+   negative status withdrawn §4.1 carried out the relabelling; this paragraph
    then kept arguing from the status that had just been withdrawn.
 2. **It contradicts the two sentences immediately above it**, which say *"Agreement between two
    methods is evidence, not validation. Neither has experimental ground truth on this target."*
@@ -1184,8 +1184,8 @@ left in because the reasoning is the record of why.
 
 **† Both of these were added and then removed the same day, and the reason matters.** They
 were the top two of the five additions on the pH objective, and both are **near-identical to a
-design already shipped** — 0.985 and 0.986 respectively. The review's instruction was *"avoid
-filling available slots with nearly identical variants"*, so ranking the reopened pool on the
+design already shipped** — 0.985 and 0.986 respectively. The review's instruction was the instruction not to spend available slots on
+nearly identical variants, so ranking the reopened pool on the
 objective produced precisely what we had been told not to do. They were replaced by
 `bcr_d3acid3_l60_s647537_mpnn3` (2.914×) and `bcr_d3acid3_l60_s647537_mpnn11` (2.747×), which
 open a backbone family that had no representation. **Correction 2026-10-05:** these two are **0.867 identical to each other** — both 60 aa, differing at 8 positions — so they are MPNN redesigns of one backbone, not two independent designs. 0.467 is their identity to everything *else* submitted. The same false figure shipped in both CSV rows and is corrected there. The rows above are left in place because they are what the reopened ledger
@@ -1208,8 +1208,10 @@ and every number here was produced before any outcome was examined.
 
 ## 10b. Finalist epitope footprints: the four checks, and one finding they surface
 
-*Added 2026-10-05 at the reviewer's request: "apply full-ECD, glycan, receptor-state and
-human/mouse contact checks to the actual finalist footprints — my earlier domain-II assessment
+*Added 2026-10-05 at the reviewer's request, which was for the full ectodomain, glycosylation,
+receptor state and
+human/mouse contact checks be applied to the real finalist footprints, noting that the earlier
+domain-II assessment
 does not clear these designs." He was right that it does not. `bin/finalist_footprints.py`
 computes each design's footprint from its own human-leg poses — a residue is in the footprint if
 it contacts the binder within 5.0 Å in a **majority** of that design's poses — and maps it to
@@ -1511,8 +1513,8 @@ than inferred from our gate**. Six of the eighteen designs sit in such a pair, a
 independent tests — that is what they are for.
 
 **The distinction this rests on, because it was got wrong once today.** The review asked for both
-halves of one sentence: *"Keep the experimental WT/mutant comparisons **and** avoid filling
-available slots with nearly identical variants."* A near-identical variant is the first thing when
+halves of one sentence: keep the experimental wild-type/mutant comparisons **and** do not spend available slots
+on nearly identical variants. A near-identical variant is the first thing when
 it ships as a declared comparison and the second thing when it is padding. On 2026-10-05 five
 designs were added from the reopened pool of §10 ranked on the pH objective, and two of them —
 `sd_d2c_101_l147_s144898_m_T65D` (0.986 to shipped `d2c_mpnn13_S88D_serasp`) and
@@ -1730,9 +1732,8 @@ exists to give. Site-level detail for every pose is retained in
 
 **pKa-perturbation sensitivity: the pH ratio cannot order this submission.**
 *Added 2026-10-05. The three-basis comparison above answers how much the **composition rule**
-moves the answer. The reviewer asked a different question — "compare the deletion estimate with
-consistently prepared apo/relaxed alternatives **and plausible pKa perturbations**" — and this
-is the pKa half. `bin/ph_pka_perturbation.py` perturbs every site's stored pKa_free and
+moves the answer. The reviewer asked a different question: how much the **free-leg definition**
+moves it, and how much **plausible pKa error** moves it. This section is the pKa half. `bin/ph_pka_perturbation.py` perturbs every site's stored pKa_free and
 pKa_bound by independent Gaussian noise, recomputes each site's linkage, re-takes the
 histidine-only product, re-takes the median over poses, and re-ranks all 18 (400 draws per
 σ, re-run on 2026-10-05 at σ = 0.4, 0.8 and 1.2 and persisted as three artifacts). σ is PROPKA 3's
@@ -1761,8 +1762,7 @@ The shipped order is therefore more stable than the table above, because those t
 five rows regardless of the noise. The table is the right statement about *the pH ratio as a
 ranking instrument*; it is not the full statement about the shipped order.
 
-**The conclusion we draw, which is the reviewer's own instruction.** *"If rankings change
-materially, use provisional tiers."* They change materially. Every tier in the CSV is already
+**The conclusion we draw, which is the reviewer's own instruction.** the instruction was to use provisional tiers if the rankings change materially. They change materially. Every tier in the CSV is already
 marked `provisional`, and the defensible claim from this submission is **a top set and a bottom
 set, not a rank order**. We have not collapsed the CSV to tiers because the platform takes an
 ordered file, but no number in it should be read as placing one design above its neighbour.
@@ -1770,19 +1770,19 @@ ordered file, but no number in it should be read as placing one design above its
 **What remains unresolved.** The apo/relaxed half of the reviewer's request is not done. It
 needs consistently-prepared unbound structures for both partners and new folding, and the
 partner-deletion free leg remains a fixed-conformation diagnostic. Also unaddressed: multiplying
-per-site ratios assumes **independent titration**, which is not a general treatment of coupled
+per-site ratios assumes **independent titration**, and therefore does not handle of coupled
 sites, and these draws model pKa error as **noise** — a systematic PROPKA bias on buried
 histidines would move every design together and this analysis would not detect it.
 
 **Apo free leg vs partner-deletion free leg.** *Added 2026-10-05, the remaining half of the
-reviewer's sensitivity request: "compare the deletion estimate with consistently prepared
+reviewer's sensitivity request: that the deletion estimate be set against consistently prepared
 apo/relaxed alternatives." `bin/ph_apo_freeleg.py` against `runs/esmfold2/w5_apo` — every
 submitted binder folded ALONE by the same predictor, same 5 seeds, same pipeline (19 monomers,
 95 structures). The **bound leg is identical in both**, so every difference below is
 attributable to the free leg alone.*
 
-This is a comparison of two approximations and the reviewer said so plainly: *"A separately
-predicted apo structure is another approximation, not automatically the correct answer."*
+This is a comparison of two approximations and the reviewer said so plainly: a separately predicted apo structure is a second approximation rather than
+automatically the right answer
 Deletion holds the side chains in a conformation the free protein does not adopt; the apo fold
 gives a plausible unbound conformation that has no particular relationship to the bound pose,
 so pairing its pKa with the complex's bound pKa mixes two structures. Neither is the free
@@ -2128,7 +2128,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     magnitude is resolved.
 27. **The reviewer's tethered-versus-extended footprint comparison was never run.** He asked for the
     complete binder footprint compared across tethered and ligand-bound extended assemblies,
-    including the second receptor, glycans and membrane-facing orientation, and said
+    taking in the second receptor, the glycans and the membrane-facing orientation, and said
     explicitly that distance from one tether contact cannot settle it. §10b runs four other
     checks and does not run this one. The receptor state we model (6ARU, tethered) matches
     the assay construct, which is why the gap is tolerable, but it is a gap.
@@ -2138,18 +2138,18 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     contact outside it. §4.4b's rAC1 result points the other way: on the full ectodomain the
     paratope recall is 0.37–0.96 and on the crop 0.00–0.07. The honest statement is that the
     crop is adequate *for the poses we generated*, which is not the same claim.
-29. **No solvent-accessible surface area was computed.** The reviewer: *"The burial atom count is a
-    useful proxy, not a substitute for solvent-accessible surface area."* It is still the sole
+29. **No solvent-accessible surface area was computed.** The reviewer: the reviewer called the burial atom count a useful proxy and
+    explicitly not a replacement for solvent-accessible surface area. It is still the sole
     support for the H370 burial conclusion. `biomodals/modal_sasa.py` exists and was never
     run; "SASA" appears in no deliverable.
 30. **The seed-instability pilot the reviewer specified was never run.** He asked for 20–30 diverse
-    candidates enriched near decision boundaries at ~10 seeds each, assessing rank changes,
+    candidates clustered around the decision boundaries at roughly ten seeds each, assessing rank changes,
     pose consistency and threshold crossings. What exists instead is 5 seeds per design on the
     shipped set and a 15-seed triad on one design (§11.6). The pKa-perturbation study (§11.7)
     answers a different question — instrument noise, not seed noise.
-31. **Mechanism A was never tested, and was twice asserted to be ruled out.** the reviewer's 2026-09-29
-    answer 3 was to give mechanism A most of the initial design effort conditional on finding
-    a suitable local acidic surface, retaining B as a smaller branch. §1 records that we used
+31. **Mechanism A was never tested, and was twice asserted to be ruled out.** The reviewer's
+    2026-09-29 answer put most of the early design effort on mechanism A, conditional on there
+    being a usable local acidic surface to aim at, and kept B as the smaller branch. §1 records that we used
     mechanism B. No mechanism-A result is reported anywhere in this document, so the two
     statements that A was ruled out are not supported by an experiment we ran.
 32. **Every shipped design clears novelty Level ≥ 3; the tightest margin is 0.0076.**

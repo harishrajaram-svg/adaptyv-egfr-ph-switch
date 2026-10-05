@@ -1,9 +1,9 @@
 # Control table — rebuilt on the reviewer's spec, 2026-10-04
 
-The reviewer: *"I would not replace the compromised bar with another universal number ... Add
-experimentally characterised, expressed EGFR nonbinders where available ... For VHHs, include
-framework-preserving CDR decoys as a separate synthetic control class ... Deduplicate positive
-controls by sequence family ... keep seeds nested within sequences."*
+The reviewer declined to put another universal number in place of the compromised bar. What was
+asked for instead: experimentally characterised, expressed EGFR nonbinders where they exist;
+CDR decoys that keep the framework intact, as a separate synthetic control class for VHHs;
+positive controls deduplicated by sequence family; and seeds nested inside sequences.
 
 ## 1. The old panel was 8 runs of THREE molecules
 
@@ -96,7 +96,7 @@ excluded on it**.
 ## 5b. THE pH CALIBRATION PAIR — G532 / G532Ctrl. Named twice, never used, and we had it backwards.
 
 **You named G532 and G532Ctrl as the relevant pH calibration pair in both replies, and
-instructed: "Use these binders only for calibration, not as starting sequences for competition
+was explicit that known binders may calibrate the method but must never become starting sequences for competition
 entries."** We did the inverse. G532 exists in this project as a **design-generation arm**
 (`g532mimic`, `g532_ladder`) and is **absent from the control panel entirely** — it appears
 nowhere in the pH gate, the ranking table, or the methods document.
@@ -135,8 +135,8 @@ four rather than returning a reverse switch. Read as a failure of the measuremen
 measured property of G532.
 
 **We are not reporting that as a falsified gate, because you told us how to read it:** *"A
-failure to recover this control could arise from the predicted pose or the protonation model.
-Assess those separately before using the pH gate to discard candidates."* Running that
+failure to recover this control could come from the predicted pose or from the protonation
+model, and the two must be assessed separately before the pH gate is used to discard anything. Running that
 separation (`bin/g532_pose_check.py`) gives **POSE WRONG on 20 of 20**: the nearest carboxylate
 sits **8.97–16.84 Å** from H433 across the five G532 poses, and in G532V/G532Ctrl the relevant
 acidic residues are mutated out by design. A gate reading on a structure that cannot host the
@@ -145,8 +145,9 @@ protonation model.**
 
 ### The pose-vs-protonation separation you asked for, now answered
 
-You wrote: *"A failure to recover this control could arise from the predicted pose or the
-protonation model. Assess those separately before using the pH gate to discard candidates."*
+The instruction was that a failure to recover this control could come from the predicted pose
+or from the protonation model, and that the two be assessed separately before the pH gate is
+used to discard anything.
 
 Done. **It is the pose, and the result is worse than a failure to recover — the instrument
 anti-ranks the ladder.** `ipsae_min` refuses on these structures by design (3 inter-chain pairs;
@@ -226,7 +227,7 @@ G532 is not merely uninformative but inverted, and that is enough to stop us rea
 affinity columns at all.
 
 **And the ordering consequence we have not honoured.** Your instruction was to assess pose and
-protonation separately *before* using the pH gate to discard candidates. The gate has been used
+protonation independently *before* the pH gate is used to reject anything. The gate has been used
 as a discard filter throughout — §10 of the methods document was rebuilt on 2026-10-04 and now
 accounts for a **75-molecule** union, sequence-keyed, rather than the 38 this paragraph
 cites; the 38 was a run-name count that collapsed to fewer distinct sequences.
@@ -281,8 +282,8 @@ All values are ipSAE_min, **median over 5 seeds**, against the 621 aa human and 
 `bin/control_family_balance.py` (reproducible, no arguments).
 
 **The family map is sequence-based, and the first version of this was wrong.** You said: *"First
-freeze a sequence/backbone-based family map without looking at scores. A shared submitting group
-is a clue, not a family definition."* The first version used the submitter-group prefix
+freeze a family map on sequence or backbone before any score is consulted. Designs coming from one submitting group
+is a hint rather than a definition of a family. The first version used the submitter-group prefix
 (`gitter-yolo` / `deepsatflow`) — exactly what you ruled out — and reported two families. Rebuilt
 by clustering the binder sequences themselves.
 
@@ -323,7 +324,8 @@ it holds the two molecules that outscore EGF on the human leg. Eight of the ten 
 this panel are one sequence family.
 
 **No confidence interval is reported, and no effective-n is substituted into Clopper–Pearson.**
-Ordinary exact binomial intervals do not become cluster-adjusted that way, and six families —
+An ordinary exact binomial interval does not become cluster-adjusted by that substitution, and
+six families —
 three of them singletons — cannot support dependable cluster-bootstrap inference either. The
 leave-one-family-out range is the uncertainty statement. The mouse leg is 1.000 under every
 weighting, the one part of this panel that is not weighting-dependent.
@@ -380,8 +382,8 @@ place it mattered.
 > **Corrected 2026-10-05.** This section previously argued that the mouse leg *rescues* the
 > failed human criterion, "a mechanism, not a margin", because the two exclusions sit at exactly
 > 0.0000 on five of five seeds rather than at a narrow margin. **That argument is withdrawn**, on
-> your correction: *"a zero predicted interface is not an experimentally demonstrated specificity
-> mechanism. Without matched mouse outcomes, this does not validate mouse binding or rescue the
+> the correction: a predicted interface of zero is not an experimentally demonstrated
+> specificity mechanism, and without matched mouse outcomes it neither validates mouse binding nor rescues the
 > failed human control criterion."* Three reasons it does not stand:
 >
 > * **No matched mouse outcomes exist.** Adaptyv measured these molecules against HUMAN EGFR. A

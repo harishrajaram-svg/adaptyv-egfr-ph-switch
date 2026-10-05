@@ -1,8 +1,8 @@
 # Preregistration — Adaptyv challenge 1 (EGFR pH-switch), December analysis
 
 Written **2026-10-04**, before any experimental outcome is known, in answer to the reviewer:
-*"Freeze the candidate universe, sequence-family assignments, model/code versions, scoring
-settings, selection history, final ranks and exclusions."*
+*Freeze the candidate universe, the sequence-family assignments, model and code versions, scoring
+settings, the selection history, and the final ranks and exclusions.*
 
 **Status of the work it covers: EXPLORATORY.** Everything below the "frozen" section was
 produced by repeated, outcome-driven screening of one pool. This document cannot undo that.
@@ -32,9 +32,9 @@ are **not** eligible and are not nonbinders; they were never candidates.
 The first draft of this document (13:18 EDT) froze a **20-design** submission. At 15:32 the
 submission was cut to **10**, and at 19:45 `bc_s360518_mpnn9_A22D` was added as an eleventh — ranks 11–20 of that build did not stand on a measurement: eight
 read *below* 1.0×, i.e. on the 0.702× value that a large share of designs return — **not** a no-switch floor, since no linkage reads 1.0; it is the analytic acid-weakening extreme, and a pile-up there indicates protonation-model saturation, so those rows are uninterpretable on this gate rather than measured non-switchers (corrected 2026-10-05). That cut is a post-freeze selection change and is recorded here
-rather than silently absorbed, on your own standard: *"A correction does not invalidate
-December's analysis if every candidate can be rescored consistently before outcomes are
-examined; silent selective changes would."* Every candidate was rescored consistently; no
+rather than silently absorbed, on the reviewer's own standard: a correction leaves December's
+analysis intact so long as every candidate is rescored on one basis before any outcome is
+looked at, whereas a quiet selective change would not. Every candidate was rescored consistently; no
 outcome has been examined.
 
 Two counts in the first draft were also stale and are corrected above: 1,948 designs *generated*
@@ -200,9 +200,9 @@ this instrument — §4.5 of the methods document shows a measured 294 nM antibo
 own non-switching comparator. Your instruction to apply eligibility and credible-interface checks
 before the challenge priorities is the basis; the cost is stated in the methods document.
 
-**On your standard for whether this invalidates December:** *"A correction does not invalidate
-December's analysis if every candidate can be rescored consistently before outcomes are examined;
-silent selective changes would."* Every submitted candidate was rescored on the new basis, at
+**On the reviewer's standard for whether this invalidates December:** a correction leaves that
+analysis intact provided every candidate is rescored on one basis before any outcome is seen; a
+quiet selective change would not. Every submitted candidate was rescored on the new basis, at
 n ≥ 5, before any outcome exists. The superseded value ships as its own CSV column. Nothing was
 selectively rescored and nothing was dropped.
 
@@ -333,7 +333,8 @@ reinterpreted later.
 
 ## 2.5 Three assessments kept separate
 
-The reviewer: *"Keep software correctness, control recovery and prospective predictive performance as
+The reviewer asked for software correctness, control recovery and forward-looking predictive
+performance to be
 separate assessments."*
 
 1. **Software correctness** — does `ipsae_min.py` reproduce the pinned reference on the
@@ -383,7 +384,7 @@ Failing (1) or (2) does not invalidate (3) and vice versa; they are reported sep
 
 Preregistration does not undo repeated selection from one pool. Therefore:
 
-* **Inference is restricted to the designs actually tested.** Untested designs are not
+* **Inference is restricted to the designs that were actually tested.** A design that was never tested is not
   nonbinders. No weighting scheme can recover groups that had zero probability of selection.
 * We do **not** claim our ranking generalises to the pool. We claim only what the tested
   designs show.
