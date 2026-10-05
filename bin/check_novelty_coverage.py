@@ -116,7 +116,22 @@ def main():
                  "  There is deliberately no fuzzy fallback: it matched the wrong row once\n"
                  "  and reported a clearing design as Level 1.")
 
-    cleared, unlevelled = [], []
+    # Two designs may never share a novelty stem: one scanned chain cannot be two
+    # sequences. The nres check alone cannot see this when the designs are the same
+    # length -- pointing both 65 aa designs at one 65 aa stem passed it.
+    used = {}
+    for r in rows:
+        st_ = STEM.get(r['name'])
+        if st_:
+            used.setdefault(st_, []).append(r['name'])
+    dupes = {k: v for k, v in used.items() if len(v) > 1}
+    if dupes:
+        print("STEM MAP IS NOT INJECTIVE -- one scanned chain claimed by several designs:")
+        for k, v in dupes.items():
+            print(f"   stem {k!r} <- " + ", ".join(v))
+        sys.exit("  Each design needs its own novelty record; fix the STEM map.")
+
+    cleared, unlevelled, misjoin = [], [], []
     show = '--margins' in sys.argv
     if show:
         print(f"{'#':>3} {'design':<46}{'lvl':>4}{'gate':>6}{'TM':>8}{'ident':>7}"
@@ -129,6 +144,17 @@ def main():
                 hit = h
                 break
         if hit:
+            # VALIDATE THE JOIN, do not trust the hand map. Pointing all four previously
+            # unmapped designs at a single stem made the gate report "18 of 18 clear" --
+            # a hand-maintained map that is never checked is the ELIGIBILITY: 0 failure
+            # again. The scanned chain's residue count must match the submitted sequence's
+            # length, which is cheap and catches every mis-join of this shape.
+            try:
+                nres = int(hit.get('nres'))
+            except (TypeError, ValueError):
+                nres = None
+            if nres is not None and nres != len(r['sequence'].strip()):
+                misjoin.append((i, r['name'], stem, nres, len(r['sequence'].strip())))
             cleared.append((i, r['name'], hit))
             if show:
                 tm, fid = num(hit.get('best_qtm')), num(hit.get('best_fident'))
@@ -147,6 +173,16 @@ def main():
                       f"{fid if fid is not None else '—':>7}  {mg:>11}")
         else:
             unlevelled.append((i, r['name']))
+
+    if misjoin:
+        print(f"\nJOIN VALIDATION FAILED for {len(misjoin)} design(s) -- the novelty record "
+              f"found does not describe the submitted sequence:")
+        for i, n, stem, nres, aa in misjoin:
+            print(f"   rank {i:>2}  {n}\n            stem {stem!r} has {nres} residues; "
+                  f"the submitted sequence is {aa} aa")
+        print("  Fix the STEM map in bin/check_novelty_coverage.py. The map is "
+              "hand-maintained and this check is what keeps it honest.")
+        sys.exit(1)
 
     bad = [(i, n, h) for i, n, h in cleared if h.get('clears_gate') != 'True']
     print(f"\nlevelled and clearing : {len(cleared) - len(bad)} of {len(rows)}")

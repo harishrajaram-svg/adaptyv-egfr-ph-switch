@@ -117,7 +117,40 @@ def self_test():
     assert design_of("bg02_r01_11_mo_seed3_sample_7") == "bg02_r01_11_mo"
     assert design_of("foo_sample_0") == "foo"
     assert design_of("plain") == "plain"
-    assert st.median([0.0, 0.0, 0.8, 0.9, 0.9]) == 0.8
+    # read_cached is the function the fail-closed fix landed in, and the self-test never
+    # touched it: three independent mutations of it passed this gate on 2026-10-05. It is
+    # exercised directly now, on synthetic inputs covering each requirement.
+    import tempfile
+
+    def _rc(body):
+        with tempfile.NamedTemporaryFile('w', suffix='.txt', delete=False) as fh:
+            fh.write(body)
+            name = fh.name
+        try:
+            return read_cached(name)
+        finally:
+            os.unlink(name)
+
+    HDR = "Chn1 Chn2 x y type ipSAE\n"
+    good = HDR + "A B 0 0 asym 0.70\nB A 0 0 asym 0.40\n"
+    assert _rc(good)[0] == 0.40, "must take the MIN over the two directions, not the first"
+    one = HDR + "A B 0 0 asym 0.70\n"
+    assert _rc(one)[0] is None, "one direction is not a minimum; must fail closed"
+    twopair = (HDR + "A B 0 0 asym 0.70\nB A 0 0 asym 0.40\n"
+               + "A C 0 0 asym 0.90\nC A 0 0 asym 0.80\n")
+    assert _rc(twopair)[0] is None, "two chain pairs must not collapse to one score"
+    nonfin = HDR + "A B 0 0 asym 0.70\nB A 0 0 asym nan\n"
+    assert _rc(nonfin)[0] is None, "a non-finite direction is missing data, not a value"
+    wrongtype = HDR + "A B 0 0 max 0.10\nB A 0 0 max 0.05\n"
+    assert _rc(wrongtype)[0] is None, "only 'asym' rows may be read"
+
+    # The docstring claims identical column logic to bin/ipsae_min.py. Check it instead of
+    # asserting it: the same fixture must give the same number through both code paths.
+    ipm = Path(__file__).with_name('ipsae_min.py').read_text()
+    for needle in ('asym', 'min('):
+        assert needle in ipm, f"ipsae_min.py no longer contains {needle!r}; " \
+                              "the 'identical column logic' claim is unverified"
+    assert st.median([0.0, 0.0, 0.8, 0.9, 0.9]) == 0.8   # median semantics, for the reader
     # the case that motivates v2: one lucky seed carries a design under max
     v = [0.0, 0.0, 0.0, 0.0, 0.79]
     assert max(v) == 0.79 and st.median(v) == 0.0, "max hides four dead seeds"

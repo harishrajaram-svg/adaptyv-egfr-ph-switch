@@ -1922,8 +1922,10 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
 13. **A 0.0000 on this instrument is not "no interface".** On its own co-crystal (4UIP), a
     pose reproducing 72% of the crystal contacts and 93% of the epitope scores ipSAE_min
     0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
-14. **Three shipped designs contact a glycosylation sequon, not one.** `c5_cf_short…_48`
-    (rank 1), `bcr_d3acid3_l60_s647537_mpnn3` (rank 8) and `…_mpnn11` (rank 9) all contact
+14. **Three shipped designs contact a glycosylation sequon, not one.**
+    `c5_cf_short__boltzgen_egfr_cropfree_short_48` (rank 1),
+    `bcr_d3acid3_l60_s647537_mpnn3` (rank 8) and `bcr_d3acid3_l60_s647537_mpnn11` (rank 9)
+    all contact
     **Asn420**; no structure we folded carries a glycan (§10b). This limitation read "rank 1
     contacts a glycosylation sequon" while §10b read "1 of 17", so the exposure looked like
     one unlucky row rather than a property shared by three designs — and the two bcr rows

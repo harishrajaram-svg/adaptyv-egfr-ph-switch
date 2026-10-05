@@ -138,9 +138,13 @@ def rules(a):
         for doc, (text, offs) in a['flat'].items():
             # The pre-registration is a FROZEN document: it records what was committed to
             # before the outcome was known, and retro-editing its numbers to match the
-            # current submission would destroy the only thing it is for. Its own amendment
-            # notes carry the drift. So it is read for citations and inventory, but never
-            # held to a current-state count.
+            # current submission would destroy the only thing it is for.
+            #
+            # SCOPE, stated honestly after an audit pointed out the comment overstated it:
+            # this skips EVERY rule for that document, not only count rules. That is wider
+            # than ideal, and the compensating cover is the CITATIONS pass, which does read
+            # it. A per-design value falsified inside its tables is therefore guarded only
+            # by CITATIONS and by INVENTORY, not by RULES.
             if doc.endswith('PREREGISTRATION.md'):
                 continue
             for m in re.finditer(pattern, text, re.I):
@@ -309,7 +313,9 @@ def rules(a):
 
 # ----------------------------------------------------------- CITATIONS ----
 FIELD_PATTERNS = [
-    ('ph_ratio_6p5_over_7p4_his_only_CONSERVATIVE', r'(\d+\.\d{3})×', 3),
+    # Accept the ASCII 'x' as well as U+00D7: the documents mix both, and requiring
+    # the typographic sign left every ASCII-written ratio unguarded.
+    ('ph_ratio_6p5_over_7p4_his_only_CONSERVATIVE', r'(\d+\.\d{3})\s*[×x]', 3),
     ('ipsae_min_human', r'human (\d\.\d{3})', 3),
     ('ipsae_min_mouse', r'mouse (\d\.\d{3})', 3),
     ('ph_poses_n', r'n\s*=\s*(\d+)', 0),
@@ -362,12 +368,36 @@ def citations(a, window=200):
                             got = round(float(q.group(1)), prec) if prec else int(float(q.group(1)))
                         except ValueError:
                             got = None
-                        # only flag when the number looks like it IS this field:
-                        # same magnitude, differs in the last place(s)
-                        if got is not None and got != truth and abs(got - truth) < max(truth * 0.5, 1.0):
-                            line = text[:m.start()].count('\n') + 1
+                        if got is None or got == truth:
+                            continue
+                        line = text[:m.start()].count('\n') + 1
+                        near = abs(got - truth) < max(truth * 0.5, 1.0)
+                        if near:
+                            # same magnitude, differs in the last place(s): a stale value
                             bad.append(f"{doc}:{line} `{name}` {field}: doc says "
                                        f"{q.group(1)}, CSV says {val}")
+                            continue
+                        # HOLE CLOSED 2026-10-05. The near-miss test was the ONLY test, so
+                        # a value differing by more than 50% was skipped -- which is exactly
+                        # the cross-attribution this pass exists to catch (one design's
+                        # number quoted in another design's sentence). A large mismatch is
+                        # reported when the quoted value IS another design's value for the
+                        # same field, which is evidence rather than coincidence.
+                        owners = []
+                        for other, orow in rows.items():
+                            if other == name:
+                                continue
+                            try:
+                                ov = (round(float(orow[field]), prec) if prec
+                                      else int(float(orow[field])))
+                            except (KeyError, TypeError, ValueError):
+                                continue
+                            if ov == got:
+                                owners.append(other)
+                        if owners:
+                            bad.append(f"{doc}:{line} `{name}` {field}: doc says "
+                                       f"{q.group(1)}, CSV says {val} -- and {q.group(1)} is "
+                                       f"{', '.join(owners)}'s value (cross-attribution)")
     return checked, bad
 
 

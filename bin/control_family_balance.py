@@ -141,6 +141,7 @@ def main():
     for f, rs in sorted(fams.items(), key=lambda kv: -len(kv[1])):
         print(f"  {f:<14} n={len(rs):<3} {', '.join(x['molecule'].replace('EXPNEG_','') for x in rs)[:84]}")
 
+    human_figs = {}
     for leg, key, ref in (('human', 'hu_med', egf['hu_med']),
                           ('mouse', 'mo_med', egf['mo_med'])):
         vals = [r[key] for r in neg]
@@ -163,6 +164,10 @@ def main():
                 print(f"     drop {drop:<14} -> {st.mean(rest):.3f}  "
                       f"(on {len(rest)} family/families)")
             loo = [st.mean([v for f, v in per.items() if f != d]) for d in per]
+            if leg == 'human':
+                human_figs = dict(raw=raw, balanced=bal, lofo_lo=min(loo),
+                                  lofo_hi=max(loo), n_families=len(per),
+                                  n_negatives=len(neg))
             print(f"  SENSITIVITY: leave-one-family-out range [{min(loo):.3f}, {max(loo):.3f}]"
                   f" around {bal:.3f}.\n"
                   f"               Per-family values themselves span [{min(per.values()):.3f}, "
@@ -183,6 +188,42 @@ def main():
           f"{len(neg)} censored molecules.")
     print("  This is consistent with the instrument working on this panel and does not")
     print("  demonstrate that it does: n = 1 positive, and the ten are censored, not zero.")
+
+    # The human leg is the one quoted in the deliverables, so it is the one asserted.
+    if not human_figs:
+        sys.exit("FAIL  the human leg produced no figures to check")
+    if not assert_published(**human_figs):
+        sys.exit(1)
+
+
+# The published figures, asserted so that this script is a GATE and not a report. It
+# printed its numbers and always exited 0, so a mutation that moved the family-balanced
+# recovery from 0.889 to 0.861 -- leaving the raw 8.0/10 untouched -- kept the whole sweep
+# green. These are the values quoted in METHODS §4.4, README and CONTROL-TABLE; changing
+# the method must change them here too, deliberately.
+EXPECT = dict(raw=0.800, balanced=0.889, lofo_lo=0.867, lofo_hi=1.000, n_families=6,
+              n_negatives=10)
+
+
+def assert_published(raw, balanced, lofo_lo, lofo_hi, n_families, n_negatives):
+    got = dict(raw=round(raw, 3), balanced=round(balanced, 3),
+               lofo_lo=round(lofo_lo, 3), lofo_hi=round(lofo_hi, 3),
+               n_families=n_families, n_negatives=n_negatives)
+    bad = {k: (v, EXPECT[k]) for k, v in got.items()
+           if abs(v - EXPECT[k]) > 1e-9}
+    if bad:
+        print("\nFAIL  the control-recovery figures no longer match the published values:")
+        for k, (g, e) in bad.items():
+            print(f"        {k}: computed {g}, published {e}")
+        print("      Either the method changed and METHODS §4.4, README and CONTROL-TABLE")
+        print("      must be updated with it, or something broke. EXPECT lives in")
+        print("      bin/control_family_balance.py.")
+        return False
+    print(f"\nPASS  control-recovery figures match the published values "
+          f"(raw {EXPECT['raw']}, family-balanced {EXPECT['balanced']}, "
+          f"leave-one-family-out {EXPECT['lofo_lo']}-{EXPECT['lofo_hi']}, "
+          f"{EXPECT['n_families']} families over {EXPECT['n_negatives']} molecules).")
+    return True
 
 
 if __name__ == '__main__':

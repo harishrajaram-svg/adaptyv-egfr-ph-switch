@@ -60,16 +60,29 @@ def main():
             claimed = int(m.group(1))
             lo, hi = max(0, m.start() - 230), min(len(t), m.end() + 230)
             ctx = t[lo:hi]
-            low = ctx.lower()
-            if any(h in low for h in HIST):
+            # HOLE CLOSED 2026-10-05: HIST was matched over the whole 460-character
+            # window, so one "corrected" or "earlier version" anywhere in a paragraph
+            # exempted EVERY rank in it. Scoped to the citation's own sentence, and the
+            # marker must precede the citation -- a history note after a live claim does
+            # not make that claim historical.
+            pre_s = t[max(0, m.start() - 320):m.start()]
+            cut = max(pre_s.rfind('. '), pre_s.rfind('.**'), pre_s.rfind('\n\n'),
+                      pre_s.rfind('! '), pre_s.rfind('? '))
+            sent_before = pre_s[cut + 1:].lower()
+            if any(h in sent_before for h in HIST):
                 continue
             # The basis exemption must attach to the RANK CLAIM, not merely appear in the
             # paragraph. Scanning the whole window let "...at rank 3 led this submission at
             # 5.461x on the superseded target-only basis" pass, because the exempting words
             # sat AFTER the citation and described a different quantity. Only a basis named
             # in the 70 characters BEFORE the rank token scopes it.
+            # The basis must govern the rank claim, i.e. sit in the same clause and not
+            # behind a comma that opens an aside. "On the his-only basis `X`, whose
+            # partnered column we also report, sits at rank 6" previously passed because
+            # "partnered" fell inside the window.
             near = t[max(0, m.start() - 70):m.start()].lower()
-            if any(b in near for b in OTHER_BASIS):
+            clause = near.rsplit(',', 1)[-1]
+            if any(b in clause for b in OTHER_BASIS):
                 continue
             # which design does this rank refer to?
             # The design must be the NEAREST named one and sit close to the citation.
@@ -89,7 +102,15 @@ def main():
             # Without this, a sentence naming three designs and three ranks mis-pairs them
             # all -- which is exactly what the corrected glycan paragraph does.
             pre = t[max(0, m.start() - 60):m.start()]
+            # Backticked first, then a bare occurrence of a CSV name -- the gate used to
+            # require backticks, so a design named in plain prose escaped it entirely.
             adj = re.search(r'`([^`]+)`[^`]{0,24}$', pre)
+            if not adj:
+                cand = [(pre.rfind(n), n) for n in rank if pre.rfind(n) != -1]
+                cand = [(k, n) for k, n in cand if len(pre) - (k + len(n)) <= 24]
+                if cand:
+                    cand.sort(key=lambda t_: (-t_[0], -len(t_[1])))
+                    adj = re.match(r'(.*)', cand[0][1])
             if adj:
                 nm = adj.group(1).strip('.,; ')
                 exact = [(n, i) for n, i in rank.items() if n == nm]

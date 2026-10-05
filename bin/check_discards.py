@@ -205,6 +205,19 @@ def main():
         print("      while an unmeasured design outranks something you are shipping.")
         return 1
 
+    if unresolved:
+        # The unresolved list used to be PRINTED and then ignored by the exit code, so the
+        # gate said "every design outranking a submitted one was also measured" while
+        # holding designs whose measurement it could not confirm either way. An
+        # unconfirmable design is not a measured one, and this gate's own contract is
+        # "do not submit while an unmeasured design outranks something you are shipping".
+        print(f"\nFAIL  {len(unresolved)} design(s) outrank a submitted one and their "
+              f"measurement")
+        print("      cannot be confirmed -- no structure file was located. Locate them, or")
+        print("      record an explicit reason for each. Previously this printed and")
+        print("      returned 0, which reported an unknown as a clean pass.")
+        return 1
+
     print(f"\nPASS  every design outranking a submitted one on {PRIMARY} was also measured")
     print("      on the ranking instrument.")
     return 0

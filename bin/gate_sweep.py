@@ -65,12 +65,38 @@ def dangling_refs():
     t = open(p).read()
     have = {m.group(1) for m in re.finditer(r'^#{2,4}\s+(\d+[a-c]?(?:\.\d+)?)', t, re.M)}
     bad = []
+    # The cross-document exemption used to clear ANY pointer preceded by a document name,
+    # so "README §99.9" passed although §99.9 exists nowhere. Now the named document must
+    # actually contain that heading.
+    others = {}
+    for doc in ('outbox/CONTROL-TABLE.md', 'outbox/PREREGISTRATION.md', 'HANDOFF.md',
+                'README.md'):
+        fp = os.path.join(ROOT, doc)
+        if os.path.exists(fp):
+            dt = open(fp).read()
+            others[os.path.basename(doc).replace('.md', '')] = {
+                mm.group(1) for mm in
+                re.finditer(r'^#{1,4}\s+(\d+[a-c]?(?:\.\d+)?)', dt, re.M)}
     for m in re.finditer(r'§\s?(\d+[a-c]?(?:\.\d+)?)', t):
         pre = t[max(0, m.start() - 24):m.start()]
-        if re.search(r'(CONTROL-TABLE|PREREGISTRATION|HANDOFF|README)\s*$', pre):
+        xd = re.search(r'(CONTROL-TABLE|PREREGISTRATION|HANDOFF|README)\s*$', pre)
+        line = t[:m.start()].count('\n') + 1
+        if xd:
+            # No `tgt and` guard: a document with NO numbered headings cannot host a
+            # numbered pointer, so "README §99.9" is dangling precisely because the set is
+            # empty. The first version of this fix skipped that case and let the injection
+            # through.
+            tgt = others.get(xd.group(1))
+            if tgt is None:
+                bad.append(f"METHODS:{line} points at {xd.group(1)} §{m.group(1)}, "
+                           f"but that document was not found")
+            elif m.group(1) not in tgt:
+                bad.append(f"METHODS:{line} points at {xd.group(1)} §{m.group(1)}, "
+                           f"which has no such heading"
+                           + (f" (it has {len(tgt)} numbered headings)" if tgt
+                              else " (it has no numbered headings at all)"))
             continue
         if m.group(1) not in have:
-            line = t[:m.start()].count('\n') + 1
             bad.append(f"METHODS:{line} points at §{m.group(1)}, no such heading")
     return bad
 

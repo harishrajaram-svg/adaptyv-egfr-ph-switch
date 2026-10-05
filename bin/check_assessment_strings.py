@@ -145,10 +145,40 @@ def main():
         head = cols.get('his-only (headline)')
 
         # ---- BASIS ----------------------------------------------------------------
+        # Every other row's four pH columns, so a ratio belonging to a DIFFERENT design
+        # can be recognised instead of ignored.
+        others = {}
+        for q in rows:
+            if q['name'] == r['name']:
+                continue
+            for c in BASIS_COLS:
+                try:
+                    others.setdefault(round(float(q[c]), 3), set()).add(q['name'])
+                except (KeyError, TypeError, ValueError):
+                    pass
+
         for v, (s0, s1) in floats(a):
             hits = [lab for lab, cv in cols.items() if abs(cv - v) <= TOL]
             if not hits:
-                continue                      # not one of this row's pH numbers
+                # HOLE CLOSED 2026-10-05: this used to `continue`, so a ratio matching NONE
+                # of the row's columns was never examined -- "7.777x" in place of the graded
+                # 5.546x passed, and so did one design's value quoted in another's row. A
+                # number presented as THIS design's pH result must be one of its own.
+                ctx = a[max(0, s0 - 90):min(len(a), s1 + 60)].lower()
+                if not re.search(r'\b(?:it reads|reads|median|pH|ratio|switch|basis)\b', ctx):
+                    continue          # not presented as this row's pH figure
+                if any(w in ctx for w in ('read ', 'previously', 'earlier', 'withdraw',
+                                          'superseded', 'parent', 'wild-type', 'ceiling',
+                                          'bound', 'against', 'compare', 'other', 'variant',
+                                          'l133d', 'gln', 'asp', 'glu', 'shipped')):
+                    continue          # a comparison, a parent, or a declared correction
+                owner = others.get(round(v, 3))
+                bad.append((i, r['name'], 'ORPHAN-RATIO',
+                            f"{v}x is presented as this row's pH figure but matches none of "
+                            f"its four pH columns"
+                            + (f"; it is {', '.join(sorted(owner))}'s value"
+                               if owner else "")))
+                continue
             if 'his-only (headline)' in hits:
                 continue                      # it IS the graded number
             ctx = a[max(0, s0 - 160):min(len(a), s1 + 160)].lower()
@@ -159,13 +189,18 @@ def main():
                             f"(headline is {head}) and the string does not name the basis"))
 
         # ---- COLUMNS ---------------------------------------------------------------
-        for m in re.finditer(r'(?:over|at n\s*=\s*|across)\s*(\d+)\s*(?:refold\s*)?poses?', a, re.I):
+        # Broadened 2026-10-05: the original three alternatives matched 11 of the 17 rows
+        # that quote a pose count. These cover the phrasings actually in use.
+        for m in re.finditer(r'(?:over|at n\s*=\s*|across|on|pooled over|median of|from)\s+'
+                             r'(?:all\s+)?(\d+)\s*(?:refold\s+|human-leg\s+)?poses?',
+                             a, re.I):
             n = int(m.group(1))
             if r.get('ph_poses_n') and n != int(r['ph_poses_n']):
                 bad.append((i, r['name'], 'COLUMNS',
                             f"prose says {n} poses, column ph_poses_n = {r['ph_poses_n']}"))
-        for m in re.finditer(r'(\d+\.\d+)x the median', a):
-            v = float(m.group(1))
+        for m in re.finditer(r'(?:spread|scatter)[^.]{0,40}?(\d+\.\d+)\s*[x\u00d7]\s*'
+                             r'(?:the\s+)?median|(\d+\.\d+)x the median', a, re.I):
+            v = float(m.group(1) or m.group(2))
             col = r.get('ph_pose_spread_over_median')
             if col and abs(float(col) - v) > TOL:
                 bad.append((i, r['name'], 'COLUMNS',
@@ -235,9 +270,17 @@ def main():
                 pre = a[:m.start()]
                 k = max(pre.rfind('. '), pre.rfind('; '), pre.rfind(': '))
                 sent = a[k + 1: a.find('.', m.end()) + 1 or len(a)].lower()
-                if any(w in sent for w in ('withdraw', 'earlier', 'superseded',
-                                           'was five-pose', 'retract', 'too few poses',
-                                           'no longer')):
+                # The marker must come BEFORE the number -- "the earlier 0.616 is
+                # withdrawn" is a withdrawal; "affinity is 0.616, withdrawn earlier" is an
+                # assertion with a word after it. And a present-tense assertion of the
+                # value is never exempt, however the sentence ends.
+                head_ = sent[:sent.find(f"{v:g}")] if f"{v:g}" in sent else sent
+                if re.search(r'\b(?:is|reads|holds at|stands at)\s*\**\s*$',
+                             a[max(0, m.start() - 24):m.start()], re.I):
+                    pass              # asserted in the present tense: not a withdrawal
+                elif any(w in head_ for w in ('withdraw', 'earlier', 'superseded',
+                                              'was five-pose', 'retract', 'too few poses',
+                                              'no longer', 'previously')):
                     continue
                 bad.append((i, r['name'], 'WITHDRAWN',
                             f"{v:g} appears here but METHODS retracts it: \"{claims[0]}\""))
