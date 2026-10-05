@@ -1382,6 +1382,54 @@ is unavailable in either leg, with the reason, instead of skipping it with a bar
 every site entered or was accounted for. Site-level detail for every pose is retained in
 `analysis/01-egfr/ph_sensitivity.json` so no later question requires a re-run.
 
+**pKa-perturbation sensitivity: the pH ratio cannot order this submission.**
+*Added 2026-10-05. The three-basis comparison above answers how much the **composition rule**
+moves the answer. The reviewer asked a different question — "compare the deletion estimate with
+consistently prepared apo/relaxed alternatives **and plausible pKa perturbations**" — and this
+is the pKa half. `bin/ph_pka_perturbation.py` perturbs every site's stored pKa_free and
+pKa_bound by independent Gaussian noise, recomputes each site's linkage, re-takes the
+histidine-only product, re-takes the median over poses, and re-ranks all 17. σ is PROPKA 3's
+own reported RMSD (~0.8 pKa units, worse for buried residues), not a tuned value.*
+
+| σ (pKa units) | designs keeping their baseline rank | designs spanning ≥5 ranks (central 90%) |
+|---|---|---|
+| 0.4 (optimistic) | 6 of 17 | **13 of 17** |
+| **0.8 (PROPKA's own RMSD)** | **4 of 17** | **16 of 17** |
+| 1.2 (buried residues) | 4 of 17 | **17 of 17** |
+
+**At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp`
+spans ranks 1–17 — the entire submission. `sd_d2c_101_l147_s144898_m_T65D` spans 1–16.
+**No design holds a top-three position in more than 50% of draws.** The conclusion does not
+depend on σ: it already holds at the optimistic 0.4.
+
+**What does survive.** Two things, and they are the two worth having. First, the **bottom group
+is robustly at the bottom** — `bc_s831683_mpnn9_WT` never leaves ranks 13–17, and
+`bc_d3acid_l65_s831683_mpnn11` and `bc_s831683_mpnn9_S15D` never rise above 9. "These are not
+switches" is stable under the noise. Second, a **top set exists even though its order does
+not**: five designs (`rimA01_r15_L133E`, `c5_cf_short…_48`, `sd_d2c…_T65D`,
+`rimA02_d3_rimA_14_vhh`, `rimA01_r15`) hold a top-three slot in 25–50% of draws and the rest
+hold it in 0–18%.
+
+**One thing this understates, in the submission's favour.** The perturbation moves the pH ratio
+only, and the shipped order is produced by three sort keys, of which two — the pose-spread
+penalty (`SPREAD_BAR`) and the antibody-unassessable penalty — do not depend on pKa at all.
+The shipped order is therefore more stable than the table above, because those two keys pin
+five rows regardless of the noise. The table is the right statement about *the pH ratio as a
+ranking instrument*; it is not the full statement about the shipped order.
+
+**The conclusion we draw, which is the reviewer's own instruction.** *"If rankings change
+materially, use provisional tiers."* They change materially. Every tier in the CSV is already
+marked `provisional`, and the defensible claim from this submission is **a top set and a bottom
+set, not a rank order**. We have not collapsed the CSV to tiers because the platform takes an
+ordered file, but no number in it should be read as placing one design above its neighbour.
+
+**What remains unresolved.** The apo/relaxed half of the reviewer's request is not done. It
+needs consistently-prepared unbound structures for both partners and new folding, and the
+partner-deletion free leg remains a fixed-conformation diagnostic. Also unaddressed: multiplying
+per-site ratios assumes **independent titration**, which is not a general treatment of coupled
+sites, and these draws model pKa error as **noise** — a systematic PROPKA bias on buried
+histidines would move every design together and this analysis would not detect it.
+
 **What this is not.** These three numbers are a sensitivity analysis, not a confidence
 interval. They bound how much the composition rule moves the answer; they say nothing about
 whether PROPKA's pKa values are right, and the partner-deletion free leg remains a
@@ -1503,11 +1551,15 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
 14. **Rank 1 contacts a glycosylation sequon.** `c5_cf_short__boltzgen_egfr_cropfree_short_48`
     contacts Asn420; no structure we folded carries a glycan (§10b).
-15. **Two shipped designs are selected successes from a failed arm.** The second-site strategy
+15. **The pH ratio cannot order this submission.** Under PROPKA's own reported accuracy
+    (±0.8 pKa units) 16 of 17 designs span five or more ranks and no design holds a
+    top-three slot in more than half of draws (§11.7). A top set and a bottom set are
+    defensible; a rank order is not.
+16. **Two shipped designs are selected successes from a failed arm.** The second-site strategy
     improved 5 of 12 attempts, median fold 0.98 (§10c). Two of the five successes are in this
     submission and none of the seven failures is. Read the S62H and L133E rows as two
     successes out of twelve attempts, not as a working method.
-16. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
+17. **Effective n is 9, not 17.** Seven of the seventeen submitted designs sit on one backbone
     (`d3acid_l65_s831683`) and a further two are a parent/point-mutant pair
     (`rimA01_r15_d3_rimA_20` and its `L133E`). Any hit rate or interval computed over designs
     rather than sequence families overstates n by up to six-fold on the arm carrying our only
