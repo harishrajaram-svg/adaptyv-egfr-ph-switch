@@ -29,7 +29,12 @@ document. Neither is a number, so check_claims would never have seen them.
 import os, re, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-VENV = os.path.join(ROOT, '.venv', 'bin', 'python')
+# A CLONE HAS NO .venv. This was hardcoded, so two gates died with FileNotFoundError on
+# '<clone>/.venv/bin/python' in a fresh checkout -- i.e. for every reader who tried to
+# reproduce the submission, which is the one audience a methods-scored track has. Prefer
+# the repo venv when it exists, fall back to the interpreter actually running this.
+_V = os.path.join(ROOT, '.venv', 'bin', 'python')
+VENV = _V if os.path.exists(_V) else sys.executable
 PY = VENV if os.path.exists(VENV) else sys.executable
 
 FAST_SKIP = {'run_fixtures --check', 'test_failclosed'}

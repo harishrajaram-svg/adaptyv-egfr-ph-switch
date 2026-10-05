@@ -13,8 +13,29 @@ import subprocess, sys, glob, os, math, statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# THE REFERENCE MUST BE FINDABLE IN A CLONE.
+#
+# `/ipsae/` is gitignored, so the working-tree copy at ROOT/ipsae/ipsae.py is NOT published.
+# The published copy is the pinned, sha256-guarded one vendored with the fixtures. Until
+# 2026-10-05 this looked only at ROOT and therefore failed closed in every clone -- so the
+# production scorer returned None for all 12 fixture cases for any reader who checked out
+# the repository, while passing locally. That is the same class of fault the external
+# reviewer reported as a 404 on the vendored reference, one level deeper: the file was
+# published and the code still could not find it.
+#
+# Order matters: the working tree wins when present, so local runs are unchanged, and the
+# vendored copy is the fallback rather than the default.
+_V = ROOT / "outbox" / "ipsae-fixtures" / "vendor" / "ipsae" / "ipsae.py"
 IPSAE = ROOT / "ipsae" / "ipsae.py"
-PY = ROOT / ".venv" / "bin" / "python"
+if not IPSAE.exists() and _V.exists():
+    IPSAE = _V
+# A CLONE HAS NO .venv. This was hardcoded, so the production scorer -- the module the
+# external reviewer was asked to check, and the first thing any reader runs -- died with
+# FileNotFoundError on '<clone>/.venv/bin/python' in a fresh checkout. Prefer the repo venv
+# when it is there, otherwise use the interpreter already running, which is what a reader
+# invoking this script actually has.
+_PY = ROOT / ".venv" / "bin" / "python"
+PY = _PY if _PY.exists() else Path(sys.executable)
 
 
 def score(pae_file: Path, struct: Path, pae_cut=10, dist_cut=10):

@@ -28,7 +28,13 @@ if (REPO / "ipsae" / "ipsae.py").exists():
     IPSAE = REPO / "ipsae" / "ipsae.py"
 if not IPSAE.exists():
     sys.exit(f"reference implementation not found at {IPSAE}")
-PY_EXE = REPO / ".venv" / "bin" / "python"
+# A CLONE HAS NO .venv -- see the same fix in bin/gate_sweep.py. Hardcoding it meant the
+# fixture bundle, whose entire purpose is to let a reviewer reproduce the scorer, could not
+# run in a fresh checkout. PK reported exactly this class of problem for the vendored
+# reference (a 404); this was the same failure one level up.
+import sys as _sys
+_PV = REPO / ".venv" / "bin" / "python"
+PY_EXE = _PV if _PV.exists() else Path(_sys.executable)
 if not PY_EXE.exists(): PY_EXE = sys.executable
 PAE_CUT, DIST_CUT = 10, 10
 

@@ -31,8 +31,30 @@ reads `no`**, with exit code 0 and no warning, because the pose index it needs i
 is this project's own signature failure — a `0.0000` meaning *absent* being read as *measured* —
 reproduced inside its reproducibility claim. The emitter now raises instead of emitting a
 silently zeroed file when a submitted sequence is missing from the ranking table, but it cannot
-conjure poses it does not have. **To reproduce the affinity columns you need the pose cache; ask
-and we will supply it. Everything else reproduces from the clone.**
+conjure poses it does not have.
+
+**MEASURED 2026-10-05, in a fresh `git clone` of the public repository with no local state:**
+
+| | |
+|---|---|
+| `python3 bin/emit_submission_csv.py` | reproduces `submissions/01-egfr.csv` **byte-identically** |
+| `python3 bin/gate_sweep.py` | **12 of 13 gates pass**, including `run_fixtures --check` at 12/12 and all ten fail-closed regressions |
+| the one failure | `check_discards`, which scans for pose files to confirm a design was measured and cannot do that without the cache |
+
+Getting there needed two fixes, both found by actually cloning rather than by reasoning about
+it. `bin/ipsae_min.py` hardcoded `ROOT/.venv/bin/python`, so the production scorer died with
+`FileNotFoundError` in any checkout; it now falls back to the running interpreter. And it looked
+for the reference only at `ROOT/ipsae/ipsae.py`, which is gitignored and therefore **not
+published** — so the scorer failed closed on all 12 fixture cases for every reader, while
+passing locally. It now falls back to the pinned, sha256-guarded copy vendored with the
+fixtures, which is the copy that *is* published. That is the same fault the external reviewer
+reported as a 404, one level deeper: the file had been published and the code still could not
+find it.
+
+**So the boundary is now one gate, not the submission.** The graded CSV, the methods document's
+generated blocks, the scorer, the fixtures and the fail-closed regressions all reproduce from
+the clone alone. The pose cache is still needed to re-derive the affinity columns from
+structures and to run `check_discards`; ask and we will supply it.
 
 ---
 
@@ -1958,8 +1980,14 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
 19. <!-- GENERATED:LIMIT-FAMILY do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
     **Effective n is 10, not 18.** 7 of the 18 submitted designs sit on one backbone (`d3acid_l65_s831683`, ranks 5, 10, 11, 15, 16, 17, 18), and 2 further families are two-design clusters: `d3acid3_l60_s647537` (ranks 8, 9); `rimA01_r15_d3_rimA_20` (ranks 3, 14). Any hit rate or interval computed over designs rather than sequence families overstates n by up to 7-fold on the arm carrying our only causal claim. See §11.3 for the partition.
 <!-- /GENERATED:LIMIT-FAMILY -->
-20. **The reproducibility claim has a boundary** — see the Repository note above. The pose cache
-    is not published, and the documented emit command returns zeroed affinity columns without it.
+20. **The reproducibility boundary is one gate wide, measured rather than asserted.** In a
+    fresh clone with no local state: the emit command reproduces the graded CSV byte-identically,
+    and 12 of 13 gates pass. The exception is `check_discards`, which needs the unpublished pose
+    cache to confirm a design was measured. This limitation previously read "the documented emit
+    command returns zeroed affinity columns without it", which was true of an earlier state and
+    had not been retested; two packaging faults in `bin/ipsae_min.py` were found and fixed by
+    cloning the repository and running it (see the Repository note). The pose cache is still not
+    published.
 21. **The design family with the best measured prior is the one we scored least.** 60 of the 71
     recovered BindCraft sequences sit at **n = 1 pose**, below the n ≥ 5 floor §6 requires, so
     they are structurally ineligible for tier 1 regardless of merit. 22 of those read ≥ 2.0× at
