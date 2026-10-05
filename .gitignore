@@ -3,6 +3,10 @@ runs/
 *.pdb
 !targets/*.pdb
 !targets/**/*.pdb
+# structure downloads are re-fetchable; analysis/02-tnf/fetch.py pulls them on demand
+*.cif
+!targets/*.cif
+!targets/**/*.cif
 __pycache__/
 .venv/
 *.pt

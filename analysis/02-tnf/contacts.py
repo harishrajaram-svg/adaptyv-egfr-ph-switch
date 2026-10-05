@@ -2,7 +2,10 @@
 Contact = heavy atom within 4.5 A of a heavy atom of a non-TNF polymer chain.
 Chain ID and numbering offset are both solved by matching observed residues to P01375
 BY SEQID (gap-safe), requiring >=0.90 identity over >=40 observed residues."""
-import gemmi, sys, json
+import os, sys
+import gemmi, json
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fetch
 from collections import defaultdict
 HUMAN="VRSSSRTPSDKPVAHVVANPQAEGQLQWLNRRANALLANGVELRDNQLVVPSEGLYLIYSQVLFKGQGCPSTHVLLTHTISRIAVSYQTKVNLLSAIKSPCQRETPEGAEAKPWYEPIYLGGVFQLEKGDRLSAEINRPDYLDFAESGQVYFGIIAL"
 CUT=4.5
@@ -23,7 +26,7 @@ def best_offset(ch):
     return best
 out={}
 for pdb in sys.argv[1:]:
-    st=gemmi.read_structure(pdb+".cif"); st.setup_entities(); st.remove_ligands_and_waters()
+    st=gemmi.read_structure(fetch.cif(pdb)); st.setup_entities(); st.remove_ligands_and_waters()
     model=st[0]
     tnf={}; other=[]
     for ch in model:
@@ -59,4 +62,7 @@ for pdb in sys.argv[1:]:
     print(f"  union epitope, {len(uni)} residues:\n    "+" ".join(f"{allhits[u]}{u}" for u in uni))
     print(f"  one partner chain ({rich}) splits across protomers: "+
           "; ".join(f"{c}:{len(v)}" for c,v in sorted(split.items(), key=lambda x:-len(x[1]))))
-json.dump(out,open("epitopes.json","w"),indent=1)
+# write next to the script, not into whatever directory it was launched from (s26)
+_out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "epitopes.json")
+json.dump(out, open(_out, "w"), indent=1)
+print(f"\nwrote {_out}")

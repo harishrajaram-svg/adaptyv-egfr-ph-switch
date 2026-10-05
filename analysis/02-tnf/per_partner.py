@@ -1,4 +1,7 @@
-import gemmi, sys, json
+import os, sys
+import gemmi, json
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fetch
 from collections import defaultdict
 HUMAN="VRSSSRTPSDKPVAHVVANPQAEGQLQWLNRRANALLANGVELRDNQLVVPSEGLYLIYSQVLFKGQGCPSTHVLLTHTISRIAVSYQTKVNLLSAIKSPCQRETPEGAEAKPWYEPIYLGGVFQLEKGDRLSAEINRPDYLDFAESGQVYFGIIAL"
 CUT=4.5
@@ -16,10 +19,10 @@ def best_offset(ch):
             if 0<=u<len(HUMAN): t+=1; m+=(c==HUMAN[u])
         if t>=40 and m/t>best[1]: best=(k,m/t)
     return best
-LABEL=json.load(open("labels.json")) if __import__("os").path.exists("labels.json") else {}
+LABEL = {}   # labels.json was a scratchpad convenience and is not an input
 res_out={}
 for pdb in sys.argv[1:]:
-    st=gemmi.read_structure(pdb+".cif"); st.setup_entities(); st.remove_ligands_and_waters()
+    st=gemmi.read_structure(fetch.cif(pdb)); st.setup_entities(); st.remove_ligands_and_waters()
     model=st[0]; tnf={}; other={}
     for ch in model:
         k,acc=best_offset(ch)
@@ -52,4 +55,8 @@ for pdb in sys.argv[1:]:
         print(f"      {' '.join(f'{aa[u]}{u}' for u in sorted(tot))}")
     res_out[pdb]={p:{"total":sorted(set().union(*per[p].values())),
                      "per_protomer":{c:sorted(v) for c,v in per[p].items()}} for p in ranked}
-json.dump(res_out,open("per_partner.json","w"),indent=1)
+# write next to the script, not into whatever directory it was launched from (s26:
+# a relative output path means the artifact lands somewhere different in a clean clone)
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "per_partner.json")
+json.dump(res_out, open(out, "w"), indent=1)
+print(f"\nwrote {out}")

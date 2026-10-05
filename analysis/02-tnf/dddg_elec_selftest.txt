@@ -1,0 +1,6 @@
+selftest OK
+  c0                      : 322.0 A*kcal/mol/e^2  (Alford 2017; textbook 332.06 is a uniform +3.1% scale and cannot change a sign or a rank)
+  eps(0) / eps(4) / eps(8): 6.0 / 80.0 / 80.0   (endpoints published, shape OURS)
+  windows                 : flat <1.45, cubic 1.45-1.85, raw 1.85-4.5, cubic 4.5-5.5, zero >5.5
+  sign convention         : His+ beside Arg/Lys -> dddG +0.2012 (> 0, binds neutral / releases acid = problem 2)
+  ... beside Asp/Glu      : dddG -0.2012 (< 0, would be problem 1)

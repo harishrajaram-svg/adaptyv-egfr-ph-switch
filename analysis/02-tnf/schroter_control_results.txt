@@ -1,0 +1,58 @@
+self-tests T1 T2 T3 passed (9 Kabat positions identity-checked, 4 variants built, 5 scramble sites from 283 candidates >12 A from the interface, WT interface histidines=1)
+
+variant           measured     sigmoid/HIE   sigmoid/HID        10/HIE         6/HIE        80/HIE  n_his
+---------------------------------------------------------------------------------------------------------
+adalimumab_WT           9x          -0.124        -0.115        -0.549        -0.911        -0.069      1
+PSV1                  231x          -0.196        -0.165        -0.928        -1.611        -0.123      4
+PSV3                  505x          -0.075        -0.019        -0.110        -0.216        -0.019      3
+PSV2                  785x          -0.205        -0.145        -0.983        -1.543        -0.119      4
+scramble_neg           neg          -0.132        -0.054        -0.571        -0.978        +0.039      1
+
+Per-site decomposition, primary leg (sigmoid/HIE) -- G2, all sites, never a subset:
+  adalimumab_WT
+    H:HIS57    binder  dddG   -0.124  iface 2.34 A  cc GLU146- @ 6.23 A
+  PSV1
+    H:HIS106   binder  dddG   -0.029  iface 2.32 A  cc GLU146- @ 6.27 A
+    H:HIS107   binder  dddG   -0.036  iface 4.05 A  cc LYS65+ @ 10.05 A
+    H:HIS57    binder  dddG   -0.130  iface 2.34 A  cc GLU146- @ 6.23 A
+    L:HIS92    binder  dddG   -0.001  iface 5.30 A  cc LYS65+ @ 7.14 A
+  PSV3
+    H:HIS102   binder  dddG   +0.001  iface 4.81 A  cc GLU146- @ 7.27 A
+    H:HIS57    binder  dddG   -0.126  iface 2.34 A  cc GLU146- @ 6.23 A
+    L:HIS32    binder  dddG   +0.048  iface 2.92 A  cc LYS65+ @ 4.16 A
+    L:HIS33    binder  dddG   +0.002  iface nan A  cc LYS65+ @ 13.05 A
+  PSV2
+    H:HIS106   binder  dddG   -0.023  iface 2.29 A  cc GLU146- @ 6.26 A
+    H:HIS107   binder  dddG   -0.038  iface 3.86 A  cc LYS65+ @ 10.05 A
+    H:HIS57    binder  dddG   -0.124  iface 2.34 A  cc GLU146- @ 6.23 A
+    L:HIS92    binder  dddG   -0.020  iface 5.46 A  cc LYS65+ @ 7.13 A
+  scramble_neg
+    H:HIS57    binder  dddG   -0.132  iface 2.36 A  cc GLU146- @ 6.23 A
+
+PRE-REGISTERED PREDICTIONS, scored on the primary leg (sigmoid/HIE):
+  P1 all PSVs > 0        : FAIL  (PSV1 -0.196, PSV2 -0.205, PSV3 -0.075)
+  P1 all PSVs > WT       : FAIL  (WT -0.124)
+  P2 WT is not zero      : WT = -0.124 on a measured 9x floor
+  P3 PSV3 ranks highest  : as predicted   (measurement ranks PSV2 highest)
+  P4 scramble collapses  : scramble -0.132 vs best PSV -0.075
+  s14 pass rate          : 0/5 clear dddG_elec >= 0
+
+MECHANISM AVAILABILITY at the control's epitope (per_partner.json, 4.5 A):
+  adalimumab contacts on TNF (UniProt numbering): [96, 97, 99, 141, 142, 143, 186, 187, 189, 191, 216, 217, 219, 220, 221, 222, 223]
+    R107 (mouse Gln)       absent
+    R108 (anchor)          absent
+    K141 (peripheral)      PRESENT
+    H149                   absent
+    R158 (peripheral)      absent
+    K166 (anchor)          absent
+    K204 (peripheral)      absent
+  s4's design mechanism is a binder histidine against R108 and K166. Neither is in
+  this epitope, so the control cannot test the mechanism the design is built on --
+  it tests whether dddG_elec recovers a measured switch driven by something else.
+
+Band across all five legs (s16 -- if the band spans the order, the order is not established):
+  adalimumab_WT    -0.911 .. -0.069   sign stable
+  PSV1             -1.611 .. -0.123   sign stable
+  PSV3             -0.216 .. -0.019   sign stable
+  PSV2             -1.543 .. -0.119   sign stable
+  scramble_neg     -0.978 .. +0.039   sign FLIPS

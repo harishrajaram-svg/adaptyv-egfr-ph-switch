@@ -1976,6 +1976,25 @@ model; FoldSeek against PDB for novelty; HBPLUS v3.06. All open-source and used 
 licences. The vendored reference implementation in `outbox/ipsae-fixtures/vendor/` carries its
 MIT licence file.
 
+🔴 **CORRECTED 2026-10-05.** The sentence "all open-source and used within their licences" was
+written without checking what BindCraft actually installs, and it does not hold as stated.
+**BindCraft installs and runs PyRosetta** (`biomodals/modal_bindcraft.py:37-69`, `set_up_pyrosetta()`
+via `pyrosetta-installer`, with `numpy<2.0` re-pinned afterwards; the wheel is re-pinned again in
+`patches/biomodals-local.patch` and `patches/modal_germinal.patch` to fix a vendor 404). PyRosetta
+is free for academic and non-profit use and needs a paid University of Washington licence
+otherwise, which does not describe this entry. `setup-checklist.md` had already reached that
+conclusion — *"Recommendation: avoid it"* — and recorded that Anthropic excluded Rosetta/PyRosetta
+from their own campaign on licence grounds; FreeBindCraft was named as the substitute and **was
+never actually substituted**. The BindCraft pool supplies **10 of the 16 submitted designs**, so
+this is not a stray dependency.
+
+The honest statement: every other tool listed above is open-source and commercially usable, and
+**the BindCraft arm carries an unresolved PyRosetta licence question**. Recorded here rather than
+corrected silently, per the project's own rule that a reader who finds an undisclosed error
+discounts everything, while one who finds it already listed and dated does the opposite. Caught
+while establishing the licence position for the problem-2 `dddG_elec` filter, which is a
+reimplementation precisely to avoid this.
+
 <!-- GENERATED:DECL-STRUCT do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 **Structures.** Predicted complexes are published at `submissions/structures/`, one median-ipSAE pose each -- not the best pose, which would be selection on the outcome. **Coverage is 9 of 16.** Without a published structure: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Their poses exist and are scored; they are simply not exported. Stated rather than implied.
 <!-- /GENERATED:DECL-STRUCT -->

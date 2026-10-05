@@ -48,6 +48,13 @@ GATES = [
     ('control_family_balance',   [PY, 'bin/control_family_balance.py'], None),
     ('run_fixtures --check',     [PY, 'run_fixtures.py', '--check'], 'outbox/ipsae-fixtures'),
     ('test_failclosed',          [PY, 'test_failclosed.py'], 'outbox/ipsae-fixtures'),
+    # dddG_elec's null is exactly 0.0 and its filter is ">= 0", so a pose with no interface
+    # histidine passes trivially (s14). The selftest pins the sign convention and the published
+    # window constants; inverting the subtraction makes it go red (bin/dddg_elec.py --mutate sign).
+    ('dddg_elec --selftest',     [PY, 'bin/dddg_elec.py', '--selftest'], None),
+    # the known-answer control for it. Reports 0/5 PASS and says so -- a FAILING control that
+    # keeps failing is the finding, so this gate checks the control still RUNS and self-tests.
+    ('schroter_control',         [PY, 'analysis/02-tnf/schroter_control.py'], None),
     # Hard ELIGIBILITY gate, not a document check. It is expected to be RED until the
     # unlevelled designs are resolved in the portal; a red here means "do not nominate
     # yet", not "the writeup is wrong". Added 2026-10-05 after 4 of 18 shipped designs
