@@ -363,19 +363,33 @@ place it mattered.
   The highest-scoring molecule in the entire measured panel is a measured **non-binder** —
   `EXPNEG_gitter-yolo10` at 0.5893 against EGF's 0.3549. It also reads a **5.27× pH ratio**, which
   places it 8th of the 132 molecules eligible to rank on our primary objective.
-- **Both species required: the one measured binder outranks all ten non-binders.**
-- **The reason that works is a mechanism, not a margin.** Both molecules that beat EGF on human
-  sit at **exactly 0.0000 on mouse with 5 of 5 dead seeds** — no interface found at all, rather
-  than a near miss. A filter resting on a margin could erode with a larger panel; this one does
-  not rest on a margin.
-- **The cross-reactivity requirement came from the organisers' brief, not from us**, and it is the
-  only specificity filter in this pipeline that measured data supports at all. That is a statement
-  about the absence of evidence for the others, not a validation of this one at n=1.
+- **Both species required: the one quantified binder outranks all ten no-KD molecules on this
+  panel.** That is the full extent of the claim.
 
-**Three limits.** The positive class is one molecule of 53 aa, shorter than every design here.
-"No binding detected" bounds affinity from below and does not prove no interaction. And ten
-censored observations do not characterise a tail, so 0.5893 is a floor on how high a no-KD molecule can
-score here, not a ceiling.
+> **Corrected 2026-10-05.** This section previously argued that the mouse leg *rescues* the
+> failed human criterion, "a mechanism, not a margin", because the two exclusions sit at exactly
+> 0.0000 on five of five seeds rather than at a narrow margin. **That argument is withdrawn**, on
+> your correction: *"a zero predicted interface is not an experimentally demonstrated specificity
+> mechanism. Without matched mouse outcomes, this does not validate mouse binding or rescue the
+> failed human control criterion."* Three reasons it does not stand:
+>
+> * **No matched mouse outcomes exist.** Adaptyv measured these molecules against HUMAN EGFR. A
+>   mouse prediction of 0.0000 is corroborated by nothing, so the filter is being validated on
+>   the species for which we have no data.
+> * **0.0000 is a statement about the predictor.** §4.4b of the methods document shows a pose
+>   reproducing 72% of a crystallographic interface scoring ipSAE_min 0.0000. Margin-independence
+>   would matter only if the zeros were known to mean no interaction, and they are not.
+> * **The human criterion failed and stays failed.** Two of ten censored molecules outrank the
+>   only quantified binder on human. A second species with no outcomes cannot convert that into
+>   a pass.
+>
+> The honest statement: **no specificity filter in this pipeline is supported by measured data**,
+> this one included. The cross-reactivity requirement came from the brief rather than from us.
+
+**Three limits.** The positive class is one molecule of 53 aa, shorter than every design here. A
+missing KD bounds affinity from ABOVE, not below, and does not prove no interaction. And ten
+censored observations do not characterise a tail, so 0.5893 is a floor on how high a no-KD
+molecule can score here, not a ceiling.
 
 **One thing I have not fixed.** You asked twice for the historical EGFR data to be split by
 design family. Eight of these eleven molecules are one group's `gitter-yolo` series, and I have

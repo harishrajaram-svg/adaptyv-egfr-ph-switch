@@ -393,21 +393,39 @@ may bind EGFR more weakly than the assay can quantify, so "the instrument ranks 
 first" is not established — what is established is that the instrument ranks a molecule of
 *unknown, weaker-than-quantifiable* affinity above a 55 nM binder.
 
-**The cross-reactivity requirement is what rescues it.** Both molecules that outrank the binder
-score exactly **0.0000 on the mouse leg**. Scored the way the submission is scored — requiring
-both species — **the one quantified binder outranks all ten no-KD molecules.** Stated at the
-strength the data supports: on this panel, requiring both species is sufficient to rank the only
-molecule with a measured KD above every censored one. With n = 1 positive this is consistent
-with the instrument working and does not demonstrate that it does, and a lack of significance
-here would be inconclusive rather than a falsification.
+**The cross-reactivity requirement does NOT rescue this control.** *Corrected 2026-10-05; the
+previous heading here read "what rescues it" and the paragraph below it argued the opposite of
+what the data supports.* The reviewer's correction was explicit: *"The mouse scores improve
+separation in this panel, but a zero predicted interface is not an experimentally demonstrated
+specificity mechanism. Without matched mouse outcomes, this does not validate mouse binding or
+rescue the failed human control criterion."*
 
-The reason that works here is a mechanism and not a curve: the two false positives are not
-*nearly* excluded by the mouse leg, they are at **exactly zero on five of five seeds**, which is
-what this instrument returns when it finds no interface at all. A filter that depends on a
-margin could erode with a larger panel; this one does not depend on a margin. The dual-species
-criterion came from the brief, not from us, and it is the only specificity filter in this
-pipeline that measured data supports at all — which is a statement about the *absence* of
-evidence for the others, not a validation of this one on n=1.
+What is true: both molecules that outrank the binder on the human leg score exactly **0.0000 on
+the mouse leg**, so scored as the submission is scored — requiring both species — the one
+quantified binder ranks above all ten no-KD molecules on this panel.
+
+What that does not establish, and the distinction is the whole point:
+
+- **There are no matched mouse outcomes.** Adaptyv measured these molecules against human EGFR.
+  We have no experimental mouse result for any of them, so a mouse prediction of 0.0000 is not
+  corroborated by anything. The dual-species filter is being validated against data that does
+  not exist for the species doing the work.
+- **A zero predicted interface is not a specificity mechanism.** §4.4b of this document shows a
+  pose that reproduces 72% of a crystallographic interface scoring ipSAE_min 0.0000. On this
+  instrument 0.0000 means "no confident interface found", which is a statement about the
+  predictor, not about the molecule. Reading it as "this molecule does not bind mouse EGFR" is
+  the same error as reading a missing KD as a measured non-binder.
+- **The human criterion failed and remains failed.** Two of ten censored molecules outrank the
+  only quantified binder on the human leg. Adding a second species on which we have no outcomes
+  cannot convert that into a pass; it can only show that a different, unvalidated filter happens
+  to order this panel differently.
+
+The earlier paragraph argued that this was "a mechanism and not a curve" because the exclusions
+sit at exactly zero on five of five seeds rather than at a narrow margin. That argument is
+withdrawn. Margin-independence would matter if the zeros were known to mean no interaction; §4.4b
+shows they are not known to mean that. The dual-species criterion came from the brief rather than
+from us, and the honest statement is that **no specificity filter in this pipeline is supported by
+measured data** — including this one.
 
 **gitter-yolo10 is the entire problem in one molecule.** Pooled over 5 refold poses it reads a
 **5.27× pH ratio** — **8th of the 132 molecules eligible to rank** on our primary objective —
