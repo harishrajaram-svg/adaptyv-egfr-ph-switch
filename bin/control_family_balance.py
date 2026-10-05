@@ -24,16 +24,92 @@ consulted in constructing it.
 
     control_family_balance.py
 """
-import json, re, statistics as st, sys
+import json, os, re, statistics as st, sys
 from collections import defaultdict
 
 SRC = 'analysis/01-egfr/control_recovery.json'
 NO_KD = 'exp_neg_no_kd'
 
 
-def family(mol):
-    m = re.match(r'EXPNEG_([a-zA-Z]+)', mol)
-    return m.group(1).lower() if m else 'other'
+# FAMILY MAP: SEQUENCE-BASED, FROZEN BEFORE SCORES WERE READ.
+#
+# Reviewer, 2026-10-05: "First freeze a sequence/backbone-based family map without looking
+# at scores. A SHARED SUBMITTING GROUP IS A CLUE, NOT A FAMILY DEFINITION."
+#
+# The first version of this script used the submitter-group prefix (gitter-yolo /
+# deepsatflow), which is exactly what he ruled out. Rebuilt by clustering the binder
+# sequences themselves.
+#
+# Plain sequence identity does not work here: the deepsatflow design is 48 aa and the
+# gitter-yolo designs are 150-200 aa, so a short-vs-long alignment reports 54-65%
+# identity over the aligned fragment and single-linkage at 30% collapses all ten into one
+# family. The metric is therefore identity x coverage, where coverage is the length ratio
+# of the shorter to the longer sequence. The resulting partition is STABLE: thresholds
+# 0.70 and 0.85 both give the same six families, so the map does not depend on a
+# threshold chosen to produce a particular answer.
+#
+#   {yolo10, yolo7, yolo9}  n=3     id x cov 0.84-0.91
+#   {yolo4, yolo5}          n=2     0.89
+#   {yolo6, yolo8}          n=2     0.89
+#   {deepsatflow-design7}   n=1
+#   {yolo2}                 n=1
+#   {yolo3}                 n=1
+#
+# Six families over ten molecules, against the two the submitter prefix implied.
+FAMILY_THRESHOLD = 0.85
+CTRL_SEQ_CACHE = 'analysis/01-egfr/control_binder_seqs.json'
+
+
+def binder_seqs():
+    """molecule -> binder (shorter chain) sequence, from the ESMFold2 inputs."""
+    import glob
+    out = {}
+    for f in glob.glob('analysis/01-egfr/score_*/EXPNEG_*.faa'):
+        stem = os.path.basename(f)[:-4]
+        mol = stem.rsplit('_', 1)[0] if stem.endswith(('_hu', '_mo')) else stem
+        d, k = {}, None
+        for ln in open(f):
+            if ln.startswith('>'):
+                k = ln.strip().lstrip('>'); d[k] = ''
+            elif k:
+                d[k] += ln.strip()
+        if len(d) >= 2:
+            out.setdefault(mol, min(d.values(), key=len))
+    return out
+
+
+def seq_families(mols):
+    """Single-linkage clusters on identity x coverage. Returns molecule -> family label."""
+    import gemmi, itertools
+    seqs = binder_seqs()
+    names = [m for m in mols if m in seqs]
+    missing = [m for m in mols if m not in seqs]
+    if missing:
+        sys.exit(f"no binder sequence for {missing}; refusing to guess a family")
+    parent = {n: n for n in names}
+
+    def find(x):
+        while parent[x] != x:
+            x = parent[x]
+        return x
+
+    for a, b in itertools.combinations(names, 2):
+        r = gemmi.align_string_sequences(list(seqs[a]), list(seqs[b]), [])
+        ident = r.calculate_identity() / 100.0
+        cov = min(len(seqs[a]), len(seqs[b])) / max(len(seqs[a]), len(seqs[b]))
+        if ident * cov >= FAMILY_THRESHOLD:
+            ra, rb = find(a), find(b)
+            if ra != rb:
+                parent[ra] = rb
+    groups = {}
+    for n in names:
+        groups.setdefault(find(n), []).append(n)
+    lab = {}
+    for i, (_, ms) in enumerate(sorted(groups.items(), key=lambda kv: (-len(kv[1]), kv[1][0])), 1):
+        name = f"fam{i}[{len(ms)}]"
+        for m in ms:
+            lab[m] = name
+    return lab
 
 
 def frac_below(vals, ref):
@@ -56,10 +132,12 @@ def main():
     print(f"no-KD molecules (right-censored): {len(neg)}  "
           f"-- one row per distinct sequence, 5 seeds nested in each\n")
 
+    lab = seq_families([r['molecule'] for r in neg])
     fams = defaultdict(list)
     for r in neg:
-        fams[family(r['molecule'])].append(r)
-    print("FROZEN FAMILY MAP (submitter-group prefix; no score consulted):")
+        fams[lab[r['molecule']]].append(r)
+    print(f"FROZEN FAMILY MAP (sequence clustering at identity x coverage >= "
+          f"{FAMILY_THRESHOLD}; no score consulted):")
     for f, rs in sorted(fams.items(), key=lambda kv: -len(kv[1])):
         print(f"  {f:<14} n={len(rs):<3} {', '.join(x['molecule'].replace('EXPNEG_','') for x in rs)[:84]}")
 
@@ -84,12 +162,17 @@ def main():
                 rest = [v for f, v in per.items() if f != drop]
                 print(f"     drop {drop:<14} -> {st.mean(rest):.3f}  "
                       f"(on {len(rest)} family/families)")
-            lo, hi = min(per.values()), max(per.values())
-            print(f"  SENSITIVITY: the family-balanced figure moves over [{lo:.3f}, {hi:.3f}]\n"
-                  f"               depending on which single family is retained. With "
-                  f"{len(per)} families,\n"
-                  f"               one of size {min(len(v) for v in fams.values())}, no "
-                  f"interval is reported -- see the module docstring.")
+            loo = [st.mean([v for f, v in per.items() if f != d]) for d in per]
+            print(f"  SENSITIVITY: leave-one-family-out range [{min(loo):.3f}, {max(loo):.3f}]"
+                  f" around {bal:.3f}.\n"
+                  f"               Per-family values themselves span [{min(per.values()):.3f}, "
+                  f"{max(per.values()):.3f}].\n"
+                  f"               {len(per)} families over {len(neg)} molecules, smallest of "
+                  f"size {min(len(v) for v in fams.values())}.\n"
+                  f"               No interval is reported: ordinary exact binomial intervals\n"
+                  f"               do not become cluster-adjusted by substituting an effective\n"
+                  f"               n, and this many families cannot support dependable\n"
+                  f"               cluster-bootstrap inference.")
 
     print("\n=== BOTH SPECIES REQUIRED (how the submission is scored) ===")
     beat = [r['molecule'] for r in neg

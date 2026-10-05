@@ -205,6 +205,27 @@ def main():
                 g = got.get("ipsae_min")
                 ok = g is not None and abs(g - v["ipsae_min"]) < 1e-6
                 print(f"{'OK  ' if ok else 'FAIL'} {k}: expected {v['ipsae_min']:.6f} got {g}")
+                # BOTH DIRECTIONAL VALUES, not just the minimum.
+                #
+                # Reviewer, 2026-10-05: "Its check compares the final minimum, not both
+                # directional values." Correct -- the directions were printed and never
+                # asserted. Two different (A->B, B->A) pairs can share a minimum, so a
+                # check on the min alone passes while the asymmetry underneath it has
+                # changed. That asymmetry is the whole quantity this bundle exists to
+                # document: case 03 and case 12 differ from their partners ONLY in the
+                # direction that is not the minimum.
+                for d, want_v in (v.get("asym") or {}).items():
+                    gv = (got.get("asym") or {}).get(d)
+                    if gv is None:
+                        print(f"     FAIL {k}: direction {d} missing from the result")
+                        ok = False
+                    elif abs(gv - want_v) > 1e-6:
+                        print(f"     FAIL {k}: direction {d} expected {want_v:.6f} got {gv:.6f}")
+                        ok = False
+                extra = set((got.get("asym") or {})) - set((v.get("asym") or {}))
+                if extra:
+                    print(f"     FAIL {k}: unexpected direction(s) {sorted(extra)}")
+                    ok = False
             # EVERY production parser must land on the reference answer. A case that
             # reproduces against the reference while our own code reads it differently
             # is not a passing case -- that gap is what this bundle exists to close.

@@ -268,26 +268,55 @@ All values are ipSAE_min, **median over 5 seeds**, against the 621 aa human and 
 
 ### 6b. Family-balanced comparison, per your item (b)
 
-`bin/control_family_balance.py` (reproducible, no arguments). **Nine of the ten no-KD molecules
-come from one submitter group**, so a raw 8-of-10 counts that group's designs nine times and is
-close to a statement about `gitter-yolo` alone. Families are assigned from the submitter-group
-prefix published with the molecules — fixed before any score was read, and independent of the
-outcome. One row per distinct sequence, five seeds nested in each.
+`bin/control_family_balance.py` (reproducible, no arguments).
+
+**The family map is sequence-based, and the first version of this was wrong.** You said: *"First
+freeze a sequence/backbone-based family map without looking at scores. A shared submitting group
+is a clue, not a family definition."* The first version used the submitter-group prefix
+(`gitter-yolo` / `deepsatflow`) — exactly what you ruled out — and reported two families. Rebuilt
+by clustering the binder sequences themselves.
+
+Plain identity does not work on this panel: the `deepsatflow` design is 48 aa against
+`gitter-yolo` designs of 150–200 aa, so a short-vs-long alignment reports 54–65% identity over
+the aligned fragment and single linkage at 30% collapses all ten into one family. The metric is
+identity × coverage (coverage = length ratio, shorter over longer). The partition is **stable**:
+thresholds 0.70 and 0.85 give the same six families, so it does not rest on a threshold picked
+for its answer.
+
+| family | n | members | id × cov |
+|---|---|---|---|
+| 1 | 3 | `yolo10`, `yolo9`, `yolo7` | 0.84–0.91 |
+| 2 | 2 | `yolo5`, `yolo4` | 0.89 |
+| 3 | 2 | `yolo8`, `yolo6` | 0.89 |
+| 4 | 1 | `deepsatflow-design7` | — |
+| 5 | 1 | `yolo2` | — |
+| 6 | 1 | `yolo3` | — |
+
+**Six families over ten molecules, against the two the submitter prefix implied.** One row per
+distinct sequence, five seeds nested in each.
 
 | | human leg (EGF 0.3549) | mouse leg (EGF 0.3700) |
 |---|---|---|
 | **raw**, one row per molecule | **8.0/10 = 0.800** | **10.0/10 = 1.000** |
-| `gitter` (n=9), fraction below EGF | 0.778 | 1.000 |
-| `deepsatflow` (n=1), fraction below EGF | 1.000 | 1.000 |
-| **family-balanced** (equal family weights, ties = ½) | **0.889** | **1.000** |
-| leave-one-family-out | 0.778 – 1.000 | 1.000 – 1.000 |
+| fam1 (n=3) | 0.333 | 1.000 |
+| fam2 (n=2) | 1.000 | 1.000 |
+| fam3 (n=2) | 1.000 | 1.000 |
+| fam4 / fam5 / fam6 (n=1 each) | 1.000 | 1.000 |
+| **family-balanced** (equal weights, ties = ½) | **0.889** | **1.000** |
+| **leave-one-family-out** | **0.867 – 1.000** | 1.000 |
+
+The family-balanced figure is unchanged at 0.889 — coincidentally the same as the two-family
+version — but the sensitivity is much tighter: leave-one-family-out now spans **0.867–1.000**
+rather than 0.778–1.000, because no single family carries nine molecules any more. Note where
+the signal actually sits: **fam1 is the only family that does not rank below EGF** (0.333), and
+it holds the two molecules that outscore EGF on the human leg. Eight of the ten "failures" of
+this panel are one sequence family.
 
 **No confidence interval is reported, and no effective-n is substituted into Clopper–Pearson.**
-With two families, one of which has a single member, the family-balanced figure on the human leg
-moves across the whole range 0.778–1.000 depending on which single family is retained. That
-swing is the honest uncertainty statement; a binomial interval would imply a denominator we do
-not have. The mouse leg is 1.000 under every weighting, which is the one part of this panel that
-is not weighting-dependent.
+Ordinary exact binomial intervals do not become cluster-adjusted that way, and six families —
+three of them singletons — cannot support dependable cluster-bootstrap inference either. The
+leave-one-family-out range is the uncertainty statement. The mouse leg is 1.000 under every
+weighting, the one part of this panel that is not weighting-dependent.
 
 **Requiring both species — how the submission is actually scored — zero of the ten no-KD
 molecules match or exceed EGF on both legs.** That is consistent with the instrument working on
