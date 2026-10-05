@@ -174,6 +174,34 @@ SENSITIVITY = "analysis/01-egfr/ph_sensitivity.json"   # three pH bases, bin/ph_
 SPREAD_BAR = 1.0
 
 
+POOLED = "analysis/01-egfr/ph_pooled_by_sequence.json"
+_TGT = {}
+
+
+def target_only():
+    """seq -> (median target-only ratio, n). Joined on SEQUENCE, not carried through.
+
+    The superseded target-only column used to be taken from submission_final.json's own
+    `ratio` field, which is provenance carried along with the record rather than a value
+    derived from the artifact. For `rimA01_r15_L133E` that field held **its parent's**
+    number: the CSV shipped 4.582 for both L133E and
+    `rimA01_r15_boltzgen_egfr_d3_rimA_20`, while L133E's own pooled median is 4.619 over
+    its own 5 poses. One shipped figure attributed to the wrong molecule, on the one row
+    whose parent is also in the submission -- which is exactly the comparison that row
+    exists to support.
+
+    This is the ninth time on this problem that a value reached a deliverable through a
+    name or a carried field instead of a join on the sequence.
+    """
+    import json as _j
+    out = {}
+    for rec in _j.load(open(POOLED)):
+        q = (rec.get("seq") or "").strip().upper()
+        if q and rec.get("median") is not None:
+            out[q] = (float(rec["median"]), int(rec.get("n") or 0))
+    return out
+
+
 def multisite():
     """seq -> (ranked pH ratio, spread/median, n). ONE source for all three.
 
@@ -373,6 +401,8 @@ def main():
     rows = json.load(open(SUB))
     pooled = pooled_affinity()
     ms = multisite()
+    global _TGT
+    _TGT = target_only()
     missing = [x["name"] for x in rows if x["seq"] not in pooled]
     if missing:
         # Fail LOUD. The silent-zero path is this project's signature failure: `hu or 0.0`
@@ -387,7 +417,11 @@ def main():
         hu, mo = pooled[x["seq"]]
         scored.append(dict(name=x["name"], sequence=x["seq"],
                            molecule_class=x.get("molecule_class", MOLECULE_CLASS),
-                           ratio=float(x["ratio"]),
+                           # target-only, joined on SEQUENCE; the record's own `ratio`
+                           # field is a fallback only, and it is wrong for at least one
+                           # design (see target_only()'s docstring).
+                           ratio=float((_TGT.get(x["seq"].strip().upper())
+                                        or (float(x["ratio"]), 0))[0]),
                            allsite=(ms.get(x["seq"]) or (None, None, None))[0],
                            spread_ratio=(ms.get(x["seq"]) or (None, None, None))[1],
                            hu=hu or 0.0, mo=mo or 0.0,
@@ -409,6 +443,21 @@ def main():
                            # Same class of bug as ratio_n, which emptied tier 1 earlier today.
                            assessment=x.get("assessment", "computational candidate"),
                            rmsd=x.get("rmsd", "")))
+
+    # EVERY ROW MUST CARRY A ROUTE TO THE METHODS DOCUMENT.
+    #
+    # Track 3 submits this CSV alone. Eighteen rows defer their caveats to "METHODS 11.7",
+    # "METHODS 4.5" and similar, and until 2026-10-05 the file contained no URL, no
+    # repository reference and no methods column -- so a grader reading only the uploaded
+    # artifact could not reach a single one of the qualifications those rows depend on.
+    # Appended here, once, for every row, rather than typed into eighteen strings.
+    METHODS_POINTER = (" Methods, limitations and every artifact behind these numbers: "
+                       "https://github.com/harishrajaram-svg/adaptyv-egfr-ph-switch "
+                       "(submissions/01-egfr-METHODS.md).")
+    for r in scored:
+        a = r.get("assessment") or ""
+        if "adaptyv-egfr-ph-switch" not in a:
+            r["assessment"] = a.rstrip() + METHODS_POINTER
 
     # THE GRADED FILE MUST BE PURE ASCII. The assessment strings are prose and today's
     # corrections introduced curly apostrophes, em-dashes and U+00D7 into them via Python
@@ -519,7 +568,7 @@ def main():
                         f"{_s['partnered_median']:.3f}" if "partnered_median" in _s else "",
                         _rng,
                         # Every tier is provisional: the shipped basis and the partnered
-                        # basis rank these designs with Kendall tau = 0.000.
+                        # basis rank these designs with Kendall tau = +0.046.
                         "provisional" if _rk else "",
                         f"{r['ratio']:.3f}",
                         # PK: "a failed run must not silently become a valid score of zero" --
@@ -562,7 +611,7 @@ def main():
           f"             conservative envelope min(his_only, allsite, partnered) for "
           f"{n_env} of {len(scored)}.\n"
           "  tgtonly  = superseded target-only ratio. All tiers are PROVISIONAL:\n"
-          "             Kendall tau(his_only, partnered) = 0.000. See ph_sensitivity.json.")
+          "             Kendall tau(his_only, partnered) = +0.046 over 18 designs. See ph_sensitivity.json.")
 
 
 def selftest():

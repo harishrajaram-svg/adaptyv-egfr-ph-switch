@@ -1282,7 +1282,7 @@ histidine-only order is nevertheless the one retained.* Measured over 165 poses,
 <!-- GENERATED:BASIS-TABLE -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
 | design | target-only | **his-only (graded)** | binder histidines | worst drag |
 |---|---|---|---|---|
-| rimA01_r15_L133E | 4.582 | **5.656** | 0 | — |
+| rimA01_r15_L133E | 4.619 | **5.656** | 0 | — |
 | c5_cf_short__boltzgen_egfr_cropfree_short_48 | 5.819 | **5.546** | 0 | — |
 | rimA02_d3_rimA_14_vhh | 5.186 | **4.838** | 0 | — |
 | c5_cr_crop_patch__boltzgen_egfr_crop_patch_05 | 5.265 | **4.812** | 0 | — |
@@ -1349,7 +1349,7 @@ hardest case. The *direction* is consistent across 76 poses and mechanistically 
 | 11 | `bc_s831683_mpnn19_S15D` | protein | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-14 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
 | 12 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 4.976 | 5.183 | 3-13 | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
 | 13 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.140 | 2.267 | 12-18 | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
-| 14 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-6 | 4.38 | 4.582 | 20 | 0.598 | 0.434 | yes |
+| 14 | `rimA01_r15_L133E` | protein | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-6 | 4.38 | 4.619 | 20 | 0.598 | 0.434 | yes |
 | 15 | `bc_s831683_mpnn9_S15D` | protein | d3acid_l65_s831683 | 65 | **1.062** | 1.804 | 6.801 | 7-16 | 1.21 | 5.428 | 20 | 0.804 | 0.804 | yes |
 | 16 | `bc_s831683_mpnn9_WT` | protein | d3acid_l65_s831683 | 65 | **0.627** | 1.195 | 5.226 | 12-18 | 1.76 | 3.522 | 26 | 0.786 | 0.784 | yes |
 | 17 | `bc_d3acid_l65_s831683_mpnn11` | protein | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 5-17 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
@@ -1834,7 +1834,7 @@ collaboration. The errors in §7 were found the same way.
 
 Of these, **12** were in the submission as it stood on 2026-10-04 and **6** were added on 2026-10-05. The additions are `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`.
 
-What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC. Measured rather than asserted -- `analysis/01-egfr/express_qc.tsv` joins to **10 of the 18** submitted designs, so 8 have no expression-QC row: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `bc_s360518_mpnn9_A22D`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Novelty IS established for all 18: `bin/check_novelty_coverage.py` is green, and the four designs that had no levelled record were re-run on 2026-10-05 (`analysis/01-egfr/novelty_gap4.tsv`). This sentence said the checker was RED, which it was for about an hour before the gap was closed.
+What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC. Measured rather than asserted -- `analysis/01-egfr/express_qc.tsv` joins to **18 of the 18** submitted designs, so 0 have no expression-QC row. Novelty IS established for all 18: `bin/check_novelty_coverage.py` is green, and the four designs that had no levelled record were re-run on 2026-10-05 (`analysis/01-egfr/novelty_gap4.tsv`). This sentence said the checker was RED, which it was for about an hour before the gap was closed.
 <!-- /GENERATED:DECL-REVIEW -->
 
 **Provenance.** All eighteen sequences are de novo designs from this project's own generation
@@ -2062,3 +2062,33 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     doing that hours before a deadline is a larger risk than the mislabel. **Nothing
     numerical depends on it** — every pKa, distance and ratio was computed on the structures,
     in mature coordinates, and only the printed labels use the other convention.
+35. **Two designs carry measured expression liabilities, and `bin/express_qc.py` had never
+    been run on the shipped set.** It was run on 2026-10-05 against
+    `submissions/01-egfr.csv` for the first time — `analysis/01-egfr/express_qc.tsv` had
+    been a stale 20-design file, 10 rows of which are not in this submission and 8 of this
+    submission's designs absent from it. 15 of 18 carry no flagged liability. The three
+    that do:
+    - **`c5_cf_short__boltzgen_egfr_cropfree_short_48`**, which the pH objective ranks
+      **first**, is **30.0% alanine** (21 of 70) with a **7-residue poly-alanine run**, an
+      **8-residue hydrophobic run** and **GRAVY +0.46** — the highest in the submission,
+      where every other design sits at +0.24 or below. Binders are produced by *E. coli*
+      cell-free synthesis, which is the regime in which long hydrophobic runs aggregate. This
+      is a fifth independent strike against the top-ranked design, alongside its weak
+      affinity, its Asn420 glycan contact, its lowest-in-set Chai ipTM of 0.201 and the
+      unorderability of the objective itself.
+    - **`rimA02_d3_rimA_14_vhh`** has **pI 6.38** (6.41 Bjellqvist, 6.54 EMBOSS) and a net
+      charge of **−0.0 at pH 6.5**, so it sits at its isoelectric point *in the assay buffer
+      where the headline low-pH measurement is taken*. A protein at its pI is at minimum
+      solubility. It is the only design with this property: every other sits at pI 3.57–4.72
+      and carries −5 to −15 net charge at 6.5. Nothing in the project's own QC flag logic
+      tests pI, so this was invisible until measured directly under three independent pKa
+      sets.
+    - `h370_020_vhh` carries 2 cysteines, the canonical VHH framework pair, which is
+      expected rather than a defect.
+36. **The uploaded CSV contains no route to this document.** Eighteen rows defer their
+    caveats to "METHODS 11.7", "METHODS 4.5" and similar, and the file carries no URL, no
+    repository reference and no methods column — `grep -oE 'https?://[^ ,"]+'` on it returns
+    nothing. Track 3 submits the CSV alone, so a grader reading only the uploaded artifact
+    cannot reach any of the qualifications those rows rely on. The repository is public at
+    `https://github.com/harishrajaram-svg/adaptyv-egfr-ph-switch` and the pointer is now
+    included in each row's assessment text; before 2026-10-05 it was not.
