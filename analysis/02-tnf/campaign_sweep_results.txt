@@ -1,0 +1,70 @@
+
+==============================================================================================
+### Pertuzumab (Her2)   1S78   binder CD / antigen A
+    benchmark: 9 single-point variants, 3 labelled hits
+    per-CDR offsets fitted (verified by residue identity):
+      H cdr1  offset  +0   1/1 verified
+      H cdr2  offset  +0   2/2 verified
+      H cdr3  offset  +0   3/4 verified
+      L cdr2  offset  +0   2/2 verified
+    🔴 DROPPED 1 position(s) that did not verify: ['H100A']
+    scoring 8 of 9 variants, 3 of 3 hits retained
+
+    variant   labelled      rigid       repacked med [min..max]  pred
+    ----------------------------------------------------------------------------
+    WT        -            -2.518     -2.518
+    H31       -            -3.134     -2.347 [-3.44..-2.17]   non    ok
+    H53       -            -5.948     -1.705 [-2.07..-1.71]   non    ok
+    H54       HIT          -1.969     -0.281 [-1.05..+0.49]!  non    WRONG
+    H99       HIT          -1.835     +0.035 [+0.04..+0.04]   switch ok
+    H101      -            -2.311     -0.277 [-0.57..-0.18]   non    ok
+    H96       -            -2.481     +2.478 [+2.37..+2.72]   switch WRONG
+    L53       -            -2.032     +1.077 [-0.04..+1.08]!  switch WRONG
+    L55       HIT          -1.907     +0.154 [+0.15..+0.15]   switch ok
+    ----------------------------------------------------------------------------
+    5/8 correct;  trivial null 5/8;  TP 2  FN 1  FP 2
+
+==============================================================================================
+### bH1 (Her2)   3BE1   binder HL / antigen A
+    benchmark: 8 single-point variants, 3 labelled hits
+    per-CDR offsets fitted (verified by residue identity):
+      H cdr1  offset  +0   2/2 verified
+      H cdr2  offset  +0   3/3 verified
+      H cdr3  offset  +0   1/1 verified
+      L cdr1  offset  +0   2/2 verified
+    scoring 8 of 8 variants, 3 of 3 hits retained
+
+    variant   labelled      rigid       repacked med [min..max]  pred
+    ----------------------------------------------------------------------------
+    WT        -            -1.710     -0.568
+    H33       -            -1.774     -0.733 [-4.70..-0.09]   non    ok
+    H28       -            -1.710     -0.570 [-1.00..-0.57]   non    ok
+    H56       -            -1.687     -0.790 [-4.21..+2.12]!  non    ok
+    H58       HIT          -7.866     -0.840 [-2.49..-0.19]   non    WRONG
+    H50       -            -1.708     -1.111 [-1.11..-0.52]   non    ok
+    H100A     -            -2.323     -1.494 [-1.73..-1.26]   non    ok
+    L27D      HIT          -1.757     -0.934 [-1.56..-0.85]   non    WRONG
+    L30       HIT          -1.710     -0.568 [-0.80..+0.83]!  non    WRONG
+    ----------------------------------------------------------------------------
+    5/8 correct;  trivial null 5/8;  TP 0  FN 3  FP 0
+
+==============================================================================================
+### Ipilimumab (CTLA-4)   5TRU   binder HL / antigen C
+    benchmark: 21 single-point variants, 2 labelled hits
+    per-CDR offsets fitted (verified by residue identity):
+      H cdr1  offset  +0   5/5 verified
+      H cdr2  offset  +1   4/7 verified
+      H cdr3  offset  +4   3/3 verified
+      L cdr2  offset  +1   3/3 verified
+      L cdr3  offset  +1   3/3 verified
+    🔴 DROPPED 3 position(s) that did not verify: ['H52A', 'H52', 'H50']
+    scoring 18 of 21 variants, 2 of 2 hits retained
+
+    variant   labelled      rigid       repacked med [min..max]  pred
+    ----------------------------------------------------------------------------
+    WT        -            -0.572     -0.576
+    H32       -            -0.559     -0.368 [-0.58..+0.00]!  non    ok
+    H33       HIT          -2.390     -0.327 [-0.33..-0.33]   non    WRONG
+    H31       HIT          -1.262     -0.899 [-2.15..-0.51]   non    WRONG
+    H28       -            -0.572     -0.498 [-0.50..-0.50]   non    ok
+    H30       -            -0.572     -0.578 [-0.72..-0.50]   non    ok

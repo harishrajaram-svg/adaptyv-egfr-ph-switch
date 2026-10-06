@@ -1,0 +1,22 @@
+
+### bH1 (Her2)  3BE1   8 mappable variants, 3 hits
+   gate fired on 0 of 8 variants
+   of 3 labelled hits the gate fired on 0; of 5 non-hits it fired on 0
+
+### Ipilimumab (CTLA-4)  5TRU   18 mappable variants, 2 hits   (3 dropped)
+   gate fired on 0 of 18 variants
+   of 2 labelled hits the gate fired on 0; of 16 non-hits it fired on 0
+
+### Tocilizumab (IL-6R)  8J6F   48 mappable variants, 6 hits   (4 dropped)
+   gate fired on 2 of 48 variants
+      H54     -     designable=1
+      H53     -     designable=1
+   of 6 labelled hits the gate fired on 0; of 42 non-hits it fired on 2
+
+### Pertuzumab (Her2)  1S78   8 mappable variants, 3 hits   (1 dropped)
+   gate fired on 0 of 8 variants
+   of 3 labelled hits the gate fired on 0; of 5 non-hits it fired on 0
+
+================================================================================
+POOLED: 82 variants, 14 hits. Gate fired on 2 (0 hits, 2 non-hits).
+precision 0.0% against a 17.1% base rate -> NOT enriched
