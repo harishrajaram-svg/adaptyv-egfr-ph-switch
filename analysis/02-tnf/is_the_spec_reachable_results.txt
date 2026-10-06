@@ -1,0 +1,53 @@
+Has ANY published molecule ever met this specification?
+
+Ceiling 10 uM. Required ratio = ceiling / KD(7.4).
+
+   KD at 7.4   ratio needed to vanish at 6.0
+----------------------------------------------
+     0.001 nM                    10,000,000x
+     0.010 nM                     1,000,000x
+     0.100 nM                       100,000x
+     1.000 nM                        10,000x
+    10.000 nM                         1,000x
+   100.000 nM                           100x
+   500.000 nM                            20x
+  1000.000 nM                            10x
+  5000.000 nM                             2x
+
+molecule                          KD@7.4    ratio      kind      needed  verdict
+--------------------------------------------------------------------------------------------
+Chugai anti-myostatin             0.2850     119x        KD     35,088x  fails by 295x
+Satralizumab (marketed)              n/a      10x        KD          --  KD not in hand; cannot place
+adalimumab WT                     0.0046       9x  off-rate  2,173,913x  fails by 241,546x
+Schroter PSV#1                    0.0463     231x  off-rate    215,983x  fails by 935x
+Schroter PSV#2                    0.0773     785x  off-rate    129,366x  fails by 165x
+Schroter PSV#3                    0.1120     505x  off-rate     89,286x  fails by 177x
+Adafre AF-M2637                   1.1000      15x      EC50      9,091x  fails by 606x
+Adafre AF-M2631                      n/a      30x      EC50          --  KD not in hand; cannot place
+best computational, any              n/a       2x        KD          --  KD not in hand; cannot place
+
+============================================================================================
+🔴 NOTHING IN THE RECORD MEETS THE SPEC.
+   Closest is Schroter PSV#2: it would need to be 165x better.
+
+WHY, in one line: the molecules people actually build are PICOMOLAR at the ON pH, and a picomolar
+binder needs a four-to-seven-log ratio to cross a 10 uM ceiling. Nobody gets near that. The
+record's best VERIFIED KD ratio is 119x; the spec wants 35,000x of a 285 pM binder.
+
+THE ESCAPE, and it is the whole design consequence: bind WEAKLY at 7.4. At KD 500 nM the spec
+needs 20x; at 1 uM it needs 10x. Both sit INSIDE the published 5-30x band. Our own s4 band of
+4.5-51.6x clears 1 uM comfortably and 500 nM at its optimistic end.
+
+So objective 1 is reachable -- but ONLY in a band where objective 3 (affinity) is deliberately
+sacrificed. That is not a tension we introduced; it is in the arithmetic of the spec. It is also
+exactly what s4 already chose (200 nM - 1 uM), which this now justifies from the opposite
+direction: not "what can our mechanism deliver" but "what does the spec permit at all".
+
+⚠️  THREE QUANTITIES, NOT ONE. The ratios above are KD, off-rate and EC50 shifts and they are
+   NOT interchangeable. Only the KD rows are strictly comparable to the requirement, which is a
+   KD question. The Schroter and Adafre rows are placed for scale and are marked.
+
+⚠️  The 10 uM ceiling is OUR assumption about the assay. Organiser question 2 asks what "no
+   detectable binding" actually means. If it means "no response above buffer" at a lower
+   concentration, every number above moves. That question is now the single highest-value
+   unknown on this problem.
