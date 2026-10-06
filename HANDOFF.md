@@ -5,6 +5,36 @@
 message, not from our own notes. Adaptyv extended it; the original Oct 4 date is wrong
 everywhere it still appears.
 
+## 🔵 THIS FILE IS PROBLEM 1 ONLY. Problem 2 is live and lives elsewhere.
+
+**Problem 1 is SUBMITTED** — 16 designs, 10/5 12:49 PM, DESIGNATED. Nothing owed.
+
+**Problem 2 (conditional TNF-α binder: bind at pH 7.4, release at pH 6.0, plus mouse
+cross-reactivity) closes Mon 2026-10-12 07:59 EDT**, retry-preserving upload Sun 10/11. Its
+decision record is **not in this repo** — it is
+`~/code/context-directory/projects/anthropic-adaptyv-2026/challenges/02-tnf-alpha.md` §1–§28,
+with the current-state block in `SESSION-HANDOFF-2026-10-06.md`. Read those, not this file.
+
+What a reader of **this repo** needs to know, because the code is here:
+
+* **`biomodals/modal_mosaic.py` is now problem-2 capable** and `biomodals/` is **gitignored** —
+  the wrapper survives only via **`patches/modal_mosaic.patch`** (1122 lines). Regenerate it
+  after every edit; it has gone stale once already and nearly lost a day's work.
+* It takes `--mechanism {acid_near_his,his_near_cation}`, a comma-separated `--target-chain`, and
+  `--anchor-chain`. `p2trimer02` passed step 4 against **all three TNF protomers** (532 tokens).
+  Cost: **21.7 s/step at 532 tokens vs 3.16 s at 228** — quadratic, so a light wave is ~$20.
+* 🔴 **`HisNearCation` reduced with `score.sum()` and was gameable** — it rewards histidine mass
+  near the cation, not histidine placed, and returned **15.8% histidine** while `his_best` read
+  **exactly 0.00 every step**. Fixed to **top-2** via module-level `his_reduce()`, plus
+  `cap_his=0.08`. `bin/mosaic_selftest.py` pins it with a **mutation test** that fails if the
+  reduction is reverted. **`AcidNearHis` (problem 1) sums too and is deliberately NOT fixed** —
+  nothing shipped came from a Mosaic trajectory, so no problem-1 result is affected.
+* **`bin/mosaic_selftest.py` runs with bare `python3`, no numpy, no GPU, no Modal account.**
+  `bin/design-mosaic.sh` calls it first. Keep it dependency-free — `bin/gate_sweep.py:32`
+  records what hardcoding `.venv/bin/python` cost: two gates dead in every fresh clone.
+* ⚠️ **Do not launch a Mosaic production wave.** The target and anchor are an open question for
+  PK; R108 is in the smoke command only because the smoke needed something.
+
 ## ⚠️ READ THIS FIRST — THE RULES LIVE IN A CHANNEL WE ARE NOT IN
 
 **`#anthropic_adaptyv_competition` (`C0C4VEG57HU`) on the Proteinbase Slack.** Harish is **not a
