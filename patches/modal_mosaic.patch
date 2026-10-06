@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..38afc8f
+index 0000000..93a7544
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1116 @@
+@@ -0,0 +1,1123 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -1043,8 +1043,15 @@ index 0000000..38afc8f
 +    # problem 1's EGFR histidine -- so the first passing problem 2 trimer run reported a
 +    # correct distance against the wrong residue name. A log line that names the wrong
 +    # anchor is how a number gets believed about the wrong molecule later.
-+    print(f"[mosaic] STEP 4 {'PASSED' if rows else 'FAILED - no designs'}: "
-+          f"{len(passed)}/{len(rows)} within 4.0 A of {anchor_label}")
++    # Two DIFFERENT questions, and this line used to blur them: did step 4 produce rows, and
++    # did any design place its titratable residue? It printed "STEP 4 PASSED: 0/1", which a
++    # reader scanning for PASSED takes as success when in fact no design passed geometry.
++    # Completion is reported as RAN/FAILED; geometry gets its own verdict line.
++    print(f"[mosaic] STEP 4 {'RAN' if rows else 'FAILED - no designs'}: {len(rows)} designs")
++    if rows:
++        print(f"[mosaic] {'✅' if passed else '🔴'} GEOMETRY {len(passed)}/{len(rows)} "
++              f"within 4.0 A of {anchor_label}"
++              + ("" if passed else " -- NO design placed its histidine"))
 +    if suspect:
 +        print(f"[mosaic] 🔴 {len(suspect)}/{len(rows)} rows have SUSPECT METRICS: "
 +              f"{', '.join(suspect)} -- see metrics_ok in designs.tsv")
