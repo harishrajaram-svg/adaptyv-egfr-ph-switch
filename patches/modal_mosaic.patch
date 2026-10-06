@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..978acd8
+index 0000000..38afc8f
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1075 @@
+@@ -0,0 +1,1116 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -280,6 +280,19 @@ index 0000000..978acd8
 +    return chain, sequence, resnums
 +
 +
++def his_reduce(score, topk, xp):
++    """The reduction HisNearCation applies to its per-position scores.
++
++    Module level, and taking its array module as an argument, so that the loss term running
++    on jnp inside Modal and bin/mosaic_selftest.py running on numpy on a laptop exercise ONE
++    definition. Writing the formula twice would make the test agree with a copy of the code
++    rather than with the code. `xp.sort` is differentiable under jax -- it is a permutation,
++    so gradient routes to whichever positions are currently best -- which a hard
++    index-select would not be.
++    """
++    return xp.sort(score)[-topk:].sum()
++
++
 +def _geometry_p2(st, anchor_resnum: int):
 +    """Problem 2's mirror: shortest binder-HISTIDINE ring-N to target CATION-N distance.
 +
@@ -493,6 +506,7 @@ index 0000000..978acd8
 +    w_monomer: float = 0.5,
 +    cap_val: float = 0.12,
 +    cap_gly: float = 0.08,
++    cap_his: float = 0.08,
 +    acid_d0: float = 8.0,
 +    his_d0: float = 6.5,
 +    acid_width: float = 1.5,
@@ -707,12 +721,31 @@ index 0000000..978acd8
 +        downhill. s22 and s20 together mean both conditional objectives must now be DESIGNED
 +        IN rather than selected for, and this is the only place in the pipeline where that can
 +        happen for the pH mechanism.
++
++        🔴 REDUCTION IS top-k, NOT sum -- and this is a correction, not a preference. The
++        first version wrote `total = score.sum()`, mirroring AcidNearHis. Summing rewards
++        total histidine MASS in the neighbourhood rather than histidine PLACEMENT, and the
++        cheapest way down that gradient is to put histidine everywhere. The 5-step trimer
++        smoke returned 12 histidines in 76 residues -- 15.8% against a ~2.3% natural
++        frequency -- while `his_best` sat at exactly 0.00 every step, i.e. the loss fell the
++        whole way without ONE histidine ever being placed. Arithmetic on the sigmoid confirms
++        the incentive without needing a run: 12 histidines loitering at 9.0 A score -0.646
++        under sum and 1 histidine placed at 3.0 A scores +0.091, so sum strictly PREFERS the
++        spam. Under top-2 the same two cases are +1.143 and +0.091 and the placed histidine
++        wins. k = 2 rather than 1 because s24 measured 0.40 pKa units per site, so the ratio
++        arithmetic needs two sites and a max would pay for only one.
++
++        AcidNearHis still sums, and has the same structural incentive. It is left alone
++        deliberately: problem 1's submitted set came from BoltzGen/MPNN with point mutations,
++        never from a Mosaic trajectory, so nothing shipped is affected -- and problem 1 is
++        another session's. Flagged in challenges/01, not fixed here.
 +        """
 +        his_idx: int
 +        cation_atoms: tuple
 +        d0: float = 6.5
 +        width: float = 1.5
 +        eps: float = 1e-3
++        topk: int = 2
 +
 +        def __call__(self, sequence, output, key):
 +            L = sequence.shape[0]
@@ -728,11 +761,13 @@ index 0000000..978acd8
 +            # untouched.
 +            his = jnp.clip(sequence[:, TOKENS.index("H")], 0.0, 1.0)
 +            score = his * jax.nn.sigmoid((self.d0 - d) / self.width)
-+            total = score.sum()
++            total = his_reduce(score, self.topk, jnp)   # top-k, not sum -- see the docstring
 +            loss = -jnp.log(total + self.eps)
 +            return loss, {
 +                "his_cation": loss,
 +                "his_best": score.max(),
++                "his_topk": total,
++                "frac_H": his.mean(),
 +                "his_dmin_CA": jnp.min(d + (1.0 - his) * 100.0),
 +            }
 +
@@ -779,7 +814,7 @@ index 0000000..978acd8
 +
 +    caps = tuple(
 +        (TOKENS.index(aa), cap, aa)
-+        for aa, cap in (("V", cap_val), ("G", cap_gly)) if cap < 1.0
++        for aa, cap in (("V", cap_val), ("G", cap_gly), ("H", cap_his)) if cap < 1.0
 +    )
 +    rows, files = [], {}
 +
@@ -986,7 +1021,7 @@ index 0000000..978acd8
 +                    "within": w_within, "plddt": w_plddt, "glob": w_glob,
 +                    "acid": w_acid, "mpnn": w_mpnn, "comp": w_comp,
 +                    "monomer": w_monomer},
-+        "caps": {"V": cap_val, "G": cap_gly}, "acid_d0": acid_d0,
++        "caps": {"V": cap_val, "G": cap_gly, "H": cap_his}, "acid_d0": acid_d0,
 +        "acid_width": acid_width, "acid_eps": acid_eps,
 +        # Derived from the composed loss object, not asserted. The previous value here
 +        # was a hardcoded `True` that would have printed True with ipSAE in the loss.
@@ -1003,8 +1038,13 @@ index 0000000..978acd8
 +    print(f"[mosaic] {len(rows)} designs; also written to {out} on the Volume")
 +    passed = [r for r in rows if r.get("geometry_pass")]
 +    suspect = [r["design"] for r in rows if not r.get("metrics_ok", True)]
++    anchor_label = f"{anchor_aa}{anchor} on chain {anchor_chain}"
++    # Name the anchor that was actually used. This line read "of H433" unconditionally --
++    # problem 1's EGFR histidine -- so the first passing problem 2 trimer run reported a
++    # correct distance against the wrong residue name. A log line that names the wrong
++    # anchor is how a number gets believed about the wrong molecule later.
 +    print(f"[mosaic] STEP 4 {'PASSED' if rows else 'FAILED - no designs'}: "
-+          f"{len(passed)}/{len(rows)} within 4.0 A of H433")
++          f"{len(passed)}/{len(rows)} within 4.0 A of {anchor_label}")
 +    if suspect:
 +        print(f"[mosaic] 🔴 {len(suspect)}/{len(rows)} rows have SUSPECT METRICS: "
 +              f"{', '.join(suspect)} -- see metrics_ok in designs.tsv")
@@ -1040,6 +1080,7 @@ index 0000000..978acd8
 +    w_monomer: float = 0.5,
 +    cap_val: float = 0.12,
 +    cap_gly: float = 0.08,
++    cap_his: float = 0.08,
 +    acid_d0: float = 8.0,
 +    his_d0: float = 6.5,
 +    mechanism: str = "acid_near_his",
@@ -1069,7 +1110,7 @@ index 0000000..978acd8
 +        recycling_steps=recycling_steps, sampling_steps=sampling_steps,
 +        stepsize=stepsize, sharpen=sharpen, use_mpnn=use_mpnn, w_acid=w_acid,
 +        w_mpnn=w_mpnn, w_plddt=w_plddt, w_monomer=w_monomer,
-+        cap_val=cap_val, cap_gly=cap_gly, acid_d0=acid_d0, acid_eps=acid_eps,
++        cap_val=cap_val, cap_gly=cap_gly, cap_his=cap_his, acid_d0=acid_d0, acid_eps=acid_eps,
 +        his_d0=his_d0, mechanism=mechanism,
 +        smoke=smoke,
 +    )

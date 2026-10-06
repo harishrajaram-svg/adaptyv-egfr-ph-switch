@@ -173,6 +173,56 @@ def main():
     print(f"p2 trimer     anchor found on protomer 0/1/2 alike at 3.0 A; "
           f"7.0 A -> geometry_pass={far['geometry_pass']}; missing anchor -> {{}}")
 
+    # 3c. THE REDUCTION. HisNearCation first wrote `score.sum()`, and summing rewards total
+    # histidine MASS near the cation rather than one histidine PLACED: the 5-step trimer smoke
+    # came back with 12 histidines in 76 residues (15.8% vs ~2.3% natural) while `his_best` sat
+    # at exactly 0.00 every step. This is a MUTATION TEST -- it asserts that the discarded `sum`
+    # formulation FAILS, so the test cannot pass if someone reverts the reduction.
+    import math
+
+    # No numpy. bin/design-mosaic.sh runs this file with bare `python3`, and gate_sweep.py:32
+    # records what hardcoding .venv/bin/python cost: two gates died with FileNotFoundError in
+    # every fresh clone. his_reduce needs sort, slice and sum and nothing else, which is the
+    # whole reason it takes its array module as an argument -- so a six-line backend over
+    # lists exercises the REAL reduction and keeps this file runnable on any interpreter.
+    class _Arr(list):
+        def sum(self):
+            return sum(self)
+
+        def __getitem__(self, k):
+            got = list.__getitem__(self, k)
+            return _Arr(got) if isinstance(k, slice) else got
+
+    np = type("np", (), {"array": staticmethod(_Arr),
+                         "sort": staticmethod(lambda x: _Arr(sorted(x)))})
+
+    his_reduce = ns["his_reduce"]
+    d0, width, eps = 6.5, 1.5, 1e-3
+
+    def loss(n_his, dist, reduce):
+        """n_his histidines, all `dist` A from the cation, padded out to 76 positions."""
+        sig = 1.0 / (1.0 + math.exp(-(d0 - dist) / width))
+        score = np.array([sig] * n_his + [0.0] * (76 - n_his))
+        return -math.log(float(reduce(score)) + eps)
+
+    placed = (1, 3.0)        # one histidine where we want it
+    spam = (12, 9.0)         # twelve loitering at a distance that is useless on its own
+    top2 = lambda s: his_reduce(s, 2, np)
+    bad_sum = lambda s: s.sum()
+
+    assert loss(*spam, bad_sum) < loss(*placed, bad_sum), \
+        "the sum formulation is supposed to prefer the spam -- if it does not, this test is " \
+        "no longer pinning down the bug it was written for"
+    assert loss(*placed, top2) < loss(*spam, top2), \
+        f"top-2 must prefer the placed His: {loss(*placed, top2)} vs {loss(*spam, top2)}"
+    # and k=2 must actually VALUE the second site -- s24 measured 0.40 pKa units per site, so
+    # one site cannot reach the spec and a max() reduction would pay for only one.
+    assert loss(2, 3.0, top2) < loss(1, 3.0, top2), "k=2 does not reward a second placed His"
+    assert loss(3, 3.0, top2) == loss(2, 3.0, top2), "a THIRD His must buy nothing"
+    print(f"reduction      sum prefers spam ({loss(*spam, bad_sum):+.3f} < "
+          f"{loss(*placed, bad_sum):+.3f}) -- top2 prefers placed "
+          f"({loss(*placed, top2):+.3f} < {loss(*spam, top2):+.3f}); 2nd His pays, 3rd is free")
+
     # 4. a distant carboxylate must FAIL the 4.0 A bar -- the bar is the whole point.
     # The reported distance is the min over ND1 AND NE2, so it is not the planted offset;
     # the bar is what is being tested here, not the arithmetic.
