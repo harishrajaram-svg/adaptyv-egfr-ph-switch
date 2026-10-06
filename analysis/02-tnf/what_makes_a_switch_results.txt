@@ -1,0 +1,47 @@
+  bH1 (Her2)                8 positions featurised
+  Ipilimumab (CTLA-4)      18 positions featurised
+  Tocilizumab (IL-6R)      48 positions featurised
+  Pertuzumab (Her2)         8 positions featurised
+
+82 positions: 14 measured switches, 68 non-switches
+
+feature       hits median  non median  separates on  direction
+--------------------------------------------------------------------------
+burial             146.00      169.50         3 of 4   hits LOWER    <-- REPORTABLE
+d_antigen            4.62        4.50         3 of 4   hits HIGHER   <-- REPORTABLE
+n_contact            5.50        5.50         3 of 4   hits LOWER    <-- REPORTABLE
+d_anion              7.83        8.78         3 of 4   hits LOWER    <-- REPORTABLE
+d_cation             6.45        8.65         3 of 4   hits LOWER    <-- REPORTABLE
+n_arom6              0.00        0.00         2 of 4   hits LOWER  
+
+(bar set before the numbers: a feature must agree on >= 3 of 4 campaigns in the same direction)
+
+5 feature(s) clear it: burial, d_antigen, n_contact, d_anion, d_cation
+Per-campaign medians for those:
+  burial
+     bH1 (Her2)              hits  126.00 (n=3)   non  194.00 (n=5)
+     Ipilimumab (CTLA-4)     hits  164.50 (n=2)   non  159.50 (n=16)
+     Tocilizumab (IL-6R)     hits  127.50 (n=6)   non  177.00 (n=42)
+     Pertuzumab (Her2)       hits  166.00 (n=3)   non  184.00 (n=5)
+  d_antigen
+     bH1 (Her2)              hits    5.11 (n=3)   non    3.44 (n=5)
+     Ipilimumab (CTLA-4)     hits    4.31 (n=2)   non    5.50 (n=16)
+     Tocilizumab (IL-6R)     hits    6.78 (n=6)   non    5.75 (n=42)
+     Pertuzumab (Her2)       hits    3.86 (n=3)   non    3.59 (n=5)
+  n_contact
+     bH1 (Her2)              hits    3.00 (n=3)   non   54.00 (n=5)
+     Ipilimumab (CTLA-4)     hits    5.50 (n=2)   non    2.00 (n=16)
+     Tocilizumab (IL-6R)     hits    0.00 (n=6)   non    1.00 (n=42)
+     Pertuzumab (Her2)       hits   19.00 (n=3)   non   66.00 (n=5)
+  d_anion
+     bH1 (Her2)              hits    5.11 (n=3)   non    3.98 (n=5)
+     Ipilimumab (CTLA-4)     hits    4.31 (n=2)   non    8.45 (n=16)
+     Tocilizumab (IL-6R)     hits    8.66 (n=6)   non    9.11 (n=42)
+     Pertuzumab (Her2)       hits   10.07 (n=3)   non   11.43 (n=5)
+  d_cation
+     bH1 (Her2)              hits   11.51 (n=3)   non    7.83 (n=5)
+     Ipilimumab (CTLA-4)     hits    6.21 (n=2)   non    9.41 (n=16)
+     Tocilizumab (IL-6R)     hits    7.03 (n=6)   non    8.70 (n=42)
+     Pertuzumab (Her2)       hits    5.16 (n=3)   non    6.66 (n=5)
+
+wrote switch_features.json (82 rows)
