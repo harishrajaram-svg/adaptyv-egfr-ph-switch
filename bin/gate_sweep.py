@@ -55,6 +55,12 @@ GATES = [
     # the known-answer control for it. Reports 0/5 PASS and says so -- a FAILING control that
     # keeps failing is the finding, so this gate checks the control still RUNS and self-tests.
     ('schroter_control',         [PY, 'analysis/02-tnf/schroter_control.py'], None),
+    # Ahn's SECOND criterion, and the reason dddG_elec's 0/5 is a diagnosis rather than a
+    # mystery: scored across an interface with no cationic partner, dddG_elec returns
+    # background. This gate runs FIRST in that pair. T5 is the known answer (3WD5 must give
+    # zero designable hits) and T6 is the anti-blindness control -- a slack 8 A criterion must
+    # find something on the same structure, or the zero is a parsing bug, not a finding.
+    ('his_cation_gate --selftest', [PY, 'bin/his_cation_gate.py', '--selftest'], None),
     # Hard ELIGIBILITY gate, not a document check. It is expected to be RED until the
     # unlevelled designs are resolved in the portal; a red here means "do not nominate
     # yet", not "the writeup is wrong". Added 2026-10-05 after 4 of 18 shipped designs

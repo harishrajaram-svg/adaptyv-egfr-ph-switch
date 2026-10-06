@@ -1,0 +1,90 @@
+
+### 3ALQ   binder=R,S,T,U,V,W  target=A,B,C,D,E,F
+  interface histidines: binder 0, target 6
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+### 8ZUI   binder=D,E,F,J,K,L  target=A,B,C,G,H,I
+  interface histidines: binder 12, target 0
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+### 7KPB   binder=E,F,H,L  target=A,B,C
+  interface histidines: binder 4, target 1
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+### 3WD5   binder=H,L  target=A
+  interface histidines: binder 1, target 0
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+### 4G3Y   binder=H,L  target=C
+  interface histidines: binder 3, target 1
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+### 5WUX   binder=A,B,C,D,H,L  target=E,F,G
+  interface histidines: binder 0, target 3
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+### 5YOY   binder=D,E,F,G,H,I,M,N,O,P,Q,R  target=A,B,C,J,K,L
+  REFUSE -- no histidine at the interface on either side
+  (this is not a FAIL. dddG_elec's `>= 0` would have passed this pose trivially.)
+
+### 5M2I   binder=G,H,I,J,K,L  target=A,B,C,D,E,F
+  interface histidines: binder 0, target 4
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+### 5M2J   binder=D  target=A
+  REFUSE -- no histidine at the interface on either side
+  (this is not a FAIL. dddG_elec's `>= 0` would have passed this pose trivially.)
+
+### 5M2M   binder=D,E,F,H,J,N  target=A,B,C,G,I,M
+  REFUSE -- no histidine at the interface on either side
+  (this is not a FAIL. dddG_elec's `>= 0` would have passed this pose trivially.)
+
+### 9BN7   binder=D,E,F  target=A,B,C
+  interface histidines: binder 0, target 2
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+### 9DJW   binder=0,1,5,6,7,D,E,F,J,K,L,P,Q,R,V,W,X,b,c,d,h,i,j,n,o,p,t,u,v,z  target=2,3,4,A,B,C,G,H,I,M,N,O,S,T,U,Y,Z,a,e,f,g,k,l,m,q,r,s,w,x,y
+  interface histidines: binder 32, target 1
+  VERDICT FAIL at D_HB=3.5 A, cone=60.0 deg   [band: ESTABLISHED]
+    DESIGNABLE  binder-His <- target-cation: 0
+    target-his  target-His <- binder-cation: 0
+    ambiguous   His as donor, excluded: 0
+    band  3.2/45:F0 3.2/60:F0 3.2/90:F0 3.5/45:F0 3.5/60:F0 3.5/90:F0 3.9/45:F0 3.9/60:F0 3.9/90:F0
+
+==============================================================================
+POOL  0 PASS / 9 FAIL / 3 REFUSE / 0 SKIP
+pass rate 0% of 9 scored complexes
+playbook s14: at 0% or 100% this is not yet shown to be a FILTER. Report it as a mechanism-availability measurement on TNF-alpha interfaces, which is what it is, and do not quote it as a selection yield.
+REFUSE is not FAIL: it counts poses the criterion could not be asked about.

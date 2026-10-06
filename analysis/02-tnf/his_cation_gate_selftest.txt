@@ -1,0 +1,1 @@
+self-tests T1-T6 passed  (3WD5: tnf=['A'] fab=['H', 'L'], 1 binder + 0 target interface His, 0 designable at 3.5 A/60 deg, 2 under the slack 8 A control)
