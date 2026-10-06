@@ -62,7 +62,22 @@ STRUCTURES = {
     # doi 10.1002/pro.696 -- combinatorial histidine scanning in a VHH, OUR format and OUR
     # mechanism, with a 1.75 A structure of the 5-histidine variant. The challenge file calls
     # it "highest value per unit effort" among leads not yet followed; it is also prior art.
-    "3QSK": ("Murtaugh VHH, 5-histidine variant", "nanobody, pH-switch prior art on this target"),
+    # \U0001F534 3QSK REMOVED 2026-10-06, same day it was added. It is NOT a TNF complex: its own
+    # title is "5 Histidine Variant of the anti-RNase A VHH in Complex with RNAse A", and its
+    # two chains are Ribonuclease pancreatic and an anti-RNase A camelid VHH. The challenge
+    # file describes Murtaugh et al. as "combinatorial histidine scanning in a VHH, OUR FORMAT"
+    # -- it never said our target, and this script read "our format" as "our target".
+    #
+    # The cost of leaving it in: both chains fail the >=0.90 TNF test, so BOTH were filed as
+    # TNF-binder prior art. RNase A is pure noise, and the anti-RNase VHH would raise a false
+    # rediscovery alarm against any nanobody sharing a common camelid framework -- which the
+    # challenge FAQ explicitly permits. T7 below now makes this class of error impossible.
+    #
+    # Murtaugh remains valuable and is NOT lost: it is a real backbone carrying five installed
+    # histidines with a 1.75 A structure, which is the best available fixture for asking whether
+    # a BACKBONE holds a histidine in place where our free tripeptide probe does not (s10's
+    # largest open confound). Different target, same question. Tracked in the challenge file,
+    # not here.
 }
 
 REBUILT = {
@@ -132,6 +147,17 @@ def binder_chains(path):
     return out, tnf
 
 
+def has_tnf(path):
+    """Does this structure actually contain a TNF-alpha chain?
+
+    Added after 3QSK -- an anti-RNase A VHH complex -- was filed as TNF prior art because the
+    source note said "our format" and this script read it as "our target". Every chain failed
+    the TNF test, so every chain was classified as a binder. A ledger that cannot tell whether
+    the target is in the file will happily record binders to something else."""
+    _, tnf = binder_chains(path)
+    return bool(tnf)
+
+
 def build():
     entries, problems = [], []
 
@@ -145,6 +171,12 @@ def build():
             chains, tnf = binder_chains(path)
         except Exception as e:
             problems.append({"id": pid, "stage": "parse", "detail": repr(e)})
+            continue
+        if not tnf:
+            problems.append({"id": pid, "stage": "NOT-A-TNF-COMPLEX",
+                             "detail": f"no chain reads as TNF-alpha; chains "
+                                       f"{sorted(chains)} would have been filed as TNF "
+                                       f"binders. REFUSED."})
             continue
         if not chains:
             problems.append({"id": pid, "stage": "no-binder-chain",
@@ -271,6 +303,16 @@ def selftest():
     assert fired >= 0.95, f"T5 FAIL a 1-substitution near-duplicate reads only {fired:.3f}"
     ok.append(f"T5 mutation test: a 1-substitution near-duplicate of the longest entry reads "
               f"{fired:.3f}")
+
+    # T7 -- EVERY entry comes from a structure that actually contains TNF-alpha. This is the
+    # 3QSK guard: without it, a complex of something else entirely files both of its chains as
+    # TNF-binder prior art, and the ledger's whole purpose -- "have we regenerated a known TNF
+    # binder" -- is answered against the wrong molecule.
+    for e in entries:
+        assert e["tnf_chains"], f"T7 FAIL {e['pdb']}:{e['chain']} has no TNF chain in its source"
+    ok.append(f"T7 all {len(entries)} entries come from structures containing a TNF-alpha chain; "
+              f"{sum(1 for p in meta['problems'] if p['stage'] == 'NOT-A-TNF-COMPLEX')} "
+              f"structure(s) refused for not being TNF complexes")
 
     # T6 -- the gaps are carried as gaps. If PUBLICATION_ONLY were ever emptied, the ledger
     # would read complete while missing 72 designs on our exact target.

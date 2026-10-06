@@ -1,9 +1,9 @@
 {
  "meta": {
   "generated": "2026-10-06",
-  "n_entries": 117,
-  "n_distinct_sequences": 49,
-  "n_structures_attempted": 23,
+  "n_entries": 115,
+  "n_distinct_sequences": 47,
+  "n_structures_attempted": 22,
   "n_structures_with_no_binder_chain": 1,
   "problems": [
    {
@@ -276,26 +276,6 @@
     "H",
     "I"
    ]
-  },
-  {
-   "key": "KETAAAKFERQHMDSSSSNYCNQMMKSRNLTKDRCKPVNTFVHESLADVQAVCSQKNVACKNGQTNCYQSYSTMSITDCRETGSSKYPNCAYKTTQANKHIIVACEGNPYVPVHFDASV",
-   "pdb": "3QSK",
-   "chain": "A",
-   "name": "Murtaugh VHH, 5-histidine variant",
-   "kind": "nanobody, pH-switch prior art on this target",
-   "len": 119,
-   "basis": "structure",
-   "tnf_chains": []
-  },
-  {
-   "key": "GSQVQLVESGGGLVQAGGSLRLSCAASGYHHPYIYMGWFRQAPGKEREGVAAMDSGGGGTLYADSVKGRFTISRDKGKNTVYLQMDSLKPEDTATYYCAAGGHHLRDHTYGQWGQGTQVTVSS",
-   "pdb": "3QSK",
-   "chain": "B",
-   "name": "Murtaugh VHH, 5-histidine variant",
-   "kind": "nanobody, pH-switch prior art on this target",
-   "len": 123,
-   "basis": "structure",
-   "tnf_chains": []
   },
   {
    "key": "EVQLVESGGGLVQPGRSLRLSCAASGFTFDDYAMHWVRQAPGKGLEWVSAITWNSGHIDYADSVEGRFTISRDNAKNSLYLDMNSLRAEDTAVYYCAKVSYLSTASSLDYWGQGTLVTVSSASTKGPSVFPLAPSSGTAALGCLVKDYFPEPVTVSWNSGALTSGVHTFPAVLQSSGLYSLSSVVTVPSSSLGTQTYICNVNHKPSNTKVDKKI",
