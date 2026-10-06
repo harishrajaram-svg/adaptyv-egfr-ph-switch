@@ -330,6 +330,69 @@ def main():
     print(f"metric audit   clean row OK, {len(cases)} impossible rows all caught, "
           "a merely-bad design still passes")
 
+    # 5b. D-P2-1's iptm gate, and the guard that was BLIND on problem 2.
+    #
+    # Two things are tested. First the gate: below iptm_repred 0.45 the verdict is withdrawn to
+    # None ("n/a"), never False, because False asserts the residue was measured and found
+    # misplaced when the binder was not bound at all. Second, a MUTATION TEST that the
+    # pass-vs-distance guard now fires on his_near_cation rows -- it read only
+    # `acid_O_to_his_N`, problem 1's key, so on every problem 2 row it found None and skipped,
+    # passing while completely blind (§25).
+    gate = ns["gate_geometry"]
+    BAR = ns["GEOMETRY_IPTM_BAR"]
+    assert BAR == 0.45, BAR
+
+    def p2row(**kw):
+        r = {"design": "t", "length": 76, "seed": 0, "sequence": "A" * 76,
+             "iptm_design": 0.42, "plddt_binder_design": 0.81,
+             "iptm_repred": 0.80, "plddt_binder_repred": 0.78,
+             "frac_V": 0.05, "frac_G": 0.04, "n_C": 0,
+             "his_N_to_cation_N": 3.1, "his_CA_to_cation_N": 5.4,
+             "closest_his": "HIS21", "geometry_pass": True}
+        r.update(kw)
+        return r
+
+    # above the bar: verdict stands, and a clean p2 row passes the audit
+    hi = gate(p2row())
+    assert hi["geometry_pass"] is True and hi["geometry_read"] is True, hi
+    assert check_row(hi, 76) == [], check_row(hi, 76)
+
+    # below the bar: verdict withdrawn, DISTANCE KEPT, reason recorded
+    lo = gate(p2row(iptm_repred=0.1776, his_N_to_cation_N=20.36, geometry_pass=False))
+    assert lo["geometry_pass"] is None, lo
+    assert lo["geometry_read"] is False, lo
+    assert lo["his_N_to_cation_N"] == 20.36, "the measured distance must survive the gate"
+    assert "0.45" in lo["geometry_gate"], lo["geometry_gate"]
+    assert check_row(lo, 76) == [], check_row(lo, 76)
+
+    # a 12-histidine 3.15 A "pass" below the bar is withdrawn too -- that is p2trimer02, the
+    # run whose pass came from histidine density rather than placement
+    sp = gate(p2row(iptm_repred=0.3123, his_N_to_cation_N=3.15, geometry_pass=True))
+    assert sp["geometry_pass"] is None, "a LUCKY pass below the bar must also be withdrawn"
+
+    # missing / NaN iptm must fail closed, not sail through
+    for bad_iptm in (None, float("nan")):
+        g = gate(p2row(iptm_repred=bad_iptm))
+        assert g["geometry_pass"] is None and g["geometry_read"] is False, (bad_iptm, g)
+
+    # MUTATION TEST: the p2 disagreement guard must now FIRE. Above the bar so the gate does
+    # not withdraw the verdict, with a verdict that contradicts its own distance.
+    blind = gate(p2row(iptm_repred=0.80, his_N_to_cation_N=19.9, geometry_pass=True))
+    found = check_row(blind, 76)
+    assert any("his_N_to_cation_N" in f and "disagrees" in f for f in found), (
+        "the pass-vs-distance guard is still blind on his_near_cation rows: " + repr(found))
+    # and the paired-presence rule too
+    orphan = gate(p2row(closest_his=None))
+    assert any("present or absent together" in f for f in check_row(orphan, 76)), \
+        check_row(orphan, 76)
+    # problem 1 rows must be unaffected by all of this
+    p1 = gate({**clean, "iptm_repred": 0.80})
+    assert p1["geometry_pass"] is True and check_row(p1, 76) == [], check_row(p1, 76)
+
+    print(f"D-P2-1 gate    bar {BAR}; below it the verdict is n/a not False and the distance "
+          f"survives;\n               a lucky 3.15 A pass is withdrawn; missing/NaN iptm fails "
+          f"closed;\n               p2 disagreement guard now FIRES (was blind); p1 unaffected")
+
     # 6. C1 derived from a loss tree, not asserted
     class Combo:
         def __init__(self, *members):

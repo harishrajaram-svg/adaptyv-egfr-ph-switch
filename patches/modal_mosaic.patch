@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..c2c51c5
+index 0000000..ca3b23e
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1250 @@
+@@ -0,0 +1,1328 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -469,6 +469,49 @@ index 0000000..c2c51c5
 +GEOMETRY_BAR = 4.0
 +
 +
++# D-P2-1: geometry is UNINFORMATIVE BELOW BINDING, so it is not reported below this iptm.
++# Set from the negative side, where the measurements are: the voided LT-alpha dead fold read
++# 0.408-0.417 over 5 seeds and the 5-step non-binders read 0.11-0.31, while the measured G1
++# binders (adalimumab + Schroter PSV#1/2/3, KD 4.6-112 pM) read 0.77-0.86 over 20. It is a
++# NECESSARY condition only -- deliberately NOT set at 0.77, because those are Fabs, s16 found
++# no transferable thresholds between formats, and a correctly folded NON-binder (the corrected
++# G4) reads 0.46. Above this bar means "geometry is worth reading", never "this binds".
++GEOMETRY_IPTM_BAR = 0.45
++
++# The geometry keys differ by mechanism, and reading only problem 1's left BOTH geometry guards
++# inert on every his_near_cation row -- a guard passing while blind, s25's pattern, found
++# 2026-10-06 while implementing D-P2-1.
++GEOMETRY_KEYS = (("acid_O_to_his_N", "closest_acid"),       # acid_near_his  (problem 1)
++                 ("his_N_to_cation_N", "closest_his"))      # his_near_cation (problem 2)
++
++
++def gate_geometry(row: dict, bar: float = GEOMETRY_IPTM_BAR) -> dict:
++    """D-P2-1. Below `bar`, geometry_pass becomes None ("n/a"), never False.
++
++    False asserts the titratable residue WAS measured and found misplaced. Below the bar the
++    binder is not bound, so nothing about placement was measured and False is a false claim --
++    p2trimer02 "passed" at 3.15 A while carrying 12 histidines, and p2species02 "failed" at
++    20.36 A with iptm 0.178; neither number was about histidine placement.
++
++    The DISTANCE is kept. It is a real measurement of the re-predicted pose; only the verdict
++    is withdrawn. Gating uses `iptm_repred`, because geometry is measured on the RE-PREDICTION
++    and gating on design-time iptm would gate on a different structure.
++    """
++    iptm = row.get("iptm_repred")
++    if iptm is None or iptm != iptm:                 # absent or NaN -> cannot gate, fail closed
++        row["geometry_read"] = False
++        row["geometry_gate"] = "n/a: iptm_repred missing or NaN"
++        row["geometry_pass"] = None
++    elif iptm < bar:
++        row["geometry_read"] = False
++        row["geometry_gate"] = f"n/a: iptm_repred {iptm} < {bar} (D-P2-1)"
++        row["geometry_pass"] = None
++    else:
++        row["geometry_read"] = True
++        row["geometry_gate"] = f"read: iptm_repred {iptm} >= {bar}"
++    return row
++
++
 +def check_row(row: dict, binder_length: int) -> list[str]:
 +    """Impossible-value audit of one emitted design row. Returns a list of violations.
 +
@@ -493,12 +536,20 @@ index 0000000..c2c51c5
 +        bad.append(f"n_C={row['n_C']} but NoCys should make cysteine impossible")
 +    if len(row.get("sequence", "")) != binder_length:
 +        bad.append(f"sequence is {len(row.get('sequence', ''))} aa, expected {binder_length}")
-+    d, passed = row.get("acid_O_to_his_N"), row.get("geometry_pass")
-+    if d is not None and passed is not None and passed != (d <= GEOMETRY_BAR):
-+        bad.append(f"geometry_pass={passed} disagrees with acid_O_to_his_N={d} "
-+                   f"at the {GEOMETRY_BAR} A bar")
-+    if (d is None) != (row.get("closest_acid") is None):
-+        bad.append("acid_O_to_his_N and closest_acid must be present or absent together")
++    passed = row.get("geometry_pass")
++    for dkey, rkey in GEOMETRY_KEYS:
++        if dkey not in row and rkey not in row:
++            continue                      # this mechanism's keys are simply not on this row
++        d = row.get(dkey)
++        if d is not None and passed is not None and passed != (d <= GEOMETRY_BAR):
++            bad.append(f"geometry_pass={passed} disagrees with {dkey}={d} "
++                       f"at the {GEOMETRY_BAR} A bar")
++        if (d is None) != (row.get(rkey) is None):
++            bad.append(f"{dkey} and {rkey} must be present or absent together")
++    # A withdrawn verdict must say so. geometry_pass=None with no gate recorded would be
++    # indistinguishable from a measurement that never ran.
++    if passed is None and "geometry_gate" in row and row.get("geometry_read") is not False:
++        bad.append("geometry_pass is None but geometry_read is not False")
 +    return bad
 +
 +
@@ -560,7 +611,7 @@ index 0000000..c2c51c5
 +    # --- SPECIES LEG (objective 2). Off unless --target2 is given, so every existing
 +    # command reproduces exactly. See analysis/02-tnf/epitope_conserved.json for the
 +    # mapping; mouse epitope positions are NOT the human ones.
-+    target2: str = "",
++    target2_pdb: bytes = b"",         # BYTES, not a path: the container cannot see local files
 +    target2_chain: str = "A,B",
 +    target2_epitope: str = "",
 +    target2_anchor: int = 0,
@@ -658,6 +709,14 @@ index 0000000..c2c51c5
 +    tmp = TemporaryDirectory()
 +    target_path = Path(tmp.name) / "target.pdb"
 +    target_path.write_bytes(target_pdb)
++    # The species target arrives as BYTES for the same reason the human one does: `modal run`
++    # ships this file and its arguments, NOT the working directory, so a path that resolves on
++    # the laptop is FileNotFoundError in the container. The first species smoke died exactly
++    # there, 1 minute in. Note that bin/mosaic_selftest.py cannot catch this class of bug --
++    # it runs locally, where the file does exist.
++    target2_path = Path(tmp.name) / "target2.pdb"
++    if target2_pdb:
++        target2_path.write_bytes(target2_pdb)
 +    # --- MULTI-CHAIN TARGET -------------------------------------------------------------
 +    # `target_chain` is a COMMA-SEPARATED list. Problem 1's EGFR is a monomer and passed one;
 +    # problem 2's TNF-alpha is a HOMOTRIMER whose epitope straddles the seam between two
@@ -701,7 +760,7 @@ index 0000000..c2c51c5
 +    # human positional 68 is a histidine that mouse DOES NOT HAVE AT ALL. A deletion moves the
 +    # backbone, and no choice of which sidechains to contact fixes a backbone difference.
 +    MO = None
-+    if target2:
++    if target2_pdb:
 +        if not target2_epitope or not target2_anchor:
 +            raise SystemExit("STEP 4 FAILED: --target2 needs --target2-epitope and "
 +                             "--target2-anchor. They are NOT the human numbers: a deletion "
@@ -712,7 +771,7 @@ index 0000000..c2c51c5
 +            raise SystemExit(f"STEP 4 FAILED: species epitope has {len(epi2)} positions, "
 +                             f"human has {len(epitope_pos)} -- the two legs must reward the "
 +                             f"SAME epitope, mapped, or they are not the same objective")
-+        MO = _prepare_target_set("species", Path(target2), target2_chain, None, epi2,
++        MO = _prepare_target_set("species", target2_path, target2_chain, None, epi2,
 +                                 target2_anchor, target2_anchor_chain, mechanism)
 +        if MO["anchor_aa"] != anchor_aa:
 +            raise SystemExit(f"STEP 4 FAILED: anchor is {anchor_aa} on the human target and "
@@ -1090,6 +1149,7 @@ index 0000000..c2c51c5
 +                "n_C": seq.count("C"),
 +                **geom,
 +            }
++            gate_geometry(row)        # D-P2-1, before the audit so the audit sees the verdict
 +            # The audit must never be the thing that destroys a design it was added to
 +            # protect. By this point the GPU work for this design is already paid for, so
 +            # a bug in ~40 lines of pure Python cannot be allowed to take it down. The C1
@@ -1167,9 +1227,19 @@ index 0000000..c2c51c5
 +    # Completion is reported as RAN/FAILED; geometry gets its own verdict line.
 +    print(f"[mosaic] STEP 4 {'RAN' if rows else 'FAILED - no designs'}: {len(rows)} designs")
 +    if rows:
-+        print(f"[mosaic] {'✅' if passed else '🔴'} GEOMETRY {len(passed)}/{len(rows)} "
-+              f"within 4.0 A of {anchor_label}"
-+              + ("" if passed else " -- NO design placed its histidine"))
++        read = [r for r in rows if r.get("geometry_read")]
++        if not read:
++            # D-P2-1: every design is below the iptm bar, so "0 passed" would be a false
++            # negative -- nothing was measured. Say that instead.
++            print(f"[mosaic] ⬛ GEOMETRY n/a on all {len(rows)} designs: none reached "
++                  f"iptm_repred {GEOMETRY_IPTM_BAR} (D-P2-1), so placement was never "
++                  f"measurable. This is NOT a geometry failure.")
++        else:
++            print(f"[mosaic] {'✅' if passed else '🔴'} GEOMETRY {len(passed)}/{len(read)} "
++                  f"within 4.0 A of {anchor_label}"
++                  + ("" if passed else " -- NO design placed its histidine")
++                  + (f"; {len(rows) - len(read)} more n/a below the iptm bar"
++                     if len(read) != len(rows) else ""))
 +    if suspect:
 +        print(f"[mosaic] 🔴 {len(suspect)}/{len(rows)} rows have SUSPECT METRICS: "
 +              f"{', '.join(suspect)} -- see metrics_ok in designs.tsv")
@@ -1232,11 +1302,19 @@ index 0000000..c2c51c5
 +    pdb = Path(target)
 +    if not pdb.is_file():
 +        raise SystemExit(f"target not found: {pdb.resolve()}  (paths resolve from biomodals/)")
++    # Read the species target HERE, on the laptop, and fail before paying for a container.
++    target2_bytes = b""
++    if target2:
++        p2 = Path(target2)
++        if not p2.is_file():
++            raise SystemExit(f"--target2 not found: {p2.resolve()}  "
++                             f"(paths resolve from biomodals/)")
++        target2_bytes = p2.read_bytes()
 +    run = run_name or datetime.now().strftime("%y%m%d%H%M")
 +    results = design.remote(
 +        target_pdb=pdb.read_bytes(), run_name=run, crop=crop, epitope=epitope,
 +        target_chain=target_chain, anchor_chain=anchor_chain,
-+        target2=target2, target2_chain=target2_chain,
++        target2_pdb=target2_bytes, target2_chain=target2_chain,
 +        target2_epitope=target2_epitope, target2_anchor=target2_anchor,
 +        target2_anchor_chain=target2_anchor_chain, w_species=w_species,
 +        anchor=anchor, lengths=lengths, n_seeds=n_seeds, seed0=seed0,
