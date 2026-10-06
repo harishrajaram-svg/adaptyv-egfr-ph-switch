@@ -1,0 +1,21 @@
+A SECOND measured pH-switch series on TNF-alpha, from a second lab, scorable on a structure
+
+  ok  T1 all 4 positions across 2 variants carry the wild-type residue the paper names, in 3WD5's own numbering
+
+variant         measured         rigid     repacked_local med [min..max]  note
+--------------------------------------------------------------------------------------------------------
+adalimumab_WT   NON-SWITCH      +0.594      -0.315 [-0.51..-0.15]    n_his=9  EC50 232 pM, minimal pH sensitivity
+AF-M2637        SWITCH          +1.527      +0.031 [-0.13..+2.21]!   n_his=12  EC50 15x higher after pH 6.0 wash
+AF-M2631        SWITCH          +0.599      -0.209 [-1.11..-0.00]    n_his=10  EC50 30x higher; ONE histidine
+--------------------------------------------------------------------------------------------------------
+
+Against the `>= 0` criterion (s15), on the repacked leg:
+  adalimumab_WT   measured NON-SWITCH  predicted NON-SWITCH  correct
+  AF-M2637        measured SWITCH      predicted SWITCH      correct
+  AF-M2631        measured SWITCH      predicted NON-SWITCH  WRONG
+
+  2 of 3 correct on this series.
+
+⚠️  EC50 shifts, not KD ratios and not off-rate ratios. Ordinal only: both engineered
+   variants switch and wild type does not. Do not combine these magnitudes with
+   Schroter's kd ratios.
