@@ -56,7 +56,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 
-from species_and_histidines import HUMAN, UNIPROT_START   # noqa: E402
+from species_and_histidines import HUMAN, MOUSE, UNIPROT_START   # noqa: E402
+
+# Mouse P06804 soluble domain is residues 80-235 (156 aa), against human's 77-233 (157 aa).
+# The competition assays mouse at pH 7.4 for objective 2, so a divergent mouse structure is a
+# problem of the same kind as a divergent human one -- and until 2026-10-06 nothing had ever
+# compared a mouse STRUCTURE to canonical P06804. The MOUSE constant was a sequence used for
+# alignment arithmetic; no file was ever checked against it.
+MOUSE_START = 80
+SPECIES = {"human": (HUMAN, UNIPROT_START), "mouse": (MOUSE, MOUSE_START)}
 
 OFFSET = 76          # uniprot = pdb_seqid + OFFSET, verified residue-by-residue
 
@@ -148,6 +156,60 @@ def chains_of(path):
         if seq:
             out[ch.name] = seq
     return out
+
+
+def slide_match(seq, ref):
+    """Best ungapped placement of the observed CHAIN STRING inside `ref`.
+
+    \U0001F534 WHY STRING MATCHING AND NOT OFFSET ARITHMETIC, for the analysis sweep.
+    2TNF (mouse) numbers its residues on a HUMAN-ALIGNED scheme: it runs 9..157 for 148
+    residues, skipping 73, because mouse carries a deletion there relative to human. So no
+    single `uniprot = seqid + k` offset fits it -- the best one scores 0.60 against a sequence
+    the chain matches at 148 of 148. Offset arithmetic would therefore have classified the
+    mouse target as "not TNF" and SKIPPED IT SILENTLY, and the guard would have printed PASS
+    for a file it never looked at.
+
+    The observed residues are contiguous in SEQUENCE even where the numbering is not, so a
+    slide is exact here. Returns (identity_fraction, ref_offset, mismatch_list) where each
+    mismatch is "<ref><ref_position><observed>" in the reference's own numbering."""
+    obs = "".join(c for _, c in seq)
+    if not obs or len(obs) > len(ref):
+        return 0.0, None, []
+    best = (-1, None)
+    for off in range(0, len(ref) - len(obs) + 1):
+        m = sum(1 for i, c in enumerate(obs) if ref[off + i] == c)
+        if m > best[0]:
+            best = (m, off)
+    m, off = best
+    return m / len(obs), off, [f"{ref[off + i]}{off + i}{c}"
+                               for i, c in enumerate(obs) if ref[off + i] != c]
+
+
+def numbering_is_linear(seq):
+    """True if the chain's residue numbers increase by exactly 1 throughout.
+
+    Reported, not enforced: a non-linear chain is legal and common, but it means a fixed
+    offset silently mislabels every residue after the break. On 2TNF that break would have
+    called mouse H99 "96" and H156 "154" (s21, third numbering scheme to bite this project)."""
+    nums = [n for n, _ in seq]
+    return all(b == a + 1 for a, b in zip(nums, nums[1:])), \
+        [(a, b) for a, b in zip(nums, nums[1:]) if b != a + 1]
+
+
+def best_species(seq):
+    """Classify a chain as human TNF, mouse TNF, or neither, and return its fitted offset.
+
+    Two references, not one. A mouse chain scored only against HUMAN tops out around 0.79 --
+    the organisers' own published figure -- so it would fail the >= 0.90 test, be classified
+    "not TNF", and be skipped silently. The guard would then report PASS on a file it never
+    looked at, which is s24 with the failure mode reversed: not a guard that passes while
+    blind, but a guard that is blind and therefore passes."""
+    best = (None, None, 0.0)
+    for name, (ref, start) in SPECIES.items():
+        k, acc = fit_offset(seq, ref=ref, start=start)
+        if k is not None and acc > best[2]:
+            best = (name, k, acc)
+    return best
 
 
 def fit_offset(seq, ref=HUMAN, start=UNIPROT_START):
@@ -308,6 +370,7 @@ def main():
     print(f"{'analysis fixture':<34}{'chain':<7}{'checked':>8}  verdict")
     print("-" * 78)
     seen_declared = set()
+    nonlinear = []
     n_struct = n_tnf_chain = 0
     for fn in sorted(os.listdir(ANALYSIS_DIR)):
         if not fn.lower().endswith((".cif", ".pdb")):
@@ -322,11 +385,46 @@ def main():
             continue
         n_struct += 1
         for name, seq in sorted(chs.items()):
-            k, acc = fit_offset(seq)
-            if k is None or acc < 0.90:
-                continue                            # not a TNF chain; nothing to assert
-            bad, n = mismatches(seq, offset=k)
+            # TWO METHODS, offset FIRST and the slide only as a fallback. Offset arithmetic
+            # handles the common case -- a crystal chain with unobserved loops, where the
+            # numbering is still linear -- and the slide cannot, because the observed string is
+            # then not a contiguous substring of the reference. Making the slide primary dropped
+            # the asserted chain count from 113 to 60 and failed seven entries, which is trading
+            # one blind spot for another. Offset first, slide for what offset cannot classify.
+            species = off = None
+            acc = 0.0
+            for sp, (ref_s, start_s) in SPECIES.items():
+                k, a = fit_offset(seq, ref=ref_s, start=start_s)
+                if k is not None and a > acc:
+                    species, off, acc, method = sp, k, a, "offset"
+            if acc < 0.90:
+                for sp, (ref_s, _) in SPECIES.items():
+                    a, o, _raw = slide_match(seq, ref_s)
+                    if a > acc:
+                        species, off, acc, method = sp, o, a, "slide"
+            if species is None or acc < 0.90:
+                continue                            # not a TNF chain of either species
+            ref, start = SPECIES[species]
+            if method == "offset":
+                bad, n = mismatches(seq, ref=ref, start=start, offset=off)
+            else:
+                _a, _o, raw = slide_match(seq, ref)
+                bad = [f"{m[0]}{int(m[1:-1]) + start}{m[-1]}" for m in raw]
+                n = len(seq)
             n_tnf_chain += 1
+            linear, breaks = numbering_is_linear(seq)
+            if species != "human":
+                name = f"{name}({species})"
+            # Only a chain that OFFSET could not classify is a numbering hazard. A gap in the
+            # numbers with a working offset is just an unobserved loop, which is normal and
+            # harmless -- flagging those put 54 chains on the warning list and buried the one
+            # that matters. The hazard is a chain whose numbering does not map to the reference
+            # at any single offset, which is what the slide fallback exists to catch.
+            if method == "slide":
+                name = f"{name}*"
+                nonlinear.append(
+                    f"{fn} chain {name}: no single offset fits (best {acc:.3f} by slide); "
+                    f"numbering breaks at {breaks}. A fixed offset is WRONG past the break")
             # mismatches() formats each as "<canonical><uniprot><observed>", e.g. "R107D".
             # The first draft keyed on m[0], which is the CANONICAL LETTER -- so every lookup
             # was ("3WD5", "R") and nothing ever matched a declaration. The guard reported
@@ -353,6 +451,11 @@ def main():
     print()
     print(f"{n_struct} structures scanned, {n_tnf_chain} TNF chains asserted over their whole "
           f"sequence")
+    if nonlinear:
+        print(f"\n\u26a0\ufe0f  {len(nonlinear)} chain(s) whose residue NUMBERING is not linear. The "
+              f"sequence is asserted and clean; the numbers are not a sequence index:")
+        for ln in nonlinear:
+            print(f"    {ln}")
     for key, (why, impact) in sorted(DECLARED.items()):
         mark = "seen" if key in seen_declared else "NOT OBSERVED"
         print(f"  declared {key[0]} uniprot {key[1]}: {mark}")

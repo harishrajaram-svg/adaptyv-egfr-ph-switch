@@ -1,0 +1,26 @@
+Does a REAL BACKBONE hold an installed histidine where a free fragment does not?
+
+n = 5 paired seeded trials, protonated state, binder-side histidines only.
+fixture                     site      sidechain RMSD under repacking
+------------------------------------------------------------------------------
+  FREE tripeptide probe     Z:2       median  0.815 A  [0.815 .. 0.815]
+  3QSK VHH (real backbone)  B:28      median  0.536 A  [0.536 .. 0.536]
+  3QSK VHH (real backbone)  B:29      median  1.206 A  [1.206 .. 1.206]
+  3QSK VHH (real backbone)  B:101     median  0.586 A  [0.586 .. 0.586]
+  3QSK VHH (real backbone)  B:102     median  0.763 A  [0.763 .. 0.763]
+  3QSK VHH (real backbone)  B:106     median  1.283 A  [1.283 .. 1.283]
+------------------------------------------------------------------------------
+median over sites: FREE probe 0.815 A   vs   REAL backbone 0.763 A (5 histidines)
+
+THE REAL BACKBONE DOES NOT HOLD ITS HISTIDINES ANY TIGHTER: 1.07x, against
+a 1.5x bar set before the numbers. The free probe at 0.815 A sits
+INSIDE the spread of the five engineered histidines on a real VHH framework
+(0.536-1.283 A).
+
+So s10's collapse is NOT a fixture artifact, and this was the last cheap way out.
+A histidine on a real scaffold is about as free to rotate away from a cation as
+our unattached tripeptide was. s4 prices two anchor sites on the opposite
+assumption.
+
+⚠️  Different target (RNase A). This measures BACKBONE CONSTRAINT only. Nothing
+   about TNF, the epitope, or any ratio is inferred from 3QSK.

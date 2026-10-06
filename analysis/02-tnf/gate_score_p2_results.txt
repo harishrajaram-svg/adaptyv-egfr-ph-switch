@@ -1,0 +1,31 @@
+
+case                                  n  per-protomer ipSAE_min, median over seeds
+--------------------------------------------------------------------------------------------
+neg_shuffled_tnfr2_1                  5  A=0.0000  B=0.0000  C=0.0000
+neg_shuffled_tnfr2_2                  5  A=0.0000  B=0.0000  C=0.0000
+neg_shuffled_tnfr2_3                  5  A=0.0000  B=0.0000  C=0.0000
+neg_shuffled_tnfr2_4                  5  A=0.0000  B=0.0000  C=0.0000
+pos2_tnf_adalimumab_fab_NONGATING     5  A=0.5317  B=0.5462  C=0.5243
+pos_tnf_tnfr2                         5  A=0.6245  B=0.6161  C=0.4967
+--------------------------------------------------------------------------------------------
+
+case                                           max        second           sum   min_engaged   engaged
+--------------------------------------------------------------------------------------------
+pos_tnf_tnfr2                               0.6245        0.6161        1.7373        0.4967         3
+pos2_tnf_adalimumab_fab_NONGATING           0.5462        0.5317        1.6022        0.5243         3
+neg_shuffled_tnfr2_1                        0.0000        0.0000        0.0000        0.0000         0
+neg_shuffled_tnfr2_2                        0.0000        0.0000        0.0000        0.0000         0
+neg_shuffled_tnfr2_3                        0.0000        0.0000        0.0000        0.0000         0
+neg_shuffled_tnfr2_4                        0.0000        0.0000        0.0000        0.0000         0
+
+============================================================================================
+PRE-REGISTERED PASS RULE (s7, written before any score existed):
+  PASS = pos_tnf_tnfr2 scores CLEARLY ABOVE all four neg_shuffled_tnfr2_*.
+============================================================================================
+  max           pos 0.6245  vs  best negative 0.0000   margin +0.6245   PASS
+  second        pos 0.6161  vs  best negative 0.0000   margin +0.6161   PASS
+  sum           pos 1.7373  vs  best negative 0.0000   margin +1.7373   PASS
+  min_engaged   pos 0.4967  vs  best negative 0.0000   margin +0.4967   PASS
+
+A pass that holds under every rule is a pass. One that depends on the aggregation
+choice is an artifact of that choice and must be reported as such.
