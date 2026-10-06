@@ -1,0 +1,33 @@
+  pos  hu  mo  LT   dVol(mo) dChg(mo) dVol(LT) dChg(LT)   CA shift  verdict
+--------------------------------------------------------------------------------------------------------
+   96  P   H   P         +40       +0       +0       +0       1.13  HAZARD (mouse differs)
+   97  Q   Q   G          +0       +0      -84       +0       1.48  SAFE + SELECTIVE
+  107  R   Q   S         -30       -1      -85       -1       1.09  HAZARD (mouse differs)
+  108  R   R   A          +0       +0      -85       -1       0.25  SAFE + SELECTIVE  <<< R108 secondary
+  109  A   A   A          +0       +0       +0       +0       1.34  safe, no selectivity
+  149  H   Y   N         +41       +0      -39       +0       1.69  HAZARD (mouse differs)
+  151  L   L   L          +0       +0       +0       +0       0.78  safe, no selectivity
+  153  T   T   T          +0       +0       +0       +0       0.65  safe, no selectivity
+  161  V   I   V         +27       +0       +0       +0       1.12  HAZARD (mouse differs)
+  162  S   S   V          +0       +0      +51       +0       1.17  SAFE + SELECTIVE
+  163  Y   Y   F          +0       +0       -4       +0       1.24  SAFE + SELECTIVE
+  166  K   K   K          +0       +0       +0       +0       1.11  safe, no selectivity  <<< K166 PRIMARY
+  167  V   V   A          +0       +0      -51       +0       1.12  SAFE + SELECTIVE
+  173  I   V   T         -27       +0      -51       +0       0.73  HAZARD (mouse differs)
+  189  P   P   P          +0       +0       +0       +0       1.03  safe, no selectivity
+  191  Y   Y   H          +0       +0      -41       +0       0.46  SAFE + SELECTIVE
+  219  D   D   D          +0       +0       +0       +0       0.77  safe, no selectivity
+  220  F   F   L          +0       +0      -23       +0       2.02  SAFE + SELECTIVE
+  221  A   A   V          +0       +0      +51       +0       1.03  SAFE + SELECTIVE
+  222  E   E   L          +0       +0      +29       +1       0.79  SAFE + SELECTIVE
+  225  Q   Q   T          +0       +0      -28       +0       0.61  SAFE + SELECTIVE
+--------------------------------------------------------------------------------------------------------
+epitope CA RMSD, real mouse trimer superposed on canonical human: 1.10 A over 21 positions
+
+  SAFE + SELECTIVE (conserved in mouse, divergent in LT-alpha): [97, 108, 162, 163, 167, 191, 220, 221, 222, 225]
+  safe but not selective (conserved in both):                   [109, 151, 153, 166, 189, 219]
+  HAZARD (mouse differs):                                       [96, 107, 149, 161, 173]
+
+  10 of 21 consensus positions satisfy BOTH objective 2 and selectivity.
+    R108 secondary   -> SAFE + SELECTIVE
+    K166 PRIMARY     -> safe, no selectivity
