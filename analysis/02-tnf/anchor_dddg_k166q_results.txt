@@ -1,0 +1,62 @@
+  ok  T1 uniprot 166 on chain A resolves to residue 90 (offset +76) and is LYS, asserted not assumed
+  ok  T2 off-site heavy atoms are bit-identical between the two conditions: 0 moved, 0 removed, 0 added (tolerance 0.001 A)
+  ok  T3 the probe (chain Z) is unchanged -- same pose, not a re-placement
+  ok  T4 the site is GLN with its amide (OE1, NE2) and no NZ -- the cation is gone
+  ok  T5 mutation test: planting the parent over the mutant makes T4's check fail, so T4 is reading the file it claims to
+  ok  T6 the probe histidine survives the rebuild intact (10 heavy atoms)
+  ok  T7 the rebuilt wild type is atom-for-atom the raw parent off-site (normalisation dropped 1: ['Z:VAL3:OXT']), so the rebuild contributes nothing of its own
+
+self-tests passed: 7
+
+K166 -> Gln control. uniprot 166 = residue 90 on chain A (offset +76), LYS -> GLN.
+Scoring the SAME 5 poses as s6e, mutated in place.
+
+  pose 1: 18 heavy atoms differ, all at the site; off-site 0; probe unchanged
+  pose 2: 18 heavy atoms differ, all at the site; off-site 0; probe unchanged
+  pose 3: 18 heavy atoms differ, all at the site; off-site 0; probe unchanged
+  pose 4: 18 heavy atoms differ, all at the site; off-site 0; probe unchanged
+  pose 5: 18 heavy atoms differ, all at the site; off-site 0; probe unchanged
+
+                sigmoid/HIE sigmoid/HID 10/HIE      6/HIE       80/HIE      
+----------------------------------------------------------------------------
+K166 wild type, rebuilt
+  pose 1         +0.448      +0.088      +1.913      +3.350      +0.238      
+  pose 2         +0.830      +0.103      +2.281      +4.105      +0.282      
+  pose 3         +0.579      +0.064      +1.906      +3.603      +0.254      
+  pose 4         +0.680      +0.103      +2.832      +4.042      +0.308      
+  pose 5         +0.420      +0.078      +1.787      +2.618      +0.194      
+K166Q no cation, rebuilt
+  pose 1         +0.009      -0.001      -0.112      -0.452      -0.040      
+  pose 2         -0.072      -0.016      -0.469      -0.557      -0.059      
+  pose 3         -0.017      -0.031      -0.225      -0.013      -0.027      
+  pose 4         -0.019      +0.002      -0.171      -0.183      -0.020      
+  pose 5         -0.102      -0.026      -0.764      -0.967      -0.092      
+K166 RAW parent (rebuild check)
+  pose 1         +0.466      +0.085      +2.159      +3.091      +0.225      
+  pose 2         +0.747      +0.096      +2.093      +3.802      +0.279      
+  pose 3         +0.878      +0.074      +2.179      +3.502      +0.146      
+  pose 4         +0.677      +0.108      +2.737      +4.325      +0.300      
+  pose 5         +0.412      +0.090      +2.262      +3.439      +0.199      
+
+leg                K166 median  K166Q median     delta   reading
+------------------------------------------------------------------------------
+sigmoid/HIE             +0.579        -0.019    -0.598   separated, and the mutation moves it DOWN, as removing a cation should
+sigmoid/HID             +0.088        -0.016    -0.104   separated, and the mutation moves it DOWN, as removing a cation should
+10/HIE                  +1.913        -0.225    -2.138   separated, and the mutation moves it DOWN, as removing a cation should
+6/HIE                   +3.603        -0.452    -4.055   separated, and the mutation moves it DOWN, as removing a cation should
+80/HIE                  +0.254        -0.040    -0.294   separated, and the mutation moves it DOWN, as removing a cation should
+
+5 of 5 legs separate K166 from K166Q; 5 of those move DOWN on losing the cation.
+A leg that separates in the WRONG direction is evidence against the score reading
+the mechanism, not for it -- a protonated histidine beside a cation is destabilised,
+so removing the cation must lower dddG_elec.
+
+leg                 raw parent    rebuilt WT  rebuild shift
+------------------------------------------------------------
+sigmoid/HIE             +0.677        +0.579         -0.098
+sigmoid/HID             +0.090        +0.088         -0.002
+10/HIE                  +2.179        +1.913         -0.266
+6/HIE                   +3.502        +3.603         +0.101
+80/HIE                  +0.225        +0.254         +0.029
+If a rebuild shift is comparable to the K166 -> K166Q delta above, the mutation
+result is not attributable and must be reported as such.
