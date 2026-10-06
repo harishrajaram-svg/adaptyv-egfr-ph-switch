@@ -296,7 +296,7 @@ def main():
         "design": "t", "length": 76, "seed": 0, "sequence": "A" * 76,
         "iptm_design": 0.42, "plddt_binder_design": 0.81,
         "iptm_repred": 0.39, "plddt_binder_repred": 0.78,
-        "frac_V": 0.05, "frac_G": 0.04, "n_C": 0,
+        "frac_V": 0.05, "frac_G": 0.04, "frac_H": 0.03, "n_C": 0,
         "acid_O_to_his_N": 3.1, "acid_CA_to_his_N": 5.4,
         "closest_acid": "ASP34", "geometry_pass": True,
     }
@@ -314,6 +314,7 @@ def main():
         ("negative distance", with_(acid_CA_to_his_N=-39.59), "acid_CA_to_his_N"),
         ("NaN metric", with_(iptm_design=float("nan")), "NaN"),
         ("probability over 1", with_(plddt_binder_repred=1.4), "plddt_binder_repred"),
+        ("frac_H impossible", with_(frac_H=1.3), "frac_H"),
         ("cysteine present", with_(n_C=5), "n_C"),
         ("wrong sequence length", with_(sequence="A" * 70), "sequence is 70"),
         ("pass disagrees with distance",
@@ -348,7 +349,7 @@ def main():
         r = {"design": "t", "length": 76, "seed": 0, "sequence": "A" * 76,
              "iptm_design": 0.42, "plddt_binder_design": 0.81,
              "iptm_repred": 0.80, "plddt_binder_repred": 0.78,
-             "frac_V": 0.05, "frac_G": 0.04, "n_C": 0,
+             "frac_V": 0.05, "frac_G": 0.04, "frac_H": 0.03, "n_C": 0,
              "his_N_to_cation_N": 3.1, "his_CA_to_cation_N": 5.4,
              "closest_his": "HIS21", "geometry_pass": True}
         r.update(kw)
