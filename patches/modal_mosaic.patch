@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..4673920
+index 0000000..5f586dc
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1348 @@
+@@ -0,0 +1,1535 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -367,10 +367,15 @@ index 0000000..4673920
 +    so gradient routes to whichever positions are currently best -- which a hard
 +    index-select would not be.
 +    """
++    # [-0:] is the WHOLE array, so topk=0 reproduces exactly the score.sum() formulation this
++    # function exists to replace -- and the mutation test would not catch it, since it only
++    # ever passes 2. Fail loudly instead.
++    if topk < 1:
++        raise ValueError(f"topk must be >= 1; topk=0 silently restores the summed form")
 +    return xp.sort(score)[-topk:].sum()
 +
 +
-+def _geometry_p2(st, anchor_resnum: int):
++def _geometry_p2(st, anchor_resnum: int, anchor_chain_idx: int = 0):
 +    """Problem 2's mirror: shortest binder-HISTIDINE ring-N to target CATION-N distance.
 +
 +    Same role as _geometry() and the same discipline: this runs BEFORE any pKa, because a
@@ -384,9 +389,22 @@ index 0000000..4673920
 +    # MULTI-CHAIN: chain 0 is the binder and EVERY chain after it is a target protomer. The
 +    # first version read st[0][1] alone, which on a trimer silently measured against protomer A
 +    # no matter which chain the anchor was actually declared on -- a wrong number, not an error.
++    # THE ANCHOR IS ON ONE SPECIFIC PROTOMER. This searched `for t in targets` and took the
++    # FIRST ARG/LYS at that residue number, with no idea which chain the loss was aimed at.
++    # TNF is a HOMOTRIMER: after renumbering, chains B, C and D all carry ARG 27. So with
++    # --anchor-chain B the loss pulled toward protomer B's R108 while this measured protomer
++    # A's, and a perfectly placed histidine was reported at ~30 A with geometry_pass False.
++    # Every geometry number produced before 2026-10-06 19:40 has that defect.
++    #
++    # The earlier comment claimed this was fixed by searching all chains instead of st[0][1].
++    # It was not: searching all chains is the bug, because the matches are indistinguishable.
++    # bin/mosaic_selftest.py could not catch it because its decoy protomers were ALA, so the
++    # ("ARG","LYS") filter made the search unambiguous -- a property the real trimer lacks.
 +    binder, targets = st[0][0], list(st[0])[1:]
-+    cat = next((r for t in targets for r in t if r.seqid.num == anchor_resnum
-+                and r.name in ("ARG", "LYS")), None)
++    if not 0 <= anchor_chain_idx < len(targets):
++        return {}
++    cat = next((r for r in targets[anchor_chain_idx]
++                if r.seqid.num == anchor_resnum and r.name in ("ARG", "LYS")), None)
 +    if cat is None:
 +        return {}
 +    names = ARG_CATION_N if cat.name == "ARG" else LYS_CATION_N
@@ -414,14 +432,21 @@ index 0000000..4673920
 +            "geometry_pass": bool(best_n <= 4.0)}
 +
 +
-+def _geometry(st, anchor_resnum: int):
++def _geometry(st, anchor_resnum: int, anchor_chain_idx: int = 0):
 +    """Shortest binder-carboxylate-O to anchor-His-N distance in a written complex.
 +
 +    This is verification step 1 and it runs BEFORE any pKa: >4.0 A cannot be a switch
 +    whatever PROPKA says. The check that caught a 3.59x "switch" whose binder sat 27 A
 +    from the histidine was exactly this one.
 +    """
-+    binder, target = st[0][0], st[0][1]
++    # Same defect as _geometry_p2 had: this read st[0][1] unconditionally. Harmless while
++    # problem 1's EGFR target is a monomer, wrong the first time acid_near_his is run
++    # multi-chain, so it is parameterised rather than left as a latent trap.
++    binder = st[0][0]
++    _targets = list(st[0])[1:]
++    if not 0 <= anchor_chain_idx < len(_targets):
++        return {}
++    target = _targets[anchor_chain_idx]
 +    his = next((r for r in target if r.seqid.num == anchor_resnum), None)
 +    if his is None:
 +        return {}
@@ -459,11 +484,17 @@ index 0000000..4673920
 +METRIC_BOUNDS = (
 +    ("iptm_design", 0.0, 1.0, False, True),        # exactly 0.0 is the IPTMLoss artifact
 +    ("iptm_repred", 0.0, 1.0, False, True),
++    ("iptm_repred_best_pair", 0.0, 1.0, False, True),
 +    ("plddt_binder_design", 0.0, 1.0, False, True),
 +    ("plddt_binder_repred", 0.0, 1.0, False, True),
 +    ("frac_V", 0.0, 1.0, True, True),
 +    ("frac_G", 0.0, 1.0, True, True),
 +    ("frac_H", 0.0, 1.0, True, True),
++    # The problem-2 distance columns. Their absence meant the bounds and NaN checks never
++    # applied to a his_near_cation row -- the same mirrored-for-one-mechanism-only gap that
++    # GEOMETRY_KEYS had, found in the same review.
++    ("his_N_to_cation_N", 0.0, 200.0, True, True),
++    ("his_CA_to_cation_N", 0.0, 200.0, True, True),
 +    ("acid_O_to_his_N", 0.0, 200.0, True, True),   # a distance is never negative
 +    ("acid_CA_to_his_N", 0.0, 200.0, True, True),
 +)
@@ -549,7 +580,12 @@ index 0000000..4673920
 +            bad.append(f"{dkey} and {rkey} must be present or absent together")
 +    # A withdrawn verdict must say so. geometry_pass=None with no gate recorded would be
 +    # indistinguishable from a measurement that never ran.
-+    if passed is None and "geometry_gate" in row and row.get("geometry_read") is not False:
++    # Distinguish "verdict PRESENT and withdrawn" from "geometry never computed". When
++    # _geometry* returns {} above the iptm bar, geometry_pass is ABSENT, not None -- and
++    # row.get() collapsed both to None, so a design whose metrics were fine got flagged
++    # METRICS SUSPECT and dropped from ranking by its own audit.
++    if ("geometry_pass" in row and row["geometry_pass"] is None
++            and "geometry_gate" in row and row.get("geometry_read") is not False):
 +        bad.append("geometry_pass is None but geometry_read is not False")
 +    return bad
 +
@@ -612,6 +648,8 @@ index 0000000..4673920
 +    # --- SPECIES LEG (objective 2). Off unless --target2 is given, so every existing
 +    # command reproduces exactly. See analysis/02-tnf/epitope_conserved.json for the
 +    # mapping; mouse epitope positions are NOT the human ones.
++    target_name: str = "",            # provenance only: bytes carry no filename
++    target2_name: str = "",
 +    target2_pdb: bytes = b"",         # BYTES, not a path: the container cannot see local files
 +    # DIMER, and it is FORCED, not preferred. A mouse trimer here is 976 tokens and it
 +    # OOMs on an L40S: RESOURCE_EXHAUSTED trying to allocate 34.24 GiB inside
@@ -763,6 +801,9 @@ index 0000000..4673920
 +    anchor_aa = HU["anchor_aa"]
 +    target_seq = HU["target_seq"]
 +    target_seqs = HU["target_seqs"]
++    # Which prepared target chain carries the anchor. Needed by the step-4 geometry check,
++    # which otherwise measures the first protomer that happens to match (finding #1).
++    anchor_chain_idx = [c[0] for c in chains_prepared].index(anchor_chain)
 +
 +    # SPECIES LEG. Objective 2 (mouse cross-reactivity) was never in the loss before this:
 +    # every run optimised human binding and mouse was CHECKED afterwards. s22 found ipSAE_min
@@ -911,6 +952,18 @@ index 0000000..4673920
 +            # point off the simplex, where an entry can be negative or exceed 1, and an
 +            # unclipped score can drive log() to NaN. Inside the simplex the gradient is
 +            # untouched.
++            # An unmodelled atom37 slot is (0,0,0), not absent -- scatter_atom37
++            # zero-initialises the grid. Without this the term silently measures distances to
++            # the coordinate origin and returns a gradient-free constant that reads like
++            # "nothing placed yet". Catches a wrong cation_atoms choice and any anchor whose
++            # sidechain the model leaves unbuilt.
++            if hasattr(output, "atom37_mask"):
++                present = sum(float(output.atom37_mask[self.his_idx, A37[a]])
++                              for a in self.cation_atoms)
++                if present < 0.5:
++                    raise ValueError(
++                        f"anchor atom(s) {self.cation_atoms} are not modelled at index "
++                        f"{self.his_idx} -- the term would measure to the origin")
 +            his = jnp.clip(sequence[:, TOKENS.index("H")], 0.0, 1.0)
 +            score = his * jax.nn.sigmoid((self.d0 - d) / self.width)
 +            total = his_reduce(score, self.topk, jnp)   # top-k, not sum -- see the docstring
@@ -974,6 +1027,9 @@ index 0000000..4673920
 +    )
 +    rows, files = [], {}
 +
++    # Defined BEFORE the loop: the per-design persistence below writes into it as each
++    # design finishes. It used to be defined after the loop, next to the single bulk write.
++    out = Path("/weights/runs") / run_name
 +    for L in length_list:
 +        features, writer = model.binder_features(
 +            binder_length=L, chains=target_chain_specs
@@ -1044,12 +1100,25 @@ index 0000000..4673920
 +                + w_contact * sp.BinderTargetContact(
 +                    epitope_idx=MO["epitope_idx"], contact_distance=14.0, paratope_size=8
 +                )
-+                + w_acid * HisNearCation(
++                # BRANCH ON MECHANISM, like the human leg. This hardcoded HisNearCation, so
++                # under --mechanism acid_near_his the species anchor is validated as H, the
++                # R/K ternary fell through to LYS_CATION_N, and the term read the NZ slot of a
++                # histidine. scatter_atom37 zero-initialises the grid, so that slot is
++                # (0,0,0): the term measured every CA to the coordinate origin, returned a
++                # constant ~6.9 with NO GRADIENT, and logged as an honest "nothing placed yet".
++                + w_acid * (AcidNearHis(
++                    his_token=L + MO["anchor_local"],
++                    d_idx=TOKENS.index("D"),
++                    e_idx=TOKENS.index("E"),
++                    d0=acid_d0,
++                    width=acid_width,
++                    eps=acid_eps,
++                ) if mechanism == "acid_near_his" else HisNearCation(
 +                    his_idx=L + MO["anchor_local"],
 +                    cation_atoms=(ARG_CATION_N if MO["anchor_aa"] == "R" else LYS_CATION_N),
 +                    d0=his_d0,
 +                    width=acid_width,
-+                )
++                ))
 +            )
 +            total_loss = total_loss + w_species * model.build_loss(
 +                loss=species_inner, features=species_features,
@@ -1058,9 +1127,14 @@ index 0000000..4673920
 +        if w_monomer > 0:
 +            mono_features, _ = model.binder_features(binder_length=L, chains=[])
 +            total_loss = total_loss + w_monomer * model.build_loss(
-+                loss=sp.PLDDTLoss()
-+                + sp.WithinBinderContact()
-+                + sp.ESMFoldGlobularity(),
++                # WEIGHTED, like the human leg. These were bare, so --w-plddt applied to the
++                # complex leg only while the monomer leg -- the one that actually asks whether
++                # the binder folds alone -- stayed at 1.0. At defaults that made globularity
++                # 1.67x STRONGER in the "down-weighted" leg (0.5 x 1.0) than in the main one
++                # (0.3), and a pLDDT sweep would read as "weight barely moves monomer pLDDT".
++                loss=w_plddt * sp.PLDDTLoss()
++                + w_within * sp.WithinBinderContact()
++                + w_glob * sp.ESMFoldGlobularity(),
 +                features=mono_features,
 +                recycling_steps=recycling_steps,
 +                sampling_steps=sampling_steps,
@@ -1122,8 +1196,27 @@ index 0000000..4673920
 +            # not a property of the binder -- the same class of error as reading a pH switch
 +            # off an apo reference. Read the interface off chain_pair_iptm() instead, which
 +            # takes asym_id from the output and needs no binder sequence passed in.
++            # chain_pair_iptm() keys are per unordered chain pair, so (0,1) is the binder
++            # against the FIRST PROTOMER ONLY -- it threw away two of three interfaces. Worse,
++            # D-P2-1's 0.45 bar was calibrated on the LUMPED binder-vs-whole-target iptm, so
++            # the gate was comparing a pair-restricted number against a global threshold. The
++            # two are not even on the same scale: predicted_tm_score normalises each row by
++            # the masked column count, so a pair mask averages over 152 columns where the
++            # lumped mask averages over 456.
++            #
++            # IPTMLoss derives asym_id from `sequence.shape[0]` alone (verified upstream:
++            # losses/structure_prediction.py:532-535), so a dummy zeros((L, 20)) gives exactly
++            # the binder-vs-everything-else split without passing a real sequence -- which is
++            # what the original zero-length artifact was about. Both numbers are recorded: the
++            # lumped one gates, the best pair is kept as a diagnostic so a future reader can
++            # see when they diverge.
 +            pair_iptm = repred.model_output.chain_pair_iptm()
-+            iptm_repred = float(pair_iptm.get((0, 1), float("nan")))
++            _bt = [v for (a, b), v in pair_iptm.items() if a == 0]
++            iptm_repred_best_pair = float(max(_bt)) if _bt else float("nan")
++            iptm_repred = float(
++                -sp.IPTMLoss()(jnp.zeros((L, 20)), repred.model_output,
++                               key=jax.random.key(seed))[0]
++            )
 +            st = repred.model_output.to_structure()
 +            # Renumber into POSITIONAL so the gates and the pose-check motif line up:
 +            # binder chain A 1..L, target chain B carrying its positional numbers.
@@ -1149,13 +1242,17 @@ index 0000000..4673920
 +                for r, num in zip(chain_obj, rn):
 +                    r.seqid = gemmi.SeqId(num, " ")
 +            st.setup_entities()
-+            geom = (_geometry(st, anchor) if mechanism == "acid_near_his"
-+                    else _geometry_p2(st, anchor))
++            # The re-predicted chain order is [binder] + chains_prepared, so the anchor
++            # chain's POSITION in chains_prepared is its index among the targets.
++            geom = (_geometry(st, anchor, anchor_chain_idx)
++                    if mechanism == "acid_near_his"
++                    else _geometry_p2(st, anchor, anchor_chain_idx))
 +            row = {
 +                "design": tag, "length": L, "seed": seed, "sequence": seq,
 +                "iptm_design": round(float(pred.iptm), 4),
 +                "plddt_binder_design": round(float(np.asarray(pred.plddt)[:L].mean()), 4),
 +                "iptm_repred": round(iptm_repred, 4),
++                "iptm_repred_best_pair": round(iptm_repred_best_pair, 4),
 +                "plddt_binder_repred": round(float(np.asarray(repred.plddt)[:L].mean()), 4),
 +                "frac_V": round(comp.get("V", 0.0), 3),
 +                "frac_G": round(comp.get("G", 0.0), 3),
@@ -1191,19 +1288,71 @@ index 0000000..4673920
 +            files[f"complex/{tag}.pdb"] = st.make_pdb_string().encode()
 +            files[f"pssm/{tag}.npy"] = np.asarray(pssm).astype(np.float32).tobytes()
 +
++            # PERSIST THIS DESIGN NOW, before the next one starts. `files` used to accumulate
++            # in memory with a single write + commit after the loop, so ANY later failure --
++            # a timeout, a crash, or the designs.tsv KeyError that heterogeneous rows used to
++            # raise -- destroyed every completed design in the run and billed for all of them.
++            #
++            # The handoff note claiming this wrapper "writes each design to the Volume as it
++            # goes" was FALSE when written (2026-10-06, found in a cold review). It is true now.
++            # Recover a run whose client died: the directory is already on the Volume.
++            try:
++                for rel, content in ((f"complex/{tag}.pdb", files[f"complex/{tag}.pdb"]),
++                                     (f"pssm/{tag}.npy", files[f"pssm/{tag}.npy"])):
++                    dest = out / rel
++                    dest.parent.mkdir(parents=True, exist_ok=True)
++                    dest.write_bytes(content)
++                # the row as a single-line JSON sidecar, so a lost run still yields its
++                # metrics without needing the post-loop designs.tsv to have been built
++                rdest = out / "rows" / f"{tag}.json"
++                rdest.parent.mkdir(parents=True, exist_ok=True)
++                rdest.write_bytes(json.dumps(row).encode())
++                weights.commit()
++                print(f"[mosaic]   persisted {tag} to the Volume")
++            except Exception as e:
++                # Never let persistence kill a design whose GPU time is already paid for.
++                print(f"[mosaic] 🔴 WARNING: could not persist {tag}: "
++                      f"{type(e).__name__}: {e} -- it survives only in the return value")
++
 +    files["designs.faa"] = "".join(
 +        f">{r['design']}\n{r['sequence']}\n" for r in rows
 +    ).encode()
-+    cols = list(rows[0].keys()) if rows else []
++    # UNION the keys, and use .get(). Row key sets are NOT uniform: _geometry* returns three
++    # different shapes (full dict / a `note` form with two keys missing when the binder has no
++    # histidine / {} when the anchor is absent). Taking columns from rows[0] and indexing with
++    # r[c] raised KeyError on the first heterogeneous pair -- and because that happens BEFORE
++    # the Volume write, it destroyed every design in the run, not just the odd one out.
++    cols = list(dict.fromkeys(k for r in rows for k in r))
 +    files["designs.tsv"] = (
 +        "\t".join(cols) + "\n"
-+        + "".join("\t".join("" if r[c] is None else str(r[c]) for c in cols) + "\n" for r in rows)
++        + "".join("\t".join("" if r.get(c) is None else str(r.get(c)) for c in cols) + "\n"
++                  for r in rows)
 +    ).encode()
++    # MECHANISM-AWARE. Every field here was a problem-1 literal, so a problem-2 run wrote
++    # `canonical: 54, label: "H433"` for what is actually R108, in the one file whose job is to
++    # stop anyone re-deriving the numbering. The log line was fixed for this exact reason
++    # ("a log line that names the wrong anchor is how a number gets believed about the wrong
++    # molecule later") and these two shipped files were missed.
++    _p2 = mechanism == "his_near_cation"
++    _canon_off = 81 if _p2 else -27          # positional + off = canonical
++    _tgt_name = target_name or "target"
 +    files["numbering.json"] = json.dumps({
-+        "scheme": "positional in egfr_ecd_6aru_renum.pdb, contiguous 1..609, "
-+                  "positional = canonical - 27",
-+        "written_pdbs": "binder = chain A, 1..L; target = chain B, positional numbering",
-+        "anchor": {"positional": anchor, "canonical": anchor + 27, "label": "H433"},
++        "scheme": (f"positional in {_tgt_name}, contiguous per chain, "
++                   f"positional {'+' if _canon_off >= 0 else '-'} {abs(_canon_off)} "
++                   f"= canonical"),
++        "written_pdbs": ("binder = chain A, 1..L; targets = chains "
++                         + ",".join(chr(ord("B") + i) for i in range(len(chains_prepared)))
++                         + ", positional numbering"),
++        "anchor": {"positional": anchor, "canonical": anchor + _canon_off,
++                   "label": f"{anchor_aa}{anchor + _canon_off}",
++                   "chain": anchor_chain, "chain_index_among_targets": anchor_chain_idx},
++        "species_leg": (None if MO is None else {
++            "target": target2_name or None,
++            "anchor_positional": target2_anchor,
++            "anchor_chain": target2_anchor_chain,
++            "epitope_positional": target2_epitope,
++            "note": "species indices are NOT the human ones -- a deletion shifts the register",
++        }),
 +        "epitope_positional": epitope_pos,
 +        "crop": list(crop_t) if crop_t else None,
 +        "ph_gate_note": "bin/ph_gate_target_his.py CANON is BoltzGen-output numbering "
@@ -1219,7 +1368,20 @@ index 0000000..4673920
 +                    "within": w_within, "plddt": w_plddt, "glob": w_glob,
 +                    "acid": w_acid, "mpnn": w_mpnn, "comp": w_comp,
 +                    "monomer": w_monomer},
-+        "caps": {"V": cap_val, "G": cap_gly, "H": cap_his}, "acid_d0": acid_d0,
++        "caps": {"V": cap_val, "G": cap_gly, "H": cap_his},
++        # mechanism and its parameters -- config.json recorded acid_d0 unconditionally, a
++        # parameter a his_near_cation run never uses, and omitted mechanism, his_d0,
++        # target_chain, anchor_chain and every species argument. A reader reconstructing the
++        # run from this file got a different run, with no record that a species leg existed.
++        "mechanism": mechanism,
++        "acid_d0": acid_d0 if mechanism == "acid_near_his" else None,
++        "his_d0": his_d0 if mechanism == "his_near_cation" else None,
++        "target": _tgt_name, "target_chain": target_chain, "anchor_chain": anchor_chain,
++        "species_leg": (None if MO is None else {
++            "target": target2_name or None,
++            "target2_chain": target2_chain, "w_species": w_species,
++            "target2_anchor": target2_anchor, "target2_epitope": target2_epitope,
++        }),
 +        "acid_width": acid_width, "acid_eps": acid_eps,
 +        # Derived from the composed loss object, not asserted. The previous value here
 +        # was a hardcoded `True` that would have printed True with ipSAE in the loss.
@@ -1227,7 +1389,6 @@ index 0000000..4673920
 +        "c1_audit": "clean" if not audit_c1(term_names, model_names) else "VIOLATION",
 +    }, indent=2).encode()
 +
-+    out = Path("/weights/runs") / run_name
 +    for rel, content in files.items():
 +        p = out / rel
 +        p.parent.mkdir(parents=True, exist_ok=True)
@@ -1322,6 +1483,31 @@ index 0000000..4673920
 +    pdb = Path(target)
 +    if not pdb.is_file():
 +        raise SystemExit(f"target not found: {pdb.resolve()}  (paths resolve from biomodals/)")
++    # SIZE THE TIMEOUT FROM THE WORKLOAD, and refuse to launch under it. The default
++    # TIMEOUT=30 (and the 90 that design-mosaic.sh passes) is below the measured wall clock
++    # for the three-leg defaults: steps_soft 60 + steps_sharp 40 = 100 steps x n_seeds 2 x
++    # len(lengths), at a MEASURED 25.9 s/step for human-trimer + mouse-dimer (s37), is 86+
++    # minutes before three JAX compiles and the step-4 re-predictions.
++    #
++    # The rate is measured, not extrapolated -- s33 records a step-time extrapolation missing
++    # by 2.1x, and s37 records one that was infeasible on memory and not just slow. A NEW
++    # configuration should be smoke-tested for its own rate rather than trusted to this one.
++    # Same pattern as bin/score-esmfold2.sh, for the same reason: output is worth nothing if
++    # the run is cut off, and the GPU time is billed either way.
++    _n_traj = max(1, int(n_seeds)) * max(1, len([v for v in lengths.split(",") if v.strip()]))
++    _steps = (3 + 2) if smoke else (int(steps_soft) + int(steps_sharp))
++    _s_per_step = 25.9 if target2 else 21.7          # measured, s33/s37
++    _est_min = (3 * 420 + _n_traj * (_steps * _s_per_step + 300)) / 60 + 1
++    print(f"[mosaic] {_n_traj} trajectories x {_steps} steps at ~{_s_per_step}s "
++          f"-> estimate ~{_est_min:.0f} min; TIMEOUT={TIMEOUT} min")
++    if TIMEOUT < _est_min:
++        raise SystemExit(
++            f"REFUSING TO LAUNCH: TIMEOUT={TIMEOUT} min is below the ~{_est_min:.0f} min\n"
++            f"  estimate. Designs are persisted per-design to the Volume, so a timeout no\n"
++            f"  longer loses everything -- but it still truncates the run and bills for the\n"
++            f"  GPU time. Raise TIMEOUT (minutes), or cut n_seeds/lengths/steps."
++        )
++
 +    # Read the species target HERE, on the laptop, and fail before paying for a container.
 +    target2_bytes = b""
 +    if target2:
@@ -1334,6 +1520,7 @@ index 0000000..4673920
 +    results = design.remote(
 +        target_pdb=pdb.read_bytes(), run_name=run, crop=crop, epitope=epitope,
 +        target_chain=target_chain, anchor_chain=anchor_chain,
++        target_name=pdb.name, target2_name=(Path(target2).name if target2 else ""),
 +        target2_pdb=target2_bytes, target2_chain=target2_chain,
 +        target2_epitope=target2_epitope, target2_anchor=target2_anchor,
 +        target2_anchor_chain=target2_anchor_chain, w_species=w_species,

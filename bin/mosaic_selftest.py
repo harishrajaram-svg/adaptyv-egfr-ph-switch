@@ -146,14 +146,20 @@ def main():
             res.add_atom(atom)
         binder.add_residue(res)
         model.add_chain(binder)
+        # EVERY protomer is ARG 27, because TNF is a HOMOTRIMER and that is what the real
+        # renumbered target looks like. The previous version named the decoys ALA, which let
+        # the ("ARG","LYS") filter disambiguate the search -- so the test asserted a property
+        # the production input does not have, and passed while _geometry_p2 was measuring the
+        # wrong protomer on every real run. A test whose fixture is easier than production is
+        # worse than no test, because it is reported as coverage.
         for ci in range(3):
             tgt = gemmi.Chain("BCD"[ci])
             arg = gemmi.Residue()
-            arg.name = "ARG" if ci == anchor_on_chain else "ALA"
+            arg.name = "ARG"
             arg.seqid = gemmi.SeqId(27, " ")
             atom = gemmi.Atom()
-            atom.name, atom.element = ("NH2" if ci == anchor_on_chain else "CB"), gemmi.Element("N")
-            # decoy protomers put their residue far away, so finding one is a visible failure
+            atom.name, atom.element = "NH2", gemmi.Element("N")
+            # the decoys sit 60 A away, so measuring the wrong one is a visible failure
             shift = 0.0 if ci == anchor_on_chain else 60.0
             atom.pos = gemmi.Position(nd1.pos.x + shift, nd1.pos.y, nd1.pos.z)
             arg.add_atom(atom)
@@ -162,16 +168,30 @@ def main():
         fake.add_model(model)
         return fake
 
+    # The anchor index must SELECT the protomer, not search for it. Passing the index of the
+    # protomer the loss was aimed at must give 3.0 A; passing any other index must give ~60 A.
     for which in (0, 1, 2):
-        g2 = geometry_p2(trimer_with(3.0, which), 27)
+        g2 = geometry_p2(trimer_with(3.0, which), 27, which)
         assert g2.get("his_N_to_cation_N") == 3.0, (which, g2)
         assert g2["geometry_pass"] is True, (which, g2)
-    far = geometry_p2(trimer_with(7.0, 2), 27)
+        # MUTATION TEST: the wrong index must NOT quietly return the right answer. This is the
+        # assertion the old fixture could not make, and the bug it would have caught.
+        for other in (0, 1, 2):
+            if other == which:
+                continue
+            gw = geometry_p2(trimer_with(3.0, which), 27, other)
+            assert gw["geometry_pass"] is False, (
+                f"anchor on protomer {which} measured from index {other} reported "
+                f"{gw.get('his_N_to_cation_N')} -- the index is being ignored")
+    far = geometry_p2(trimer_with(7.0, 2), 27, 2)
     assert far["geometry_pass"] is False, far
-    assert geometry_p2(trimer_with(3.0, 1), 999) == {}, \
+    assert geometry_p2(trimer_with(3.0, 1), 999, 1) == {}, \
         "a missing anchor must report nothing, not a number"
-    print(f"p2 trimer     anchor found on protomer 0/1/2 alike at 3.0 A; "
-          f"7.0 A -> geometry_pass={far['geometry_pass']}; missing anchor -> {{}}")
+    assert geometry_p2(trimer_with(3.0, 1), 27, 9) == {}, \
+        "an out-of-range anchor index must report nothing, not fall back to protomer 0"
+    print("p2 trimer     all three protomers are ARG 27 (as in production); the anchor INDEX "
+          "selects,\n              and every wrong index reports a miss; 7.0 A -> False; "
+          "missing anchor and\n              out-of-range index both -> {}")
 
     # 3c. THE REDUCTION. HisNearCation first wrote `score.sum()`, and summing rewards total
     # histidine MASS near the cation rather than one histidine PLACED: the 5-step trimer smoke
@@ -295,7 +315,8 @@ def main():
     clean = {
         "design": "t", "length": 76, "seed": 0, "sequence": "A" * 76,
         "iptm_design": 0.42, "plddt_binder_design": 0.81,
-        "iptm_repred": 0.39, "plddt_binder_repred": 0.78,
+        "iptm_repred": 0.39, "iptm_repred_best_pair": 0.41,
+        "plddt_binder_repred": 0.78,
         "frac_V": 0.05, "frac_G": 0.04, "frac_H": 0.03, "n_C": 0,
         "acid_O_to_his_N": 3.1, "acid_CA_to_his_N": 5.4,
         "closest_acid": "ASP34", "geometry_pass": True,
@@ -315,6 +336,9 @@ def main():
         ("NaN metric", with_(iptm_design=float("nan")), "NaN"),
         ("probability over 1", with_(plddt_binder_repred=1.4), "plddt_binder_repred"),
         ("frac_H impossible", with_(frac_H=1.3), "frac_H"),
+        # the problem-2 distance columns, which METRIC_BOUNDS used to omit entirely
+        ("p2 distance negative", with_(his_N_to_cation_N=-3.0), "his_N_to_cation_N"),
+        ("p2 distance NaN", with_(his_CA_to_cation_N=float("nan")), "NaN"),
         ("cysteine present", with_(n_C=5), "n_C"),
         ("wrong sequence length", with_(sequence="A" * 70), "sequence is 70"),
         ("pass disagrees with distance",
@@ -377,6 +401,26 @@ def main():
     for bad_iptm in (None, float("nan")):
         g = gate(p2row(iptm_repred=bad_iptm))
         assert g["geometry_pass"] is None and g["geometry_read"] is False, (bad_iptm, g)
+
+    # #8: geometry simply NOT COMPUTED above the bar must not be flagged. gate_geometry
+    # leaves geometry_pass ABSENT when _geometry* returns {}, and check_row used row.get(),
+    # collapsing absent and present-and-None -- so a design with fine metrics was marked
+    # METRICS SUSPECT and dropped from ranking by its own audit.
+    nogeom = {k: v for k, v in p2row(iptm_repred=0.80).items()
+              if k not in ("his_N_to_cation_N", "his_CA_to_cation_N",
+                           "closest_his", "geometry_pass")}
+    ng = gate(nogeom)
+    assert ng["geometry_read"] is True, ng
+    assert check_row(ng, 76) == [], (
+        "a row whose geometry was never computed, above the bar, must not be flagged: "
+        + repr(check_row(ng, 76)))
+
+    # #10: topk=0 silently restores the summed form this function exists to replace
+    try:
+        his_reduce(np.array([0.1, 0.2, 0.3]), 0, np)
+        raise AssertionError("his_reduce(topk=0) must raise, not sum the whole array")
+    except ValueError:
+        pass
 
     # MUTATION TEST: the p2 disagreement guard must now FIRE. Above the bar so the gate does
     # not withdraw the verdict, with a verdict that contradicts its own distance.
