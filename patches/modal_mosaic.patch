@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..bcb7e7c
+index 0000000..52ca99e
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,888 @@
+@@ -0,0 +1,1006 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -209,7 +209,15 @@ index 0000000..bcb7e7c
 +
 +TOKENS = "ARNDCQEGHILKMFPSTWYV"              # mosaic.common.TOKENS, mirrored for local use
 +A37 = {"CA": 1, "ND1": 14, "NE2": 25,         # mosaic.losses.atom37.ATOM37_NAMES order
-+       "OD1": 16, "OD2": 17, "OE1": 26, "OE2": 27}
++       "OD1": 16, "OD2": 17, "OE1": 26, "OE2": 27,
++       # --- problem 2 (TNF) adds the CATION nitrogens. The mechanism is MIRRORED:
++       # problem 1 put a binder ACID against a TARGET histidine (EGFR H433); problem 2
++       # puts a binder HISTIDINE against a TARGET cation (TNF R108 / K166). Indices
++       # verified against the standard atom37 ordering, in which the seven above also
++       # land exactly where this dict already says they do.
++       "NE": 23, "NH1": 29, "NH2": 30, "NZ": 35}
++ARG_CATION_N = ("NE", "NH1", "NH2")
++LYS_CATION_N = ("NZ",)
 +DEFAULT_CROP = (284, 453)                     # domain III, positional (== canonical 311..480)
 +DEFAULT_EPITOPE = "403,404,405,406,407,408,409"
 +ANCHOR = 406                                  # H433, positional
@@ -270,6 +278,46 @@ index 0000000..bcb7e7c
 +    if len(sequence) != len(resnums) or "X" in sequence:
 +        raise SystemExit(f"STEP 4 FAILED: non-standard residue in target: {sequence}")
 +    return chain, sequence, resnums
++
++
++def _geometry_p2(st, anchor_resnum: int):
++    """Problem 2's mirror: shortest binder-HISTIDINE ring-N to target CATION-N distance.
++
++    Same role as _geometry() and the same discipline: this runs BEFORE any pKa, because a
++    histidine that is not actually near the cation cannot switch whatever a pKa predictor
++    says. Problem 1's version caught a 3.59x "switch" whose binder sat 27 A away; the failure
++    mode is identical here with the chemistries swapped.
++
++    s9 measured the cation's effect at an ND1-to-N distance of 3.0 A, and s6d measured that
++    geometry as reachable, so 4.0 A is the same generous bar problem 1 used.
++    """
++    binder, target = st[0][0], st[0][1]
++    cat = next((r for r in target if r.seqid.num == anchor_resnum), None)
++    if cat is None:
++        return {}
++    names = ARG_CATION_N if cat.name == "ARG" else LYS_CATION_N
++    pts = [a.pos for a in cat if a.name in names]
++    if not pts:
++        return {}
++    best_n, best_ca, best_res = 1e9, 1e9, None
++    for r in binder:
++        if r.name != "HIS":
++            continue
++        for a in r:
++            if a.name not in ("ND1", "NE2", "CA"):
++                continue
++            d = min(a.pos.dist(p) for p in pts)
++            if a.name == "CA":
++                best_ca = min(best_ca, d)
++            elif d < best_n:
++                best_n, best_res = d, f"{r.name}{r.seqid.num}"
++    if best_res is None:
++        return {"his_N_to_cation_N": None, "geometry_pass": False,
++                "note": "no histidine in the binder"}
++    return {"his_N_to_cation_N": round(best_n, 2),
++            "his_CA_to_cation_N": round(best_ca, 2),
++            "closest_his": best_res,
++            "geometry_pass": bool(best_n <= 4.0)}
 +
 +
 +def _geometry(st, anchor_resnum: int):
@@ -417,6 +465,7 @@ index 0000000..bcb7e7c
 +    crop: str = "284:453",
 +    epitope: str = DEFAULT_EPITOPE,
 +    anchor: int = ANCHOR,
++    mechanism: str = "acid_near_his",
 +    lengths: str = "76",
 +    n_seeds: int = 2,
 +    seed0: int = 0,
@@ -440,6 +489,7 @@ index 0000000..bcb7e7c
 +    cap_val: float = 0.12,
 +    cap_gly: float = 0.08,
 +    acid_d0: float = 8.0,
++    his_d0: float = 6.5,
 +    acid_width: float = 1.5,
 +    acid_eps: float = 1e-3,
 +    smoke: bool = False,
@@ -514,8 +564,15 @@ index 0000000..bcb7e7c
 +    print(f"[mosaic] target {target_chain} crop={crop_t} len={len(target_seq)}")
 +    print(f"[mosaic] epitope positional {epitope_pos} -> target idx {epitope_idx}")
 +    print(f"[mosaic] anchor positional {anchor} -> target idx {anchor_local} = {anchor_aa}")
-+    if anchor_aa != "H":
-+        raise SystemExit(f"STEP 4 FAILED: anchor {anchor} is {anchor_aa}, not H -- numbering is wrong")
++    MECHANISMS = ("acid_near_his", "his_near_cation")
++    if mechanism not in MECHANISMS:
++        raise SystemExit(f"STEP 4 FAILED: mechanism {mechanism!r} not in {MECHANISMS}")
++    want = "H" if mechanism == "acid_near_his" else "RK"
++    if anchor_aa not in want:
++        raise SystemExit(
++            f"STEP 4 FAILED: anchor {anchor} is {anchor_aa}, not one of {want!r} for "
++            f"mechanism {mechanism!r} -- numbering or mechanism is wrong")
++    print(f"[mosaic] mechanism {mechanism}: anchor {anchor_aa}{anchor} on the TARGET")
 +
 +    # --- the one loss term the whole programme has failed to control -----------------
 +    class AcidNearHis(LossTerm):
@@ -574,6 +631,58 @@ index 0000000..bcb7e7c
 +                "acid_dmin_CA": jnp.min(d + (1.0 - acid) * 100.0),
 +            }
 +
++    class HisNearCation(LossTerm):
++        """Problem 2's MIRROR of AcidNearHis: pull a binder HISTIDINE to the target's cation.
++
++        Problem 1 placed a binder carboxylate against a TARGET histidine (EGFR H433). Problem 2
++        inverts the roles -- the titratable group moves to the BINDER and the target supplies a
++        fixed positive charge (TNF R108 or K166). Same shape, same clipping, same eps semantics;
++        only the two chemistries swap sides.
++
++        MEASURED ON CA, for the reason AcidNearHis gives: design features hand the binder UNK/G
++        reference atoms, so it has NO SIDECHAINS during optimization. CA-to-cation-N is the
++        honest differentiable proxy. A histidine CA sits at most ~3.4 A from its own ND1, so
++        d0 = 6.5 is the CA distance consistent with ND1 within ~3.1 A -- which is the geometry
++        s6d measured as reachable and s9 measured as the one the cation actually acts on.
++        The real all-atom distance is measured after design by _geometry() on a re-prediction.
++
++        WHY THIS TERM IS WORTH HAVING EVEN THOUGH THE FILTERS ARE DEAD. s19/s20 retired
++        dddG_elec and his_cation_gate as SELECTORS -- they cannot rank finished molecules. That
++        is a different job from supplying a GRADIENT. Nothing measured says the geometry is
++        unbuildable; s6d says the opposite (17.2% of approach directions are clear at K166).
++        A filter must discriminate among molecules that exist; a loss only has to point
++        downhill. s22 and s20 together mean both conditional objectives must now be DESIGNED
++        IN rather than selected for, and this is the only place in the pipeline where that can
++        happen for the pH mechanism.
++        """
++        his_idx: int
++        cation_atoms: tuple
++        d0: float = 6.5
++        width: float = 1.5
++        eps: float = 1e-3
++
++        def __call__(self, sequence, output, key):
++            L = sequence.shape[0]
++            ca = output.atom37_coords[:L, A37["CA"]]
++            ds = [jnp.linalg.norm(ca - output.atom37_coords[self.his_idx, A37[a]], axis=-1)
++                  for a in self.cation_atoms]
++            d = ds[0]
++            for extra in ds[1:]:
++                d = jnp.minimum(d, extra)
++            # Clip for the same reason AcidNearHis clips: APGM evaluates at an extrapolated
++            # point off the simplex, where an entry can be negative or exceed 1, and an
++            # unclipped score can drive log() to NaN. Inside the simplex the gradient is
++            # untouched.
++            his = jnp.clip(sequence[:, TOKENS.index("H")], 0.0, 1.0)
++            score = his * jax.nn.sigmoid((self.d0 - d) / self.width)
++            total = score.sum()
++            loss = -jnp.log(total + self.eps)
++            return loss, {
++                "his_cation": loss,
++                "his_best": score.max(),
++                "his_dmin_CA": jnp.min(d + (1.0 - his) * 100.0),
++            }
++
 +    class CompositionCap(LossTerm):
 +        """Hinge penalty on over-represented residues. Zero until the cap is crossed."""
 +        caps: tuple
@@ -630,14 +739,19 @@ index 0000000..bcb7e7c
 +            + w_within * sp.WithinBinderContact()
 +            + w_plddt * sp.PLDDTLoss()
 +            + w_glob * sp.ESMFoldGlobularity()
-+            + w_acid * AcidNearHis(
++            + w_acid * (AcidNearHis(
 +                his_token=L + anchor_local,
 +                d_idx=TOKENS.index("D"),
 +                e_idx=TOKENS.index("E"),
 +                d0=acid_d0,
 +                width=acid_width,
 +                eps=acid_eps,
-+            )
++            ) if mechanism == "acid_near_his" else HisNearCation(
++                his_idx=L + anchor_local,
++                cation_atoms=(ARG_CATION_N if anchor_aa == "R" else LYS_CATION_N),
++                d0=his_d0,
++                width=acid_width,
++            ))
 +        )
 +        if mpnn is not None:
 +            inner = inner + w_mpnn * InverseFoldingSequenceRecovery(
@@ -744,7 +858,8 @@ index 0000000..bcb7e7c
 +            for r, num in zip(m[1], resnums):
 +                r.seqid = gemmi.SeqId(num, " ")
 +            st.setup_entities()
-+            geom = _geometry(st, anchor)
++            geom = (_geometry(st, anchor) if mechanism == "acid_near_his"
++                    else _geometry_p2(st, anchor))
 +            row = {
 +                "design": tag, "length": L, "seed": seed, "sequence": seq,
 +                "iptm_design": round(float(pred.iptm), 4),
@@ -858,6 +973,8 @@ index 0000000..bcb7e7c
 +    cap_val: float = 0.12,
 +    cap_gly: float = 0.08,
 +    acid_d0: float = 8.0,
++    his_d0: float = 6.5,
++    mechanism: str = "acid_near_his",
 +    acid_eps: float = 1e-3,
 +    smoke: bool = False,
 +):
@@ -884,6 +1001,7 @@ index 0000000..bcb7e7c
 +        stepsize=stepsize, sharpen=sharpen, use_mpnn=use_mpnn, w_acid=w_acid,
 +        w_mpnn=w_mpnn, w_plddt=w_plddt, w_monomer=w_monomer,
 +        cap_val=cap_val, cap_gly=cap_gly, acid_d0=acid_d0, acid_eps=acid_eps,
++        his_d0=his_d0, mechanism=mechanism,
 +        smoke=smoke,
 +    )
 +    dest = Path(out_dir) / run
