@@ -1,0 +1,1307 @@
+{
+ "legs": [
+  "rigid",
+  "repacked_local"
+ ],
+ "shell_A": 8.0,
+ "summary": {
+  "schroter": {
+   "medians": {
+    "rigid": 1.8355,
+    "repacked_local": 0.6335
+   },
+   "pass_ge_zero": {
+    "rigid": "5/5",
+    "repacked_local": "3/5"
+   }
+  },
+  "anchor_K166": {
+   "medians": {
+    "rigid": 4.9049,
+    "repacked_local": -0.2363
+   },
+   "pass_ge_zero": {
+    "rigid": "5/5",
+    "repacked_local": "2/5"
+   }
+  },
+  "anchor_K166Q": {
+   "medians": {
+    "rigid": -0.877,
+    "repacked_local": -1.228
+   },
+   "pass_ge_zero": {
+    "rigid": "0/5",
+    "repacked_local": "0/5"
+   }
+  },
+  "far_control": {
+   "medians": {
+    "rigid": 0.3651,
+    "repacked_local": -0.1138
+   },
+   "pass_ge_zero": {
+    "rigid": "5/5",
+    "repacked_local": "2/5"
+   }
+  }
+ },
+ "results": {
+  "schroter": {
+   "adalimumab_WT": {
+    "path": "3WD5_adalimumab_WT.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 9,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "L:189",
+     "L:198",
+     "H:35",
+     "H:57",
+     "H:172",
+     "H:208"
+    ],
+    "n_his_binder": 6,
+    "rigid": {
+     "dddG": 0.5943,
+     "dddG_min": 0.5943,
+     "dddG_max": 0.5943,
+     "dddG_trials": [
+      0.5943
+     ],
+     "sign_unstable": false,
+     "neutral": -11.3633,
+     "protonated": -10.769,
+     "n_pairs": 925,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.3148,
+     "dddG_min": -0.5085,
+     "dddG_max": -0.1487,
+     "dddG_trials": [
+      -0.5085,
+      -0.1487,
+      -0.3148,
+      -0.2712,
+      -0.3148
+     ],
+     "sign_unstable": false,
+     "neutral": -17.0823,
+     "protonated": -17.3971,
+     "n_pairs": 928,
+     "n_trials": 5,
+     "repacked_residues": 176,
+     "sidechain_rmsd": 0.79
+    }
+   },
+   "PSV1": {
+    "path": "3WD5_PSV1.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 14,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "L:90",
+     "L:92",
+     "L:97",
+     "L:189",
+     "L:198",
+     "H:35",
+     "H:57",
+     "H:106",
+     "H:107",
+     "H:172",
+     "H:208"
+    ],
+    "n_his_binder": 11,
+    "rigid": {
+     "dddG": 1.8418,
+     "dddG_min": 1.8418,
+     "dddG_max": 1.8418,
+     "dddG_trials": [
+      1.8418
+     ],
+     "sign_unstable": false,
+     "neutral": -10.4365,
+     "protonated": -8.5947,
+     "n_pairs": 917,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": 0.6335,
+     "dddG_min": -0.0563,
+     "dddG_max": 1.0988,
+     "dddG_trials": [
+      1.0988,
+      0.4687,
+      0.8464,
+      -0.0563,
+      0.6335
+     ],
+     "sign_unstable": true,
+     "neutral": -16.0245,
+     "protonated": -15.1781,
+     "n_pairs": 919,
+     "n_trials": 5,
+     "repacked_residues": 232,
+     "sidechain_rmsd": 1.127
+    }
+   },
+   "PSV2": {
+    "path": "3WD5_PSV2.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 14,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "L:89",
+     "L:90",
+     "L:92",
+     "L:189",
+     "L:198",
+     "H:35",
+     "H:57",
+     "H:106",
+     "H:107",
+     "H:172",
+     "H:208"
+    ],
+    "n_his_binder": 11,
+    "rigid": {
+     "dddG": 1.8355,
+     "dddG_min": 1.8355,
+     "dddG_max": 1.8355,
+     "dddG_trials": [
+      1.8355
+     ],
+     "sign_unstable": false,
+     "neutral": -10.4366,
+     "protonated": -8.6011,
+     "n_pairs": 917,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": 0.9192,
+     "dddG_min": 0.1214,
+     "dddG_max": 1.3051,
+     "dddG_trials": [
+      0.1214,
+      1.3051,
+      0.9192,
+      0.9792,
+      0.3409
+     ],
+     "sign_unstable": false,
+     "neutral": -15.7523,
+     "protonated": -15.1478,
+     "n_pairs": 919,
+     "n_trials": 5,
+     "repacked_residues": 229,
+     "sidechain_rmsd": 1.105
+    }
+   },
+   "PSV3": {
+    "path": "3WD5_PSV3.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 12,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "L:32",
+     "L:33",
+     "L:189",
+     "L:198",
+     "H:35",
+     "H:57",
+     "H:102",
+     "H:172",
+     "H:208"
+    ],
+    "n_his_binder": 9,
+    "rigid": {
+     "dddG": 2.1201,
+     "dddG_min": 2.1201,
+     "dddG_max": 2.1201,
+     "dddG_trials": [
+      2.1201
+     ],
+     "sign_unstable": false,
+     "neutral": -10.927,
+     "protonated": -8.8069,
+     "n_pairs": 916,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": 3.3896,
+     "dddG_min": -0.4693,
+     "dddG_max": 4.372,
+     "dddG_trials": [
+      3.3896,
+      -0.4693,
+      4.372,
+      1.967,
+      3.6474
+     ],
+     "sign_unstable": true,
+     "neutral": -14.5898,
+     "protonated": -11.5548,
+     "n_pairs": 917,
+     "n_trials": 5,
+     "repacked_residues": 227,
+     "sidechain_rmsd": 1.05
+    }
+   },
+   "scramble_neg": {
+    "path": "3WD5_scramble.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 14,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "L:102",
+     "L:189",
+     "L:191",
+     "L:198",
+     "H:35",
+     "H:39",
+     "H:57",
+     "H:84",
+     "H:172",
+     "H:177",
+     "H:208"
+    ],
+    "n_his_binder": 11,
+    "rigid": {
+     "dddG": 0.5943,
+     "dddG_min": 0.5943,
+     "dddG_max": 0.5943,
+     "dddG_trials": [
+      0.5943
+     ],
+     "sign_unstable": false,
+     "neutral": -11.3633,
+     "protonated": -10.769,
+     "n_pairs": 925,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.4645,
+     "dddG_min": -0.6309,
+     "dddG_max": -0.2712,
+     "dddG_trials": [
+      -0.6309,
+      -0.3148,
+      -0.4645,
+      -0.2712,
+      -0.4813
+     ],
+     "sign_unstable": false,
+     "neutral": -17.0823,
+     "protonated": -17.5196,
+     "n_pairs": 928,
+     "n_trials": 5,
+     "repacked_residues": 267,
+     "sidechain_rmsd": 1.031
+    }
+   }
+  },
+  "anchor_K166": {
+   "K166#1": {
+    "path": "pose_anchor_K166_rebuilt_1.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 4.9983,
+     "dddG_min": 4.9983,
+     "dddG_max": 4.9983,
+     "dddG_trials": [
+      4.9983
+     ],
+     "sign_unstable": false,
+     "neutral": -1.8954,
+     "protonated": 3.1029,
+     "n_pairs": 64,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -4.1024,
+     "dddG_min": -4.4356,
+     "dddG_max": -4.1024,
+     "dddG_trials": [
+      -4.1024,
+      -4.1024,
+      -4.1024,
+      -4.3079,
+      -4.4356
+     ],
+     "sign_unstable": false,
+     "neutral": -0.2771,
+     "protonated": -4.3795,
+     "n_pairs": 63,
+     "n_trials": 5,
+     "repacked_residues": 13,
+     "sidechain_rmsd": 0.286
+    }
+   },
+   "K166#2": {
+    "path": "pose_anchor_K166_rebuilt_2.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 4.67,
+     "dddG_min": 4.67,
+     "dddG_max": 4.67,
+     "dddG_trials": [
+      4.67
+     ],
+     "sign_unstable": false,
+     "neutral": -2.0261,
+     "protonated": 2.6438,
+     "n_pairs": 59,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.2363,
+     "dddG_min": -0.2363,
+     "dddG_max": -0.2363,
+     "dddG_trials": [
+      -0.2363,
+      -0.2363,
+      -0.2363,
+      -0.2363,
+      -0.2363
+     ],
+     "sign_unstable": false,
+     "neutral": -0.8089,
+     "protonated": -1.0452,
+     "n_pairs": 59,
+     "n_trials": 5,
+     "repacked_residues": 11,
+     "sidechain_rmsd": 0.276
+    }
+   },
+   "K166#3": {
+    "path": "pose_anchor_K166_rebuilt_3.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 4.9049,
+     "dddG_min": 4.9049,
+     "dddG_max": 4.9049,
+     "dddG_trials": [
+      4.9049
+     ],
+     "sign_unstable": false,
+     "neutral": -2.8582,
+     "protonated": 2.0466,
+     "n_pairs": 66,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.5614,
+     "dddG_min": -0.6342,
+     "dddG_max": -0.5182,
+     "dddG_trials": [
+      -0.6342,
+      -0.5614,
+      -0.5614,
+      -0.5182,
+      -0.5614
+     ],
+     "sign_unstable": false,
+     "neutral": -1.0675,
+     "protonated": -1.629,
+     "n_pairs": 66,
+     "n_trials": 5,
+     "repacked_residues": 13,
+     "sidechain_rmsd": 0.251
+    }
+   },
+   "K166#4": {
+    "path": "pose_anchor_K166_rebuilt_4.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 5.9371,
+     "dddG_min": 5.9371,
+     "dddG_max": 5.9371,
+     "dddG_trials": [
+      5.9371
+     ],
+     "sign_unstable": false,
+     "neutral": -2.2563,
+     "protonated": 3.6808,
+     "n_pairs": 63,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": 1.2565,
+     "dddG_min": 1.2565,
+     "dddG_max": 1.2565,
+     "dddG_trials": [
+      1.2565,
+      1.2565,
+      1.2565,
+      1.2565,
+      1.2565
+     ],
+     "sign_unstable": false,
+     "neutral": -0.8086,
+     "protonated": 0.4479,
+     "n_pairs": 64,
+     "n_trials": 5,
+     "repacked_residues": 10,
+     "sidechain_rmsd": 0.227
+    }
+   },
+   "K166#5": {
+    "path": "pose_anchor_K166_rebuilt_5.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 4.2856,
+     "dddG_min": 4.2856,
+     "dddG_max": 4.2856,
+     "dddG_trials": [
+      4.2856
+     ],
+     "sign_unstable": false,
+     "neutral": -1.7819,
+     "protonated": 2.5037,
+     "n_pairs": 61,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": 0.4202,
+     "dddG_min": 0.4202,
+     "dddG_max": 0.4202,
+     "dddG_trials": [
+      0.4202,
+      0.4202,
+      0.4202,
+      0.4202,
+      0.4202
+     ],
+     "sign_unstable": false,
+     "neutral": -1.1588,
+     "protonated": -0.7386,
+     "n_pairs": 61,
+     "n_trials": 5,
+     "repacked_residues": 9,
+     "sidechain_rmsd": 0.219
+    }
+   }
+  },
+  "anchor_K166Q": {
+   "K166Q#1": {
+    "path": "pose_anchor_K166Q_1.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": -0.877,
+     "dddG_min": -0.877,
+     "dddG_max": -0.877,
+     "dddG_trials": [
+      -0.877
+     ],
+     "sign_unstable": false,
+     "neutral": 0.0432,
+     "protonated": -0.8337,
+     "n_pairs": 64,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -3.8853,
+     "dddG_min": -4.2214,
+     "dddG_max": -0.8827,
+     "dddG_trials": [
+      -3.8853,
+      -0.8827,
+      -3.9992,
+      -4.2214,
+      -1.8949
+     ],
+     "sign_unstable": false,
+     "neutral": -0.3173,
+     "protonated": -4.2679,
+     "n_pairs": 63,
+     "n_trials": 5,
+     "repacked_residues": 13,
+     "sidechain_rmsd": 0.291
+    }
+   },
+   "K166Q#2": {
+    "path": "pose_anchor_K166Q_2.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": -0.9428,
+     "dddG_min": -0.9428,
+     "dddG_max": -0.9428,
+     "dddG_trials": [
+      -0.9428
+     ],
+     "sign_unstable": false,
+     "neutral": 0.2005,
+     "protonated": -0.7423,
+     "n_pairs": 59,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.6346,
+     "dddG_min": -0.6346,
+     "dddG_max": -0.6346,
+     "dddG_trials": [
+      -0.6346,
+      -0.6346,
+      -0.6346,
+      -0.6346,
+      -0.6346
+     ],
+     "sign_unstable": false,
+     "neutral": -0.6801,
+     "protonated": -1.3147,
+     "n_pairs": 59,
+     "n_trials": 5,
+     "repacked_residues": 11,
+     "sidechain_rmsd": 0.281
+    }
+   },
+   "K166Q#3": {
+    "path": "pose_anchor_K166Q_3.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": -0.3778,
+     "dddG_min": -0.3778,
+     "dddG_max": -0.3778,
+     "dddG_trials": [
+      -0.3778
+     ],
+     "sign_unstable": false,
+     "neutral": -0.7674,
+     "protonated": -1.1453,
+     "n_pairs": 66,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -1.228,
+     "dddG_min": -2.3835,
+     "dddG_max": -1.0228,
+     "dddG_trials": [
+      -2.3835,
+      -1.0228,
+      -1.5002,
+      -1.228,
+      -1.2232
+     ],
+     "sign_unstable": false,
+     "neutral": -1.7512,
+     "protonated": -2.9744,
+     "n_pairs": 66,
+     "n_trials": 5,
+     "repacked_residues": 13,
+     "sidechain_rmsd": 0.244
+    }
+   },
+   "K166Q#4": {
+    "path": "pose_anchor_K166Q_4.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": -0.2272,
+     "dddG_min": -0.2272,
+     "dddG_max": -0.2272,
+     "dddG_trials": [
+      -0.2272
+     ],
+     "sign_unstable": false,
+     "neutral": -0.1765,
+     "protonated": -0.4038,
+     "n_pairs": 63,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -1.3135,
+     "dddG_min": -2.5259,
+     "dddG_max": -1.2563,
+     "dddG_trials": [
+      -1.2563,
+      -2.5259,
+      -1.3135,
+      -1.3135,
+      -1.3135
+     ],
+     "sign_unstable": false,
+     "neutral": -0.955,
+     "protonated": -2.2685,
+     "n_pairs": 64,
+     "n_trials": 5,
+     "repacked_residues": 10,
+     "sidechain_rmsd": 0.235
+    }
+   },
+   "K166Q#5": {
+    "path": "pose_anchor_K166Q_5.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": -1.2504,
+     "dddG_min": -1.2504,
+     "dddG_max": -1.2504,
+     "dddG_trials": [
+      -1.2504
+     ],
+     "sign_unstable": false,
+     "neutral": 0.7885,
+     "protonated": -0.4618,
+     "n_pairs": 61,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.761,
+     "dddG_min": -0.761,
+     "dddG_max": -0.761,
+     "dddG_trials": [
+      -0.761,
+      -0.761,
+      -0.761,
+      -0.761,
+      -0.761
+     ],
+     "sign_unstable": false,
+     "neutral": -0.2967,
+     "protonated": -1.0577,
+     "n_pairs": 61,
+     "n_trials": 5,
+     "repacked_residues": 9,
+     "sidechain_rmsd": 0.223
+    }
+   }
+  },
+  "far_control": {
+   "far#1": {
+    "path": "pose_far_control_1.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 0.22,
+     "dddG_min": 0.22,
+     "dddG_max": 0.22,
+     "dddG_trials": [
+      0.22
+     ],
+     "sign_unstable": false,
+     "neutral": -0.6464,
+     "protonated": -0.4265,
+     "n_pairs": 28,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.3945,
+     "dddG_min": -0.3945,
+     "dddG_max": -0.3945,
+     "dddG_trials": [
+      -0.3945,
+      -0.3945,
+      -0.3945,
+      -0.3945,
+      -0.3945
+     ],
+     "sign_unstable": false,
+     "neutral": -3.0422,
+     "protonated": -3.4368,
+     "n_pairs": 28,
+     "n_trials": 5,
+     "repacked_residues": 8,
+     "sidechain_rmsd": 0.301
+    }
+   },
+   "far#2": {
+    "path": "pose_far_control_2.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 0.2011,
+     "dddG_min": 0.2011,
+     "dddG_max": 0.2011,
+     "dddG_trials": [
+      0.2011
+     ],
+     "sign_unstable": false,
+     "neutral": 0.4743,
+     "protonated": 0.6754,
+     "n_pairs": 23,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.9831,
+     "dddG_min": -0.9831,
+     "dddG_max": -0.9831,
+     "dddG_trials": [
+      -0.9831,
+      -0.9831,
+      -0.9831,
+      -0.9831,
+      -0.9831
+     ],
+     "sign_unstable": false,
+     "neutral": -0.2865,
+     "protonated": -1.2696,
+     "n_pairs": 23,
+     "n_trials": 5,
+     "repacked_residues": 8,
+     "sidechain_rmsd": 0.295
+    }
+   },
+   "far#3": {
+    "path": "pose_far_control_3.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 0.3651,
+     "dddG_min": 0.3651,
+     "dddG_max": 0.3651,
+     "dddG_trials": [
+      0.3651
+     ],
+     "sign_unstable": false,
+     "neutral": 0.821,
+     "protonated": 1.1861,
+     "n_pairs": 23,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": 0.2893,
+     "dddG_min": 0.2893,
+     "dddG_max": 0.2893,
+     "dddG_trials": [
+      0.2893,
+      0.2893,
+      0.2893,
+      0.2893,
+      0.2893
+     ],
+     "sign_unstable": false,
+     "neutral": -0.9802,
+     "protonated": -0.6909,
+     "n_pairs": 24,
+     "n_trials": 5,
+     "repacked_residues": 9,
+     "sidechain_rmsd": 0.28
+    }
+   },
+   "far#4": {
+    "path": "pose_far_control_4.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 2.4854,
+     "dddG_min": 2.4854,
+     "dddG_max": 2.4854,
+     "dddG_trials": [
+      2.4854
+     ],
+     "sign_unstable": false,
+     "neutral": -0.4781,
+     "protonated": 2.0074,
+     "n_pairs": 50,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS",
+      "HIS_D"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": 0.9162,
+     "dddG_min": -0.4186,
+     "dddG_max": 0.9162,
+     "dddG_trials": [
+      -0.4186,
+      0.9162,
+      0.9162,
+      -0.4186,
+      0.9162
+     ],
+     "sign_unstable": true,
+     "neutral": -0.3834,
+     "protonated": 0.5329,
+     "n_pairs": 50,
+     "n_trials": 5,
+     "repacked_residues": 10,
+     "sidechain_rmsd": 0.262
+    }
+   },
+   "far#5": {
+    "path": "pose_far_control_5.pdb",
+    "trials": 5,
+    "shell_A": 8.0,
+    "n_his": 10,
+    "his": [
+     "A:15",
+     "A:73",
+     "A:78",
+     "B:15",
+     "B:73",
+     "B:78",
+     "C:15",
+     "C:73",
+     "C:78",
+     "Z:2"
+    ],
+    "n_his_binder": 1,
+    "rigid": {
+     "dddG": 0.6757,
+     "dddG_min": 0.6757,
+     "dddG_max": 0.6757,
+     "dddG_trials": [
+      0.6757
+     ],
+     "sign_unstable": false,
+     "neutral": -0.7149,
+     "protonated": -0.0392,
+     "n_pairs": 35,
+     "n_trials": 1,
+     "repacked_residues": null,
+     "sidechain_rmsd": null
+    },
+    "tautomers": {
+     "repacked_local/neutral": [
+      "HIS"
+     ],
+     "repacked_local/protonated": [
+      "HIS_P"
+     ]
+    },
+    "repacked_local": {
+     "dddG": -0.1138,
+     "dddG_min": -2.5312,
+     "dddG_max": -0.1138,
+     "dddG_trials": [
+      -0.1138,
+      -2.5312,
+      -0.1138,
+      -0.1138,
+      -0.1138
+     ],
+     "sign_unstable": false,
+     "neutral": -3.5464,
+     "protonated": -3.6602,
+     "n_pairs": 35,
+     "n_trials": 5,
+     "repacked_residues": 9,
+     "sidechain_rmsd": 0.284
+    }
+   }
+  }
+ }
+}
