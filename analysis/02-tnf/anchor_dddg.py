@@ -91,7 +91,13 @@ PY = VENV if os.path.exists(VENV) else sys.executable
 
 def load():
     import gemmi
-    st = gemmi.read_structure(fetch.pdb("1TNF"))
+    # CORRECTED TARGET 2026-10-06 -- see anchor_reach.TARGET. Raw 1TNF has LEU where canonical
+    # TNF-alpha has ASP219, in the consensus core of the epitope. The probe tripeptide is still
+    # lifted from this same file, so its geometry is unaffected by the substitution.
+    from anchor_reach import TARGET
+    if not os.path.exists(TARGET):
+        raise SystemExit(f"REFUSING: {TARGET} is missing. Do NOT fall back to raw 1TNF.")
+    st = gemmi.read_structure(TARGET)
     st.setup_entities()
     st.remove_ligands_and_waters()
     while len(st) > 1:

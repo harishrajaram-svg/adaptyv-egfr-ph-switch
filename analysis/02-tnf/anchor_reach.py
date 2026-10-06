@@ -137,10 +137,20 @@ def rot_axis(axis, theta):
 
 # ----------------------------------------------------------------------------------- structure
 
+# CORRECTED TARGET, 2026-10-06. This used fetch.pdb("1TNF") directly, and raw 1TNF carries LEU
+# where canonical TNF-alpha has ASP219 -- in the consensus core of the epitope, 10 of 10 receptor
+# copies. Residue 219 sits 11.5-13.5 A from R108, which is INSIDE this file's LOCAL_R = 14 A
+# clash shell, so the reach map genuinely depended on it.
+TARGET = os.path.join(ROOT, "targets", "tnf", "tnf_canonical_trimer.pdb")
+
+
 def load_1tnf():
     """-> (atoms, {(chain, uniprot): (resname, {atom: pos})}, all-heavy-atom array)"""
     import gemmi
-    st = gemmi.read_structure(fetch.pdb("1TNF"))
+    if not os.path.exists(TARGET):
+        raise SystemExit(f"REFUSING: {TARGET} is missing. Do NOT fall back to raw 1TNF -- it has "
+                         f"the wrong residue at 219. Rebuild the target first.")
+    st = gemmi.read_structure(TARGET)
     st.setup_entities()
     st.remove_ligands_and_waters()
     model = st[0]

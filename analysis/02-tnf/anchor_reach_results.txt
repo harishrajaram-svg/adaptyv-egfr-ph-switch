@@ -1,4 +1,4 @@
-self-tests T1 T2 T3 T5 passed  (template A:HIS91, 3 protomers, 3552 heavy atoms; most-buried atom admits 0 of 642, trimer centroid admits 12 -- the axial channel)
+self-tests T1 T2 T3 T5 passed  (template A:HIS91, 3 protomers, 3570 heavy atoms; most-buried atom admits 0 of 642, trimer centroid admits 11 -- the axial channel)
 
 Reach map on apo 1TNF. D_PLACE=3.0 A, CLASH=3.0 A, 642 directions x 18 spins = 11556 placements per donor N.
 
@@ -34,9 +34,9 @@ A158    comparison, not in plan   B      NH2           0    11556  —
 A158    comparison, not in plan   C      NE           13    11556  3.6 A
 A158    comparison, not in plan   C      NH1         244    11556  5.4 A
 A158    comparison, not in plan   C      NH2           1    11556  —
-L141    comparison, not in plan   A      NZ         2863    11556  5.4 A
-L141    comparison, not in plan   B      NZ         2273    11556  5.4 A
-L141    comparison, not in plan   C      NZ         1413    11556  5.5 A
+L141    comparison, not in plan   A      NZ         2894    11556  5.4 A
+L141    comparison, not in plan   B      NZ         2528    11556  5.5 A
+L141    comparison, not in plan   C      NZ         1328    11556  5.4 A
 --------------------------------------------------------------------------------------
 A108: 5565 clear placements across 3 protomers
 L166: 5976 clear placements across 3 protomers
