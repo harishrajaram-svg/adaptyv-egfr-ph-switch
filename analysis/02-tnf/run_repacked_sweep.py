@@ -30,36 +30,43 @@ SETS = [
 ]
 MEASURED = {"adalimumab_WT": "9x", "PSV1": "231x", "PSV2": "785x", "PSV3": "505x",
             "scramble_neg": "-"}
-LEGS = ("rigid", "repacked_local", "repacked_all")
+LEGS = ("rigid", "repacked_local")
+# repacked_all is dropped from the n=5 trial sweep on cost, not on principle: it repacks ~230-270
+# residues per trajectory against repacked_local's 9-13, and its n=1 numbers are already on
+# record in the previous run. The decisive leg is repacked_local, which is the one P2 is about.
 
 
 def main():
     results = {}
     for setname, binder, target, items in SETS:
         print(f"\n### {setname}   binder {binder} / target {target}")
-        print(f"{'case':<18}{'measured':>10}" + "".join(f"{l:>17}" for l in LEGS)
-              + f"{'n_his':>7}{'repack n/rmsd':>22}")
-        print("-" * 110)
+        print(f"{'case':<18}{'measured':>10}"
+              + "".join(f"{l + ' med [min..max]':>32}" for l in LEGS)
+              + f"{'n_his':>7}{'repack n/rmsd':>18}")
+        print("-" * 128)
         for label, path in items:
             if not os.path.exists(path):
                 print(f"{label:<18}{'':>10}  MISSING {path}")
                 continue
             try:
-                r = dd.score(path, binder.replace(",", ""), target.replace(",", ""))
+                r = dd.score(path, binder.replace(",", ""), target.replace(",", ""),
+                             legs_wanted=LEGS)
             except SystemExit as e:
                 print(f"{label:<18}{'':>10}  REFUSED: {e}")
                 results.setdefault(setname, {})[label] = {"refused": str(e)}
                 continue
             results.setdefault(setname, {})[label] = r
-            cells = "".join(f"{r[l]['dddG']:>+17.4f}" for l in LEGS)
+            cells = "".join(
+                f"{r[l]['dddG']:>+9.3f} [{r[l]['dddG_min']:+.2f}..{r[l]['dddG_max']:+.2f}]"
+                + ("!" if r[l]["sign_unstable"] else " ") for l in LEGS)
             loc = r["repacked_local"]
             print(f"{label:<18}{MEASURED.get(label, ''):>10}{cells}{r['n_his']:>7}"
-                  f"{str(loc['repacked_residues']) + ' / ' + str(loc['sidechain_rmsd']):>22}")
+                  f"{str(loc['repacked_residues']) + '/' + str(loc['sidechain_rmsd']):>18}")
 
     print("\n\n### MEDIANS and the `>= 0` pass rate per leg")
-    print(f"{'set':<18}" + "".join(f"{l + ' med':>18}" for l in LEGS)
-          + "".join(f"{l + ' >=0':>18}" for l in LEGS))
-    print("-" * 110)
+    print(f"{'set':<18}" + "".join(f"{l + ' med':>20}" for l in LEGS)
+          + "".join(f"{l + ' >=0':>20}" for l in LEGS))
+    print("-" * 100)
     summary = {}
     for setname, cases in results.items():
         meds, rates = [], []
@@ -69,8 +76,8 @@ def main():
             rates.append(f"{sum(1 for x in v if x >= 0)}/{len(v)}" if v else "-")
         summary[setname] = {"medians": dict(zip(LEGS, meds)),
                             "pass_ge_zero": dict(zip(LEGS, rates))}
-        print(f"{setname:<18}" + "".join(f"{m:>+18.4f}" for m in meds)
-              + "".join(f"{r:>18}" for r in rates))
+        print(f"{setname:<18}" + "".join(f"{m:>+20.4f}" for m in meds)
+              + "".join(f"{r:>20}" for r in rates))
 
     out = os.path.join(HERE, "repacked_sweep.json")
     json.dump({"legs": list(LEGS), "shell_A": dd.SHELL, "summary": summary,

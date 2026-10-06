@@ -68,7 +68,20 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 
 SHELL = 8.0
 HIS_TYPES = ("HIS", "HIS_D", "HIS_P")
-INIT = "-mute all -ex1 -ex2aro -pH_mode true -value_pH 0 -ignore_unrecognized_res false"
+# The two CHARGE states, and the residue types that realise each. HIS (NE2-H, "HIE") and HIS_D
+# (ND1-H, "HID") are both net-neutral tautomers -- so locking the neutral leg to the literal
+# name "HIS" is wrong, and the guard caught it: the packer returned HIS_D and the run REFUSED.
+# The invariant is the NET CHARGE, not the name. Letting Rosetta choose between the two neutral
+# tautomers is a feature, not slack: the rigid tool has to GUESS the tautomer and carries
+# HIE/HID as two separate band legs (s16). Here the packer picks, and which one it picks is
+# reported.
+STATE_TYPES = {"neutral": ("HIS", "HIS_D"), "protonated": ("HIS_P",)}
+STATE_CHARGE = {"neutral": 0.0, "protonated": 1.0}
+SET_TYPE = {"neutral": "HIS", "protonated": "HIS_P"}
+INIT = ("-mute all -ex1 -ex2aro -pH_mode true -value_pH 0 -ignore_unrecognized_res false "
+        "-constant_seed")
+TRIALS = 5          # playbook s18: n >= 5, because the packer is STOCHASTIC -- see set_seed()
+BASE_SEED = 20261006
 _READY = {"done": False}
 
 
@@ -137,11 +150,45 @@ def cross_fa_elec(pose, A, B):
     return tot, n
 
 
-def repack(pose, sites, shell=SHELL):
+def set_seed(k):
+    """Pin Rosetta's RNG for one packer trajectory.
+
+    🔴 THE PACKER IS STOCHASTIC AND THIS WAS MEASURED, NOT ASSUMED. Three repacks of the
+    SAME pose in the SAME protonation state gave cross-interface energies -4.6869, -4.3795 and
+    -4.4282 -- a spread of 0.31 on a quantity whose repacked dddG values sit at -0.24. So a
+    single repack pair carries roughly 0.3-0.4 of packer noise, which is LARGER than most of the
+    differences the sweep was reporting. Every repacked number from a single trajectory is n=1 on
+    a random process, which is s18 and the exact trap s6e fell into at n=1.
+
+    Trials are paired: trial k repacks the neutral and protonated states under the SAME seed, so
+    the difference is not also differencing two independent draws."""
+    from pyrosetta.rosetta.numeric.random import rg
+    rg().set_seed("mt19937", BASE_SEED + k)
+
+
+def repack(pose, sites, shell=SHELL, lock=None, state=None):
     """Repack sidechains within `shell` of any switched histidine. Backbone fixed.
 
     Returns the number of residues allowed to move, so a run that repacked nothing is visible
-    rather than silently labelled 'repacked'."""
+    rather than silently labelled 'repacked'.
+
+    🔴 `lock` + `state` ARE NOT OPTIONAL IN PRACTICE, AND THE FIRST VERSION OMITTED THEM.
+    Without them the packer QUIETLY UNDOES THE PROTONATION ASSIGNMENT. `RestrictToRepacking`
+    forbids changing the amino acid, but HIS / HIS_D / HIS_P are three residue types of the same
+    amino acid, so under -pH_mode the packer is free to pick among them -- that freedom is what
+    pH mode is for. Measured on pose_anchor_K166_rebuilt_1: starting from all-neutral, the packer
+    re-protonated residue 458 (the probe) back to HIS_P, so BOTH legs converged on the same pose
+    and dddG came out EXACTLY +0.0000 on four of five poses.
+
+    That zero read as "the anchor signal vanishes under repacking", which is a dramatic
+    conclusion and was false. It is s17 (know the floor your method returns when nothing
+    happens), s10 (a zero is not an absence) and s19 (fail closed) arriving together. The tell
+    was that the neutral and protonated CROSS-INTERFACE ENERGIES were identical to four
+    decimals, not that dddG was zero -- which is why both are now reported, not just the
+    difference.
+
+    `restrict_restypes` pins each switched site to the single chosen type, so the packer may
+    rotate the sidechain and may not re-title it."""
     from pyrosetta import get_fa_scorefxn
     from pyrosetta.rosetta.core.pack.task import TaskFactory, operation
     from pyrosetta.rosetta.protocols.minimization_packing import PackRotamersMover
@@ -172,6 +219,16 @@ def repack(pose, sites, shell=SHELL):
     for i in range(1, pose.total_residue() + 1):
         if i not in movable:
             task.nonconst_residue_task(i).prevent_repacking()
+    if lock:
+        from pyrosetta.rosetta.utility import vector1_std_string
+        if state is None:
+            raise SystemExit("REFUSING: repack() got `lock` without `state`; pinning the "
+                             "protonation state is the whole point of the argument")
+        allowed = vector1_std_string()
+        for t in STATE_TYPES[state]:
+            allowed.append(t)
+        for i in lock:
+            task.nonconst_residue_task(i).restrict_restypes(allowed)
     PackRotamersMover(get_fa_scorefxn(), task).apply(pose)
     return len(movable)
 
@@ -191,10 +248,17 @@ def sidechain_rmsd(a, b, residues):
     return float(np.sqrt(np.mean(d))) if d else 0.0
 
 
-def score(path, binder, target, rigid_only=False, shell=SHELL):
-    """Both legs on one pose. Returns a dict; raises rather than returning a silent zero."""
+def score(path, binder, target, rigid_only=False, shell=SHELL, trials=TRIALS,
+          legs_wanted=None):
+    """Every leg on one pose. Raises rather than returning a silent zero.
+
+    Repacked legs run `trials` PAIRED trajectories: trial k repacks the neutral and the
+    protonated state under the SAME seed, so the difference is not also differencing two
+    independent draws from a stochastic packer. Reported as median [min..max] over trials,
+    never as a single number -- s18."""
+    import numpy as np
     scored = sorted(set(binder) | set(target))
-    out = {"path": os.path.basename(path)}
+    out = {"path": os.path.basename(path), "trials": trials, "shell_A": shell}
     base = load(path)
     A = chain_res(base, binder)
     B = chain_res(base, target)
@@ -211,32 +275,60 @@ def score(path, binder, target, rigid_only=False, shell=SHELL):
     out["n_his_binder"] = len(binder_sites)
     centres = {"repacked_local": binder_sites or sites, "repacked_all": sites}
 
-    legs = {}
     leg_names = ("rigid",) if rigid_only else ("rigid", "repacked_local", "repacked_all")
-    for state in ("HIS", "HIS_P"):
-        for leg in leg_names:
-            p = base.clone()
-            set_state(p, sites, state)
-            q = [net_charge(p, i) for i in sites]
-            want = 1.0 if state == "HIS_P" else 0.0
-            bad = [(s, v) for s, v in zip(out["his"], q) if abs(v - want) > 1e-3]
-            if bad:
-                raise SystemExit(f"REFUSING {path}: net charge wrong in state {state}: {bad[:3]}")
-            moved = None
-            if leg != "rigid":
-                before = p.clone()
-                n_mov = repack(p, centres[leg], shell)
-                moved = (n_mov, sidechain_rmsd(before, p, range(1, p.total_residue() + 1)))
-            e, n = cross_fa_elec(p, A, B)
-            legs[(leg, state)] = (e, n, moved)
+    if legs_wanted:
+        leg_names = tuple(l for l in leg_names if l in legs_wanted)
+
+    def one(leg, state, trial):
+        p = base.clone()
+        set_state(p, sites, SET_TYPE[state])
+        want = STATE_CHARGE[state]
+        bad = [(s_, v) for s_, v in zip(out["his"], (net_charge(p, i) for i in sites))
+               if abs(v - want) > 1e-3]
+        if bad:
+            raise SystemExit(f"REFUSING {path}: net charge wrong in state {state}: {bad[:3]}")
+        moved = None
+        if leg != "rigid":
+            before = p.clone()
+            set_seed(trial)
+            n_mov = repack(p, centres[leg], shell, lock=sites, state=state)
+            bad_q = [(f"{p.pdb_info().chain(i)}:{p.pdb_info().number(i)}",
+                      p.residue(i).name(), round(net_charge(p, i), 3))
+                     for i in sites if abs(net_charge(p, i) - want) > 1e-3]
+            if bad_q:
+                raise SystemExit(f"REFUSING {path}: after repacking, {bad_q[:4]} are not in the "
+                                 f"{state} charge state. The two legs would be the same pose and "
+                                 f"dddG would be a spurious zero.")
+            out.setdefault("tautomers", {}).setdefault(f"{leg}/{state}", set()).update(
+                p.residue(i).name().split(":")[0] for i in sites)
+            moved = (n_mov, sidechain_rmsd(before, p, range(1, p.total_residue() + 1)))
+        e, n = cross_fa_elec(p, A, B)
+        return e, n, moved
 
     for leg in leg_names:
-        en, nn, _ = legs[(leg, "HIS")]
-        ep, np_, mv = legs[(leg, "HIS_P")]
-        out[leg] = {"neutral": round(en, 4), "protonated": round(ep, 4),
-                    "dddG": round(ep - en, 4), "n_pairs": nn,
-                    "repacked_residues": mv[0] if mv else None,
-                    "sidechain_rmsd": round(mv[1], 3) if mv else None}
+        n_t = 1 if leg == "rigid" else trials
+        ds, neus, pros, rms, npair, nmov = [], [], [], [], None, None
+        for t in range(1, n_t + 1):
+            en, nn, _ = one(leg, "neutral", t)
+            ep, np_, mv = one(leg, "protonated", t)
+            ds.append(ep - en); neus.append(en); pros.append(ep)
+            npair = nn
+            if mv:
+                nmov, r = mv
+                rms.append(r)
+        out[leg] = {
+            "dddG": round(float(np.median(ds)), 4),
+            "dddG_min": round(min(ds), 4), "dddG_max": round(max(ds), 4),
+            "dddG_trials": [round(x, 4) for x in ds],
+            "sign_unstable": bool(min(ds) < 0 <= max(ds)),
+            "neutral": round(float(np.median(neus)), 4),
+            "protonated": round(float(np.median(pros)), 4),
+            "n_pairs": npair, "n_trials": n_t,
+            "repacked_residues": nmov,
+            "sidechain_rmsd": round(float(np.median(rms)), 3) if rms else None,
+        }
+    if "tautomers" in out:
+        out["tautomers"] = {k: sorted(v) for k, v in out["tautomers"].items()}
     return out
 
 
@@ -303,6 +395,57 @@ def selftest():
             fired = "no histidine" in str(e) or "net charge" in str(e) or "REFUSING" in str(e)
         assert fired, "T5 FAIL a histidine-free pose did not refuse"
     ok.append("T5 mutation test: a histidine-stripped pose REFUSES rather than returning 0.0")
+
+    # T6 -- THE PACKER MUST NOT RE-TITRATE. Mutation test on the guard that was missing: run a
+    # repack WITHOUT the lock and confirm the protonation state is broken, then WITH it and
+    # confirm it holds. Without this test the exact-zero bug comes straight back.
+    init()
+    base = load(k166)
+    sites = histidines(base, chain_res(base, "ZABC"))
+    zsites = [i for i in sites if base.pdb_info().chain(i) == "Z"]
+    unlocked = base.clone()
+    set_state(unlocked, sites, "HIS")
+    repack(unlocked, zsites)
+    broke = [i for i in sites if abs(net_charge(unlocked, i)) > 1e-3]
+    assert broke, ("T6 FAIL an unlocked repack did NOT change any protonation state, so the lock "
+                   "cannot be shown to be doing anything")
+    locked = base.clone()
+    set_state(locked, sites, "HIS")
+    repack(locked, zsites, lock=sites, state="neutral")
+    held = [i for i in sites if abs(net_charge(locked, i)) > 1e-3]
+    taut = sorted({locked.residue(i).name().split(":")[0] for i in sites})
+    assert not held, f"T6 FAIL the lock did not hold at {held[:3]}"
+    ok.append(f"T6 mutation test on the protonation lock: WITHOUT it the packer re-titrates "
+              f"{len(broke)} site(s) (residue {broke[0]}, the probe) to net +1 and both legs "
+              f"collapse to the same pose; WITH it all {len(sites)} sites stay net-neutral, and "
+              f"Rosetta picks the tautomer itself: {taut}")
+
+    # T7 -- THE PACKER IS STOCHASTIC, AND THE SEED MAKES IT REPRODUCIBLE. Both halves matter.
+    # Without the first, a single trajectory looks like a measurement. Without the second,
+    # nothing in this file reproduces in a clean clone (s26).
+    base2 = load(k166)
+    sites2 = histidines(base2, chain_res(base2, "ZABC"))
+    z2 = [i for i in sites2 if base2.pdb_info().chain(i) == "Z"]
+    A2, B2 = chain_res(base2, "Z"), chain_res(base2, "ABC")
+
+    def one_repack(seed):
+        q = base2.clone()
+        set_state(q, sites2, "HIS_P")
+        set_seed(seed)
+        repack(q, z2, lock=sites2, state="protonated")
+        return round(cross_fa_elec(q, A2, B2)[0], 4)
+
+    same = [one_repack(1) for _ in range(3)]
+    many = [one_repack(k) for k in range(1, 9)]
+    assert len(set(same)) == 1, f"T7 FAIL the same seed gave {same} \u2014 not reproducible"
+    spread = max(many) - min(many)
+    assert len(set(many)) > 1, (f"T7 FAIL eight seeds all gave {many[0]} \u2014 either the seed is "
+                                f"not reaching the packer or the {TRIALS}-trial spread is theatre")
+    ok.append(f"T7 packer noise is REAL and SEEDED: one seed reproduces exactly ({same[0]}), "
+              f"eight seeds span {spread:.4f} on the cross-interface energy "
+              f"({len(set(many))} distinct values). Seeds 1\u20133 alone all landed in the same "
+              f"basin, so three trials would have read as deterministic \u2014 which is why the "
+              f"spread is measured over {TRIALS} and not 3")
 
     for line in ok:
         print("  ok  " + line)
