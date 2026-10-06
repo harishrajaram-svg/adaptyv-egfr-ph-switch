@@ -1,0 +1,17 @@
+
+### schroter   binder H,L / target A
+case                measured            rigid med [min..max]     repacked_all med [min..max]  n_his     repack n/rmsd
+--------------------------------------------------------------------------------------------------------------------------------
+adalimumab_WT             9x   +0.594 [+0.59..+0.59]    -0.315 [-0.46..-0.27]       9         249/0.983
+PSV1                    231x   +1.842 [+1.84..+1.84]    +0.436 [+0.36..+1.33]      14         304/1.271
+PSV2                    785x   +1.835 [+1.84..+1.84]    +0.794 [+0.24..+0.94]      14         301/1.253
+PSV3                    505x   +2.120 [+2.12..+2.12]    +1.310 [-0.65..+2.16]!     12         298/1.208
+scramble_neg               -   +0.594 [+0.59..+0.59]    -0.465 [-0.63..-0.27]      14         340/1.187
+
+
+### MEDIANS and the `>= 0` pass rate per leg
+set                          rigid med    repacked_all med           rigid >=0    repacked_all >=0
+----------------------------------------------------------------------------------------------------
+schroter                       +1.8355             +0.4361                 5/5                 3/5
+
+wrote /Users/harish/code/adaptyv-2026/analysis/02-tnf/repacked_sweep_schroter_all.json

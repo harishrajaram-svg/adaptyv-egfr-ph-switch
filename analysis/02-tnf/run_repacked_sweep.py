@@ -5,6 +5,7 @@ The order is deliberate: the Schroter series FIRST, because it is the only set w
 repacked leg can overturn a conclusion already in the challenge file (s6b's 0 of 5). The anchor
 sets test P2 and P3 and cannot overturn anything -- they can only resize s9's effect.
 """
+import argparse
 import os, sys, json
 import numpy as np
 
@@ -30,15 +31,23 @@ SETS = [
 ]
 MEASURED = {"adalimumab_WT": "9x", "PSV1": "231x", "PSV2": "785x", "PSV3": "505x",
             "scramble_neg": "-"}
-LEGS = ("rigid", "repacked_local")
+LEGS = ("rigid", "repacked_local")   # overridable with --legs
 # repacked_all is dropped from the n=5 trial sweep on cost, not on principle: it repacks ~230-270
 # residues per trajectory against repacked_local's 9-13, and its n=1 numbers are already on
 # record in the previous run. The decisive leg is repacked_local, which is the one P2 is about.
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--sets", help="comma-separated subset of set names")
+    ap.add_argument("--legs", help="comma-separated subset of legs")
+    ap.add_argument("--out", default="repacked_sweep.json")
+    a = ap.parse_args()
+    sets = SETS if not a.sets else [x for x in SETS if x[0] in a.sets.split(",")]
+    legs = LEGS if not a.legs else tuple(a.legs.split(","))
+    globals()["LEGS"] = legs
     results = {}
-    for setname, binder, target, items in SETS:
+    for setname, binder, target, items in sets:
         print(f"\n### {setname}   binder {binder} / target {target}")
         print(f"{'case':<18}{'measured':>10}"
               + "".join(f"{l + ' med [min..max]':>32}" for l in LEGS)
@@ -59,9 +68,9 @@ def main():
             cells = "".join(
                 f"{r[l]['dddG']:>+9.3f} [{r[l]['dddG_min']:+.2f}..{r[l]['dddG_max']:+.2f}]"
                 + ("!" if r[l]["sign_unstable"] else " ") for l in LEGS)
-            loc = r["repacked_local"]
+            loc = next((r[l] for l in legs if l != "rigid" and l in r), None) or {}
             print(f"{label:<18}{MEASURED.get(label, ''):>10}{cells}{r['n_his']:>7}"
-                  f"{str(loc['repacked_residues']) + '/' + str(loc['sidechain_rmsd']):>18}")
+                  f"{str(loc.get('repacked_residues')) + '/' + str(loc.get('sidechain_rmsd')):>18}")
 
     print("\n\n### MEDIANS and the `>= 0` pass rate per leg")
     print(f"{'set':<18}" + "".join(f"{l + ' med':>20}" for l in LEGS)
@@ -79,8 +88,8 @@ def main():
         print(f"{setname:<18}" + "".join(f"{m:>+20.4f}" for m in meds)
               + "".join(f"{r:>20}" for r in rates))
 
-    out = os.path.join(HERE, "repacked_sweep.json")
-    json.dump({"legs": list(LEGS), "shell_A": dd.SHELL, "summary": summary,
+    out = os.path.join(HERE, a.out)
+    json.dump({"legs": list(legs), "shell_A": dd.SHELL, "summary": summary,
                "results": results}, open(out, "w"), indent=1, default=str)
     print(f"\nwrote {out}")
 
