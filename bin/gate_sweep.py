@@ -61,6 +61,10 @@ GATES = [
     # zero designable hits) and T6 is the anti-blindness control -- a slack 8 A criterion must
     # find something on the same structure, or the zero is a parsing bug, not a finding.
     ('his_cation_gate --selftest', [PY, 'bin/his_cation_gate.py', '--selftest'], None),
+    # The reach test that gave his_cation_gate its first real-coordinate positive, and that
+    # found R108 is reachable only through NH2 (11.8% vs 2.15% for NE+NH1). T5 is the
+    # anti-blindness control: the most-buried atom in the structure must admit nothing.
+    ('anchor_reach --selftest', [PY, 'analysis/02-tnf/anchor_reach.py', '--selftest'], None),
     # Hard ELIGIBILITY gate, not a document check. It is expected to be RED until the
     # unlevelled designs are resolved in the portal; a red here means "do not nominate
     # yet", not "the writeup is wrong". Added 2026-10-05 after 4 of 18 shipped designs

@@ -1,0 +1,49 @@
+self-tests T1 T2 T3 T5 passed  (template A:HIS91, 3 protomers, 3552 heavy atoms; most-buried atom admits 0 of 642, trimer centroid admits 12 -- the axial channel)
+
+Reach map on apo 1TNF. D_PLACE=3.0 A, CLASH=3.0 A, 642 directions x 18 spins = 11556 placements per donor N.
+
+site    role                      chain  donor     clear       of  CB spread
+--------------------------------------------------------------------------------------
+A108    ANCHOR (s4)               A      NE            6    11556  1.2 A
+A108    ANCHOR (s4)               A      NH1           9    11556  3.8 A
+A108    ANCHOR (s4)               A      NH2        2140    11556  5.6 A
+A108    ANCHOR (s4)               B      NE          661    11556  4.6 A
+A108    ANCHOR (s4)               B      NH1         812    11556  5.3 A
+A108    ANCHOR (s4)               B      NH2         918    11556  6.7 A
+A108    ANCHOR (s4)               C      NE            0    11556  —
+A108    ANCHOR (s4)               C      NH1           0    11556  —
+A108    ANCHOR (s4)               C      NH2        1019    11556  5.2 A
+L166    ANCHOR (s4)               A      NZ         2466    11556  6.0 A
+L166    ANCHOR (s4)               B      NZ         2613    11556  5.7 A
+L166    ANCHOR (s4)               C      NZ          897    11556  5.5 A
+A107    comparison, not in plan   A      NE           98    11556  3.5 A
+A107    comparison, not in plan   A      NH1        2312    11556  5.5 A
+A107    comparison, not in plan   A      NH2        3952    11556  5.7 A
+A107    comparison, not in plan   B      NE         1169    11556  5.1 A
+A107    comparison, not in plan   B      NH1        2611    11556  6.6 A
+A107    comparison, not in plan   B      NH2        4499    11556  5.7 A
+A107    comparison, not in plan   C      NE         1668    11556  5.7 A
+A107    comparison, not in plan   C      NH1        2626    11556  5.3 A
+A107    comparison, not in plan   C      NH2        1820    11556  5.4 A
+A158    comparison, not in plan   A      NE            0    11556  —
+A158    comparison, not in plan   A      NH1          40    11556  4.3 A
+A158    comparison, not in plan   A      NH2           0    11556  —
+A158    comparison, not in plan   B      NE           28    11556  3.2 A
+A158    comparison, not in plan   B      NH1         941    11556  5.3 A
+A158    comparison, not in plan   B      NH2           0    11556  —
+A158    comparison, not in plan   C      NE           13    11556  3.6 A
+A158    comparison, not in plan   C      NH1         244    11556  5.4 A
+A158    comparison, not in plan   C      NH2           1    11556  —
+L141    comparison, not in plan   A      NZ         2863    11556  5.4 A
+L141    comparison, not in plan   B      NZ         2273    11556  5.4 A
+L141    comparison, not in plan   C      NZ         1413    11556  5.5 A
+--------------------------------------------------------------------------------------
+A108: 5565 clear placements across 3 protomers
+L166: 5976 clear placements across 3 protomers
+
+T4 A108: his_cation_gate CONFIRMS -> X:HIS1 ND1 <- A:ARG108:NH2  3.0 A  0.0 deg  needs HIE
+T4 L166: his_cation_gate CONFIRMS -> X:HIS1 ND1 <- A:LYS166:NZ  3.0 A  0.0 deg  needs HIE
+
+A clear placement means the approach vector is open on the apo trimer. It does NOT
+mean a binder backbone can reach it -- that is the generator's problem. A BLOCKED
+direction is blocked for any binder, which is what makes a zero here decisive.
