@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..ca3b23e
+index 0000000..35e7db0
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1328 @@
+@@ -0,0 +1,1335 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -612,7 +612,14 @@ index 0000000..ca3b23e
 +    # command reproduces exactly. See analysis/02-tnf/epitope_conserved.json for the
 +    # mapping; mouse epitope positions are NOT the human ones.
 +    target2_pdb: bytes = b"",         # BYTES, not a path: the container cannot see local files
-+    target2_chain: str = "A,B",
++    # TRIMER, not a dimer. D-P2-3 originally chose two protomers on the reasoning that the
++    # epitope straddles one seam so the third adds tokens without information. s36 measured
++    # that and the dimer is worse on BOTH axes: 1 of 5 ESMFold2 seeds failed to assemble a
++    # 2-protomer TNF (A:B 0.067 against 0.398/0.376/0.375/0.401), an assembled dimer packs
++    # about half as tightly as the trimer (~0.39 vs 0.71-0.74), and on the human analogue the
++    # dimer recovered 0.497 against the trimer's 0.576. Cost of the third protomer is ~+$7 on
++    # the wave. Paying it removes the assembly question instead of insuring against it.
++    target2_chain: str = "A,B,C",
 +    target2_epitope: str = "",
 +    target2_anchor: int = 0,
 +    target2_anchor_chain: str = "A",
@@ -1255,7 +1262,7 @@ index 0000000..ca3b23e
 +    target_chain: str = "A",
 +    anchor_chain: str = "A",
 +    target2: str = "",
-+    target2_chain: str = "A,B",
++    target2_chain: str = "A,B,C",
 +    target2_epitope: str = "",
 +    target2_anchor: int = 0,
 +    target2_anchor_chain: str = "A",
