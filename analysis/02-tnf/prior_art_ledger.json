@@ -1,9 +1,9 @@
 {
  "meta": {
   "generated": "2026-10-06",
-  "n_entries": 115,
+  "n_entries": 119,
   "n_distinct_sequences": 47,
-  "n_structures_attempted": 22,
+  "n_structures_attempted": 24,
   "n_structures_with_no_binder_chain": 1,
   "problems": [
    {
@@ -2537,6 +2537,54 @@
     "w",
     "x",
     "y"
+   ]
+  },
+  {
+   "key": "EVQLVESGGGLVQPGRSLRLSCAASGFTFDDYAMHWVRQAPGKGLEWVSAITWNSGHIDYADSVEGRFTISRDNAKNSLYLDMNSLRAEDTAVYYCAKVSYHSTASSLDYWGQGTLVTVSSASTKGPSVFPLAPSSGTAALGCLVKDYFPEPVTVSWNSGALTSGVHTFPAVLQSSGLYSLSSVVTVPSSSLGTQTYICNVNHKPSNTKVDKKI",
+   "pdb": "3WD5_AFM2631",
+   "chain": "H",
+   "name": "Adafre AF-M2631",
+   "kind": "adalimumab H chain L102H -- ONE histidine, EC50 30x. The single-His positive our filter called a non-switch (s17). Patent pending",
+   "len": 214,
+   "basis": "rebuilt",
+   "tnf_chains": [
+    "A"
+   ]
+  },
+  {
+   "key": "DIQMTQSPSSLSASVGDRVTITCRASQGIRNYLAWYQQKPGKAPKLLIYAASTLQSGVPSRFSGSGSGTDFTLTISSLQPEDVATYYCQRYNRAPYTFGQGTKVEIKRTVAAPSVFIFPPSDEQLKSGTASVVCLLNNFYPREAKVQWKVDNALQSGNSQESVTEQDSKDSTYSLSSTLTLSKADYEKHKVYACEVTHQGLSSPVTKSFNRGE",
+   "pdb": "3WD5_AFM2631",
+   "chain": "L",
+   "name": "Adafre AF-M2631",
+   "kind": "adalimumab H chain L102H -- ONE histidine, EC50 30x. The single-His positive our filter called a non-switch (s17). Patent pending",
+   "len": 213,
+   "basis": "rebuilt",
+   "tnf_chains": [
+    "A"
+   ]
+  },
+  {
+   "key": "EVQLVESGGGLVQPGRSLRLSCAASGFTFDDYAMHWVRQAPGKGLEWVSAITWNSGHIDYADSVEGRFTISRDNAKNSLYLDMNSLRAEDTAVYYCAKVSYLSTASSLDYWGQGTLVTVSSASTKGPSVFPLAPSSGTAALGCLVKDYFPEPVTVSWNSGALTSGVHTFPAVLQSSGLYSLSSVVTVPSSSLGTQTYICNVNHKPSNTKVDKKI",
+   "pdb": "3WD5_AFM2637",
+   "chain": "H",
+   "name": "Adafre AF-M2637",
+   "kind": "adalimumab L chain Q89H/R90H/N92H, monovalent; EC50 15x higher after a pH 6.0 wash. Patent pending",
+   "len": 214,
+   "basis": "rebuilt",
+   "tnf_chains": [
+    "A"
+   ]
+  },
+  {
+   "key": "DIQMTQSPSSLSASVGDRVTITCRASQGIRNYLAWYQQKPGKAPKLLIYAASTLQSGVPSRFSGSGSGTDFTLTISSLQPEDVATYYCHHYHRAPYTFGQGTKVEIKRTVAAPSVFIFPPSDEQLKSGTASVVCLLNNFYPREAKVQWKVDNALQSGNSQESVTEQDSKDSTYSLSSTLTLSKADYEKHKVYACEVTHQGLSSPVTKSFNRGE",
+   "pdb": "3WD5_AFM2637",
+   "chain": "L",
+   "name": "Adafre AF-M2637",
+   "kind": "adalimumab L chain Q89H/R90H/N92H, monovalent; EC50 15x higher after a pH 6.0 wash. Patent pending",
+   "len": 213,
+   "basis": "rebuilt",
+   "tnf_chains": [
+    "A"
    ]
   },
   {

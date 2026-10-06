@@ -78,7 +78,10 @@ def check_wt():
 def build(name, subs):
     from pdbfixer import PDBFixer
     from openmm.app import PDBFile
-    out = os.path.join(HERE, f"3WD5_{name.replace('-', '')}.pdb")
+    # structures/, not HERE: prior_art_ledger.py's REBUILT block reads from structures/ and the
+    # first version wrote beside the script, so the two Adafre variants were added to the ledger
+    # and silently not found (47 distinct sequences, unchanged).
+    out = os.path.join(HERE, "structures", f"3WD5_{name.replace('-', '')}.pdb")
     fixer = PDBFixer(filename=WT)
     fixer.missingResidues = {}
     by_chain = {}

@@ -85,6 +85,17 @@ REBUILT = {
     "3WD5_PSV1": ("Schroter PSV#1", "adalimumab + 5 His, measured kd ratio 231x"),
     "3WD5_PSV2": ("Schroter PSV#2", "adalimumab + 5 His, measured kd ratio 785x"),
     "3WD5_PSV3": ("Schroter PSV#3", "adalimumab + 3 His, measured kd ratio 505x"),
+    # Added 2026-10-06 (s17). Adafre Biosciences, Watkins & Watkins, J Immunol 209(4):829-839
+    # (2022), PMID 35896334, doi 10.4049/jimmunol.2101180. pH-sensitive monovalent adalimumab
+    # variants -- OUR target, OUR direction, PATENT PENDING per the paper's conflict statement.
+    # They post-date the 21-entry RCSB survey by seven years and nothing in this project had
+    # named them until the SIpHAB reference list surfaced them.
+    "3WD5_AFM2637": ("Adafre AF-M2637",
+                     "adalimumab L chain Q89H/R90H/N92H, monovalent; EC50 15x higher after a "
+                     "pH 6.0 wash. Patent pending"),
+    "3WD5_AFM2631": ("Adafre AF-M2631",
+                     "adalimumab H chain L102H -- ONE histidine, EC50 30x. The single-His "
+                     "positive our filter called a non-switch (s17). Patent pending"),
 }
 
 # Named, sequences not in hand. Each carries WHY, so the gap is auditable.
