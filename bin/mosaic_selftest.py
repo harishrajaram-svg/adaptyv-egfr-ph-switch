@@ -124,6 +124,55 @@ def main():
         "a missing anchor must report nothing, not a number"
     print(f"geometry      {g}")
 
+    # 3b. PROBLEM 2, MULTI-CHAIN. _geometry_p2 must find an anchor on ANY target protomer, not
+    # only the first. The original _geometry read st[0][1] alone; on a trimer that silently
+    # measured against protomer A whatever chain the anchor was declared on -- a wrong number,
+    # not an error. This is also the only multi-chain coverage in this file: the single-chain
+    # path passed clean while the trimer run died on a NameError 20 GPU-minutes in, because
+    # nothing here exercised it.
+    geometry_p2 = ns["_geometry_p2"]
+
+    def trimer_with(his_offset, anchor_on_chain):
+        """Binder + THREE target protomers; the Arg anchor sits on `anchor_on_chain` (0,1,2)."""
+        fake = gemmi.Structure()
+        model = gemmi.Model("1")
+        binder = gemmi.Chain("A")
+        res = gemmi.Residue()
+        res.name, res.seqid = "HIS", gemmi.SeqId(1, " ")
+        for name, d in (("ND1", his_offset), ("CA", his_offset + 2.0)):
+            atom = gemmi.Atom()
+            atom.name, atom.element = name, gemmi.Element("N" if name[0] == "N" else "C")
+            atom.pos = gemmi.Position(nd1.pos.x + d, nd1.pos.y, nd1.pos.z)
+            res.add_atom(atom)
+        binder.add_residue(res)
+        model.add_chain(binder)
+        for ci in range(3):
+            tgt = gemmi.Chain("BCD"[ci])
+            arg = gemmi.Residue()
+            arg.name = "ARG" if ci == anchor_on_chain else "ALA"
+            arg.seqid = gemmi.SeqId(27, " ")
+            atom = gemmi.Atom()
+            atom.name, atom.element = ("NH2" if ci == anchor_on_chain else "CB"), gemmi.Element("N")
+            # decoy protomers put their residue far away, so finding one is a visible failure
+            shift = 0.0 if ci == anchor_on_chain else 60.0
+            atom.pos = gemmi.Position(nd1.pos.x + shift, nd1.pos.y, nd1.pos.z)
+            arg.add_atom(atom)
+            tgt.add_residue(arg)
+            model.add_chain(tgt)
+        fake.add_model(model)
+        return fake
+
+    for which in (0, 1, 2):
+        g2 = geometry_p2(trimer_with(3.0, which), 27)
+        assert g2.get("his_N_to_cation_N") == 3.0, (which, g2)
+        assert g2["geometry_pass"] is True, (which, g2)
+    far = geometry_p2(trimer_with(7.0, 2), 27)
+    assert far["geometry_pass"] is False, far
+    assert geometry_p2(trimer_with(3.0, 1), 999) == {}, \
+        "a missing anchor must report nothing, not a number"
+    print(f"p2 trimer     anchor found on protomer 0/1/2 alike at 3.0 A; "
+          f"7.0 A -> geometry_pass={far['geometry_pass']}; missing anchor -> {{}}")
+
     # 4. a distant carboxylate must FAIL the 4.0 A bar -- the bar is the whole point.
     # The reported distance is the min over ND1 AND NE2, so it is not the planted offset;
     # the bar is what is being tested here, not the arithmetic.

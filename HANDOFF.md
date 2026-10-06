@@ -22,7 +22,7 @@ from this file for a week. Organisers: Tudor-Stefan Cotet, Simon Dürr, Amir Sha
     VHH failure mode on the live platform and Adaptyv have said the antibody threshold is being
     re-tested, so **the bar our two VHH rows sit near may move before the deadline.**
   * Track 3 needs nothing beyond the CSV on Proteinbase; track is assigned by account email.
-    The cap is 20 designs per account per collection. We ship 10.
+    The cap is 20 designs per account per collection. **We ship 16** (updated 2026-10-06; this line said 10 and the set has been 16 since d63c61f).
   * **Iterating on any previously submitted design is explicitly disallowed** — stricter than
     the challenge page's "existing binder" wording. Our submission is clean on it, verified.
 
@@ -45,22 +45,66 @@ the git remote exists. What is left is upload.
 
 ## 1. STATE — everything below is verified, not remembered
 
-**Submission: `submissions/01-egfr.csv`, 18 designs** (Track 3 allows 20 — see METHODS §11;
-this file said 10 for a day after the count changed). Ranked on the two-partner
-histidine-only pH product, not the superseded target-only basis.
-`bin/check_discards.py` PASSES, exit 0. `bin/gate_sweep.py` runs 12 gates: 11 green,
-**`novelty_coverage` RED** — novelty eligibility is unresolved for four shipped designs.
+**Submission: `submissions/01-egfr.csv`, 16 designs.** Track 3 allows 20 — see METHODS §11.
+Ranked on the two-partner histidine-only pH product, not the superseded target-only basis.
+`bin/check_discards.py` PASSES, exit 0. **`bin/gate_sweep.py`: 14 gates, all green at 16
+designs** (d63c61f).
 
-     1  5.461  bc_s831683_mpnn8_S15D         hu 0.7760  mo 0.7637   65aa
-     2  5.435  bc_s831683_mpnn19_S15D        hu 0.8077  mo 0.7859   65aa
-     3  5.428  bc_s831683_mpnn9_S15D         hu 0.8025  mo 0.8026   65aa
-     4  5.397  bc_s831683_mpnn6_S15D         hu 0.7803  mo 0.7507   65aa
-     5  5.186  rimA02_d3_rimA_14_vhh         hu 0.2275  mo 0.4511  129aa  nanobody
-     6  4.582  rimA01_r15_boltzgen_d3_rimA_20 hu 0.5765 mo 0.5603  150aa
-     7  4.572  d2c_mpnn13_S88D_serasp        hu 0.6031  mo 0.5283  147aa
-     8  4.010  bc_d3acid_l65_s831683_mpnn11  hu 0.7949  mo 0.7835   65aa
-     9  3.522  bc_s831683_mpnn9_WT           hu 0.7827  mo 0.7829   65aa  <- matched control
-    10  2.289  h370_020_vhh                  hu 0.4409  mo 0.7093   98aa  nanobody
+🔴 **Both counts in this paragraph were stale and are corrected 2026-10-06.** It read
+"18 designs" and "12 gates: 11 green, `novelty_coverage` RED". What happened in between, from
+the commit record rather than from this file: the 18-row set **was** pushed to Proteinbase on
+10/5 ≈ 12:35 PM, their novelty filter scored 16 at 3/4 and **two at 2/4**, and it **blocked the
+submission** until those two were removed — `bc_s360518_mpnn9_A22D` (Level 3 on our gate at
+qTM 0.7924, clearing the cliff by 0.0076; limitation 33 named it in advance as the sharpest
+eligibility exposure in the set) and `h370_020_vhh`. Removed as an INELIGIBLE map in
+`bin/emit_submission_csv.py`, so a re-emit cannot reinstate them. `novelty_coverage` went green
+on 10/5 when foldseek was reinstalled and the gate re-run — all four unlevelled chains cleared
+Level 3. **`rimA02_d3_rimA_14_vhh` PASSED at 3/4**, which retires the ANARCI worry recorded
+elsewhere: the one surviving antibody-format row is known-good on their gate.
+
+✅ **ANSWERED 2026-10-06 11:50 AM, from the portal. IT WAS UPLOADED AND IT IS DESIGNATED.**
+~~UNRECORDED: was the corrected 16-row set ever successfully uploaded?~~
+
+Read first-hand while logged in as `harishrajaram-svg`:
+- The profile carries a collection **"[Anthropic × Adaptyv] Submission 1", 16 proteins, marked
+  DESIGNATED**, created 10/5. Its 16 AA lengths match `submissions/01-egfr.csv` exactly.
+- `/rounds/1/submit` returns *"You've already submitted today … again after 6 Oct, 16:49 UTC."*
+  A blocked upload does not start that cooldown, so the accepted submission went in at
+  **5 Oct 16:49 UTC = 12:49 PM EDT**, fourteen minutes after `d63c61f` removed the two designs
+  their novelty filter rejected.
+
+**DESIGNATED means it is the one that counts, so no nomination step is outstanding.** Nothing is
+owed on problem 1. The only thing still live is an opportunity, not a risk: challenge 1 stayed
+open until Wed 10/7 7:59 AM and one further submission was available from 12:49 PM on 10/6 —
+submissions are retained with the designated one counting, so an upload could not have lost what
+was already banked.
+
+🔴 **The 10-row table that stood here is replaced, 2026-10-06 — it was wrong twice over.**
+It listed 10 of 16 shipped designs, it still carried `h370_020_vhh`, which Proteinbase rejected,
+and its numbers came from the **`ph_ratio_target_only_SUPERSEDED`** column — contradicting the
+sentence directly above it, which declares the ranking basis to be the two-partner his-only
+product. Below is all 16, generated from `submissions/01-egfr.csv` on that declared basis
+(`ph_ratio_6p5_over_7p4_his_only_CONSERVATIVE`), never typed. The basis change reorders the set
+heavily — the four S15D designs drop from ranks 1–4 to 11–14 — so the CSV's own
+`ph_rank_range_across_bases` is carried in the last column. **If the intended ranking key is a
+different column, say so; this table follows the sentence above it.**
+
+     1  5.656  rimA01_r15_L133E                              hu 0.5978  mo 0.4338  150aa  rank-range 1-6   
+     2  5.546  c5_cf_short__boltzgen_egfr_cropfree_short_48  hu 0.2415  mo 0.1812   70aa  rank-range 2-10  
+     3  4.838  rimA02_d3_rimA_14_vhh                         hu 0.2186  mo 0.4468  129aa  rank-range 3-13    nanobody
+     4  4.812  c5_cr_crop_patch__boltzgen_egfr_crop_patch_05 hu 0.1320  mo 0.2041   66aa  rank-range 4-11  
+     5  4.256  rimA01_r15_boltzgen_egfr_d3_rimA_20           hu 0.5938  mo 0.5668  150aa  rank-range 3-14  
+     6  3.545  ss_bc_s831683_mpnn6_S15D_S62H_routeA          hu 0.7654  mo 0.7443   65aa  rank-range 4-11  
+     7  3.526  d2c_mpnn13_S88D_serasp                        hu 0.6031  mo 0.5283  147aa  rank-range 5-9   
+     8  3.180  cons_gap_h370_only__boltzgen_egfr_h370_018    hu 0.4566  mo 0.2150   90aa  rank-range 4-15  
+     9  2.914  bcr_d3acid3_l60_s647537_mpnn3                 hu 0.5736  mo 0.1681   60aa  rank-range 10-16 
+    10  2.747  bcr_d3acid3_l60_s647537_mpnn11                hu 0.4429  mo 0.2342   60aa  rank-range 11-17 
+    11  1.835  bc_s831683_mpnn6_S15D                         hu 0.7803  mo 0.7507   65aa  rank-range 2-13  
+    12  1.774  bc_s831683_mpnn19_S15D                        hu 0.8077  mo 0.7859   65aa  rank-range 3-14  
+    13  1.062  bc_s831683_mpnn9_S15D                         hu 0.8040  mo 0.8037   65aa  rank-range 7-16  
+    14  1.023  bc_s831683_mpnn8_S15D                         hu 0.7760  mo 0.7637   65aa  rank-range 8-17  
+    15  0.737  bc_d3acid_l65_s831683_mpnn11                  hu 0.7963  mo 0.7838   65aa  rank-range 5-17  
+    16  0.627  bc_s831683_mpnn9_WT                           hu 0.7857  mo 0.7840   65aa  rank-range 12-18 
 
 **Methods document: `submissions/01-egfr-METHODS.md`, 12 sections, DONE.** Nothing is owed to
 it. Leads with §4.4.

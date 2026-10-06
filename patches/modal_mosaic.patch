@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..52ca99e
+index 0000000..978acd8
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1006 @@
+@@ -0,0 +1,1075 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -291,8 +291,12 @@ index 0000000..52ca99e
 +    s9 measured the cation's effect at an ND1-to-N distance of 3.0 A, and s6d measured that
 +    geometry as reachable, so 4.0 A is the same generous bar problem 1 used.
 +    """
-+    binder, target = st[0][0], st[0][1]
-+    cat = next((r for r in target if r.seqid.num == anchor_resnum), None)
++    # MULTI-CHAIN: chain 0 is the binder and EVERY chain after it is a target protomer. The
++    # first version read st[0][1] alone, which on a trimer silently measured against protomer A
++    # no matter which chain the anchor was actually declared on -- a wrong number, not an error.
++    binder, targets = st[0][0], list(st[0])[1:]
++    cat = next((r for t in targets for r in t if r.seqid.num == anchor_resnum
++                and r.name in ("ARG", "LYS")), None)
 +    if cat is None:
 +        return {}
 +    names = ARG_CATION_N if cat.name == "ARG" else LYS_CATION_N
@@ -461,7 +465,8 @@ index 0000000..52ca99e
 +def design(
 +    target_pdb: bytes,
 +    run_name: str,
-+    target_chain: str = "A",
++    target_chain: str = "A",          # comma-separated for a multi-chain target, e.g. "A,B,C"
++    anchor_chain: str = "A",          # which of those chains carries the anchor residue
 +    crop: str = "284:453",
 +    epitope: str = DEFAULT_EPITOPE,
 +    anchor: int = ANCHOR,
@@ -553,17 +558,65 @@ index 0000000..52ca99e
 +    tmp = TemporaryDirectory()
 +    target_path = Path(tmp.name) / "target.pdb"
 +    target_path.write_bytes(target_pdb)
-+    chain, target_seq, resnums = _prepare_target(target_path, target_chain, crop_t)
-+    index_of = {num: i for i, num in enumerate(resnums)}
-+    missing = [p for p in epitope_pos + [anchor] if p not in index_of]
-+    if missing:
-+        raise SystemExit(f"STEP 4 FAILED: positions {missing} are not in the crop {crop_t}")
-+    epitope_idx = [index_of[p] for p in epitope_pos]       # 0-based into the TARGET chain
-+    anchor_local = index_of[anchor]
-+    anchor_aa = target_seq[anchor_local]
-+    print(f"[mosaic] target {target_chain} crop={crop_t} len={len(target_seq)}")
-+    print(f"[mosaic] epitope positional {epitope_pos} -> target idx {epitope_idx}")
-+    print(f"[mosaic] anchor positional {anchor} -> target idx {anchor_local} = {anchor_aa}")
++    # --- MULTI-CHAIN TARGET -------------------------------------------------------------
++    # `target_chain` is a COMMA-SEPARATED list. Problem 1's EGFR is a monomer and passed one;
++    # problem 2's TNF-alpha is a HOMOTRIMER whose epitope straddles the seam between two
++    # protomers (s1: "a binder in that groove must straddle the subunit interface; it cannot
++    # sit on one chain"). Designing against a single protomer lets the optimizer place a binder
++    # where the other two subunits actually are.
++    #
++    # Verified against mosaic upstream before writing this:
++    #   * binder_features(binder_length, chains) prepends the binder and delegates to
++    #     target_only_features, which zips `chains` against "ABCDEF..." -- every chain is
++    #     handled, there is no assertion at one, and the only ceiling is 26.
++    #   * BinderTargetIPTM builds asym_id as zeros(binder) + ones(EVERYTHING ELSE), so all
++    #     target residues share one asym_id and target-target protomer pairs are NEVER scored.
++    #     That was the real risk: it is exactly the failure bin/ipsae_min.py refuses on in s7,
++    #     where a flat min across chain pairs let an intra-binder interface be read as binding.
++    #
++    # TWO INDEX SPACES, AND THEY ARE NOT THE SAME:
++    #   epitope_idx  TARGET-relative. BinderTargetContact slices [:L, L:] first, then indexes
++    #                columns, so these are offsets into the CONCATENATED target, excluding L.
++    #   anchor idx   GLOBAL. The loss terms index output.atom37_coords directly, so the anchor
++    #                carries the binder's L as well.
++    # Both need a per-chain offset; only one needs L. Getting that wrong silently aims the
++    # mechanism at whatever residue happens to sit at the stale index.
++    chain_ids = [c.strip() for c in target_chain.split(",") if c.strip()]
++    chains_prepared, target_seqs, offsets, off = [], [], {}, 0
++    for cid in chain_ids:
++        ch_i, seq_i, resnums_i = _prepare_target(target_path, cid, crop_t)
++        idx_i = {num: j for j, num in enumerate(resnums_i)}
++        missing = [p for p in epitope_pos + ([anchor] if cid == anchor_chain else [])
++                   if p not in idx_i]
++        if missing:
++            raise SystemExit(f"STEP 4 FAILED: positions {missing} are not in chain {cid} "
++                             f"crop {crop_t}")
++        chains_prepared.append((cid, ch_i, seq_i, idx_i, resnums_i))
++        target_seqs.append(seq_i)
++        offsets[cid] = off
++        off += len(seq_i)
++    if anchor_chain not in offsets:
++        raise SystemExit(f"STEP 4 FAILED: anchor_chain {anchor_chain!r} is not in "
++                         f"target_chain {chain_ids}")
++
++    # epitope on EVERY protomer: the trimer is a homotrimer, the same positional residues are
++    # the epitope on each copy, and the binder sits in a seam between two of them. Rewarding
++    # contact with any copy is the honest statement of that; restricting to one would re-impose
++    # the single-protomer assumption this change exists to remove.
++    epitope_idx = [offsets[cid] + idx_i[p]
++                   for cid, _ch, _s, idx_i, _rn in chains_prepared for p in epitope_pos]
++    a_cid, _a_ch, a_seq, a_idx, _a_rn = next(c for c in chains_prepared
++                                             if c[0] == anchor_chain)
++    anchor_local = offsets[anchor_chain] + a_idx[anchor]   # target-relative; + L added later
++    anchor_aa = a_seq[a_idx[anchor]]
++    target_seq = "".join(target_seqs)
++    print(f"[mosaic] target chains {chain_ids} crop={crop_t} "
++          f"lens={[len(s) for s in target_seqs]} total={len(target_seq)}")
++    print(f"[mosaic] chain offsets (target-relative) {offsets}")
++    print(f"[mosaic] epitope {len(epitope_pos)} positions x {len(chain_ids)} chains "
++          f"-> {len(epitope_idx)} target idx")
++    print(f"[mosaic] anchor positional {anchor} on chain {anchor_chain} "
++          f"-> target idx {anchor_local} = {anchor_aa}")
 +    MECHANISMS = ("acid_near_his", "his_near_cation")
 +    if mechanism not in MECHANISMS:
 +        raise SystemExit(f"STEP 4 FAILED: mechanism {mechanism!r} not in {MECHANISMS}")
@@ -713,9 +766,13 @@ index 0000000..52ca99e
 +                  "continuing without InverseFoldingSequenceRecovery")
 +            mpnn = None
 +
-+    target_chain_spec = TargetChain(
-+        sequence=target_seq, use_msa=False, template_chain=chain
-+    )
++    # One TargetChain per protomer, each carrying ITS OWN crystal chain as a template. The
++    # order here must match the order `offsets` was built in, or every index above is wrong.
++    target_chain_specs = [
++        TargetChain(sequence=seq_i, use_msa=False, template_chain=ch_i)
++        for _cid, ch_i, seq_i, _idx, _rn in chains_prepared
++    ]
++    target_chain_spec = target_chain_specs[0]      # kept for the re-prediction path below
 +    # use_msa=False -> `msa: empty`, so nothing reaches an MSA server from inside Modal.
 +    # The crystal chain goes in as a TEMPLATE instead, which is the stronger constraint
 +    # here anyway: the whole design depends on H433's ring sitting where 6ARU puts it.
@@ -728,7 +785,7 @@ index 0000000..52ca99e
 +
 +    for L in length_list:
 +        features, writer = model.binder_features(
-+            binder_length=L, chains=[target_chain_spec]
++            binder_length=L, chains=target_chain_specs
 +        )
 +        inner = (
 +            w_iptm * sp.BinderTargetIPTM()
@@ -828,7 +885,7 @@ index 0000000..52ca99e
 +            # the binder no sidechains, so the real carboxylate-O geometry and anything
 +            # PROPKA touches can only be measured on an all-atom re-prediction.
 +            re_features, re_writer = model.target_only_features(
-+                [TargetChain(sequence=seq, use_msa=False), target_chain_spec]
++                [TargetChain(sequence=seq, use_msa=False)] + target_chain_specs
 +            )
 +            repred = model.predict(
 +                features=re_features, writer=re_writer,
@@ -845,18 +902,27 @@ index 0000000..52ca99e
 +            st = repred.model_output.to_structure()
 +            # Renumber into POSITIONAL so the gates and the pose-check motif line up:
 +            # binder chain A 1..L, target chain B carrying its positional numbers.
++            # MULTI-CHAIN renumbering. Chain 0 is the binder; chains 1..n are the protomers in
++            # the SAME ORDER as chains_prepared, which is the order target_chain_specs was built
++            # in. This block previously assumed exactly two chains and referenced a `resnums`
++            # that the multi-chain rewrite had deleted -- a NameError that only fired after the
++            # design finished and the re-prediction began, i.e. after the GPU time was spent.
 +            m = st[0]
-+            if len(m[0]) != L or len(m[1]) != len(resnums):
++            want = [L] + [len(rn) for *_rest, rn in chains_prepared]
++            got = [len(c) for c in m]
++            if got != want:
 +                raise SystemExit(
-+                    f"STEP 4 FAILED: re-prediction chains are {len(m[0])}/{len(m[1])}, "
-+                    f"expected {L}/{len(resnums)} -- do not renumber blind"
++                    f"STEP 4 FAILED: re-prediction chains are {got}, expected {want} "
++                    f"-- do not renumber blind"
 +                )
-+            m[0].name = "A"
-+            m[1].name = "B"
++            names = ["A"] + [chr(ord("B") + i) for i in range(len(chains_prepared))]
++            for c, nm in zip(m, names):
++                c.name = nm
 +            for i, r in enumerate(m[0]):
 +                r.seqid = gemmi.SeqId(i + 1, " ")
-+            for r, num in zip(m[1], resnums):
-+                r.seqid = gemmi.SeqId(num, " ")
++            for chain_obj, (*_rest, rn) in zip(list(m)[1:], chains_prepared):
++                for r, num in zip(chain_obj, rn):
++                    r.seqid = gemmi.SeqId(num, " ")
 +            st.setup_entities()
 +            geom = (_geometry(st, anchor) if mechanism == "acid_near_his"
 +                    else _geometry_p2(st, anchor))
@@ -951,6 +1017,8 @@ index 0000000..52ca99e
 +def main(
 +    step: int = 1,
 +    target: str = "../targets/egfr/egfr_ecd_6aru_renum.pdb",
++    target_chain: str = "A",
++    anchor_chain: str = "A",
 +    run_name: str = "",
 +    out_dir: str = "../runs/mosaic",
 +    crop: str = "284:453",
@@ -995,6 +1063,7 @@ index 0000000..52ca99e
 +    run = run_name or datetime.now().strftime("%y%m%d%H%M")
 +    results = design.remote(
 +        target_pdb=pdb.read_bytes(), run_name=run, crop=crop, epitope=epitope,
++        target_chain=target_chain, anchor_chain=anchor_chain,
 +        anchor=anchor, lengths=lengths, n_seeds=n_seeds, seed0=seed0,
 +        steps_soft=steps_soft, steps_sharp=steps_sharp,
 +        recycling_steps=recycling_steps, sampling_steps=sampling_steps,
