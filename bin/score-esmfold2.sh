@@ -21,6 +21,13 @@ set -euo pipefail
 
 IN_RAW="$1"; RUN="${2:-$(date +%y%m%d%H%M)}"; SEEDS="${SEEDS:-1,2,3,4,5}"
 
+# Cheap pre-flight, the way design-mosaic.sh runs bin/mosaic_selftest.py: checks the output
+# FILENAMES against output the pre-2026-10-06 code really wrote, and that the per-fold Volume
+# commit is still inside the fold loop. A commit that drifts outside it makes the durability
+# fix cosmetic while every test still passes. No GPU, no Modal account, ~0.1s.
+python3 "$(dirname "$0")/esmfold2_selftest.py" || {
+  echo "[score-esmfold2] REFUSING TO LAUNCH: esmfold2_selftest.py failed" >&2; exit 1; }
+
 # --- footgun 1: resolve the input BEFORE cd'ing, so repo-relative paths work ---
 if [[ ! -e "$IN_RAW" ]]; then
   echo "error: input not found: $IN_RAW" >&2

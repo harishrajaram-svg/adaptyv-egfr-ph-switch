@@ -1,6 +1,14 @@
---- modal_esmfold2.py.orig	2026-09-18 16:04:05
-+++ modal_esmfold2.py	2026-09-18 18:49:03
-@@ -33,9 +33,16 @@
+diff --git a/modal_esmfold2.py b/modal_esmfold2.py
+index e3ea6da..14757d6 100644
+--- a/modal_esmfold2.py
++++ b/modal_esmfold2.py
+@@ -28,14 +28,21 @@ modal run modal_esmfold2.py --input-faa complex.faa --num-diffusion-samples 3
+ import os
+ from pathlib import Path
+ 
+-from modal import App, Image
++from modal import App, Image, Volume
+ 
  GPU = os.environ.get("MODAL_GPU", "A100-40GB")
  TIMEOUT = int(os.environ.get("MODAL_TIMEOUT", 30))
  
@@ -20,9 +28,34 @@
  ESMFOLD2_CACHE_DIR = "/root/.cache/huggingface"
  
  
-@@ -117,9 +124,8 @@
+@@ -68,6 +75,21 @@ image = (
+     .run_function(_download_models)
+ )
  
- @app.function(timeout=TIMEOUT * 60, gpu=GPU)
++# DURABILITY. Output used to exist only as the remote function's RETURN VALUE, shipped back
++# after the last fold, so a timeout, a crash or a DEAD LOCAL PROCESS wrote nothing: 13 of 20
++# folds lost 2026-10-02 and billed in full, and 2 of 10 lost again 2026-10-06 when a local
++# DNS blip killed the non-detached client. Note that --detach does NOT fix that -- the files
++# are written by the LOCAL entrypoint, which dies with the client either way.
++#
++# Each fold's files are now written to this Volume and committed AS THAT FOLD FINISHES, so
++# partial work survives any of the three triggers. The return value is unchanged, so the
++# local path and every caller behave exactly as before; the Volume is a parallel durable copy.
++#
++# Recover a run that lost its client:
++#     modal volume ls  esmfold2-runs
++#     modal volume get esmfold2-runs <run_name> ./runs/<dest>
++runs_vol = Volume.from_name("esmfold2-runs", create_if_missing=True)
++
+ app = App("esmfold2", image=image)
+ 
+ 
+@@ -115,21 +137,28 @@ def _fasta_to_input(fasta_str: str):
+     return StructurePredictionInput(sequences=sequences)
+ 
+ 
+-@app.function(timeout=TIMEOUT * 60, gpu=GPU)
++@app.function(timeout=TIMEOUT * 60, gpu=GPU, volumes={"/runs": runs_vol})
  def esmfold2(
 -    fasta_name: str,
 -    fasta_str: str,
@@ -32,7 +65,15 @@
      num_diffusion_samples: int = 1,
      num_sampling_steps: int = 50,
      num_loops: int = 3,
-@@ -129,7 +135,10 @@
++    run_name: str = "",     # names the Volume directory; "" disables the durable copy
+ ) -> list[tuple[Path, bytes]]:
+-    """Fold a FASTA with ESMFold2; return per-sample CIF + scores JSON."""
++    """Fold a FASTA with ESMFold2; return per-sample CIF + scores JSON.
++
++    Files are ALSO written to the `esmfold2-runs` Volume as each fold finishes, so partial
++    work survives a timeout, a crash or a dead local client. See the note by the Volume.
++    """
+     import json
      import time
  
      from esm.models.esmfold2 import ESMFold2InputBuilder
@@ -44,14 +85,13 @@
  
      t0 = time.time()
      model = ESMFold2Model.from_pretrained(
-@@ -139,22 +148,34 @@
+@@ -139,21 +168,21 @@ def esmfold2(
      ).cuda().eval()
      print(f"[esmfold2] Model loaded in {time.time() - t0:.1f}s")
  
 -    spi = _fasta_to_input(fasta_str)
 -    print(f"[esmfold2] {len(spi.sequences)} entities, samples={num_diffusion_samples}, steps={num_sampling_steps}")
-+    print(f"[esmfold2] {len(complexes)} complex(es), samples={num_diffusion_samples}, steps={num_sampling_steps}")
- 
+-
 -    t0 = time.time()
 -    result = ESMFold2InputBuilder().fold(
 -        model, spi,
@@ -62,6 +102,10 @@
 -        complex_id=fasta_name,
 -    )
 -    print(f"[esmfold2] fold() done in {time.time() - t0:.1f}s")
+-
+-    samples = result if isinstance(result, list) else [result]
++    print(f"[esmfold2] {len(complexes)} complex(es), samples={num_diffusion_samples}, steps={num_sampling_steps}")
++
 +    # PATCHED 2026-09-18: fold once per seed, reusing the loaded model.
 +    # The protocol requires ipSAE_min max-over->=5 distinct seeds. Model load is ~116s
 +    # and a fold ~16s, so looping here costs ~1.5x for 5 seeds instead of ~5x for
@@ -70,6 +114,59 @@
 +                 if isinstance(seed, str) else [int(seed)])
 +    builder = ESMFold2InputBuilder()
 +    samples, sample_seeds, sample_names = [], [], []
++    outputs_so_far: list[tuple[Path, bytes]] = []
++    # An EXPLICIT counter, not len(outputs)//3. Deriving the sample index from the file count
++    # silently assumes every sample yields exactly three files, so adding a fourth output
++    # would renumber every sample and orphan each *_ipsae.json from its *.cif.
++    sample_idx = 0
+ 
+     def _to_py(v):
+         if v is None:
+@@ -166,8 +195,10 @@ def esmfold2(
+             return [_to_py(x) for x in v]
+         return v
+ 
+-    outputs: list[tuple[Path, bytes]] = []
+-    for idx, sample in enumerate(samples):
++    def _serialize_sample(sample, _sd, fasta_name, idx):
++        """The three files one sample produces. Extracted from the old post-loop block so it
++        can run per fold; byte-for-byte the same output, same names, same order."""
++        out: list[tuple[Path, bytes]] = []
+         complex_obj = getattr(sample, "complex", sample)
+         cif_str = complex_obj.to_mmcif()
+         plddt_list = _to_py(complex_obj.plddt) or []
+@@ -181,17 +212,74 @@ def esmfold2(
+             "iptm": _to_py(getattr(sample, "iptm", None)),
+             "chain_pair_iptm": _to_py(getattr(sample, "pair_chains_iptm", None)),
+         }
+-        outputs.append((Path(f"{fasta_name}_sample_{idx}.cif"), cif_str.encode()))
+-        outputs.append((Path(f"{fasta_name}_sample_{idx}_scores.json"),
+-                        json.dumps(scores, indent=2).encode()))
+-
+-    return outputs
++        base = f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}"
++        out.append((Path(f"{base}.cif"), cif_str.encode()))
++        out.append((Path(f"{base}_scores.json"), json.dumps(scores, indent=2).encode()))
++
++        # ipsae.py reads data['pae'] (or 'predicted_aligned_error'), and expects
++        # data['plddt'] to be the PER-TOKEN array, not a scalar mean.
++        pae = None
++        for _obj in (sample, complex_obj):
++            for _attr in ("pae", "predicted_aligned_error", "aligned_error", "pae_matrix"):
++                _v = getattr(_obj, _attr, None)
++                if _v is not None:
++                    pae = _to_py(_v)
++                    break
++            if pae is not None:
++                break
++        if pae is None:
++            print(f"[esmfold2] WARNING: no PAE matrix exposed on sample {idx}; "
++                  f"ipSAE cannot score this output.")
++        out.append((Path(f"{base}_ipsae.json"), json.dumps({
++            "pae": pae, "plddt": plddt_list,
++            "ptm": scores["ptm"], "iptm": scores["iptm"],
++        }).encode()))
++        return out
 +    for cname, cfasta in complexes:
 +        spi = _fasta_to_input(cfasta)
 +        for sd in seed_list:
@@ -87,57 +184,28 @@
 +            samples.extend(got)
 +            sample_seeds.extend([sd] * len(got))
 +            sample_names.extend([cname] * len(got))
- 
--    samples = result if isinstance(result, list) else [result]
--
-     def _to_py(v):
-         if v is None:
-             return None
-@@ -168,6 +189,9 @@
- 
-     outputs: list[tuple[Path, bytes]] = []
-     for idx, sample in enumerate(samples):
-+        # PATCHED: tag with seed so seeds don't collide in the output dir
-+        _sd = sample_seeds[idx]
-+        fasta_name = sample_names[idx]
-         complex_obj = getattr(sample, "complex", sample)
-         cif_str = complex_obj.to_mmcif()
-         plddt_list = _to_py(complex_obj.plddt) or []
-@@ -181,17 +205,41 @@
-             "iptm": _to_py(getattr(sample, "iptm", None)),
-             "chain_pair_iptm": _to_py(getattr(sample, "pair_chains_iptm", None)),
-         }
--        outputs.append((Path(f"{fasta_name}_sample_{idx}.cif"), cif_str.encode()))
--        outputs.append((Path(f"{fasta_name}_sample_{idx}_scores.json"),
-+        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}.cif"), cif_str.encode()))
-+        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}_scores.json"),
-                         json.dumps(scores, indent=2).encode()))
- 
-+        # PATCHED: emit an ipSAE-compatible sidecar.
-+        # ipsae.py reads data['pae'] (or 'predicted_aligned_error'), and expects
-+        # data['plddt'] to be the PER-TOKEN array, not a scalar mean.
-+        pae = None
-+        for _obj in (sample, complex_obj):
-+            for _attr in ("pae", "predicted_aligned_error", "aligned_error", "pae_matrix"):
-+                _v = getattr(_obj, _attr, None)
-+                if _v is not None:
-+                    pae = _to_py(_v)
-+                    break
-+            if pae is not None:
-+                break
-+        if pae is None:
-+            print(f"[esmfold2] WARNING: no PAE matrix exposed on sample {idx}; "
-+                  f"ipSAE cannot score this output. Attrs: {sorted(a for a in dir(sample) if not a.startswith('_'))}")
-+        ipsae_scores = {
-+            "pae": pae,
-+            "plddt": plddt_list,
-+            "ptm": scores["ptm"],
-+            "iptm": scores["iptm"],
-+        }
-+        outputs.append((Path(f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}_ipsae.json"),
-+                        json.dumps(ipsae_scores).encode()))
++            # Persist THIS fold before starting the next one. `idx` must stay the GLOBAL
++            # flattened sample index, because the filenames downstream readers glob for
++            # carry it (..._seed{sd}_sample_{idx}.cif) and renumbering would orphan every
++            # *_ipsae.json from its *.cif.
++            for g in got:
++                files = _serialize_sample(g, sd, cname, sample_idx)
++                sample_idx += 1
++                outputs_so_far.extend(files)
++                if run_name:
++                    for rel, content in files:
++                        dest = Path("/runs") / run_name / rel
++                        dest.parent.mkdir(parents=True, exist_ok=True)
++                        dest.write_bytes(content)
++            if run_name:
++                runs_vol.commit()      # survives a dead client from here on
++                print(f"[esmfold2]   persisted {cname} seed {sd} to the Volume "
++                      f"({len(outputs_so_far)} files so far)")
 +
-     return outputs
++    # The post-loop serialization block that used to live here is gone: it ran only AFTER
++    # every fold, which is what made the output all-or-nothing. _serialize_sample now runs
++    # inside the fold loop and `outputs_so_far` is the same list it used to build.
++    return outputs_so_far
  
  
  @app.local_entrypoint()
@@ -148,7 +216,7 @@
      num_diffusion_samples: int = 1,
      num_sampling_steps: int = 50,
      num_loops: int = 3,
-@@ -200,12 +248,21 @@
+@@ -200,19 +288,48 @@ def main(
  ):
      from datetime import datetime
  
@@ -166,6 +234,9 @@
 +        files = [_p]
 +    complexes = [(f.stem, f.read_text()) for f in files]
 +    print(f"[esmfold2] batching {len(complexes)} complex(es) into one container")
++
++    today = datetime.now().strftime("%Y%m%d%H%M")[2:]
++    vol_tag = run_name or today          # resolved HERE so the Volume dir matches out_dir
  
      outputs = esmfold2.remote(
 -        fasta_name=fasta_name,
@@ -174,3 +245,29 @@
          seed=seed,
          num_diffusion_samples=num_diffusion_samples,
          num_sampling_steps=num_sampling_steps,
+         num_loops=num_loops,
++        run_name=vol_tag,
+     )
+-
+-    today = datetime.now().strftime("%Y%m%d%H%M")[2:]
++    # ALL-OR-NOTHING OUTPUT -- FIXED 2026-10-06. This local write still happens only after
++    # the remote call returns, so it is still all-or-nothing BY ITSELF. What changed is that
++    # it is no longer the only copy: esmfold2() now writes each fold's three files to the
++    # `esmfold2-runs` Volume and commits as that fold finishes.
++    #
++    # History, because the failure recurred twice before the fix: 13 of 20 folds lost
++    # 2026-10-02 to a function timeout and billed in full, then 2 of 10 lost 2026-10-06 when a
++    # local DNS blip killed the client of a non-detached run. The timeout-sizing guard in
++    # bin/score-esmfold2.sh only ever covered the first trigger; "dead local process" was
++    # named in this comment and left uncovered, and that is the one that fired. --detach is
++    # NOT a fix either: these files are written by the LOCAL entrypoint, which dies with the
++    # client regardless.
++    #
++    # Recover a run whose client died:
++    #     modal volume ls  esmfold2-runs
++    #     modal volume get esmfold2-runs <run_name> ./runs/<dest>
++    # Still size MODAL_TIMEOUT to the batch -- the Volume saves completed folds, it does not
++    # make an undersized timeout stop truncating the run.
+     out_dir_full = Path(out_dir) / (run_name or today)
+     for out_file, out_content in outputs:
+         target = out_dir_full / out_file
