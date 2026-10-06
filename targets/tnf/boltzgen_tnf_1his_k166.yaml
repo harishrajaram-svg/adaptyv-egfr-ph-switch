@@ -1,0 +1,91 @@
+# SINGLE-HISTIDINE ARM -- one pinned His against K166 only, the EASIER anchor (17.2% reach vs
+# R108 NH2 11.8%). Hedge against the two-site span being unbuildable. Otherwise as the main arm.
+#
+# WHY THE HISTIDINES ARE PINNED AND NOT FILTERED FOR
+# Problem 1, Mechanism A: across 140 designs on two sites, 106 (76%) contained NO binder
+# histidine at the interface and exactly ONE was a real switch. The limiting factor was never
+# the site or the mechanism -- nothing told the generator to supply a titratable group.
+# challenges/02-tnf-alpha.md s4 and playbook s5/lesson 12: supply goes in the generator,
+# selection stays at the filter. This spec is that rule applied before any spend.
+#
+# THE TWO ANCHORS, AND WHY THERE ARE ONLY TWO (s4 + third_site_census.py)
+# Seven cationic residues in the 40-residue receptor-contact union; four inside the
+# 21-residue consensus core; two of those four are killed by mouse divergence:
+#   R107 -> Gln in mouse   (objective 2 is assayed at pH 7.4, so a load-bearing contact there
+#                           fails cross-reactivity -- treat any R107 contact as human upside)
+#   H149 -> Tyr in mouse
+# R108 and K166 are not two candidates among several. They are the complete set.
+#
+# REACH, MEASURED, NOT ASSUMED (s6d, analysis/02-tnf/anchor_reach.py)
+# 11,556 rigid-body placements of a real histidine sidechain per donor nitrogen on apo 1TNF:
+#   K166 NZ        17.2% clear   -- the easier anchor, open on all three protomers
+#   R108 NH2       11.8% clear
+#   R108 NE + NH1   2.15% clear  -- and EXACTLY ZERO for both on protomer C
+# R108's guanidinium is not a symmetric target. A design aiming "near R108" is aiming at a
+# surface that is 98% closed, so the hotspot below means the NH2 face specifically.
+#
+# PROTOMER PAIR, CHOSEN NOT INHERITED
+# Three cross-protomer pairs exist. B:R108 <-> A:K166 at 17.1 A is the tightest and the
+# closest to s4's 18.4 A span figure:
+#   R108(B) -- K166(A)  17.1 A   min reach 918
+#   R108(A) -- K166(C)  19.8 A   min reach 897
+#   R108(C) -- K166(B)  20.7 A   min reach 1019
+# All three chains are included because the assay target IS the trimer and a binder that
+# clashes into the third protomer is not a binder. Only two carry hotspots.
+#
+# NUMBERING: this file is 1TNF's own, uniprot = seqid + 76, verified residue-by-residue.
+#   R108 canonical = residue 32.   K166 canonical = residue 90.
+# Checked against the structure before writing: ARG at 32 and LYS at 90 in all three chains.
+#
+# HISTIDINE SPACING, borrowed deliberately rather than re-derived
+# Indices 46 and 75, i.e. 29 designed residues apart -- identical to problem 1's
+# boltzgen_egfr_hf_domIII_2His.yaml, whose target span was 17.9 A against our 17.1 A. Same
+# span, same spacing; saying so because it is inherited, not independently fitted.
+#
+# How the constraint works (BoltzGen commit 247b9bb, src/boltzgen/data/parse/schema.py
+# 743-760): DIGITS request that many designed residues, LETTERS are FIXED identities. There is
+# no wildcard -- 'X' pins UNK and lowercase silently becomes UNK, so case matters.
+# RUN WITH EXTRA_ARGS="--diffusion_batch_size 1" or the pinned residue lands at one index in
+# every design in the batch.
+entities:
+  - protein:
+      id: D
+      sequence: 45, H, 74..114
+      binding_types:
+        binding: 46
+      secondary_structure:
+        loop: 41..45,47..51
+
+  - file:
+      path: tnf_1tnf_trimer.pdb
+      include:
+        - chain:
+            id: A
+        - chain:
+            id: B
+        - chain:
+            id: C
+      binding_types:
+        - chain:
+            id: A
+            binding: 90
+      structure_groups: "all"
+
+# ---------------------------------------------------------------------------------------------
+# WHY THIS ARM EXISTS (appended; the body above is the main arm's, edited in four places)
+#
+# The two-site arm has to span 17.1 A AND straddle two protomers, which is a size floor s4
+# calls a constraint rather than a preference. If that turns out to be unbuildable, the whole
+# pH-selectivity objective fails on geometry rather than on chemistry -- and we would find out
+# with no fallback.
+#
+# One histidine on K166 costs the predicted ratio (s4's table: one site at pKa_free 7.0 with a
+# 2.0-unit drop is ~7.2x, against 51.6x for two) but asks much less of the fold. K166 is the
+# right single anchor: 17.2% reach against R108 NH2's 11.8%, and open on all three protomers
+# where R108 is shut on C.
+#
+# EDITS FROM THE MAIN ARM, all five: one pinned H instead of two; `binding: 46` not `46,75`;
+# the loop window around index 46 only; hotspot on A:90 (K166) only, B:32 removed; and the
+# trailing designed run widened to 74..114 so TOTAL LENGTH stays 120..160, identical to the
+# main arm and to problem 1's baseline. Without that last edit dropping one pinned residue
+# would also have shortened the binder, and a length difference would confound the comparison.
