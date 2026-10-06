@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..93a7544
+index 0000000..c2c51c5
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1123 @@
+@@ -0,0 +1,1250 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -280,6 +280,83 @@ index 0000000..93a7544
 +    return chain, sequence, resnums
 +
 +
++def _prepare_target_set(label, target_path, chain_csv, crop_t, epitope_pos,
++                        anchor, anchor_chain, mechanism):
++    """Prepare one TARGET SPECIES: chains, per-chain offsets, epitope indices, anchor.
++
++    Factored out so the human and mouse legs run the SAME index arithmetic instead of two
++    copies of it. That matters here specifically: both of this file's 2026-10-06 bugs lived
++    in this block (a stale `resnums` after the multi-chain rewrite, and an epitope applied to
++    one protomer instead of all three), and a second hand-written copy for mouse would be a
++    second place for them to come back.
++
++    `label` only tags the log lines, so a reader can tell which species a number belongs to.
++
++    TWO INDEX SPACES, AND THEY ARE NOT THE SAME:
++      epitope_idx  TARGET-relative. BinderTargetContact slices [:L, L:] first, then indexes
++                   columns, so these are offsets into the CONCATENATED target, excluding L.
++      anchor_local TARGET-relative too; the caller adds L, because the loss terms index
++                   output.atom37_coords directly and so carry the binder's length.
++    Both need a per-chain offset; only one needs L. Getting that wrong silently aims the
++    mechanism at whatever residue happens to sit at the stale index.
++
++    MOUSE EPITOPE POSITIONS ARE NOT THE HUMAN ONES. A deletion near human positional 68
++    shifts the register, so the offset is -3 at the anchor and -4 further along. The mapping
++    is computed from a pairwise alignment of the OBSERVED chains and stored in
++    analysis/02-tnf/epitope_conserved.json; it is passed in, never inferred here.
++    """
++    chain_ids = [c.strip() for c in chain_csv.split(",") if c.strip()]
++    chains_prepared, target_seqs, offsets, off = [], [], {}, 0
++    for cid in chain_ids:
++        ch_i, seq_i, resnums_i = _prepare_target(target_path, cid, crop_t)
++        idx_i = {num: j for j, num in enumerate(resnums_i)}
++        missing = [p for p in epitope_pos + ([anchor] if cid == anchor_chain else [])
++                   if p not in idx_i]
++        if missing:
++            raise SystemExit(f"STEP 4 FAILED [{label}]: positions {missing} are not in "
++                             f"chain {cid} crop {crop_t}")
++        chains_prepared.append((cid, ch_i, seq_i, idx_i, resnums_i))
++        target_seqs.append(seq_i)
++        offsets[cid] = off
++        off += len(seq_i)
++    if anchor_chain not in offsets:
++        raise SystemExit(f"STEP 4 FAILED [{label}]: anchor_chain {anchor_chain!r} is not in "
++                         f"chains {chain_ids}")
++
++    # epitope on EVERY protomer: the trimer is a homotrimer, the same positional residues are
++    # the epitope on each copy, and the binder sits in a seam between two of them. Rewarding
++    # contact with any copy is the honest statement of that; restricting to one would re-impose
++    # the single-protomer assumption the multi-chain change exists to remove.
++    epitope_idx = [offsets[cid] + idx_i[p]
++                   for cid, _ch, _s, idx_i, _rn in chains_prepared for p in epitope_pos]
++    _ac, _ach, a_seq, a_idx, _arn = next(c for c in chains_prepared if c[0] == anchor_chain)
++    anchor_local = offsets[anchor_chain] + a_idx[anchor]
++    anchor_aa = a_seq[a_idx[anchor]]
++    target_seq = "".join(target_seqs)
++
++    print(f"[mosaic] [{label}] chains {chain_ids} crop={crop_t} "
++          f"lens={[len(s) for s in target_seqs]} total={len(target_seq)}")
++    print(f"[mosaic] [{label}] chain offsets (target-relative) {offsets}")
++    print(f"[mosaic] [{label}] epitope {len(epitope_pos)} positions x {len(chain_ids)} "
++          f"chains -> {len(epitope_idx)} target idx")
++    print(f"[mosaic] [{label}] anchor positional {anchor} on chain {anchor_chain} "
++          f"-> target idx {anchor_local} = {anchor_aa}")
++
++    MECHANISMS = ("acid_near_his", "his_near_cation")
++    if mechanism not in MECHANISMS:
++        raise SystemExit(f"STEP 4 FAILED: mechanism {mechanism!r} not in {MECHANISMS}")
++    want = "H" if mechanism == "acid_near_his" else "RK"
++    if anchor_aa not in want:
++        raise SystemExit(
++            f"STEP 4 FAILED [{label}]: anchor {anchor} is {anchor_aa}, not one of {want!r} "
++            f"for mechanism {mechanism!r} -- numbering or mechanism is wrong")
++    print(f"[mosaic] [{label}] mechanism {mechanism}: anchor {anchor_aa}{anchor} on the TARGET")
++    return {"chain_ids": chain_ids, "chains_prepared": chains_prepared,
++            "offsets": offsets, "epitope_idx": epitope_idx,
++            "anchor_local": anchor_local, "anchor_aa": anchor_aa,
++            "target_seq": target_seq, "target_seqs": target_seqs}
++
++
 +def his_reduce(score, topk, xp):
 +    """The reduction HisNearCation applies to its per-position scores.
 +
@@ -480,6 +557,15 @@ index 0000000..93a7544
 +    run_name: str,
 +    target_chain: str = "A",          # comma-separated for a multi-chain target, e.g. "A,B,C"
 +    anchor_chain: str = "A",          # which of those chains carries the anchor residue
++    # --- SPECIES LEG (objective 2). Off unless --target2 is given, so every existing
++    # command reproduces exactly. See analysis/02-tnf/epitope_conserved.json for the
++    # mapping; mouse epitope positions are NOT the human ones.
++    target2: str = "",
++    target2_chain: str = "A,B",
++    target2_epitope: str = "",
++    target2_anchor: int = 0,
++    target2_anchor_chain: str = "A",
++    w_species: float = 1.0,
 +    crop: str = "284:453",
 +    epitope: str = DEFAULT_EPITOPE,
 +    anchor: int = ANCHOR,
@@ -595,51 +681,45 @@ index 0000000..93a7544
 +    #                carries the binder's L as well.
 +    # Both need a per-chain offset; only one needs L. Getting that wrong silently aims the
 +    # mechanism at whatever residue happens to sit at the stale index.
-+    chain_ids = [c.strip() for c in target_chain.split(",") if c.strip()]
-+    chains_prepared, target_seqs, offsets, off = [], [], {}, 0
-+    for cid in chain_ids:
-+        ch_i, seq_i, resnums_i = _prepare_target(target_path, cid, crop_t)
-+        idx_i = {num: j for j, num in enumerate(resnums_i)}
-+        missing = [p for p in epitope_pos + ([anchor] if cid == anchor_chain else [])
-+                   if p not in idx_i]
-+        if missing:
-+            raise SystemExit(f"STEP 4 FAILED: positions {missing} are not in chain {cid} "
-+                             f"crop {crop_t}")
-+        chains_prepared.append((cid, ch_i, seq_i, idx_i, resnums_i))
-+        target_seqs.append(seq_i)
-+        offsets[cid] = off
-+        off += len(seq_i)
-+    if anchor_chain not in offsets:
-+        raise SystemExit(f"STEP 4 FAILED: anchor_chain {anchor_chain!r} is not in "
-+                         f"target_chain {chain_ids}")
++    HU = _prepare_target_set("human", target_path, target_chain, crop_t, epitope_pos,
++                             anchor, anchor_chain, mechanism)
++    chain_ids = HU["chain_ids"]
++    chains_prepared = HU["chains_prepared"]
++    offsets = HU["offsets"]
++    epitope_idx = HU["epitope_idx"]
++    anchor_local = HU["anchor_local"]
++    anchor_aa = HU["anchor_aa"]
++    target_seq = HU["target_seq"]
++    target_seqs = HU["target_seqs"]
 +
-+    # epitope on EVERY protomer: the trimer is a homotrimer, the same positional residues are
-+    # the epitope on each copy, and the binder sits in a seam between two of them. Rewarding
-+    # contact with any copy is the honest statement of that; restricting to one would re-impose
-+    # the single-protomer assumption this change exists to remove.
-+    epitope_idx = [offsets[cid] + idx_i[p]
-+                   for cid, _ch, _s, idx_i, _rn in chains_prepared for p in epitope_pos]
-+    a_cid, _a_ch, a_seq, a_idx, _a_rn = next(c for c in chains_prepared
-+                                             if c[0] == anchor_chain)
-+    anchor_local = offsets[anchor_chain] + a_idx[anchor]   # target-relative; + L added later
-+    anchor_aa = a_seq[a_idx[anchor]]
-+    target_seq = "".join(target_seqs)
-+    print(f"[mosaic] target chains {chain_ids} crop={crop_t} "
-+          f"lens={[len(s) for s in target_seqs]} total={len(target_seq)}")
-+    print(f"[mosaic] chain offsets (target-relative) {offsets}")
-+    print(f"[mosaic] epitope {len(epitope_pos)} positions x {len(chain_ids)} chains "
-+          f"-> {len(epitope_idx)} target idx")
-+    print(f"[mosaic] anchor positional {anchor} on chain {anchor_chain} "
-+          f"-> target idx {anchor_local} = {anchor_aa}")
-+    MECHANISMS = ("acid_near_his", "his_near_cation")
-+    if mechanism not in MECHANISMS:
-+        raise SystemExit(f"STEP 4 FAILED: mechanism {mechanism!r} not in {MECHANISMS}")
-+    want = "H" if mechanism == "acid_near_his" else "RK"
-+    if anchor_aa not in want:
-+        raise SystemExit(
-+            f"STEP 4 FAILED: anchor {anchor} is {anchor_aa}, not one of {want!r} for "
-+            f"mechanism {mechanism!r} -- numbering or mechanism is wrong")
-+    print(f"[mosaic] mechanism {mechanism}: anchor {anchor_aa}{anchor} on the TARGET")
++    # SPECIES LEG. Objective 2 (mouse cross-reactivity) was never in the loss before this:
++    # every run optimised human binding and mouse was CHECKED afterwards. s22 found ipSAE_min
++    # cannot RANK by species, which says nothing about whether it can be DESIGNED for -- the
++    # same filter-vs-objective distinction that applies to the pH terms.
++    #
++    # Why a second target rather than just restricting the epitope to conserved residues:
++    # human positional 68 is a histidine that mouse DOES NOT HAVE AT ALL. A deletion moves the
++    # backbone, and no choice of which sidechains to contact fixes a backbone difference.
++    MO = None
++    if target2:
++        if not target2_epitope or not target2_anchor:
++            raise SystemExit("STEP 4 FAILED: --target2 needs --target2-epitope and "
++                             "--target2-anchor. They are NOT the human numbers: a deletion "
++                             "near human positional 68 shifts the register (-3 at the anchor, "
++                             "-4 further along). See analysis/02-tnf/epitope_conserved.json.")
++        epi2 = [int(v) for v in target2_epitope.split(",")]
++        if len(epi2) != len(epitope_pos):
++            raise SystemExit(f"STEP 4 FAILED: species epitope has {len(epi2)} positions, "
++                             f"human has {len(epitope_pos)} -- the two legs must reward the "
++                             f"SAME epitope, mapped, or they are not the same objective")
++        MO = _prepare_target_set("species", Path(target2), target2_chain, None, epi2,
++                                 target2_anchor, target2_anchor_chain, mechanism)
++        if MO["anchor_aa"] != anchor_aa:
++            raise SystemExit(f"STEP 4 FAILED: anchor is {anchor_aa} on the human target and "
++                             f"{MO['anchor_aa']} on the species target -- one pH mechanism "
++                             f"cannot serve both")
++        print(f"[mosaic] SPECIES LEG ON: w={w_species}, anchor {anchor_aa} conserved, "
++              f"{len(epi2)} mapped epitope positions")
 +
 +    # --- the one loss term the whole programme has failed to control -----------------
 +    class AcidNearHis(LossTerm):
@@ -808,6 +888,10 @@ index 0000000..93a7544
 +        for _cid, ch_i, seq_i, _idx, _rn in chains_prepared
 +    ]
 +    target_chain_spec = target_chain_specs[0]      # kept for the re-prediction path below
++    species_chain_specs = [
++        TargetChain(sequence=seq_i, use_msa=False, template_chain=ch_i)
++        for _cid, ch_i, seq_i, _idx, _rn in (MO["chains_prepared"] if MO else [])
++    ]
 +    # use_msa=False -> `msa: empty`, so nothing reaches an MSA server from inside Modal.
 +    # The crystal chain goes in as a TEMPLATE instead, which is the stronger constraint
 +    # here anyway: the whole design depends on H433's ring sitting where 6ARU puts it.
@@ -865,6 +949,40 @@ index 0000000..93a7544
 +        # L + 170, so the step time should rise by much less than double.
 +        #
 +        # Set --w-monomer 0 to disable and reproduce tune01 exactly.
++        # SPECIES LEG (objective 2). Mirrors the monomer leg's pattern: a second
++        # build_loss over its own features, added with a weight. It carries the BINDING terms
++        # and the pH term, not the folding terms -- PLDDTLoss/globularity/WithinBinderContact
++        # are properties of the binder alone and the human leg plus the monomer leg already
++        # constrain them, so repeating them here would triple-count folding and quietly
++        # outvote the two objectives this leg exists to add.
++        #
++        # The pH term is included because the anchor is CONSERVED (R in both species, checked
++        # above and asserted), so one histidine can satisfy both; omitting it would let the
++        # optimiser place a histidine that works on human geometry alone.
++        #
++        # Cost: a third Boltz-2 forward+backward per step. Measured human-only is 21.7 s/step
++        # at 532 tokens; this leg is ~312 tokens more, so expect roughly 2.5x, not 2x.
++        if MO is not None and w_species > 0:
++            species_features, _ = model.binder_features(
++                binder_length=L, chains=species_chain_specs
++            )
++            species_inner = (
++                w_iptm * sp.BinderTargetIPTM()
++                + w_pae * sp.BinderTargetPAE()
++                + w_contact * sp.BinderTargetContact(
++                    epitope_idx=MO["epitope_idx"], contact_distance=14.0, paratope_size=8
++                )
++                + w_acid * HisNearCation(
++                    his_idx=L + MO["anchor_local"],
++                    cation_atoms=(ARG_CATION_N if MO["anchor_aa"] == "R" else LYS_CATION_N),
++                    d0=his_d0,
++                    width=acid_width,
++                )
++            )
++            total_loss = total_loss + w_species * model.build_loss(
++                loss=species_inner, features=species_features,
++                recycling_steps=recycling_steps, sampling_steps=sampling_steps,
++            )
 +        if w_monomer > 0:
 +            mono_features, _ = model.binder_features(binder_length=L, chains=[])
 +            total_loss = total_loss + w_monomer * model.build_loss(
@@ -1066,6 +1184,12 @@ index 0000000..93a7544
 +    target: str = "../targets/egfr/egfr_ecd_6aru_renum.pdb",
 +    target_chain: str = "A",
 +    anchor_chain: str = "A",
++    target2: str = "",
++    target2_chain: str = "A,B",
++    target2_epitope: str = "",
++    target2_anchor: int = 0,
++    target2_anchor_chain: str = "A",
++    w_species: float = 1.0,
 +    run_name: str = "",
 +    out_dir: str = "../runs/mosaic",
 +    crop: str = "284:453",
@@ -1112,6 +1236,9 @@ index 0000000..93a7544
 +    results = design.remote(
 +        target_pdb=pdb.read_bytes(), run_name=run, crop=crop, epitope=epitope,
 +        target_chain=target_chain, anchor_chain=anchor_chain,
++        target2=target2, target2_chain=target2_chain,
++        target2_epitope=target2_epitope, target2_anchor=target2_anchor,
++        target2_anchor_chain=target2_anchor_chain, w_species=w_species,
 +        anchor=anchor, lengths=lengths, n_seeds=n_seeds, seed0=seed0,
 +        steps_soft=steps_soft, steps_sharp=steps_sharp,
 +        recycling_steps=recycling_steps, sampling_steps=sampling_steps,

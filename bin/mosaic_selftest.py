@@ -223,6 +223,61 @@ def main():
           f"{loss(*placed, bad_sum):+.3f}) -- top2 prefers placed "
           f"({loss(*placed, top2):+.3f} < {loss(*spam, top2):+.3f}); 2nd His pays, 3rd is free")
 
+    # 3d. THE SPECIES LEG's index mapping, on the REAL structures. Mouse epitope positions
+    # are NOT the human ones -- a deletion near human positional 68 shifts the register by -3
+    # at the anchor and -4 further along -- so this is checked against residue IDENTITY, not
+    # against arithmetic that could be wrong in the same direction twice. If the mapping slips,
+    # the mouse leg aims the mechanism at whatever sits at the stale index and still reports a
+    # plausible number.
+    prep_set = ns["_prepare_target_set"]
+    spec_file = Path("analysis/02-tnf/epitope_conserved.json")
+    mouse_pdb = Path("targets/tnf/tnf_mouse_trimer_renum.pdb")
+    if spec_file.is_file() and mouse_pdb.is_file():
+        import json
+
+        spec = json.loads(spec_file.read_text())
+        hu_epi, mo_epi = spec["human_positional"], spec["mouse_positional"]
+        assert len(hu_epi) == len(mo_epi), (hu_epi, mo_epi)
+
+        hu = prep_set("t-human", Path("targets/tnf/tnf_trimer_renum.pdb"), "A,B,C", None,
+                      hu_epi, spec["anchor"]["human_positional"], "B", "his_near_cation")
+        mo = prep_set("t-mouse", mouse_pdb, "A,B", None, mo_epi,
+                      spec["anchor"]["mouse_positional"], "A", "his_near_cation")
+
+        # the anchor must be the SAME residue in both, or one pH term cannot serve both legs
+        assert hu["anchor_aa"] == mo["anchor_aa"] == "R", (hu["anchor_aa"], mo["anchor_aa"])
+
+        # and every mapped epitope position must carry the SAME residue in both species --
+        # that is what "conserved" has to mean for the two legs to be the same objective
+        def residues(prep, positions):
+            _cid, _ch, seq, idx, _rn = prep["chains_prepared"][0]
+            return "".join(seq[idx[p]] for p in positions)
+
+        hu_res, mo_res = residues(hu, hu_epi), residues(mo, mo_epi)
+        assert hu_res == mo_res, f"epitope residues differ: human {hu_res} vs mouse {mo_res}"
+
+        # index counts must scale with protomer count, not silently collapse to one
+        assert len(hu["epitope_idx"]) == len(hu_epi) * 3, len(hu["epitope_idx"])
+        assert len(mo["epitope_idx"]) == len(mo_epi) * 2, len(mo["epitope_idx"])
+
+        # MUTATION TEST: the human numbers must NOT work on the mouse target. If they did,
+        # the mapping would be decoration and a stale copy would go unnoticed.
+        try:
+            bad = prep_set("t-bad", mouse_pdb, "A,B", None, hu_epi,
+                           spec["anchor"]["human_positional"], "A", "his_near_cation")
+            assert residues(bad, hu_epi) != hu_res, (
+                "human epitope numbers reproduce the human residues on the MOUSE target -- "
+                "the -3/-4 register shift is not being exercised, so this test is vacuous")
+        except SystemExit:
+            pass        # refusing outright is also a correct answer
+
+        print(f"species leg   anchor R in both; {len(hu_epi)} mapped positions carry "
+              f"{hu_res} in human and mouse alike; {len(hu['epitope_idx'])} vs "
+              f"{len(mo['epitope_idx'])} target idx; human numbers do NOT work on mouse")
+    else:
+        raise SystemExit("species-leg fixtures missing: "
+                         f"{spec_file} and {mouse_pdb} are required")
+
     # 4. a distant carboxylate must FAIL the 4.0 A bar -- the bar is the whole point.
     # The reported distance is the min over ND1 AND NE2, so it is not the planted offset;
     # the bar is what is being tested here, not the arithmetic.

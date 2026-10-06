@@ -1,0 +1,39 @@
+{
+ "note": "D-P2-3. Positions are POSITIONAL in each renumbered trimer, not canonical TNF numbering. Human positional +81 = canonical (R108 = positional 27). Mouse indices come from a pairwise alignment of the OBSERVED chains, because a deletion near human positional 68 means the numbering does not carry over.",
+ "human_positional": [
+  16,
+  27,
+  28,
+  70,
+  72,
+  81,
+  82,
+  85,
+  86
+ ],
+ "mouse_positional": [
+  13,
+  24,
+  25,
+  66,
+  68,
+  77,
+  78,
+  81,
+  82
+ ],
+ "dropped_divergent": {
+  "15": "P->H",
+  "26": "R->Q",
+  "68": "H->deleted",
+  "80": "V->I"
+ },
+ "anchor": {
+  "canonical": "R108",
+  "human_positional": 27,
+  "mouse_positional": 24,
+  "residue_both": "R"
+ },
+ "human_target": "targets/tnf/tnf_trimer_renum.pdb",
+ "mouse_source": "analysis/02-tnf/structures/2TNF.pdb"
+}
