@@ -1,0 +1,25 @@
+K166 -> Gln on the REPACKED leg. s9 was rigid only; s10 showed the rigid magnitude at this
+anchor is largely an artifact of freezing, so the control has to be re-asked of the leg
+that now has external validity. n=5 paired seeded trials, probe-local shell.
+
+  K166#1  rigid   +4.998   repacked   -4.102 [-4.44..-4.10] 
+  K166#2  rigid   +4.670   repacked   -0.236 [-0.24..-0.24] 
+  K166#3  rigid   +4.905   repacked   -0.561 [-0.63..-0.52] 
+  K166#4  rigid   +5.937   repacked   +1.256 [+1.26..+1.26] 
+  K166#5  rigid   +4.286   repacked   +0.420 [+0.42..+0.42] 
+  K166Q#1  rigid   -0.877   repacked   -3.885 [-4.22..-0.88] 
+  K166Q#2  rigid   -0.943   repacked   -0.635 [-0.63..-0.63] 
+  K166Q#3  rigid   -0.378   repacked   -1.228 [-2.38..-1.02] 
+  K166Q#4  rigid   -0.227   repacked   -1.313 [-2.53..-1.26] 
+  K166Q#5  rigid   -1.250   repacked   -0.761 [-0.76..-0.76] 
+
+PAIRED, pose by pose -- the only comparison where just the charge differs:
+pose    rigid K166  rigid K166Q   rigid d     rep K166  rep K166Q    rep d   verdict
+1           +4.998       -0.877    +5.875       -4.102     -3.885   -0.217   INVERTED
+2           +4.670       -0.943    +5.613       -0.236     -0.635   +0.398   right way
+3           +4.905       -0.378    +5.283       -0.561     -1.228   +0.667   right way
+4           +5.937       -0.227    +6.164       +1.256     -1.313   +2.570   right way
+5           +4.286       -1.250    +5.536       +0.420     -0.761   +1.181   right way
+
+rigid: 5/5 poses keep K166 above K166Q.  repacked: 4/5.
+medians -- rigid K166 +4.905 vs K166Q -0.877; repacked K166 -0.236 vs K166Q -1.228

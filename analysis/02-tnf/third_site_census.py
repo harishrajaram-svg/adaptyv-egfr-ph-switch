@@ -34,9 +34,29 @@ COUPLING_A = 12.0   # below this, two titratable sites are not safely independen
 BURIAL_R = 10.0     # heavy atoms within this radius = burial proxy
 
 # The ten receptor copies the day-1 analysis used, as (entry, partner-chain) pairs.
+#
+# \U0001F534 FOUR OF THE TEN ARE A MUTEIN, found 2026-10-06 by the widened identity guard
+# (analysis/02-tnf/target_identity.py). 3ALQ's own PDB entity record carries
+# pdbx_mutation = "K11M, K65S, K90P, K98R, K112N, K128P" = K87M, K141S, K166P, K174R, K188N,
+# K204P in our numbering. THREE of those are cationic sites this census ranks, and K166 -- the
+# primary anchor -- IS PROLINE in 3ALQ.
+#
+# What that costs, and what it does not. The CONTACT POSITIONS are still real: 166 is in the
+# receptor-contact set of 8ZUI and 7KPB as well, both wild type and both clean through the
+# guard, so the epitope does not rest on the mutein. But a conservation count over these ten
+# copies measures POSITION, not residue IDENTITY, at the 3ALQ rows. Anything phrased as
+# "K166 is present in 10 of 10 receptor copies" must be restated as SIX of ten wild-type copies
+# plus four copies at the same position in a mutein.
+#
+# This census's T3 asserts residue identity "only at cationic positions" -- against a single
+# 1TNF reference, not per entry, which is why it passed while four of its ten rows carried a
+# proline there. Scoped-guard failure, playbook s24, same shape as the 1TNF error itself.
+WILD_TYPE_ENTRIES = {"8ZUI", "7KPB"}
+MUTEIN_ENTRIES = {"3ALQ": "K87M K141S K166P K174R K188N K204P"}
 RECEPTOR_COPIES = [("3ALQ", c) for c in ("T", "R", "V", "U")] + \
                   [("8ZUI", c) for c in ("E", "K", "D", "J")] + \
                   [("7KPB", c) for c in ("E", "F")]
+N_WILD_TYPE_COPIES = sum(1 for e, _ in RECEPTOR_COPIES if e in WILD_TYPE_ENTRIES)
 
 
 def fetch_1tnf(path):
@@ -189,7 +209,15 @@ def main():
               f"{min(same) if same else float('nan'):.1f} A, "
               f"closest cross-protomer {min(cross) if cross else float('nan'):.1f} A")
     r = roles.get(108, {}), roles.get(166, {})
-    print(f"  protomer role over the 10 receptor copies: R108 {r[0]}, K166 {r[1]}")
+    print(f"  protomer role over the {len(RECEPTOR_COPIES)} receptor copies: "
+          f"R108 {r[0]}, K166 {r[1]}")
+    print(f"  \u26a0\ufe0f  {N_WILD_TYPE_COPIES} of those {len(RECEPTOR_COPIES)} are WILD TYPE "
+          f"({sorted(WILD_TYPE_ENTRIES)}). The other "
+          f"{len(RECEPTOR_COPIES) - N_WILD_TYPE_COPIES} are 3ALQ, a six-lysine mutein carrying "
+          f"{MUTEIN_ENTRIES['3ALQ']} -- so K166 is PROLINE in them. A count over all ten "
+          f"measures contact POSITION, not residue identity. Report conservation as "
+          f"{N_WILD_TYPE_COPIES} of {len(RECEPTOR_COPIES)} wild-type copies, never as "
+          f"{len(RECEPTOR_COPIES)} of {len(RECEPTOR_COPIES)}.")
 
 
 if __name__ == "__main__":
