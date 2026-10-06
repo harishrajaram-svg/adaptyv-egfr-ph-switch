@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..5f586dc
+index 0000000..34ad2f3
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1535 @@
+@@ -0,0 +1,1558 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -355,6 +355,34 @@ index 0000000..5f586dc
 +            "offsets": offsets, "epitope_idx": epitope_idx,
 +            "anchor_local": anchor_local, "anchor_aa": anchor_aa,
 +            "target_seq": target_seq, "target_seqs": target_seqs}
++
++
++def check_cation_atoms(anchor_aa: str, cation_atoms: tuple, label: str) -> None:
++    """Assert the cation atom set matches the anchor residue, BEFORE any GPU work.
++
++    An unmodelled atom37 slot is (0,0,0), not absent -- scatter_atom37 zero-initialises the
++    grid -- so asking for NZ on an arginine, or any ARG/LYS atom on a histidine, makes
++    HisNearCation measure every binder CA to the coordinate ORIGIN. It then returns a
++    gradient-free constant that logs as `his_cation: 6.91`, indistinguishable from an honest
++    "no histidine placed yet". That is how the species leg silently contributed nothing.
++
++    This check lives HERE, not inside the loss. The first version asserted on
++    `output.atom37_mask` inside `__call__`, which raised ConcretizationTypeError: you cannot
++    call float() on a traced array under jit, and you cannot branch on one. The values needed
++    are known before the GPU is touched, so the check belongs at construction.
++    """
++    want = {"R": ARG_CATION_N, "K": LYS_CATION_N}.get(anchor_aa)
++    if want is None:
++        raise SystemExit(
++            f"STEP 4 FAILED [{label}]: HisNearCation needs an R or K anchor; got {anchor_aa!r}. "
++            f"A histidine anchor means the mechanism is acid_near_his, not his_near_cation."
++        )
++    if tuple(cation_atoms) != tuple(want):
++        raise SystemExit(
++            f"STEP 4 FAILED [{label}]: anchor is {anchor_aa} but cation_atoms={cation_atoms}, "
++            f"expected {want}. Those atoms are unmodelled on a {anchor_aa}, so the term would "
++            f"measure to the coordinate origin and return a constant."
++        )
 +
 +
 +def his_reduce(score, topk, xp):
@@ -952,18 +980,6 @@ index 0000000..5f586dc
 +            # point off the simplex, where an entry can be negative or exceed 1, and an
 +            # unclipped score can drive log() to NaN. Inside the simplex the gradient is
 +            # untouched.
-+            # An unmodelled atom37 slot is (0,0,0), not absent -- scatter_atom37
-+            # zero-initialises the grid. Without this the term silently measures distances to
-+            # the coordinate origin and returns a gradient-free constant that reads like
-+            # "nothing placed yet". Catches a wrong cation_atoms choice and any anchor whose
-+            # sidechain the model leaves unbuilt.
-+            if hasattr(output, "atom37_mask"):
-+                present = sum(float(output.atom37_mask[self.his_idx, A37[a]])
-+                              for a in self.cation_atoms)
-+                if present < 0.5:
-+                    raise ValueError(
-+                        f"anchor atom(s) {self.cation_atoms} are not modelled at index "
-+                        f"{self.his_idx} -- the term would measure to the origin")
 +            his = jnp.clip(sequence[:, TOKENS.index("H")], 0.0, 1.0)
 +            score = his * jax.nn.sigmoid((self.d0 - d) / self.width)
 +            total = his_reduce(score, self.topk, jnp)   # top-k, not sum -- see the docstring
@@ -1034,6 +1050,13 @@ index 0000000..5f586dc
 +        features, writer = model.binder_features(
 +            binder_length=L, chains=target_chain_specs
 +        )
++        if mechanism == "his_near_cation":
++            check_cation_atoms(anchor_aa,
++                               ARG_CATION_N if anchor_aa == "R" else LYS_CATION_N, "human")
++            if MO is not None:
++                check_cation_atoms(MO["anchor_aa"],
++                                   ARG_CATION_N if MO["anchor_aa"] == "R" else LYS_CATION_N,
++                                   "species")
 +        inner = (
 +            w_iptm * sp.BinderTargetIPTM()
 +            + w_pae * sp.BinderTargetPAE()

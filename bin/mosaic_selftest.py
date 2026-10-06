@@ -415,6 +415,29 @@ def main():
         "a row whose geometry was never computed, above the bar, must not be flagged: "
         + repr(check_row(ng, 76)))
 
+    # The cation-atom guard, which must run at SETUP time and not inside the loss. The first
+    # version asserted on output.atom37_mask inside __call__ and raised
+    # ConcretizationTypeError on the GPU -- you cannot float() a traced array under jit. This
+    # test exists so that mistake cannot come back, and it runs with no jax at all.
+    cca = ns["check_cation_atoms"]
+    ARGN, LYSN = ns["ARG_CATION_N"], ns["LYS_CATION_N"]
+    cca("R", ARGN, "ok")            # must not raise
+    cca("K", LYSN, "ok")
+    for aa, atoms, why in (("H", LYSN, "a histidine anchor"),
+                           ("R", LYSN, "LYS atoms on an arginine"),
+                           ("K", ARGN, "ARG atoms on a lysine"),
+                           ("A", ARGN, "a non-titratable anchor")):
+        try:
+            cca(aa, atoms, "t")
+            raise AssertionError(f"check_cation_atoms accepted {why} -- it would measure "
+                                 f"to the coordinate origin and return a constant")
+        except SystemExit:
+            pass
+    assert "float(output.atom37_mask" not in MOD.read_text(), (
+        "the atom37_mask assertion is back inside the loss; it cannot work under jit")
+    print("cation guard  R/ARG and K/LYS accepted; H, and both swapped atom sets, rejected;")
+    print("              no traced-value assertion inside the loss")
+
     # #10: topk=0 silently restores the summed form this function exists to replace
     try:
         his_reduce(np.array([0.1, 0.2, 0.3]), 0, np)
