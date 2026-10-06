@@ -1,0 +1,50 @@
+{
+ "target_file": "targets/tnf/tnf_canonical_trimer.pdb",
+ "target_chains": [
+  "A",
+  "B",
+  "C"
+ ],
+ "target_len_per_protomer": [
+  157,
+  157,
+  157
+ ],
+ "positive": {
+  "source": "3ALQ",
+  "chain": "S",
+  "len": 164,
+  "what": "TNFR2 extracellular domain, natural receptor, non-antibody"
+ },
+ "negatives": {
+  "n": 4,
+  "kind": "composition-matched shuffle of the positive binder",
+  "seed": 20261006
+ },
+ "second_positive_nongating": {
+  "source": "3WD5",
+  "chains": [
+   "H",
+   "L"
+  ],
+  "lens": [
+   214,
+   213
+  ],
+  "what": "adalimumab Fab heavy+light"
+ },
+ "tnf_chains_detected": {
+  "3ALQ": [
+   "A",
+   "B",
+   "C",
+   "D",
+   "E",
+   "F"
+  ],
+  "3WD5": [
+   "A"
+  ]
+ },
+ "pass_rule": "PASS = pos_tnf_tnfr2 ipSAE_min scores clearly above all 4 neg_shuffled_tnfr2_* . The Fab leg is reported, never gating."
+}
