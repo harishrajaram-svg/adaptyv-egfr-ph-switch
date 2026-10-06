@@ -65,6 +65,10 @@ GATES = [
     # found R108 is reachable only through NH2 (11.8% vs 2.15% for NE+NH1). T5 is the
     # anti-blindness control: the most-buried atom in the structure must admit nothing.
     ('anchor_reach --selftest', [PY, 'analysis/02-tnf/anchor_reach.py', '--selftest'], None),
+    # dddG_elec's own mechanism-present control, with the matched far control that makes it
+    # mean anything. This is the gate that would catch a regression reviving the `>= 0`
+    # threshold: the far control passes it 15/15 while sitting 13.98 A from any cation.
+    ('anchor_dddg', [PY, 'analysis/02-tnf/anchor_dddg.py'], None),
     # Hard ELIGIBILITY gate, not a document check. It is expected to be RED until the
     # unlevelled designs are resolved in the portal; a red here means "do not nominate
     # yet", not "the writeup is wrong". Added 2026-10-05 after 4 of 18 shipped designs
