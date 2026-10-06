@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..35e7db0
+index 0000000..56d5af1
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1335 @@
+@@ -0,0 +1,1340 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -612,14 +612,19 @@ index 0000000..35e7db0
 +    # command reproduces exactly. See analysis/02-tnf/epitope_conserved.json for the
 +    # mapping; mouse epitope positions are NOT the human ones.
 +    target2_pdb: bytes = b"",         # BYTES, not a path: the container cannot see local files
-+    # TRIMER, not a dimer. D-P2-3 originally chose two protomers on the reasoning that the
-+    # epitope straddles one seam so the third adds tokens without information. s36 measured
-+    # that and the dimer is worse on BOTH axes: 1 of 5 ESMFold2 seeds failed to assemble a
-+    # 2-protomer TNF (A:B 0.067 against 0.398/0.376/0.375/0.401), an assembled dimer packs
-+    # about half as tightly as the trimer (~0.39 vs 0.71-0.74), and on the human analogue the
-+    # dimer recovered 0.497 against the trimer's 0.576. Cost of the third protomer is ~+$7 on
-+    # the wave. Paying it removes the assembly question instead of insuring against it.
-+    target2_chain: str = "A,B,C",
++    # DIMER, and it is FORCED, not preferred. A mouse trimer here is 976 tokens and it
++    # OOMs on an L40S: RESOURCE_EXHAUSTED trying to allocate 34.24 GiB inside
++    # jit______eval_loss_and_grad, against 48 GB total (p2species03, 2026-10-06 6:39 PM).
++    # 828 -> 976 tokens is only +18% tokens but ~1.39x on the quadratic attention terms,
++    # which is the cliff. The dimer at 828 runs at a measured 25.9 s/step.
++    #
++    # A trimer needs an H100 (80 GB) at $3.95/hr against the L40S at $1.95 -- roughly 1.5-2.3x
++    # the wave cost, on an untested configuration. Not worth it, because the reason for
++    # wanting a trimer is weak: s36's 1-in-5 non-assembly was measured on UNTEMPLATED
++    # ESMFold2, while this leg hands Boltz-2 the crystal chain as a template_chain, so the
++    # rate probably does not transfer at all. Pass --target2-chain "A,B,C" with GPU=H100 to
++    # revisit.
++    target2_chain: str = "A,B",
 +    target2_epitope: str = "",
 +    target2_anchor: int = 0,
 +    target2_anchor_chain: str = "A",
@@ -1262,7 +1267,7 @@ index 0000000..35e7db0
 +    target_chain: str = "A",
 +    anchor_chain: str = "A",
 +    target2: str = "",
-+    target2_chain: str = "A,B,C",
++    target2_chain: str = "A,B",
 +    target2_epitope: str = "",
 +    target2_anchor: int = 0,
 +    target2_anchor_chain: str = "A",

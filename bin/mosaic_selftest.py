@@ -241,9 +241,9 @@ def main():
 
         hu = prep_set("t-human", Path("targets/tnf/tnf_trimer_renum.pdb"), "A,B,C", None,
                       hu_epi, spec["anchor"]["human_positional"], "B", "his_near_cation")
-        # A,B,C -- the species leg defaults to a TRIMER since §36 measured the dimer failing
-        # to assemble in 1 of 5 seeds and packing half as tightly when it did.
-        mo = prep_set("t-mouse", mouse_pdb, "A,B,C", None, mo_epi,
+        # A,B -- a DIMER, forced: a mouse trimer is 976 tokens and OOMs on an L40S
+        # (34.24 GiB allocation, 48 GB card). See the note on target2_chain.
+        mo = prep_set("t-mouse", mouse_pdb, "A,B", None, mo_epi,
                       spec["anchor"]["mouse_positional"], "A", "his_near_cation")
 
         # the anchor must be the SAME residue in both, or one pH term cannot serve both legs
@@ -260,12 +260,12 @@ def main():
 
         # index counts must scale with protomer count, not silently collapse to one
         assert len(hu["epitope_idx"]) == len(hu_epi) * 3, len(hu["epitope_idx"])
-        assert len(mo["epitope_idx"]) == len(mo_epi) * 3, len(mo["epitope_idx"])
+        assert len(mo["epitope_idx"]) == len(mo_epi) * 2, len(mo["epitope_idx"])
 
         # MUTATION TEST: the human numbers must NOT work on the mouse target. If they did,
         # the mapping would be decoration and a stale copy would go unnoticed.
         try:
-            bad = prep_set("t-bad", mouse_pdb, "A,B,C", None, hu_epi,
+            bad = prep_set("t-bad", mouse_pdb, "A,B", None, hu_epi,
                            spec["anchor"]["human_positional"], "A", "his_near_cation")
             assert residues(bad, hu_epi) != hu_res, (
                 "human epitope numbers reproduce the human residues on the MOUSE target -- "
