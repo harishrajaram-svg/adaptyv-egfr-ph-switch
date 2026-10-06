@@ -70,6 +70,13 @@ def main():
     assert 'volumes={"/runs": runs_vol}' in src, "Volume not mounted on the function"
     assert "runs_vol.commit()" in src, "nothing ever commits -- the Volume would stay empty"
     assert "modal volume get esmfold2-runs" in src, "no recovery command documented"
+    # The documented command must be the form that WORKS. The first version passed the
+    # destination as an argument, which raises "[Errno 21] Is a directory" -- a recovery
+    # command you reach for only after losing a run is the worst place for that.
+    assert "cd runs/<dest>" in src, \
+        "the recovery command must cd to the destination, not pass it as an argument"
+    assert "esmfold2-runs <run_name> ./" not in src, \
+        "the broken recovery form (destination as argument) is back in the comments"
     assert src.count("def _to_py") == 1, "the duplicated post-loop block is still present"
     assert "len(outputs_so_far) // 3" not in src, "implicit sample index came back"
     assert "sample_idx += 1" in src, "explicit counter missing"
