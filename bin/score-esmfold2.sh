@@ -44,12 +44,33 @@ N_FOLDS=$(( N_COMPLEX * N_SEEDS ))
 # REFUSED TO LAUNCH a run that needed 55 minutes (2026-10-04, 8 apps x 254 folds).
 # That is the third time this constant has misled a launch decision, so it is now
 # derived from the actual residue count in the input.
-#   measured anchors: 770 residues ~ 140s/fold ; 240 residues ~ 10s/fold
-# => roughly quadratic in length; a linear fit through those two points is enough
-#    for a timeout, and it is rounded UP.
+# FOURTH time, 2026-10-06. The 770res~140s anchor UNDERSHOOTS badly: g-fab's 898-residue
+# Fab+trimer complexes measured 377s/fold, 25 folds, timed with a stopwatch -- the fit
+# predicted 161s, a 2.3x underestimate. On the corrected G4 (859 res, 5 folds) that handed
+# back MODAL_TIMEOUT=34min for a run that needs 31.4min: 2.6 minutes of headroom on a
+# wrapper whose whole point is that a timeout loses EVERY completed fold. Caught before it
+# spent anything, but only because the measured rate was fresh in mind.
+#   measured anchors: 898 residues = 377s/fold (n=25, 2026-10-06, the firmest point we have)
+#                     770 residues ~ 140s/fold ; 240 residues ~ 10s/fold
+# The three points are not collinear -- 240->770 gives 0.245 s/res, 770->898 gives 1.85 --
+# which is what "roughly quadratic" actually looks like once there is a third point. So fit
+# QUADRATICALLY through the extremes rather than linearly, and anchor it on the measured
+# high end, because that is the end where being wrong costs a whole run:
+#   sec = 10 + 367 * ((N_RES - 240) / 658)^2    [ = 377 at 898, = 10 at 240 ]
+# At 770 this gives 249s against that anchor's ~140s, i.e. it OVERSHOOTS the middle by
+# ~1.8x. That is deliberate and it is the safe direction: MODAL_TIMEOUT is a ceiling, not
+# a reservation -- Modal bills actual use, so an over-long timeout costs nothing, while an
+# under-long one loses every completed fold and bills for all of them. The default
+# NEED_MIN doubles it again, so the REFUSING branch cannot fire on a default launch.
+# If a future measurement contradicts this, replace the ANCHOR and re-derive; do not nudge
+# the constant -- nudging is how this drifted wrong three times before.
 N_RES=$(awk '/^[A-Z]/ {n+=length($0)} END {print n}' "$(find "$IN" -maxdepth 1 -name '*.faa' | head -1)" 2>/dev/null)
 N_RES=${N_RES:-770}
-SEC_PER_FOLD=$(( 10 + (N_RES - 240) * 130 / 530 ))
+if (( N_RES <= 240 )); then
+  SEC_PER_FOLD=10
+else
+  SEC_PER_FOLD=$(( 10 + 367 * (N_RES - 240) * (N_RES - 240) / (658 * 658) + 1 ))
+fi
 (( SEC_PER_FOLD < 8 )) && SEC_PER_FOLD=8
 EST_MIN=$(( (N_FOLDS * SEC_PER_FOLD + 180) / 60 + 1 ))
 echo "[score-esmfold2] ${N_RES} residues/complex -> ~${SEC_PER_FOLD}s per fold"
