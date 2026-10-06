@@ -69,6 +69,12 @@ GATES = [
     # mean anything. This is the gate that would catch a regression reviving the `>= 0`
     # threshold: the far control passes it 15/15 while sitting 13.98 A from any cation.
     ('anchor_dddg', [PY, 'analysis/02-tnf/anchor_dddg.py'], None),
+    # 1TNF carries LEU where canonical TNF-alpha has ASP219 -- one mismatch in 157 residues,
+    # in the consensus core of the epitope, reported in Slack 2026-10-06. Three existing
+    # guards all missed it because each checks identity only at positions it already cares
+    # about. This one checks EVERY position of EVERY target, and refuses if any generator
+    # spec points at a known-divergent file.
+    ('target_identity', [PY, 'analysis/02-tnf/target_identity.py'], None),
     # Hard ELIGIBILITY gate, not a document check. It is expected to be RED until the
     # unlevelled designs are resolved in the portal; a red here means "do not nominate
     # yet", not "the writeup is wrong". Added 2026-10-05 after 4 of 18 shipped designs

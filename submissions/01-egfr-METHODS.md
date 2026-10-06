@@ -1995,6 +1995,17 @@ discounts everything, while one who finds it already listed and dated does the o
 while establishing the licence position for the problem-2 `dddG_elec` filter, which is a
 reimplementation precisely to avoid this.
 
+🟢 **RESOLVED 2026-10-06 by the organisers, and the disclosure above stands unchanged.** Asked
+directly in `#design-methods` whether BindCraft's PyRosetta use was acceptable for a
+non-commercial individual researcher, Amir Shanehsazzadeh (Anthropic) replied: *"I believe
+PyRosetta is fine for non-commercial use. The license rule on our end is just for you to make sure
+you are adhering to the relevant licenses."* This entry is non-commercial, so **the question above
+is answered and there is no licence breach.** Two things do not change: the disclosure stays, since
+what BindCraft installs is a fact a reader is entitled to, and the correction above stays with its
+original date, since the 10-05 statement was wrong *when written* about what had been verified. The
+one claim now withdrawn is the inference that Anthropic's own exclusion of Rosetta/PyRosetta from
+their campaign implied a prohibition on ours — it did not.
+
 <!-- GENERATED:DECL-STRUCT do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 **Structures.** Predicted complexes are published at `submissions/structures/`, one median-ipSAE pose each -- not the best pose, which would be selection on the outcome. **Coverage is 9 of 16.** Without a published structure: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Their poses exist and are scored; they are simply not exported. Stated rather than implied.
 <!-- /GENERATED:DECL-STRUCT -->

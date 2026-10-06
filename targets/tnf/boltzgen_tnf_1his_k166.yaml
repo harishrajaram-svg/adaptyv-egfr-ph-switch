@@ -1,3 +1,17 @@
+# 🔴 TARGET CORRECTED 2026-10-06 -- READ THIS BEFORE RE-RUNNING ANYTHING OLDER
+# This spec now points at tnf_canonical_trimer.pdb, NOT tnf_1tnf_trimer.pdb.
+# 1TNF carries LEU at PDB residue 143 in all three chains where canonical human TNF-alpha
+# (UniProt P01375) has ASP -- Asp219 of the full-length protein, uniprot 219 in our numbering.
+# It is the ONLY mismatch in 157 residues, and it sits in the CONSENSUS CORE of the
+# receptor-contact epitope, present in 10 of 10 receptor copies.
+# Reported by Ken Osumi in #anthropic_adaptyv_competition 2026-10-05 22:14 EDT, with the
+# empirical consequence attached: binders he designed against 1TNF failed re-prediction
+# against canonical TNF-alpha, and after redesigning against the canonical sequence they
+# bound by BLI at Adaptyv Bio. So this is not a cosmetic numbering point.
+# Our own guards did NOT catch it: per_partner.py's best_offset only requires >=90% sequence
+# identity (1 mismatch in 157 is 99.4%) and the census self-tests only assert residue identity
+# at the CATIONIC positions. We verified identity exactly where we were looking.
+#
 # SINGLE-HISTIDINE ARM -- one pinned His against K166 only, the EASIER anchor (17.2% reach vs
 # R108 NH2 11.8%). Hedge against the two-site span being unbuildable. Otherwise as the main arm.
 #
@@ -57,7 +71,7 @@ entities:
         loop: 41..45,47..51
 
   - file:
-      path: tnf_1tnf_trimer.pdb
+      path: tnf_canonical_trimer.pdb
       include:
         - chain:
             id: A

@@ -4,9 +4,23 @@ dddG_elec -- the SELECTION FILTER for problem 2's first-ranked objective (pH-sel
 
 WHY THIS FILE EXISTS, AND WHAT IT IS NOT
     challenges/02-tnf-alpha.md s6 names this "the selection filter to build". It is a
-    REIMPLEMENTATION of the Rosetta `fa_elec` functional form, not Rosetta. Rosetta and
-    PyRosetta are out of scope on licence grounds by the organisers' own rule
-    (reference/anthropic-binder-design-protocol.md:78), and Ahn et al. never released code.
+    REIMPLEMENTATION of the Rosetta `fa_elec` functional form, not Rosetta.
+
+    s LICENCE PREMISE CORRECTED 2026-10-06: this file was written believing Rosetta and
+    PyRosetta were out of scope by the organisers' own rule
+    (reference/anthropic-binder-design-protocol.md:78). They are NOT. Amir Shanehsazzadeh
+    (Anthropic) in #design-methods, 2026-10-06 08:56 EDT: "I believe PyRosetta is fine for
+    non-commercial use. The license rule on our end is just for you to make sure you are
+    adhering to the relevant licenses." So the reimplementation was not NECESSARY.
+
+    It was still not wasted -- it produced the finding that the published `>= 0` threshold
+    passes a mechanism-absent control 15/15 (s6e), which is a property of the functional form
+    and not of this implementation. But the right next move is now PyRosetta, because Ahn
+    REPACK at both pH values via pH_mode and this file is rigid, and its own docstring below
+    says the relaxed leg is the honest one. Do not extend the rigid version further.
+
+    Ahn et al. never released code, so the reimplementation remains the only route to their
+    exact filter without rebuilding their protocol in PyRosetta.
     Precedent for this substitution: bin/ph_gate.py stands in for Rosetta's pH module,
     bin/relax_chain.py substitutes OpenMM+ff14SB for FastRelax.
 
