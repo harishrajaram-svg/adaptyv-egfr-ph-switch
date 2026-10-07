@@ -1,20 +1,44 @@
 diff --git a/modal_esmfold2.py b/modal_esmfold2.py
-index e3ea6da..ddf8b5e 100644
---- a/modal_esmfold2.py
+new file mode 100644
+index 0000000..ddf8b5e
+--- /dev/null
 +++ b/modal_esmfold2.py
-@@ -28,14 +28,21 @@ modal run modal_esmfold2.py --input-faa complex.faa --num-diffusion-samples 3
- import os
- from pathlib import Path
- 
--from modal import App, Image
+@@ -0,0 +1,347 @@
++# /// script
++# requires-python = ">=3.12"
++# dependencies = [
++#     "modal>=1.0",
++# ]
++# ///
++"""ESMFold2 (Biohub) structure prediction.
++
++https://github.com/Biohub/esm  https://huggingface.co/biohub/ESMFold2
++
++Single-sequence (or multi-chain complex) folding with the Biohub ESMFold2
++model. No API token required; weights are baked into the image at build time.
++
++Input is a FASTA. Header type tags `protein|`, `dna|`, `rna|`, `ligand|`
++are honored when present; otherwise sequences are treated as protein.
++Ligand sequences are interpreted as SMILES.
++
++```
++printf '>protein|name=insulin\\nGIVEQCCTSICSLYQLENYCN\\n' > test_esmfold2.faa
++modal run modal_esmfold2.py --input-faa test_esmfold2.faa
++
++# Multi-entity complex with a ligand
++printf '>protein|A\\nMKTAYIAKQRQISFVKSHFSRQ\\n>ligand|B\\nN[C@@H](Cc1ccc(O)cc1)C(=O)O\\n' > complex.faa
++modal run modal_esmfold2.py --input-faa complex.faa --num-diffusion-samples 3
++```
++"""
++
++import os
++from pathlib import Path
++
 +from modal import App, Image, Volume
- 
- GPU = os.environ.get("MODAL_GPU", "A100-40GB")
- TIMEOUT = int(os.environ.get("MODAL_TIMEOUT", 30))
- 
--ESMFOLD2_HF_REPO = "biohub/ESMFold2"
--ESMFOLD2_HF_REVISION = "1afea82e432079d9af2ebd71d1e4c339ecca2ff0"
--ESMFOLD2_GIT_REF = "c94ed8d"
++
++GPU = os.environ.get("MODAL_GPU", "A100-40GB")
++TIMEOUT = int(os.environ.get("MODAL_TIMEOUT", 30))
++
 +# PATCHED 2026-09-18: made selectable so the protocol's Full + Fast arms can both run.
 +#   Full (default): ESMFOLD2_HF_REPO=biohub/ESMFold2
 +#   Fast:           ESMFOLD2_HF_REPO=biohub/ESMFold2-Fast ESMFOLD2_HF_REVISION=main
@@ -25,13 +49,38 @@ index e3ea6da..ddf8b5e 100644
 +    "ESMFOLD2_HF_REVISION", "1afea82e432079d9af2ebd71d1e4c339ecca2ff0"
 +) or None
 +ESMFOLD2_GIT_REF = "43b4548b86762edfa747b07d5f440aad3c33acee"  # PATCHED 2026-09-18: c94ed8d depended on github.com/Biohub/transformers (private/deleted, 404) and could not build. Upstream replaced it with PyPI transformers>=4.57.6. This is esm 3.4.1.post1 (2026-09-16).
- ESMFOLD2_CACHE_DIR = "/root/.cache/huggingface"
- 
- 
-@@ -68,6 +75,25 @@ image = (
-     .run_function(_download_models)
- )
- 
++ESMFOLD2_CACHE_DIR = "/root/.cache/huggingface"
++
++
++def _download_models():
++    """Pre-download ESMFold2 weights into the image cache at build time."""
++    from huggingface_hub import snapshot_download
++
++    Path(ESMFOLD2_CACHE_DIR).mkdir(parents=True, exist_ok=True)
++    snapshot_download(
++        repo_id=ESMFOLD2_HF_REPO,
++        revision=ESMFOLD2_HF_REVISION,
++        cache_dir=ESMFOLD2_CACHE_DIR,
++        allow_patterns=["*.safetensors", "*.bin", "*.json", "*.pkl", "*.txt", "*.model"],
++    )
++
++
++image = (
++    Image.from_registry("nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04", add_python="3.12")
++    .apt_install("git", "wget")
++    .env({
++        "CUDA_HOME": "/usr/local/cuda",
++        "HF_HOME": ESMFOLD2_CACHE_DIR,
++        "HF_HUB_CACHE": ESMFOLD2_CACHE_DIR,
++    })
++    .uv_pip_install(
++        f"esm @ git+https://github.com/Biohub/esm.git@{ESMFOLD2_GIT_REF}",
++        "xformers",
++        "huggingface_hub",
++    )
++    .run_function(_download_models)
++)
++
 +# DURABILITY. Output used to exist only as the remote function's RETURN VALUE, shipped back
 +# after the last fold, so a timeout, a crash or a DEAD LOCAL PROCESS wrote nothing: 13 of 20
 +# folds lost 2026-10-02 and billed in full, and 2 of 10 lost again 2026-10-06 when a local
@@ -51,63 +100,84 @@ index e3ea6da..ddf8b5e 100644
 +#      Verified 2026-10-06 voltest01: 6/6 files byte-identical.)
 +runs_vol = Volume.from_name("esmfold2-runs", create_if_missing=True)
 +
- app = App("esmfold2", image=image)
- 
- 
-@@ -115,21 +141,28 @@ def _fasta_to_input(fasta_str: str):
-     return StructurePredictionInput(sequences=sequences)
- 
- 
--@app.function(timeout=TIMEOUT * 60, gpu=GPU)
++app = App("esmfold2", image=image)
++
++
++def _fasta_iter(s: str):
++    """Yield (header, sequence) tuples from a FASTA string."""
++    from io import StringIO
++    from itertools import groupby
++
++    with StringIO(s) as fh:
++        groups = (x[1] for x in groupby(fh, lambda line: line.startswith(">")))
++        for header_lines in groups:
++            header = next(header_lines)[1:].strip()
++            seq = "".join(s.strip() for s in next(groups))
++            yield header, seq
++
++
++def _fasta_to_input(fasta_str: str):
++    """Build a StructurePredictionInput from a FASTA string."""
++    from esm.models.esmfold2 import (
++        DNAInput,
++        LigandInput,
++        ProteinInput,
++        StructurePredictionInput,
++    )
++    try:
++        from esm.models.esmfold2 import RNAInput
++    except ImportError:
++        RNAInput = None
++
++    chain_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
++    sequences: list = []
++    for n, (seq_id, seq) in enumerate(_fasta_iter(fasta_str)):
++        first = seq_id.split("|")[0].lower() if "|" in seq_id else ""
++        cid = chain_letters[n] if n < len(chain_letters) else f"chain_{n}"
++        if first == "ligand":
++            sequences.append(LigandInput(id=cid, smiles=seq))
++        elif first == "dna":
++            sequences.append(DNAInput(id=cid, sequence=seq))
++        elif first == "rna":
++            if RNAInput is None:
++                raise ValueError("RNA inputs not supported by this esm version")
++            sequences.append(RNAInput(id=cid, sequence=seq))
++        else:
++            sequences.append(ProteinInput(id=cid, sequence=seq))
++    return StructurePredictionInput(sequences=sequences)
++
++
 +@app.function(timeout=TIMEOUT * 60, gpu=GPU, volumes={"/runs": runs_vol})
- def esmfold2(
--    fasta_name: str,
--    fasta_str: str,
--    seed: int = 42,
++def esmfold2(
 +    complexes: list,        # PATCHED: [(name, fasta_str), ...] -- ALL folded in ONE container
 +    seed: int | str = 42,   # PATCHED: accepts "1,2,3,4,5" -- loops seeds in ONE container
-     num_diffusion_samples: int = 1,
-     num_sampling_steps: int = 50,
-     num_loops: int = 3,
++    num_diffusion_samples: int = 1,
++    num_sampling_steps: int = 50,
++    num_loops: int = 3,
 +    run_name: str = "",     # names the Volume directory; "" disables the durable copy
- ) -> list[tuple[Path, bytes]]:
--    """Fold a FASTA with ESMFold2; return per-sample CIF + scores JSON."""
++) -> list[tuple[Path, bytes]]:
 +    """Fold a FASTA with ESMFold2; return per-sample CIF + scores JSON.
 +
 +    Files are ALSO written to the `esmfold2-runs` Volume as each fold finishes, so partial
 +    work survives a timeout, a crash or a dead local client. See the note by the Volume.
 +    """
-     import json
-     import time
- 
-     from esm.models.esmfold2 import ESMFold2InputBuilder
--    from transformers.models.esmfold2.modeling_esmfold2 import ESMFold2Model
++    import json
++    import time
++
++    from esm.models.esmfold2 import ESMFold2InputBuilder
 +    # PATCHED 2026-09-18: transformers.models.esmfold2 exists only in the (deleted)
 +    # Biohub transformers fork and upstream 5.16.0.dev0+. With mainline transformers 4.x
 +    # the model class lives in the esm package itself, as EsmFold2Model (not ESMFold2Model).
 +    from esm.models.esmfold2 import EsmFold2Model as ESMFold2Model
- 
-     t0 = time.time()
-     model = ESMFold2Model.from_pretrained(
-@@ -139,21 +172,21 @@ def esmfold2(
-     ).cuda().eval()
-     print(f"[esmfold2] Model loaded in {time.time() - t0:.1f}s")
- 
--    spi = _fasta_to_input(fasta_str)
--    print(f"[esmfold2] {len(spi.sequences)} entities, samples={num_diffusion_samples}, steps={num_sampling_steps}")
--
--    t0 = time.time()
--    result = ESMFold2InputBuilder().fold(
--        model, spi,
--        num_loops=num_loops,
--        num_sampling_steps=num_sampling_steps,
--        num_diffusion_samples=num_diffusion_samples,
--        seed=seed,
--        complex_id=fasta_name,
--    )
--    print(f"[esmfold2] fold() done in {time.time() - t0:.1f}s")
--
--    samples = result if isinstance(result, list) else [result]
++
++    t0 = time.time()
++    model = ESMFold2Model.from_pretrained(
++        ESMFOLD2_HF_REPO,
++        revision=ESMFOLD2_HF_REVISION,
++        local_files_only=True,
++    ).cuda().eval()
++    print(f"[esmfold2] Model loaded in {time.time() - t0:.1f}s")
++
 +    print(f"[esmfold2] {len(complexes)} complex(es), samples={num_diffusion_samples}, steps={num_sampling_steps}")
 +
 +    # PATCHED 2026-09-18: fold once per seed, reusing the loaded model.
@@ -123,31 +193,35 @@ index e3ea6da..ddf8b5e 100644
 +    # silently assumes every sample yields exactly three files, so adding a fourth output
 +    # would renumber every sample and orphan each *_ipsae.json from its *.cif.
 +    sample_idx = 0
- 
-     def _to_py(v):
-         if v is None:
-@@ -166,8 +199,10 @@ def esmfold2(
-             return [_to_py(x) for x in v]
-         return v
- 
--    outputs: list[tuple[Path, bytes]] = []
--    for idx, sample in enumerate(samples):
++
++    def _to_py(v):
++        if v is None:
++            return None
++        if hasattr(v, "tolist"):
++            return v.tolist()
++        if isinstance(v, dict):
++            return {str(k): _to_py(val) for k, val in v.items()}
++        if isinstance(v, (list, tuple)):
++            return [_to_py(x) for x in v]
++        return v
++
 +    def _serialize_sample(sample, _sd, fasta_name, idx):
 +        """The three files one sample produces. Extracted from the old post-loop block so it
 +        can run per fold; byte-for-byte the same output, same names, same order."""
 +        out: list[tuple[Path, bytes]] = []
-         complex_obj = getattr(sample, "complex", sample)
-         cif_str = complex_obj.to_mmcif()
-         plddt_list = _to_py(complex_obj.plddt) or []
-@@ -181,17 +216,74 @@ def esmfold2(
-             "iptm": _to_py(getattr(sample, "iptm", None)),
-             "chain_pair_iptm": _to_py(getattr(sample, "pair_chains_iptm", None)),
-         }
--        outputs.append((Path(f"{fasta_name}_sample_{idx}.cif"), cif_str.encode()))
--        outputs.append((Path(f"{fasta_name}_sample_{idx}_scores.json"),
--                        json.dumps(scores, indent=2).encode()))
--
--    return outputs
++        complex_obj = getattr(sample, "complex", sample)
++        cif_str = complex_obj.to_mmcif()
++        plddt_list = _to_py(complex_obj.plddt) or []
++        mean_plddt = sum(plddt_list) / len(plddt_list) if plddt_list else 0.0
++        scores = {
++            "plddt": mean_plddt,
++            "plddt_per_token": plddt_list,
++            "num_tokens": len(plddt_list),
++            "sample_index": idx,
++            "ptm": _to_py(getattr(sample, "ptm", None)),
++            "iptm": _to_py(getattr(sample, "iptm", None)),
++            "chain_pair_iptm": _to_py(getattr(sample, "pair_chains_iptm", None)),
++        }
 +        base = f"{fasta_name}/{fasta_name}_seed{_sd}_sample_{idx}"
 +        out.append((Path(f"{base}.cif"), cif_str.encode()))
 +        out.append((Path(f"{base}_scores.json"), json.dumps(scores, indent=2).encode()))
@@ -210,22 +284,20 @@ index e3ea6da..ddf8b5e 100644
 +    # every fold, which is what made the output all-or-nothing. _serialize_sample now runs
 +    # inside the fold loop and `outputs_so_far` is the same list it used to build.
 +    return outputs_so_far
- 
- 
- @app.local_entrypoint()
- def main(
-     input_faa: str,
--    seed: int = 42,
++
++
++@app.local_entrypoint()
++def main(
++    input_faa: str,
 +    seed: str = "42",   # PATCHED: comma-separated for multi-seed, e.g. "1,2,3,4,5"
-     num_diffusion_samples: int = 1,
-     num_sampling_steps: int = 50,
-     num_loops: int = 3,
-@@ -200,19 +292,52 @@ def main(
- ):
-     from datetime import datetime
- 
--    fasta_str = Path(input_faa).read_text()
--    fasta_name = Path(input_faa).stem
++    num_diffusion_samples: int = 1,
++    num_sampling_steps: int = 50,
++    num_loops: int = 3,
++    out_dir: str = "./out/esmfold2",
++    run_name: str | None = None,
++):
++    from datetime import datetime
++
 +    # PATCHED: input_faa may be a FILE or a DIRECTORY of .faa files. A directory
 +    # folds every complex in ONE container, so the ~137s model load is paid once
 +    # instead of once per design. At 100 designs that is ~4 GPU-hours saved.
@@ -241,19 +313,15 @@ index e3ea6da..ddf8b5e 100644
 +
 +    today = datetime.now().strftime("%Y%m%d%H%M")[2:]
 +    vol_tag = run_name or today          # resolved HERE so the Volume dir matches out_dir
- 
-     outputs = esmfold2.remote(
--        fasta_name=fasta_name,
--        fasta_str=fasta_str,
++
++    outputs = esmfold2.remote(
 +        complexes=complexes,
-         seed=seed,
-         num_diffusion_samples=num_diffusion_samples,
-         num_sampling_steps=num_sampling_steps,
-         num_loops=num_loops,
++        seed=seed,
++        num_diffusion_samples=num_diffusion_samples,
++        num_sampling_steps=num_sampling_steps,
++        num_loops=num_loops,
 +        run_name=vol_tag,
-     )
--
--    today = datetime.now().strftime("%Y%m%d%H%M")[2:]
++    )
 +    # ALL-OR-NOTHING OUTPUT -- FIXED 2026-10-06. This local write still happens only after
 +    # the remote call returns, so it is still all-or-nothing BY ITSELF. What changed is that
 +    # it is no longer the only copy: esmfold2() now writes each fold's three files to the
@@ -276,6 +344,10 @@ index e3ea6da..ddf8b5e 100644
 +    #      Verified 2026-10-06 voltest01: 6/6 files byte-identical.)
 +    # Still size MODAL_TIMEOUT to the batch -- the Volume saves completed folds, it does not
 +    # make an undersized timeout stop truncating the run.
-     out_dir_full = Path(out_dir) / (run_name or today)
-     for out_file, out_content in outputs:
-         target = out_dir_full / out_file
++    out_dir_full = Path(out_dir) / (run_name or today)
++    for out_file, out_content in outputs:
++        target = out_dir_full / out_file
++        target.parent.mkdir(parents=True, exist_ok=True)
++        target.write_bytes(out_content)
++
++    print(f"Results saved to: {out_dir_full}")
