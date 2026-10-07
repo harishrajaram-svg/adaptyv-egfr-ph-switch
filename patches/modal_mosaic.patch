@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..34ad2f3
+index 0000000..4b79df6
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1558 @@
+@@ -0,0 +1,1564 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -1519,7 +1519,13 @@ index 0000000..34ad2f3
 +    # the run is cut off, and the GPU time is billed either way.
 +    _n_traj = max(1, int(n_seeds)) * max(1, len([v for v in lengths.split(",") if v.strip()]))
 +    _steps = (3 + 2) if smoke else (int(steps_soft) + int(steps_sharp))
-+    _s_per_step = 25.9 if target2 else 21.7          # measured, s33/s37
++    # Measured rates, with a SAFETY FACTOR, because the same configuration does not
++    # reproduce to better than ~20%: the species leg measured 25.9 s/step on p2species02 and
++    # 30.6 s/step on p2dry03 -- identical tokens, legs and length, +18% apart. The ESMFold
++    # estimator missed in the other direction by a similar margin (239s actual vs 335s
++    # predicted). A point estimate is not safe here, so the factor is explicit rather than
++    # hidden in a rounded constant.
++    _s_per_step = (30.6 if target2 else 25.0) * 1.15
 +    _est_min = (3 * 420 + _n_traj * (_steps * _s_per_step + 300)) / 60 + 1
 +    print(f"[mosaic] {_n_traj} trajectories x {_steps} steps at ~{_s_per_step}s "
 +          f"-> estimate ~{_est_min:.0f} min; TIMEOUT={TIMEOUT} min")
