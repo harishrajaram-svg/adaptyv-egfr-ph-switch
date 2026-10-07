@@ -42,6 +42,19 @@ set -euo pipefail
 : "${1:?usage: probe-grad-noise.sh <tag> <length> <seed>}"
 TAG="$1"; LEN="${2:-76}"; SEED="${3:-0}"
 
+# FAIL CLOSED on the caller's zsh trap, 2026-10-07. Four runs were launched with `set -- $a`
+# in a zsh loop; zsh does NOT word-split unquoted parameters, so TAG became "n-p 76 0" and LEN
+# and SEED fell back to their defaults -- four IDENTICAL L=76 seed=0 runs instead of 76/84 x
+# seeds 0/1. Nothing downstream noticed; it was visible only in the log banner. A tag carrying
+# whitespace is the signature of that collapse, and digits are cheap to insist on.
+case "$TAG" in
+  *[[:space:]]*) echo "[probe] REFUSING: tag '$TAG' contains whitespace -- the caller's shell did"                      " not split its arguments, so LEN and SEED silently took defaults." >&2
+                 exit 1 ;;
+esac
+case "$LEN"  in ''|*[!0-9]*) echo "[probe] REFUSING: length '$LEN' is not a number"  >&2; exit 1;; esac
+case "$SEED" in ''|*[!0-9]*) echo "[probe] REFUSING: seed '$SEED' is not a number"   >&2; exit 1;; esac
+echo "[probe] tag=$TAG L=$LEN seed=$SEED grad_samples=${GRAD_SAMPLES:-1} momentum_soft=${MOMENTUM_SOFT:-0.0}"
+
 # ARM A is the default: momentum off, ONE sample. Arm B adds averaging and is GATED on arm A
 # showing movement -- see s45's amendment, which also fixes the hard stop at two arms.
 GRAD_SAMPLES="${GRAD_SAMPLES:-1}"
