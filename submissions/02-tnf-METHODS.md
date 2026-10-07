@@ -653,6 +653,51 @@ runway — nothing here used it.
 
 ---
 
+### 6.6 The estimator probe: built, pre-registered, and reported whatever it returns
+
+Acting on the correction above rather than only recording it. The configuration every one of the
+sixteen trajectories shared is now a parameter, and an arm exists that varies it:
+
+| held identical to condition 2 — the best of the five | varied |
+|---|---|
+| pinned 9-position epitope, anchor 27 on chain B | **`--grad-samples 4`** (was 1) |
+| `w_acid 0.5` and the condition-2 weight set | **`--momentum-soft 0.0`** (was 0.9) |
+| lengths 76 and 84, seeds 0 and 1 | — |
+| `steps_soft 38 / steps_sharp 12`, `sampling_steps 10`, `recycling_steps 1` | — |
+| species leg on, mouse dimer, `w_species 1.0` | — |
+
+Four samples go through `build_multisample_loss` on the **human and species legs only**. The monomer
+leg stays single-sample: it carries pLDDT, within-binder contact and globularity and **no interface
+term**, so averaging it spends GPU memory — the binding constraint on an L40S that already cannot
+hold three protomers (§14) — on a leg that cannot answer the question.
+
+**The bar is pre-registered, before any number exists**, and is the same statistic and tool as the
+free-footprint probe so the two are comparable: **four-run mean rise in `iptm_repred` across the
+soft phase**, via `analysis/02-tnf/loss_traj.py --block 13`. The free-footprint probe returned
+**+0.004 ± 0.013**. A rise worth acting on is **≥ +0.12**; detectable rise over four runs is ~0.017,
+so sensitivity is not the constraint. **A mean rise under +0.02 eliminates cause 2**, leaves cause 3
+alone, and ends the search — it is not grounds for a seventh condition. Endpoint medians are
+secondary, for the §6.3 reason that an endpoint cannot distinguish a badly-tuned method from one
+that is not optimising.
+
+**What it does not test, stated in advance.** Cause 3 is untouched, and condition 3 is direct
+evidence for it — tripling the interface weights made results *worse*, on 20 terms across three legs
+where the external method carries 8 on one leg at an ipTM weight of 0.025. A null here does not
+exonerate the loss, and a rise would not prove noise was the only problem. AlphaProteo's diagnosis
+of this epitope (§6.5) is optimizer-independent and survives either result.
+
+**Status at the time of writing: built, selftested, mutation-tested, not launched.** The default
+path is unchanged — `grad_samples 1` and momentum 0.9/0.5 reproduce every earlier run — so nothing
+already reported is affected. Guards added with it, because the free-footprint path taught that an
+unexecuted path is probably broken: the selftest asserts momentum is not a literal again, that the
+multisample path stays gated on `grad_samples > 1`, that **every keyword passed to
+`build_multisample_loss` is one upstream `b94b9d4` accepts** (a bad keyword would otherwise surface
+20 minutes into a billed run), that the monomer leg is not routed through it, that the run banner
+states the estimator, and that **every flag in every probe launcher exists on the entrypoint**. Each
+guard was mutation-tested in the direction it is meant to catch.
+
+---
+
 ## 7. Protomer count is a measured confound for any inter-protomer epitope
 
 The challenge recommends an epitope spanning two protomers. Any ipSAE-type score computed for such
@@ -1265,7 +1310,9 @@ those are marked.
     a literal in our own wrapper, so **the configuration that every one of the sixteen trajectories
     shared (one sample per gradient, momentum 0.9) was never varied, and could have been.** The
     method fails for a reason this work cannot name, and one of the three candidate reasons was left
-    untested by an unchecked assumption rather than by the budget.
+    untested by an unchecked assumption rather than by the budget. An arm that varies it is now
+    built and its bar pre-registered (§6.6); whether it was run is stated there, and the sixteen
+    trajectories reported in §6.1–§6.4 are unaffected either way.
 35. **The step budget is therefore unjustified by measurement.** 50 steps and 200 steps give
     indistinguishable results, so whichever is used for the submitted designs is chosen on cost,
     not on evidence that it is sufficient.

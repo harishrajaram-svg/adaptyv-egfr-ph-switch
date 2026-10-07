@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..0819bd1
+index 0000000..55b4227
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1635 @@
+@@ -0,0 +1,1677 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -744,6 +744,17 @@ index 0000000..0819bd1
 +    sampling_steps: int = 10,
 +    stepsize: float = 0.0,
 +    sharpen: float = 1.3,
++    # THE GRADIENT ESTIMATOR. Defaults reproduce every run before 2026-10-07 exactly:
++    # one sample per gradient evaluation, momentum 0.9 soft / 0.5 sharp. All sixteen
++    # trajectories shared that configuration -- weights, steps and footprint were the three
++    # axes varied, and this was never one of them. Per-step interface SD is 0.0345 against a
++    # signal of ~0.13, so momentum 0.9 integrating one noisy sample can random-walk instead of
++    # descending. grad_samples > 1 switches the interface legs to mosaic's own
++    # build_multisample_loss, which re-runs structure+confidence from ONE trunk output and
++    # averages -- four samples halve the noise SD for well under 4x the cost.
++    grad_samples: int = 1,
++    momentum_soft: float = 0.9,
++    momentum_sharp: float = 0.5,
 +    use_mpnn: bool = True,
 +    w_iptm: float = 1.0,
 +    w_pae: float = 0.05,
@@ -1062,6 +1073,27 @@ index 0000000..0819bd1
 +            return total, {self.name: total, **aux}
 +
 +    model = Boltz2()
++
++    def build_interface_loss(*, loss, features):
++        """Boltz2 loss for a leg that carries the interface/pH terms.
++
++        grad_samples == 1 is byte-for-byte the previous behaviour. Above 1 this averages the
++        loss over several structure+confidence passes from a single trunk output, which is the
++        variance reduction the flat-trajectory question needs. The MONOMER leg deliberately
++        does NOT go through here: it carries pLDDT, within-binder contact and globularity and
++        no interface term, so averaging it costs GPU memory -- the binding constraint on an
++        L40S, which already cannot hold three protomers -- for no bearing on the question.
++        """
++        if grad_samples > 1:
++            return model.build_multisample_loss(
++                loss=loss, features=features, recycling_steps=recycling_steps,
++                sampling_steps=sampling_steps, num_samples=grad_samples,
++            )
++        return model.build_loss(
++            loss=loss, features=features,
++            recycling_steps=recycling_steps, sampling_steps=sampling_steps,
++        )
++
 +    mpnn = None
 +    if use_mpnn:
 +        # The published Nipah-winning recipe is Boltz-2 + SOLUBLE ProteinMPNN +
@@ -1140,10 +1172,7 @@ index 0000000..0819bd1
 +            inner = inner + w_mpnn * InverseFoldingSequenceRecovery(
 +                mpnn, temp=jnp.array(0.01)
 +            )
-+        total_loss = model.build_loss(
-+            loss=inner, features=features,
-+            recycling_steps=recycling_steps, sampling_steps=sampling_steps,
-+        )
++        total_loss = build_interface_loss(loss=inner, features=features)
 +        # GATE 0 -- THE MONOMER LOSS. tune01 produced binder pLDDT 0.41-0.52, barely above
 +        # the 0.32-0.45 range of the resequencing arms that were written off as not folding.
 +        # The likely cause: every term above sees only the COMPLEX, so nothing ever asks
@@ -1200,9 +1229,8 @@ index 0000000..0819bd1
 +                    width=acid_width,
 +                ))
 +            )
-+            total_loss = total_loss + w_species * model.build_loss(
++            total_loss = total_loss + w_species * build_interface_loss(
 +                loss=species_inner, features=species_features,
-+                recycling_steps=recycling_steps, sampling_steps=sampling_steps,
 +            )
 +        if w_monomer > 0:
 +            mono_features, _ = model.binder_features(binder_length=L, chains=[])
@@ -1229,6 +1257,9 @@ index 0000000..0819bd1
 +            raise SystemExit("STEP 4 FAILED on C1:\n  " + "\n  ".join(c1_violations))
 +        print(f"[mosaic] C1 audit clean. loss terms: {', '.join(term_names)}")
 +        step = stepsize if stepsize > 0 else 0.1 * float(np.sqrt(L))
++        est = (f"{grad_samples}x-avg" if grad_samples > 1 else "1-sample")
++        print(f"[mosaic] grad={est} momentum={momentum_soft}/{momentum_sharp} "
++              f"({'DEFAULT estimator' if grad_samples == 1 and momentum_soft == 0.9 else 'ESTIMATOR VARIED'})")
 +        print(f"[mosaic] L={L} stepsize={step:.3f} epitope={fmt_epitope(epitope_idx)} "
 +              f"terms={'+mpnn' if mpnn else 'no-mpnn'}")
 +
@@ -1243,10 +1274,10 @@ index 0000000..0819bd1
 +            # stage at scale>1 commits to a bad basin early; one at scale=1 never
 +            # discretizes and the argmax then has little to do with what was optimized.
 +            _, x = simplex_APGM(loss_function=loss_fn, x=x, n_steps=steps_soft,
-+                                stepsize=step, momentum=0.9, scale=1.0,
++                                stepsize=step, momentum=momentum_soft, scale=1.0,
 +                                key=jax.random.fold_in(key, 1))
 +            _, x = simplex_APGM(loss_function=loss_fn, x=x, n_steps=steps_sharp,
-+                                stepsize=step, momentum=0.5, scale=sharpen,
++                                stepsize=step, momentum=momentum_sharp, scale=sharpen,
 +                                key=jax.random.fold_in(key, 2))
 +            pssm = NoCys.sequence(x)                     # reinsert the zeroed Cys column
 +            tokens = np.asarray(pssm).argmax(-1)
@@ -1444,6 +1475,12 @@ index 0000000..0819bd1
 +        "steps_sharp": steps_sharp, "recycling_steps": recycling_steps,
 +        "sampling_steps": sampling_steps, "stepsize": stepsize, "sharpen": sharpen,
 +        "use_mpnn": mpnn is not None, "smoke": smoke,
++        # The estimator, recorded because the whole point of the probe that introduced it is a
++        # matched comparison against runs that did not have it. Absent from a config, a run is
++        # indistinguishable from the sixteen before it.
++        "optimizer": {"grad_samples": grad_samples, "momentum_soft": momentum_soft,
++                      "momentum_sharp": momentum_sharp,
++                      "multisample_loss": grad_samples > 1},
 +        "weights": {"iptm": w_iptm, "pae": w_pae, "contact": w_contact,
 +                    "within": w_within, "plddt": w_plddt, "glob": w_glob,
 +                    "acid": w_acid, "mpnn": w_mpnn, "comp": w_comp,
@@ -1535,6 +1572,9 @@ index 0000000..0819bd1
 +    sampling_steps: int = 10,
 +    stepsize: float = 0.0,
 +    sharpen: float = 1.3,
++    grad_samples: int = 1,
++    momentum_soft: float = 0.9,
++    momentum_sharp: float = 0.5,
 +    use_mpnn: bool = True,
 +    w_acid: float = 2.0,
 +    w_mpnn: float = 3.0,
@@ -1626,6 +1666,8 @@ index 0000000..0819bd1
 +        steps_soft=steps_soft, steps_sharp=steps_sharp,
 +        recycling_steps=recycling_steps, sampling_steps=sampling_steps,
 +        stepsize=stepsize, sharpen=sharpen, use_mpnn=use_mpnn, w_acid=w_acid,
++        grad_samples=grad_samples, momentum_soft=momentum_soft,
++        momentum_sharp=momentum_sharp,
 +        w_mpnn=w_mpnn, w_plddt=w_plddt, w_monomer=w_monomer,
 +        w_iptm=w_iptm, w_contact=w_contact, w_pae=w_pae, w_within=w_within,
 +        w_glob=w_glob, w_comp=w_comp,

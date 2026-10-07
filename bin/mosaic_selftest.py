@@ -11,6 +11,7 @@ wrong in the same direction twice.
 usage: python3 bin/mosaic_selftest.py        (run from the repo root)
 """
 import pathlib
+import re
 import sys
 import types
 from pathlib import Path
@@ -586,6 +587,93 @@ def main():
         banner_ok = "call site NOT checked (biomodals/ absent -- gitignored)"
     print(f"free footprint  '' / none / free / None -> [] on both legs, banner reads "
           f"{fmt_epitope(None)!r}, bare len() still fails; {banner_ok}")
+
+    # 7. THE GRADIENT ESTIMATOR, added 2026-10-07. Checked at source level for the same
+    # reason the banner is: design() needs Boltz2 weights and a GPU, so the only thing
+    # reachable here is the call site. The failure this guards is specific and expensive --
+    # a kwarg mosaic does not accept dies ~20 minutes into a paid run, not locally.
+    #
+    # RECORDED UPSTREAM SIGNATURE, escalante-bio/mosaic at b94b9d4 (the commit the image
+    # pins), src/mosaic/models/boltz2.py, read 2026-10-07 via the GitHub contents API:
+    #     def build_multisample_loss(self, *, loss, features, recycling_steps=1,
+    #                                num_samples: int = 4, sampling_steps=None,
+    #                                reduction=jnp.mean)
+    # It is KEYWORD-ONLY, so every argument we pass must appear in this set.
+    UPSTREAM_MULTISAMPLE_KWARGS = {
+        "loss", "features", "recycling_steps", "num_samples", "sampling_steps", "reduction",
+    }
+    if src.is_file():
+        text = src.read_text()
+        lines = text.splitlines()
+
+        # 7a. momentum must not be a literal again. It was hardcoded 0.9/0.5 through all
+        # sixteen trajectories, which is exactly why that axis went unsearched.
+        # scoped to the simplex_APGM continuation lines ("stepsize=step, momentum=..."), not
+        # every line containing "momentum=" -- the run banner legitimately prints the values.
+        apgm = [l for l in lines if "stepsize=step, momentum=" in l]
+        assert apgm, "no simplex_APGM momentum call sites found at all"
+        for l in apgm:
+            assert "momentum=momentum_" in l, (
+                f"momentum is hardcoded again: {l.strip()!r} -- the one axis all sixteen "
+                "trajectories held fixed must stay a parameter")
+        assert len(apgm) == 2, f"expected soft+sharp momentum call sites, found {len(apgm)}"
+
+        # 7b. the multisample path must exist and be guarded by grad_samples > 1, so the
+        # default stays byte-for-byte the pre-2026-10-07 behaviour.
+        assert "build_multisample_loss(" in text, \
+            "the multisample path is gone; grad_samples would be silently ignored"
+        assert "if grad_samples > 1:" in text, \
+            "the multisample path is no longer gated on grad_samples > 1"
+
+        # 7c. every kwarg we hand it must be one upstream accepts. A typo here is invisible
+        # locally and fatal on a paid GPU.
+        i = next(n for n, l in enumerate(lines) if "build_multisample_loss(" in l)
+        call = "\n".join(lines[i:i + 6])
+        passed = set(re.findall(r"(\w+)=", call.split("build_multisample_loss(", 1)[1]))
+        unknown = passed - UPSTREAM_MULTISAMPLE_KWARGS
+        assert not unknown, (
+            f"build_multisample_loss called with kwargs upstream b94b9d4 does not accept: "
+            f"{sorted(unknown)}; it accepts {sorted(UPSTREAM_MULTISAMPLE_KWARGS)}")
+        assert "num_samples=grad_samples" in call, \
+            "grad_samples is not reaching num_samples, so --grad-samples would do nothing"
+
+        # 7d. the monomer leg must stay single-sample: it carries no interface or pH term,
+        # and the 4x vmap is memory-bound on an L40S that already cannot hold 3 protomers.
+        assert "loss=w_plddt * sp.PLDDTLoss()" in text, "monomer leg moved; recheck 7d"
+        mono = text.split("loss=w_plddt * sp.PLDDTLoss()", 1)[0].rsplit("total_loss", 1)[-1]
+        assert "build_interface_loss" not in mono, \
+            "the monomer leg was routed through the multisample path; it has no interface term"
+
+        # 7e. the banner must state the estimator, so a log proves which arm produced it --
+        # the same guarantee 'epitope=free' gives the free-footprint arm.
+        assert 'grad={est}' in text and "ESTIMATOR VARIED" in text, \
+            "the run banner no longer states the gradient estimator"
+        est_ok = "estimator call sites checked in source"
+    else:
+        est_ok = "estimator NOT checked (biomodals/ absent -- gitignored)"
+    print(f"grad estimator  momentum parameterised at 2 sites, multisample gated on "
+          f"grad_samples>1,\n                kwargs \u2286 upstream b94b9d4, monomer leg "
+          f"single-sample; {est_ok}")
+
+    # 8. EVERY FLAG IN EVERY PROBE LAUNCHER MUST EXIST ON main(). modal derives its CLI from
+    # the entrypoint signature, so a renamed or mistyped flag is not caught until the moment a
+    # paid run starts -- the same shape as "a weight that cannot be passed is a weight nobody
+    # tunes", and the same shape as the free-footprint path that had never been executed.
+    if src.is_file():
+        import ast as _ast
+        _fn = next(n for n in _ast.walk(_ast.parse(src.read_text()))
+                   if isinstance(n, _ast.FunctionDef) and n.name == "main")
+        _flags = {a.arg.replace("_", "-") for a in _fn.args.args + _fn.args.kwonlyargs}
+        _checked = []
+        for _sh in sorted(pathlib.Path("bin").glob("probe-*.sh")):
+            _used = set(re.findall(r"(?m)^\s+(--[a-z0-9-]+)", _sh.read_text()))
+            _bad = {f for f in _used if f.lstrip("-") not in _flags and f != "--smoke"}
+            assert not _bad, (
+                f"{_sh} passes flags main() does not accept: {sorted(_bad)} -- modal builds its "
+                f"CLI from the signature, so this dies at launch, after the GPU is billed")
+            _checked.append(f"{_sh.name}:{len(_used)}")
+        assert _checked, "no probe launchers found to check"
+        print("probe flags     every flag exists on main() -- " + ", ".join(_checked))
 
     print("\nselftest OK")
 
