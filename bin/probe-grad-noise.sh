@@ -12,6 +12,15 @@
 # output and averages, so 4 samples cost well under 4x. No parent, no warm start, no fork, no
 # patent licence.
 #
+# TWO ARMS, run in order, second gated on the first (s45 amendment 2026-10-07 12:35 PM):
+#   A  GRAD_SAMPLES=1 MOMENTUM_SOFT=0.0   ~$9   the default here. No memory risk at all:
+#                                               momentum is a scalar in the update rule.
+#   B  GRAD_SAMPLES=2 (or 4)              ~$15  ONLY if A moves. 4 samples on the human trimer
+#                                               leg asked for 64.66 GiB against an L40S's 48 GB
+#                                               and died RESOURCE_EXHAUSTED in simplex_APGM, so
+#                                               smoke 2 first -- the ceiling below 4 is unmeasured.
+# HARD STOP: two arms, then plan C ships. A null in A ends it and arm B does not run.
+#
 # MATCHED TO CONDITION 2 -- the best of the five -- so the estimator is the only variable:
 # pinned 9-position epitope, anchor 27 on chain B, w_acid 0.5, lengths 76/84, seeds 0/1,
 # steps_soft 38 / steps_sharp 12, species leg on. Identical to the p2probe2-* runs in every
@@ -32,6 +41,11 @@
 set -euo pipefail
 : "${1:?usage: probe-grad-noise.sh <tag> <length> <seed>}"
 TAG="$1"; LEN="${2:-76}"; SEED="${3:-0}"
+
+# ARM A is the default: momentum off, ONE sample. Arm B adds averaging and is GATED on arm A
+# showing movement -- see s45's amendment, which also fixes the hard stop at two arms.
+GRAD_SAMPLES="${GRAD_SAMPLES:-1}"
+MOMENTUM_SOFT="${MOMENTUM_SOFT:-0.0}"
 
 cd "$(dirname "$0")/.."
 python3 bin/mosaic_selftest.py >/dev/null
@@ -68,9 +82,11 @@ ARGS=(
   --seed0 "$SEED"
   --steps-soft 38                # condition 2's split exactly, not the free probe's 75/25
   --steps-sharp 12
-  --grad-samples 4               # THE VARIABLE. 1 everywhere before 2026-10-07
-  --momentum-soft 0.0            # THE OTHER VARIABLE. 0.9 everywhere before 2026-10-07
+  --grad-samples "$GRAD_SAMPLES"
+  --momentum-soft "$MOMENTUM_SOFT"
 )
+# momentum_sharp is deliberately NOT varied: the pre-registered statistic is the rise across the
+# SOFT phase, so touching the sharp phase too would stop this being one variable.
 # NOTE: this is the matched arm to CONDITION 2 (runs p2probe-a..d: w_acid 0.5 with the binding
 # weights at 1.0), NOT to condition 3 (p2probe2-e..h, which raised iptm and contact to 3.0) and
 # NOT to the free-footprint probe. Every other value here is design()'s default and already
