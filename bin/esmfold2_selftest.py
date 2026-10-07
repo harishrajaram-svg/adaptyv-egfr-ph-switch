@@ -44,25 +44,41 @@ def main():
 
     # The names a REAL previous run produced, read off disk, must match that pattern -- this
     # is the independent check: it compares against output the OLD code actually wrote.
-    real = sorted(Path("runs/gate-g-fab/g-fab").glob("*/*_ipsae.json"))
+    # Reference names from output the PRE-2026-10-06 code actually wrote. The pose cache under
+    # runs/ is gitignored and runs to tens of gigabytes, so a reader has no access to it -- and
+    # this check only needs the NAMES. They are vendored so the check is real in a fresh clone
+    # rather than skipped. Found by cloning the published repo: this assertion failed for every
+    # reader while passing locally, which is the same class of fault as the wrapper itself not
+    # being published.
+    cache = sorted(Path("runs/gate-g-fab/g-fab").glob("*/*_ipsae.json"))
+    vendored = Path("outbox/esmfold2-fixtures/reference-names.txt")
+    if cache:
+        real = [f"{f.parent.name}/{f.name}" for f in cache]
+        src = "the local pose cache"
+    else:
+        assert vendored.is_file(), (
+            f"no pose cache and no vendored names at {vendored} -- the naming check cannot run")
+        real = [l.strip() for l in vendored.read_text().splitlines() if l.strip()]
+        src = f"{vendored} ({len(real)} vendored names)"
     assert real, "no reference output found; cannot verify naming against the old code"
     import re
 
     pat = re.compile(r"^(?P<c>.+)/(?P=c)_seed(?P<s>\d+)_sample_(?P<i>\d+)_ipsae\.json$")
     idxs = []
-    for f in real:
-        rel = f"{f.parent.name}/{f.name}"
+    for rel in real:
         m = pat.match(rel)
         assert m, f"reference name does not match the pattern the new code emits: {rel}"
         idxs.append(int(m.group("i")))
-        assert (f.parent / f"{f.name[:-len('_ipsae.json')]}.cif").is_file(), \
-            f"{rel} has no .cif beside it -- the pairing readers rely on is broken"
+        if cache:
+            f = next(x for x in cache if f"{x.parent.name}/{x.name}" == rel)
+            assert (f.parent / f"{f.name[:-len('_ipsae.json')]}.cif").is_file(), \
+                f"{rel} has no .cif beside it -- the pairing readers rely on is broken"
     # indices are GLOBAL across complexes and seeds, contiguous from 0 -- which is exactly what
     # the explicit `sample_idx` counter reproduces and what len(outputs)//3 would too, until
     # someone adds a fourth output file.
     assert sorted(idxs) == list(range(len(idxs))), sorted(idxs)
     print(f"naming       {len(real)} reference outputs from the OLD code all match the new "
-          f"pattern;\n             every *_ipsae.json has its .cif; indices contiguous 0..{max(idxs)}")
+          f"pattern\n             (source: {src}); indices contiguous 0..{max(idxs)}")
 
     # the Volume is declared, mounted, and the recovery command is documented
     src = MOD.read_text()
