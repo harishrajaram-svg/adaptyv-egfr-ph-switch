@@ -508,7 +508,16 @@ assembled dimer packs about half as tightly as the trimer.
 
 ## 8. Filtering and selection
 
-*Method fixed; results pending generation.*
+*Method fixed and exercised; no design has passed it.*
+
+**The gate has now been applied to all 21 candidate sequences and rejected all 21** (§10). That is
+a result about the filter, not only about the designs, and it cuts in an uncomfortable direction:
+**a gate that has only ever rejected is half-validated.** Its specificity was set from the negative
+side, where measurements exist, and every application so far has been a rejection — so nothing in
+this work establishes that it correctly *admits* a true conditional binder. The false-negative rate
+is unmeasured and unmeasurable here, because no de novo TNF-α binder exists to anchor the upper
+side. A reader should treat `n/a` on all 21 as evidence the designs did not bind, **and** as a
+reminder that the instrument has never been shown to say yes.
 
 **Geometry reporting is gated on binding.** The distance from the binder histidine to the target
 cation is reported only when the re-predicted complex reaches **iptm ≥ 0.45**; below that it is
@@ -540,7 +549,19 @@ binding only.
 
 ## 9. Controls
 
-*Design fixed; results pending generation.*
+*Design fixed; results pending generation — and their value is now conditional, see below.*
+
+🔴 **A matched pair is only informative if the parent binds.** With 0 of 21 candidates clearing the
+interface gate (§8, §10), a histidine-removal control would compare two sequences that both fail to
+bind, and the paired difference would measure nothing. **The controls do not rescue a non-binding
+set; they only interpret a binding one.** This is stated here rather than discovered at analysis
+time, because the temptation to report a paired difference between two non-binders as a mechanism
+result is exactly the failure the preceding challenge produced — a 1.432× ratio that dissolved
+under matched arms.
+
+Their design is unchanged and is kept for the case where generation succeeds. If it does not, the
+four control slots are better spent on additional candidates, and the submission says so rather
+than shipping controls for an effect that was never established.
 
 **Matched histidine-removal pairs.** Four of the twenty submitted designs are derived from shipped
 backbones by removing the engineered histidine and re-predicting. The backbone is otherwise
