@@ -5,7 +5,7 @@
 message, not from our own notes. Adaptyv extended it; the original Oct 4 date is wrong
 everywhere it still appears.
 
-## 🔴 FOUR MODAL JOBS LIVE as of 2026-10-07 1:45 AM
+## 🔴 FOUR MODAL JOBS LIVE as of 2026-10-07 1:20 AM
 
 `p2deep-p/q/r/s`, 200 steps at `--w-acid 0.5`. Check with `modal app list | grep ephemeral` and
 `for t in p q r s; do echo "$t: $(grep -cE '^[0-9]+ loss:' /tmp/deep_$t.log)/200"; done`.
