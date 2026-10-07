@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..4d2389f
+index 0000000..2871ad4
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1583 @@
+@@ -0,0 +1,1597 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -1502,6 +1502,18 @@ index 0000000..4d2389f
 +    w_mpnn: float = 3.0,
 +    w_plddt: float = 1.0,
 +    w_monomer: float = 0.5,
++    # The BINDING weights. These existed on design() but not here, so the only way to retune
++    # the balance between "get onto the target" and "place the histidine" was to edit the file
++    # -- or to move w_acid, which changes the same ratio from the other side. Found while
++    # probing a run where w_acid 2.0 outweighed w_iptm 1.0 and w_contact 1.0 on designs that
++    # were not binding at all. Defaults are identical to design()'s, so nothing changes
++    # unless a flag is passed.
++    w_iptm: float = 1.0,
++    w_contact: float = 1.0,
++    w_pae: float = 0.05,
++    w_within: float = 1.0,
++    w_glob: float = 0.3,
++    w_comp: float = 10.0,
 +    cap_val: float = 0.12,
 +    cap_gly: float = 0.08,
 +    cap_his: float = 0.08,
@@ -1577,6 +1589,8 @@ index 0000000..4d2389f
 +        recycling_steps=recycling_steps, sampling_steps=sampling_steps,
 +        stepsize=stepsize, sharpen=sharpen, use_mpnn=use_mpnn, w_acid=w_acid,
 +        w_mpnn=w_mpnn, w_plddt=w_plddt, w_monomer=w_monomer,
++        w_iptm=w_iptm, w_contact=w_contact, w_pae=w_pae, w_within=w_within,
++        w_glob=w_glob, w_comp=w_comp,
 +        cap_val=cap_val, cap_gly=cap_gly, cap_his=cap_his, acid_d0=acid_d0, acid_eps=acid_eps,
 +        his_d0=his_d0, mechanism=mechanism,
 +        smoke=smoke,

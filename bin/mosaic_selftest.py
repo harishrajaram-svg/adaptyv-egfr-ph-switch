@@ -477,6 +477,39 @@ def main():
           f"survives;\n               a lucky 3.15 A pass is withdrawn; missing/NaN iptm fails "
           f"closed;\n               p2 disagreement guard now FIRES (was blind); p1 unaffected")
 
+    # 5c. EVERY loss weight must be settable from the CLI, with a matching default.
+    # w_iptm and w_contact existed on design() but not on main() for the whole project, so the
+    # only way to retune binding-vs-pH balance was to edit the file -- which is how a run went
+    # out with the pH term weighted 2x the binding terms on designs that never bound. A weight
+    # that cannot be passed is a weight nobody tunes.
+    import ast as _ast
+
+    _src = MOD.read_text()
+    _tree = _ast.parse(_src)
+    _fns = {n.name: n for n in _ast.walk(_tree)
+            if isinstance(n, _ast.FunctionDef) and n.name in ("design", "main")}
+
+    def _wdefaults(fn):
+        names = [a.arg for a in fn.args.args]
+        ds = fn.args.defaults
+        out = {}
+        for a, d in zip(names[len(names) - len(ds):], ds):
+            if a.startswith("w_"):
+                try:
+                    out[a] = _ast.literal_eval(d)
+                except Exception:
+                    out[a] = "<non-literal>"
+        return out
+
+    _d, _m = _wdefaults(_fns["design"]), _wdefaults(_fns["main"])
+    _missing = sorted(k for k in _d if k not in _m)
+    assert not _missing, f"loss weights not settable from the CLI: {_missing}"
+    _mismatch = {k: (_d[k], _m[k]) for k in _d if k in _m and _d[k] != _m[k]}
+    assert not _mismatch, (
+        f"CLI default differs from design()'s, so passing nothing changes behaviour: {_mismatch}")
+    print(f"weight flags   all {len(_d)} loss weights settable from the CLI, "
+          f"defaults identical")
+
     # 6. C1 derived from a loss tree, not asserted
     class Combo:
         def __init__(self, *members):
