@@ -607,6 +607,42 @@ length or seed does not produce distinct families and is not treated as diversit
 while preserving family coverage and keeping matched pairs adjacent. **The ordering is provisional,
 for experimental testing.** No retired score is used as a calibrated prediction.
 
+### What exists right now, counted rather than estimated
+
+Candidate material is not hypothetical, and stating its size is more useful than describing the
+intended allocation. **Twenty-one distinct sequences exist**, one per trajectory across every
+condition run, at two lengths. That is more than the twenty slots. **None of them is a success by
+this work's own instruments:**
+
+| | count of 21 |
+|---|---|
+| sequences, all distinct | 21 |
+| clearing the 0.45 interface gate | **0** |
+| therefore carrying a geometry verdict other than `n/a` | **0** |
+| histidine fraction above the 8% cap | 3 |
+| nearest histidine within the 4.0 Å criterion | 2 |
+| of those 2, defensible | **0** — see below |
+
+**Both sub-4 Å placements fail for separate reasons, and neither is reported as a result.** One
+measures 2.62 Å but sits at an interface confidence of 0.200, so its verdict is `n/a` and the
+distance is an annotation, not a verified placement — a precise distance inside a complex the
+predictor does not assert exists. The other measures 3.15 Å and is invalid twice over: the sequence
+carries 12 histidines in 76 residues, which is the composition pathology of §6.1, and it predates
+the protomer fix of §11, so the measurement itself came from the code that searched the wrong
+protomer. It appears in §11 as a withdrawn pass and nowhere else.
+
+**The consequence for the submission is stated plainly.** A submitted set drawn from this material
+would consist of sequences this work declines to validate, accompanied by the reasons it declines.
+That is a worse experimental bet than a set of verified switches and a better one than a set
+presented as verified switches when it is not. The instruments that would have let us claim
+otherwise are the four retired in §4 and the gate in §5, and they were built and tested before
+these designs existed, which is why they can refuse them.
+
+**Diversity is the binding constraint on this material, not count.** All 21 belong to one footprint
+family — the pinned nine positions — and span two lengths. §14 records single-epitope dependence as
+the largest correlated risk in the submission, and 21 sequences from one family do not reduce it.
+The second family is the subject of the test in §6.3's open causes.
+
 ---
 
 ## 11. Errors found in this work, and what they cost
