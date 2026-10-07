@@ -51,7 +51,7 @@ Expected output: **11/11 cases reproduce**, exit 0.
 |---|---|
 | our wrapper | `bin/ipsae_min.py` (copied here as `ipsae_min.py`) |
 | repo commit | `a5bd3d6`, 2026-10-04. `bin/ipsae_min.py` is **committed and the tree is clean**, so the copy here is byte-identical to the committed one. (An earlier version of this table pinned `76c5b0c` and warned the scorer was dirty in the working tree; that caveat no longer applies.) |
-| public repo | <https://github.com/harishrajaram-svg/adaptyv-egfr-ph-switch> — this bundle, the methods document and the submission are all there |
+| public repo | <https://github.com/harishrajaram-svg/anthropic-adaptyv-2026> — this bundle, the methods document and the submission are all there |
 | reference implementation | `ipsae/ipsae.py`, Roland Dunbrack, version 4, biorxiv 2025.02.10.637595v2 |
 | reference commit | `6174cf9e71cb1bd660cc805856a18c4871a6dec3`, 2026-01-03 (shallow clone) |
 | structure model | ESMFold2 via Modal, Anthropic's published protocol parameters (loops=10, steps=68) |

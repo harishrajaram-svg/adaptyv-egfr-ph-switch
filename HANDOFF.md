@@ -1,5 +1,5 @@
-# HANDOFF — Adaptyv challenge 2 (TNF-α conditional binder)
-# Updated 2026-10-07 9:15 AM EDT.
+# HANDOFF — Anthropic × Adaptyv 2026, Track 3 (all challenges)
+# Updated 2026-10-07 9:25 AM EDT. Covers BOTH challenges; problem 1 is closed and archived below.
 
 **Problem 2 is the live work. Due Mon Oct 12, 7:59 AM EDT.** 20 slots, Track 3.
 
@@ -69,96 +69,118 @@ mkdir -p /tmp/rec && cd /tmp/rec
 modal volume get mosaic-weights runs/p2free-p     # destination must be the CWD; an argument raises Errno 21
 ```
 
-## 🧭 PROBLEM 2's PLAN IS `ROADMAP.md` IN THE OTHER REPO
+## 🧭 THE PLAN LIVES IN `ROADMAP.md` IN THE OTHER REPO
 
-`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (2026-10-06 11:20 PM) is the
-live plan: the 20-slot allocation, the wave, what the dry run established, the order of work, and
-what is decided vs open. Read it before anything in this file.
+`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (updated 2026-10-07 9:15 AM)
+is the live plan: the result, the one outstanding decision, the 20-slot allocation, and what blocks
+what. Read it before anything in this file. Then `challenges/02-tnf-alpha.md` §1–§44 for the
+decision record.
 
-**What a reader of THIS repo needs:** `bin/plan_wave.py` prints the wave split and launches only
-under `--launch`. `biomodals/` is gitignored — the wrappers survive only via
-`patches/modal_mosaic.patch` and `patches/modal_esmfold2.patch`, so regenerate after every edit.
-`bin/mosaic_selftest.py` and `bin/esmfold2_selftest.py` run with bare `python3`, no GPU, and the
-launchers refuse to start if they fail.
+**What a reader of THIS repo needs, because the code is here:**
 
-## 🔵 THIS FILE IS PROBLEM 1 ONLY. Problem 2 is live and lives elsewhere.
+* **`biomodals/` is gitignored.** `modal_mosaic.py` survives *only* via
+  `patches/modal_mosaic.patch` (1,636 lines) and `modal_esmfold2.patch` (353 lines).
+  **Regenerate after every edit** — it has gone stale once and nearly lost a day. Verified current
+  as of 9:20 AM: regenerating produces a byte-identical file.
+* **Restore it in a clone with:**
+  `git apply --directory=biomodals patches/modal_mosaic.patch` and the same for `modal_esmfold2`.
+  Both self-tests then pass with bare `python3`, no venv, no GPU, no Modal account.
+* **`runs/` is gitignored too.** The 25 candidate sequences are committed separately as
+  `outbox/02-tnf-candidates.faa` and `.tsv`, with each sequence's condition, score and histidine
+  distance in its own FASTA header. Nothing else in git holds them.
+* **Every tool carries a `--selftest`** and all eleven pass. The launchers refuse to start if the
+  wrapper self-test fails.
 
-**✅ PROBLEM 1 IS CLOSED — submitted 2026-10-07, 16 designs, all 16 cleared novelty.**
-Nothing owed. Methodology box pasted, METHODS attached, repo public and pushed, 22 gates
-green. The resubmission swapped the set's composition rather than its size: both designs
-the 10-05 check rejected were accepted, and two it had passed at 3/4 were rejected on
-byte-identical sequences — their novelty check is not stable, and every novelty level we
-state is one run of their pipeline on one day. METHODS limitation 37; carry-forward lessons
-10 and 11 in `projects/anthropic-adaptyv-2026/lessons-problem-1.md` (context-directory).
+## 🔧 TOOLING ADDED 2026-10-07 — one command each
 
-**Problem 2 (conditional TNF-α binder: bind at pH 7.4, release at pH 6.0, plus mouse
-cross-reactivity) closes Mon 2026-10-12 07:59 EDT**, retry-preserving upload Sun 10/11. Its
-decision record is **not in this repo** — it is
-`~/code/context-directory/projects/anthropic-adaptyv-2026/challenges/02-tnf-alpha.md` §1–§28,
-with the current-state block in `SESSION-HANDOFF-2026-10-06.md`. Read those, not this file.
+```
+python3 analysis/02-tnf/score_free_probe.py    the free-footprint reading, verdict included
+python3 analysis/02-tnf/design_inventory.py    what is shippable, counted from the run tables
+python3 analysis/02-tnf/loss_traj.py <logs>    block-averaged trajectory, the decisive reading
+python3 bin/check_p2_stats.py                  recompute every METHODS figure from designs.tsv
+python3 bin/check_no_verbatim.py               reviewer anonymity across the published tree
+bin/probe-free-footprint.sh <tag> <len> <seed> the free-footprint launcher, reasoning in its header
+```
 
-What a reader of **this repo** needs to know, because the code is here:
+`check_p2_stats.py` exists because two cells in METHODS §6.2 reported a row value where a median
+belonged. It has since caught the same error class twice more, including one committed hours after
+the entry describing it was written. **Run it before any edit to §6 or §10 ships.**
 
-* **`biomodals/modal_mosaic.py` is now problem-2 capable** and `biomodals/` is **gitignored** —
-  the wrapper survives only via **`patches/modal_mosaic.patch`** (1122 lines). Regenerate it
-  after every edit; it has gone stale once already and nearly lost a day's work.
-* It takes `--mechanism {acid_near_his,his_near_cation}`, a comma-separated `--target-chain`, and
-  `--anchor-chain`. `p2trimer02` passed step 4 against **all three TNF protomers** (532 tokens).
-  Cost: **21.7 s/step at 532 tokens vs 3.16 s at 228** — quadratic, so a light wave is ~$20.
-* 🔴 **`HisNearCation` reduced with `score.sum()` and was gameable** — it rewards histidine mass
-  near the cation, not histidine placed, and returned **15.8% histidine** while `his_best` read
-  **exactly 0.00 every step**. Fixed to **top-2** via module-level `his_reduce()`, plus
-  `cap_his=0.08`. `bin/mosaic_selftest.py` pins it with a **mutation test** that fails if the
-  reduction is reverted. **`AcidNearHis` (problem 1) sums too and is deliberately NOT fixed** —
-  nothing shipped came from a Mosaic trajectory, so no problem-1 result is affected.
-* **`bin/mosaic_selftest.py` runs with bare `python3`, no numpy, no GPU, no Modal account.**
-  `bin/design-mosaic.sh` calls it first. Keep it dependency-free — `bin/gate_sweep.py:32`
-  records what hardcoding `.venv/bin/python` cost: two gates dead in every fresh clone.
-* ⚠️ **Do not launch a Mosaic production wave.** The target and anchor are an open question for the
-  reviewer; R108 is in the smoke command only because the smoke needed something.
+## ⚠️ ORGANISER FACTS — confirmed in the Slack, do not re-derive
 
-## ⚠️ READ THIS FIRST — THE RULES LIVE IN A CHANNEL WE ARE NOT IN
+Harish **is** a member of `#anthropic_adaptyv_competition` (`C0C4VEG57HU`) and the other four
+Proteinbase channels. Organisers: Tudor-Stefan Cotet, Simon Dürr, Théo Jalabert, and Amir
+Shanehsazzadeh (Anthropic).
 
-**`#anthropic_adaptyv_competition` (`C0C4VEG57HU`) on the Proteinbase Slack.** Harish is **not a
-member**; it is public and searchable. **Every organiser clarification since 2026-09-28 is
-there**, and neither repo referenced it until now — which is why the facts below were missing
-from this file for a week. Organisers: Tudor-Stefan Cotet, Simon Dürr, Amir Shanehsazzadeh.
-`#design-methods` is dead for this challenge; `#feedback` carries a few answers.
+**Problem 2, confirmed 2026-10-06/07:**
+* **The assayed target is Asp143**, UniProt **P01375**, reagent **AcroBiosystems TNA-H4211**. Our
+  target already carried Asp143 — organiser confirmation of a prior decision, not a correction.
+* **Selection reads the methodology text.** Amir, 10-06: *"Claude will review what you share and
+  use it for selection."* Tudor added that the section is **linked to a public Proteinbase
+  Collection** — so it is published, which is why the reviewer-anonymity check matters and why the
+  document carries no reader-directed imperatives.
+* **The novelty gate is "at least 3 of 4 checks"**, and the organisers are reviewing whether to
+  relax it to 2 of 4. Watch before the novelty step.
+* **Model refusals are hitting other entrants** on protein-design tasks. Amir: Sonnet 5, Opus 5 and
+  Sonnet 5.5 carry the same classifiers, and he recommends Sonnet 5.5. We have not been blocked.
 
-**Submission mechanics, from organiser messages:**
-  * **One submission per 24 hours.** Submissions are **retained, not replaced** — you nominate
-    which one counts, or the most recent is designated by default. So an early upload costs
-    nothing. **The last upload that still permits a second attempt is Tue Oct 6, 07:59 EDT.**
-  * Novelty runs **at upload**, in 3–5 minutes, and a **self-service novelty pipeline ships
-    Oct 5** so designs can be checked before committing. A competitor has reproduced our exact
-    VHH failure mode on the live platform and Adaptyv have said the antibody threshold is being
-    re-tested, so **the bar our two VHH rows sit near may move before the deadline.**
-  * Track 3 needs nothing beyond the CSV on Proteinbase; track is assigned by account email.
-    The cap is 20 designs per account per collection. **We ship 16** (updated 2026-10-06; this line said 10 and the set has been 16 since d63c61f).
-  * **Iterating on any previously submitted design is explicitly disallowed** — stricter than
-    the challenge page's "existing binder" wording. Our submission is clean on it, verified.
+**Still unanswered, and our contingencies depend on it.** A competitor posted seven TNF-α questions
+on 10-06 at 11:09 AM with **zero replies**, two of which are ours: whether the selection step models
+against the full trimer or a single chain, and whether the trimer stays intact at pH 6.0.
+**METHODS §7 and §9 carry the contingencies; they stand.** Also open: the exact mouse TNF-α
+sequence and vendor, and whether the expression system and C-terminal tag match challenge 1.
 
-**Measurement spec, which retires a decision recorded below:**
-  * human EGFR at **pH 6.5 and 7.4**; mouse EGFR at **pH 6.5 only**. Mouse is NOT 7.4-only, and
-    the cross-reactivity/pH tension that premise created does not exist.
-  * Targets are the **full ectodomains, tethered**: human **Met1–Ser645**, mouse **Met1–Ser647**,
-    Sino Biological 10001-H08H and 51091-M08H. Met1–Ser645 minus the 24-residue signal peptide
-    is **621 residues** — which is the construct we folded against.
-  * You do **not** prepend the initiator Met; they add it when building constructs.
-  * The assayed target carries a **His tag**, and the organisers have said a binder engaging it
-    "might look pH-selective but would bind to anything with a His tag", and that in-silico
-    evidence will be weighted more heavily to catch it. **All 10 of our designs switch on the
-    target's native H433** (48 of 50 pool-wide; zero tag). Say so.
+## 🔭 ONE UNEVALUATED ALTERNATIVE
 
-**The two blockers from the last handoff are CLOSED.** The methods document is finished and
-the git remote exists. What is left is upload.
+Mosaic's author pointed at **Ken Osumi's "structural carryover"**
+(`github.com/ken-osumi/ArcRefine`): **6 of 10 optimized TNF-α designs bound vs 1 of 10
+unoptimized**, measured by BLI at Adaptyv, built on Boltz-2 which we already run. Relevant because
+1-of-10 means their starting designs mostly did not bind either — which is our position.
+
+**Not a recommendation yet.** The author's own caveat: candidates "were selected independently for
+each group… They do not isolate the effect of structural carryover alone or establish that binding
+occurs at the predicted site." Their campaign cost **~$677**, roughly 14× our unspent budget.
+PolyForm Noncommercial licence, and a tool-licence question in `#design-methods` is unanswered.
+Nothing states whether it rescues non-binders. **Read before deciding ROADMAP item 10.**
+
+## 📛 THE REPO WAS RENAMED 2026-10-07 — and problem 1's artifacts deliberately were not updated
+
+`adaptyv-egfr-ph-switch` → **`anthropic-adaptyv-2026`**, because it now covers both challenges and
+the methods documents link it publicly. GitHub serves a **301 redirect** from the old URL
+(verified: resolves 200), so nothing that references the old name is broken.
+
+🔴 **Four files still carry the old name on purpose. Do not "fix" them.**
+`submissions/01-egfr.csv`, `submissions/01-egfr-METHODS.md`, `bin/emit_submission_csv.py` and
+`outbox/PREREGISTRATION.md`. The first two are **submitted artifacts** and the third's job is to
+**reproduce the submitted CSV byte-identically** — a claim published in problem 1's methods and in
+problem 2's methodology box. Changing the URL in the emitter would break that claim, because the
+submitted CSV contains the old string in all 16 assessment fields. Re-verified after the rename:
+the emitter still reproduces the submitted file byte-identically. The pre-registration is
+immutable by definition.
+
+---
+
+# ══════════ PROBLEM 1 — CLOSED, ARCHIVE BELOW ══════════
+
+**✅ SUBMITTED 2026-10-07. 16 designs, all 16 cleared novelty. Nothing owed.**
+Methodology box pasted, METHODS attached, repo public and pushed, gates green.
+
+**The one carry-forward lesson:** the resubmission swapped the set's *composition*, not its size.
+Both designs the 10-05 check rejected were accepted on 10-06, and two it had passed at 3/4 were
+rejected — **on byte-identical sequences.** Their novelty check is not stable, so every novelty
+level we state is one run of their pipeline on one day. METHODS limitation 37; lessons 10 and 11
+in `projects/anthropic-adaptyv-2026/lessons-problem-1.md`.
+
+Everything below this line is the problem-1 record, kept because the lessons carry forward. **No
+action in it is outstanding.**
 
 ---
 
 ## 1. STATE — everything below is verified, not remembered
 
-**Submission: `submissions/01-egfr.csv`, 18 designs** (the resubmission set). Track 3
-allows 20 — see METHODS §11.
+**Submission: `submissions/01-egfr.csv`, 16 designs** (the resubmission set, as accepted). Track 3
+allows 20 — see METHODS §11. *(This line read "18 designs" until 2026-10-07; the paragraph two
+below has recorded the drop to 16 since 10-06, so the file contradicted itself for a day.)*
 Ranked on the two-partner histidine-only pH product, not the superseded target-only basis.
 `bin/check_discards.py` PASSES, exit 0. **`bin/gate_sweep.py`: 14 gates, all green at 16
 designs** (d63c61f).
@@ -223,8 +245,8 @@ different column, say so; this table follows the sentence above it.**
 it. Leads with §4.4.
 
 **Git remote: EXISTS, public, pushed.**
-<https://github.com/harishrajaram-svg/adaptyv-egfr-ph-switch> — 200 on the README, the methods
-doc, the CSV. The README is a submission front door, not the old setup log (that moved to
+<https://github.com/harishrajaram-svg/anthropic-adaptyv-2026> — 200 on the README, the methods
+doc, the CSV. *(Renamed from `adaptyv-egfr-ph-switch` on 2026-10-07; the old URL 301-redirects.)* The README is a submission front door, not the old setup log (that moved to
 `docs/setup-notes-2026-09-18.md`).
 
 Every pH number is the MEDIAN over every ESMFold2 refold pose of that exact binder sequence,
@@ -233,7 +255,7 @@ pooled across runs, joined to affinity BY SEQUENCE in `analysis/01-egfr/master_r
 
 ---
 
-## 2. THE RESULT THAT CHANGED TODAY — control recovery
+## 2. [2026-10-04] The result that changed that day — control recovery
 
 `expctrl`/`ctrl2` had written raw PAE matrices and **no `*_10_10.txt`**, so the ipSAE step had
 never run on them and the only measured-outcome test in the project was unavailable. Backfilled
@@ -267,7 +289,7 @@ Artifacts: `analysis/01-egfr/control_recovery.{json,tsv}`. Written up as METHODS
 
 ---
 
-## 3. DECISIONS MADE TODAY — do not relitigate
+## 3. [2026-10-04] Decisions made that day — do not relitigate
 
 - **Submission cut 20 → 10** (Harish, 3:30 PM). Ranks 11–20 did not stand on a measurement:
   8 read below 1.0× on the 0.702× analytic acid-weakening extreme. (Corrected 2026-10-05:
@@ -290,20 +312,19 @@ and the four are NOT distinguishable from each other. Do not claim rank 1 beats 
 
 ---
 
-## 4. WHAT IS LEFT — in order
+## 4. WHAT WAS LEFT — one item survives, and it is still open
 
-1. **UPLOAD, and upload EARLY enough to resubmit.** Two of ten rows are VHH format and clear
-   only on Adaptyv's antibody novelty branch. `h370_020_vhh` is antibody-rule Level 4 but
-   general-rule Level 2 (TM 0.914); `rimA02_d3_rimA_14_vhh` is general-rule Level 1. **If their
-   ANARCI does not call them antibodies, those two rows fail the gate at upload.** METHODS §9
-   states this. Do not upload at the wire.
-2. **Send the outbox.** All three of the reviewer's asks are done and still unsent:
-   `outbox/ipsae-fixtures/` (8 cases, `run_fixtures.py --check`, VHH-zero trace),
-   `outbox/CONTROL-TABLE.md`, `outbox/PREREGISTRATION.md`. §4.4 is the answer to his
-   control-recovery ask and he should see it.
-3. Optional: `master_rank.json` now has molecules with `ratio_n >= 5` and affinity that were
-   never considered for the submission. Nothing in the top 10 is at risk, but the `sd`/`sd2`
-   arms are the place a better design would hide.
+1. ~~**UPLOAD, and upload early enough to resubmit.**~~ ✅ **DONE** — uploaded 10-05 12:49 PM EDT,
+   designated, 16 designs, all cleared novelty on the 10-06 re-check. The VHH worry recorded here
+   resolved: `rimA02_d3_rimA_14_vhh` passed at 3/4, and `h370_020_vhh` was one of the two the
+   10-05 check rejected and is not in the shipped set.
+2. 🔴 **STILL OPEN — send the reviewer their artifacts.** All of their asks are done and **still
+   unsent**: `outbox/ipsae-fixtures/` (8 cases, `run_fixtures.py --check`, VHH-zero trace),
+   `outbox/CONTROL-TABLE.md`, `outbox/PREREGISTRATION.md`, and the construct audit. §4.4 answers
+   their control-recovery ask and they should see it. **This is ROADMAP item 19 and it is Harish's
+   to send** — the Gmail connector drafts only, it never sends.
+3. ~~Optional: better designs hiding in the `sd`/`sd2` arms of `master_rank.json`.~~ **Moot** —
+   problem 1 is submitted and designated, and iterating on a submitted design is disallowed.
 
 ---
 
