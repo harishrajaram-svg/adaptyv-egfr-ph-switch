@@ -581,19 +581,73 @@ reported. Method novelty alone does not displace a better-supported candidate.
 
 ---
 
-## 13. Reproducibility
+## 13. Reproducibility, measured in a fresh clone
 
-- All analysis code is published. Every instrument carries a `--selftest` that runs without a GPU,
-  a Modal account, or network access, and the launchers refuse to start if it fails.
-- Self-tests include **mutation tests**: each asserts that the *discarded* implementation fails, so
-  a test cannot pass if the fix it guards is reverted. The protomer fix and the top-2 reduction are
-  both pinned this way, and both were verified by reverting the fix and confirming the failure.
+Claims in this section were tested by cloning the published repository into an empty directory
+with no local state and running the tests there. **Two of the four did not work for any reader
+when first tested**, and both faults are described below rather than silently fixed.
+
+**MEASURED 2026-10-07, fresh clone, system `python3`, no virtualenv, no GPU, no Modal account:**
+
+| | |
+|---|---|
+| `bin/mosaic_selftest.py` | **PASS** |
+| `bin/esmfold2_selftest.py` | **PASS** |
+| `bin/plan_wave.py --selftest` | **PASS** |
+| `analysis/02-tnf/construct_audit.py --selftest` | **PASS** |
+
+One preparation step is required and is the reason the first two initially failed:
+
+```
+mkdir -p biomodals
+git apply --directory=biomodals patches/modal_mosaic.patch
+git apply --directory=biomodals patches/modal_esmfold2.patch
+```
+
+### The two faults, because they are the same fault problem 1 had
+
+**The wrappers are not published.** `biomodals/` is gitignored — the Modal wrappers are large,
+change independently of the analysis, and are carried as patches under `patches/`. Both wrapper
+self-tests read the wrapper file directly, so in a clone they failed with `FileNotFoundError`
+**while passing locally**. The tests that gate both launchers could not run for any reader.
+
+**And one patch could not reconstruct its file.** `modal_mosaic.patch` was generated as a creation
+patch (`new file mode`) and reconstructs cleanly. `modal_esmfold2.patch` was a *modification*
+diff (`index e3ea6da..ddf8b5e`), which requires the original file to already exist — in a clone
+where `biomodals/` never exists, it can never apply. It is now a full-file creation patch.
+
+**A second unpublished dependency, in the same test.** The esmfold2 naming check compares output
+filenames against output the pre-fix code really wrote, which lived in `runs/` — gitignored and
+tens of gigabytes. The check needs only the **names**, so 25 of them are vendored at
+`outbox/esmfold2-fixtures/reference-names.txt` and the check uses the local cache when present
+and the vendored list otherwise. The one assertion that genuinely needs the files — that each
+`*_ipsae.json` has its `.cif` beside it — is skipped without the cache, and says so in its output
+rather than passing silently.
+
+**This is the same class of fault problem 1 documented**, where a scorer looked for its reference
+only at a gitignored path and therefore failed closed for every reader while passing locally. It
+recurred in a different file. The lesson that transfers is narrow and mechanical: **a test that
+reads a gitignored path is not a published test**, and the only way to find out is to clone and
+run, not to reason about it.
+
+### What the tests themselves guarantee
+
+- Every instrument's self-test runs with no GPU, no Modal account and no network, and both
+  launchers refuse to start if theirs fails.
+- Self-tests include **mutation tests**, which assert the *discarded* implementation fails — so a
+  test cannot pass if the fix it guards is reverted. Verified by reverting: the protomer fix, the
+  top-2 reduction, and the CLI weight coverage each make their test fail by name when undone.
+- Numbering is checked against **residue identity** on every run, not against arithmetic.
 - The `ipSAE_min` pre-registration is a commit timestamped **2026-10-06 16:24:41**, preceding the
-  scoring run.
-- Pose caches are gitignored and run to tens of gigabytes; they are available on request.
-- Numbering is machine-checked against residue identity rather than asserted, on every run.
+  scoring run, so the ordering of registration and measurement is checkable rather than asserted.
 
----
+### What is not reproducible
+
+- **Pose caches** under `runs/` are gitignored and run to tens of gigabytes; available on request.
+- **The design runs themselves** require a GPU and a Modal account. The wrappers, parameters and
+  weights are published; the compute is not reproducible without equivalent hardware.
+- **The platform's novelty checker** changed during the competition and its implementation is not
+  published, so its verdicts cannot be reproduced locally.
 
 ## 14. Limitations
 
