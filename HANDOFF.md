@@ -1,5 +1,5 @@
 # HANDOFF — Adaptyv challenge 2 (TNF-α conditional binder)
-# Updated 2026-10-07 8:30 AM EDT.
+# Updated 2026-10-07 9:15 AM EDT.
 
 **Problem 2 is the live work. Due Mon Oct 12, 7:59 AM EDT.** 20 slots, Track 3.
 
@@ -9,62 +9,65 @@ forward (`lessons-problem-1.md`), not because anything is pending. **The repo is
 `adaptyv-egfr-ph-switch` after problem 1**, which is worth renaming or noting before submission,
 since the methods document links it.
 
-## 🔴 FOUR JOBS LIVE — the free-footprint probe, launched 7:50 AM
+## 🟢 NOTHING RUNNING as of 2026-10-07 9:15 AM — the search is finished
 
-`p2free-p/q/r/s` — 100 steps, both legs free, `--w-acid 0.5`. **ETA ~9:05 AM, ~$10.**
-Launched by `bin/probe-free-footprint.sh`, which carries the full reasoning in its header.
+All 16 trajectories complete, `modal app list` empty, ~$36 spent, **the $49 wave unspent.**
 
-| job | length | seed | modal app |
-|---|---|---|---|
-| `p2free-p` | 76 | 0 | `ap-PGWvwUkeikba6ELA9qaEj8` |
-| `p2free-q` | 76 | 1 | `ap-5M9hJZB42Kj3QeMYZJpT2M` |
-| `p2free-r` | 84 | 0 | `ap-BV41Z6craHnT764ik15V75` |
-| `p2free-s` | 84 | 1 | `ap-RXuElogSVo1uTx0WZUlkyF` |
-
-### If you are a new session, run exactly this
+**Result: the free footprint changed nothing.** Four-run rise +0.004 ± 0.013 over 75 soft steps —
+flat, like the other twelve. Endpoints worse: mean 0.168 pinned → 0.135 free. **Cause 1 of
+METHODS §6.3 is eliminated**; causes 2 and 3 survive and neither is testable in the remaining time.
 
 ```
 cd ~/code/adaptyv-2026
-modal app list | grep -c ephemeral                 # 4 = still running, 0 = landed
-for t in p q r s; do echo "$t: $(grep -cE '^[0-9]+ loss:' /tmp/free_$t.log)/100"; done
-python3 analysis/02-tnf/score_free_probe.py        # THE READING. Verdict included.
+python3 analysis/02-tnf/score_free_probe.py        # the full reading, verdict included
+python3 analysis/02-tnf/design_inventory.py        # what is shippable: 25 seqs, 0 clear the gate
+python3 bin/check_p2_stats.py                      # every methods figure, recomputed
 ```
 
-`score_free_probe.py` prints the paired endpoints against the pinned probe, the 25-step block
-means, each run's fitted rise with a 2-SE interval, and which decision-table row the four-run mean
-lands on. **It withholds the verdict until all four runs are in**, so it is safe to run early.
+**Five conditions tried. Best anywhere 0.200 against a 0.45 bar, from the second thing tried.**
 
-**Do not decide on the medians.** The decision is the trajectory shape. Reading only endpoints is
-what made the 200-step test cost $15 for half an answer (METHODS §11).
+| # | condition | steps | median | max |
+|---|---|---|---|---|
+| 1 | baseline | 50 | 0.136 | 0.156 |
+| 2 | **pH weight down** | 50 | **0.179** | **0.200** |
+| 3 | binding weights up | 50 | 0.156 | 0.197 |
+| 4 | step budget up | 200 | 0.163 | 0.189 |
+| 5 | free footprint | 100 | 0.134 | 0.137 |
 
-### What it decides
+**Keep this finding:** the pinned epitope was *load-bearing for the pH objective*, not an obstacle.
+Freeing it pushed the median nearest-histidine distance from 22.8 Å to 34.8 Å. The anchor is one
+pinned point on a 456-residue surface and the epitope term was the only thing holding the binder
+near it.
 
-| reading | next |
-|---|---|
-| the interface term **climbs** | the pinned epitope was the blocker → ROADMAP item 10, the ~$49 wave, weighted to free footprint |
-| **flat**, like all 12 pinned runs | cause 2 or 3 in METHODS §6.3 → **plan C**, the methods-first submission |
+### 🎯 Blocked on one decision: ROADMAP item 10
 
-**As of 8:25 AM at ~40 of 100 steps it is reading flat** (four-run rise −0.0029 ± 0.0162). That is
-not the result — the interval is still wide and the runs are not half done. It is a warning not to
-expect a rescue.
+**Recommended: plan C**, the methods-first submission — 20 of 25 real sequences in two footprint
+families, plus the measured negative result. The organisers confirmed on Oct 6 that *"Claude will
+review what you share and use it for selection"* and that the methodology text is linked to a
+public Proteinbase Collection.
 
-### Recovery, if a client died
+**One unevaluated alternative:** Ken Osumi's structural carryover
+(`github.com/ken-osumi/ArcRefine`), 6/10 TNF-α designs bound vs 1/10 unoptimized, BLI-measured at
+Adaptyv, built on Boltz-2. But ~$677 for their campaign, PolyForm Noncommercial, the author's own
+caveat that the comparison does not isolate the mechanism or establish the binding site, and no
+statement that it rescues non-binders. Read before deciding item 10.
+
+### Organiser facts confirmed 2026-10-06, worth not re-deriving
+
+- The assayed target is **Asp143**, UniProt **P01375**, reagent **AcroBiosystems TNA-H4211**. Our
+  target already carried Asp143 — confirmed, not corrected.
+- The novelty gate is **"at least 3 of 4 checks"**, and the organisers are reviewing whether to
+  relax it to 2 of 4. Watch before item 13.
+- Ingmar's seven TNF-α questions (Oct 6, 11:09 AM) still have **zero replies**, including whether
+  selection models against the full trimer or a single chain, and whether the trimer stays intact
+  at pH 6.0. **Our §7 and §9 contingencies stand.**
+
+### Recovery, if ever needed
 
 ```
 mkdir -p /tmp/rec && cd /tmp/rec
 modal volume get mosaic-weights runs/p2free-p     # destination must be the CWD; an argument raises Errno 21
 ```
-
-### What landed before this
-
-The four 200-step jobs finished: **steps are not the lever, and the interface term never
-improves** — 12 trajectories, 3 weight conditions, 2 step budgets, flat in every one. Best anywhere
-0.200 against a 0.45 bar. Evidence at `analysis/02-tnf/{deep_vs_probe.tsv,traj/,loss_traj.py}`,
-write-up at METHODS §6.3. ~$36 spent in total; the $49 wave is unspent.
-
-**Candidate material, counted:** `python3 analysis/02-tnf/design_inventory.py` — 21 distinct
-sequences, more than the 20 slots, and **0 of 21 clear the 0.45 gate**, so every geometry verdict is
-`n/a`. Two sit under the 4.0 Å placement bar and neither is defensible (METHODS §10).
 
 ## 🧭 PROBLEM 2's PLAN IS `ROADMAP.md` IN THE OTHER REPO
 
