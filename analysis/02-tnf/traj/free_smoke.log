@@ -1,0 +1,93 @@
+[probe] selftest PASS
+✓ Initialized. View run at 
+https://modal.com/apps/harishrajaram-svg/main/ap-WSg4mT8TCWe8MDx7xmF9Wr
+✓ Created objects.
+├── 🔨 Created mount /Users/harish/code/adaptyv-2026/biomodals/modal_mosaic.py
+├── 🔨 Created function probe.
+├── 🔨 Created function probe_mosaic.
+├── 🔨 Created function fetch_weights.
+└── 🔨 Created function design.
+[mosaic] 1 trajectories x 5 steps at ~35.19s -> estimate ~30 min; TIMEOUT=30 min
+[mosaic] jax 0.11.2 devices [CudaDevice(id=0)]
+[mosaic] SMOKE MODE: 3+2 steps, 1 seed -- proves the path, not the design
+[mosaic] [human] chains ['A', 'B', 'C'] crop=None lens=[152, 152, 152] total=456
+[mosaic] [human] chain offsets (target-relative) {'A': 0, 'B': 152, 'C': 304}
+[mosaic] [human] FREE FOOTPRINT: no epitope restriction -- contact is rewarded against any of 456 target residues (s41 family B). The anchor is still pinned.
+[mosaic] [human] anchor positional 27 on chain B -> target idx 178 = R
+[mosaic] [human] mechanism his_near_cation: anchor R27 on the TARGET
+[mosaic] [species] chains ['A', 'B'] crop=None lens=[148, 148] total=296
+[mosaic] [species] chain offsets (target-relative) {'A': 0, 'B': 148}
+[mosaic] [species] FREE FOOTPRINT: no epitope restriction -- contact is rewarded against any of 296 target residues (s41 family B). The anchor is still pinned.
+[mosaic] [species] anchor positional 24 on chain A -> target idx 23 = R
+[mosaic] [species] mechanism his_near_cation: anchor R24 on the TARGET
+[mosaic] SPECIES LEG ON: w=1.0, anchor R conserved, FREE FOOTPRINT on both legs
+/usr/local/lib/python3.12/site-packages/pytorch_lightning/utilities/migration/utils.py:56: The loaded checkpoint was produced with Lightning v2.5.0.post0, which is newer than your current Lightning version: v2.5.0
+[mosaic] soluble ProteinMPNN loaded
+Loading data
+Checking input data.
+Processing 1 inputs with 1 threads.
+
+Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+[1A  0%|          | 0/1 [00:00<?, ?it/s]
+[1A100%|██████████| 1/1 [00:00<00:00,  7.61it/s]
+[1A100%|██████████| 1/1 [00:00<00:00,  7.60it/s]
+Something odd happened with manifest, trying to reload.
+/usr/local/lib/python3.12/site-packages/torch/utils/data/dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+Loading data
+Checking input data.
+Processing 1 inputs with 1 threads.
+
+Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+[1A  0%|          | 0/1 [00:00<?, ?it/s]
+[1A100%|██████████| 1/1 [00:00<00:00,  9.80it/s]100%|██████████| 1/1 [00:00<00:00,  9.79it/s]
+Something odd happened with manifest, trying to reload.
+/usr/local/lib/python3.12/site-packages/torch/utils/data/dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+Loading data
+Checking input data.
+Processing 1 inputs with 1 threads.
+
+Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+[1A  0%|          | 0/1 [00:00<?, ?it/s]
+[1A100%|██████████| 1/1 [00:00<00:00, 46.35it/s]
+Something odd happened with manifest, trying to reload.
+[mosaic] C1 audit clean. loss terms: NoCys, Boltz2Loss, BinderTargetIPTM, BinderTargetPAE, BinderTargetContact, WithinBinderContact, PLDDTLoss, ESMFoldGlobularity, HisNearCation, InverseFoldingSequenceRecovery, Boltz2Loss, BinderTargetIPTM, BinderTargetPAE, BinderTargetContact, HisNearCation, Boltz2Loss, PLDDTLoss, WithinBinderContact, ESMFoldGlobularity, CompositionCap
+[mosaic] L=76 stepsize=0.872 epitope=free terms=+mpnn
+n_msa 1
+n_msa 1
+n_msa 1
+loc("dot.9925"): error: 'tt.dot' op expected the output shape to be the concatenation of the last dimension of the first operand and the last dimension of the second 
+loc("dot.9925"): error: 'tt.dot' op expected the output shape to be the concatenation of the last dimension of the first operand and the last dimension of the second 
+loc("dot.9925"): error: 'tt.dot' op expected the output shape to be the concatenation of the last dimension of the first operand and the last dimension of the second 
+loc("dot.9925"): error: 'tt.dot' op expected the output shape to be the concatenation of the last dimension of the first operand and the last dimension of the second 
+loc("dot.9925"): error: 'tt.dot' op expected the output shape to be the concatenation of the last dimension of the first operand and the last dimension of the second 
+0 loss: 28.32 .0.boltz2.0.bt_iptm: 0.14 .0.boltz2.1.bt_pae: 27.32 .0.boltz2.2.target_contact:-6.40 .0.boltz2.3.intra_contact:-4.96 .0.boltz2.4.plddt: 0.32 .0.boltz2.5.esmfold_globularity: 1.31 .0.boltz2.5.esmfold_rg: 12.88 .0.boltz2.6.frac_H: 0.06 .0.boltz2.6.his_best: 0.00 .0.boltz2.6.his_cation: 6.48 .0.boltz2.6.his_dmin_CA: 92.64 .0.boltz2.6.his_topk: 0.00 .0.boltz2.7.sequence_recovery: 0.06 .1.boltz2.0.bt_iptm: 0.16 .1.boltz2.1.bt_pae: 25.47 .1.boltz2.2.target_contact:-6.11 .1.boltz2.3.frac_H: 0.06 .1.boltz2.3.his_best: 0.00 .1.boltz2.3.his_cation: 5.22 .1.boltz2.3.his_dmin_CA: 86.65 .1.boltz2.3.his_topk: 0.00 .2.boltz2.0.plddt: 0.72 .2.boltz2.1.intra_contact:-5.73 .2.boltz2.2.esmfold_globularity: 1.73 .2.boltz2.2.esmfold_rg: 13.29 .3.comp: 0.00 .3.f_G: 0.07 .3.f_H: 0.06 .3.f_V: 0.05 loss: 28.32 nnz: 8.01 time: 777.58
+1 loss: 25.75 .0.boltz2.0.bt_iptm: 0.11 .0.boltz2.1.bt_pae: 29.27 .0.boltz2.2.target_contact:-6.22 .0.boltz2.3.intra_contact:-4.38 .0.boltz2.4.plddt: 0.31 .0.boltz2.5.esmfold_globularity: 0.83 .0.boltz2.5.esmfold_rg: 12.39 .0.boltz2.6.frac_H: 0.08 .0.boltz2.6.his_best: 0.00 .0.boltz2.6.his_cation: 6.86 .0.boltz2.6.his_dmin_CA: 61.49 .0.boltz2.6.his_topk: 0.00 .0.boltz2.7.sequence_recovery: 0.04 .1.boltz2.0.bt_iptm: 0.13 .1.boltz2.1.bt_pae: 26.99 .1.boltz2.2.target_contact:-4.79 .1.boltz2.3.frac_H: 0.08 .1.boltz2.3.his_best: 0.00 .1.boltz2.3.his_cation: 5.08 .1.boltz2.3.his_dmin_CA: 22.15 .1.boltz2.3.his_topk: 0.01 .2.boltz2.0.plddt: 0.38 .2.boltz2.1.intra_contact:-4.20 .2.boltz2.2.esmfold_globularity: 0.60 .2.boltz2.2.esmfold_rg: 12.16 .3.comp: 0.00 .3.f_G: 0.07 .3.f_H: 0.07 .3.f_V: 0.05 loss: 25.75 nnz: 4.86 time: 30.65
+2 loss: 21.78 .0.boltz2.0.bt_iptm: 0.11 .0.boltz2.1.bt_pae: 29.26 .0.boltz2.2.target_contact:-5.53 .0.boltz2.3.intra_contact:-4.25 .0.boltz2.4.plddt: 0.30 .0.boltz2.5.esmfold_globularity: 0.82 .0.boltz2.5.esmfold_rg: 12.39 .0.boltz2.6.frac_H: 0.08 .0.boltz2.6.his_best: 0.01 .0.boltz2.6.his_cation: 4.51 .0.boltz2.6.his_dmin_CA: 16.18 .0.boltz2.6.his_topk: 0.01 .0.boltz2.7.sequence_recovery: 0.05 .1.boltz2.0.bt_iptm: 0.15 .1.boltz2.1.bt_pae: 26.92 .1.boltz2.2.target_contact:-2.97 .1.boltz2.3.frac_H: 0.08 .1.boltz2.3.his_best: 0.00 .1.boltz2.3.his_cation: 4.77 .1.boltz2.3.his_dmin_CA: 20.77 .1.boltz2.3.his_topk: 0.01 .2.boltz2.0.plddt: 0.34 .2.boltz2.1.intra_contact:-4.23 .2.boltz2.2.esmfold_globularity: 0.62 .2.boltz2.2.esmfold_rg: 12.18 .3.comp: 0.00 .3.f_G: 0.06 .3.f_H: 0.07 .3.f_V: 0.10 loss: 21.78 nnz: 4.32 time: 30.60
+0 loss: 24.01 .0.boltz2.0.bt_iptm: 0.11 .0.boltz2.1.bt_pae: 28.94 .0.boltz2.2.target_contact:-5.70 .0.boltz2.3.intra_contact:-5.12 .0.boltz2.4.plddt: 0.31 .0.boltz2.5.esmfold_globularity: 1.79 .0.boltz2.5.esmfold_rg: 13.35 .0.boltz2.6.frac_H: 0.08 .0.boltz2.6.his_best: 0.00 .0.boltz2.6.his_cation: 5.36 .0.boltz2.6.his_dmin_CA: 27.42 .0.boltz2.6.his_topk: 0.00 .0.boltz2.7.sequence_recovery: 0.07 .1.boltz2.0.bt_iptm: 0.15 .1.boltz2.1.bt_pae: 26.64 .1.boltz2.2.target_contact:-3.61 .1.boltz2.3.frac_H: 0.08 .1.boltz2.3.his_best: 0.02 .1.boltz2.3.his_cation: 3.75 .1.boltz2.3.his_dmin_CA: 18.41 .1.boltz2.3.his_topk: 0.02 .2.boltz2.0.plddt: 0.40 .2.boltz2.1.intra_contact:-4.92 .2.boltz2.2.esmfold_globularity: 1.44 .2.boltz2.2.esmfold_rg: 13.01 .3.comp: 0.00 .3.f_G: 0.07 .3.f_H: 0.08 .3.f_V: 0.07 loss: 24.01 nnz: 4.24 time: 30.62
+1 loss: 24.42 .0.boltz2.0.bt_iptm: 0.13 .0.boltz2.1.bt_pae: 28.62 .0.boltz2.2.target_contact:-5.24 .0.boltz2.3.intra_contact:-5.57 .0.boltz2.4.plddt: 0.31 .0.boltz2.5.esmfold_globularity: 2.09 .0.boltz2.5.esmfold_rg: 13.65 .0.boltz2.6.frac_H: 0.09 .0.boltz2.6.his_best: 0.27 .0.boltz2.6.his_cation: 1.26 .0.boltz2.6.his_dmin_CA: 27.71 .0.boltz2.6.his_topk: 0.28 .0.boltz2.7.sequence_recovery: 0.08 .1.boltz2.0.bt_iptm: 0.19 .1.boltz2.1.bt_pae: 25.79 .1.boltz2.2.target_contact:-4.34 .1.boltz2.3.frac_H: 0.09 .1.boltz2.3.his_best: 0.00 .1.boltz2.3.his_cation: 6.91 .1.boltz2.3.his_dmin_CA: 37.86 .1.boltz2.3.his_topk: 0.00 .2.boltz2.0.plddt: 0.46 .2.boltz2.1.intra_contact:-5.27 .2.boltz2.2.esmfold_globularity: 1.66 .2.boltz2.2.esmfold_rg: 13.22 .3.comp: 0.01 .3.f_G: 0.04 .3.f_H: 0.09 .3.f_V: 0.06 loss: 24.42 nnz: 3.58 time: 30.65
+[mosaic] p2free-smoke01_L76_s0 KPQVSSLHDDHHTQPNPIINYAQPVGSHGEDEEMEEHPGKDEEKVSKSSMHHSHDNEDQGRQRDIVIHKVFWIHDN
+n_msa 1
+Loading data
+Checking input data.
+Processing 1 inputs with 1 threads.
+
+Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+[1A  0%|          | 0/1 [00:00<?, ?it/s]
+[1A100%|██████████| 1/1 [00:00<00:00,  5.75it/s]100%|██████████| 1/1 [00:00<00:00,  5.75it/s]
+Something odd happened with manifest, trying to reload.
+[mosaic] p2free-smoke01_L76_s0 {"his_N_to_cation_N": 18.63, "his_CA_to_cation_N": 15.35, "closest_his": "HIS74", "geometry_pass": false} iptm=0.2932
+[mosaic]   persisted p2free-smoke01_L76_s0 to the Volume
+[mosaic] 1 designs; also written to /weights/runs/p2free-smoke01 on the Volume
+[mosaic] STEP 4 RAN: 1 designs
+[mosaic] ⬛ GEOMETRY n/a on all 1 designs: none reached iptm_repred 0.45 (D-P2-1), so placement was never measurable. This is NOT a geometry failure.
+[mosaic] metrics audit clean on all 1 rows
+
+Results saved to: ../runs/mosaic-p2/p2free-smoke01
+Stopping app - local entrypoint completed.
+✓ App completed. View run at 
+https://modal.com/apps/harishrajaram-svg/main/ap-WSg4mT8TCWe8MDx7xmF9Wr

@@ -42,6 +42,14 @@ BLI. Our target was point-mutated to **Asp at mature 143** before any design wor
 152-residue sequence matches the canonical challenge sequence exactly — checked by string equality
 against the sequence published on the challenge page, 2026-10-06, not inferred from the deposition.
 
+**Confirmed by the organisers after the fact, 2026-10-06.** Asked directly to resolve the
+discrepancy, they stated the assayed sequence is the one carrying **Asp143**, referenced
+**UniProt P01375**, and named the specific reagent under test — **AcroBiosystems TNA-H4211**. This
+work's choice therefore agrees with the confirmed target, and the agreement is recorded as
+*confirmation of a prior decision* rather than as its basis: the point mutation was made on
+sequence evidence a day before the confirmation existed. The vendor construct is the authority on
+residue range and tag, and nothing in this work depends on either.
+
 **Numbering.** Five schemes are live in this project, and conflating them has cost real compute
 here. The anchor, in all of them:
 
@@ -366,8 +374,9 @@ a matched pair with a §6.2 trajectory and the step count is the only difference
 | 2 — pH weight down | 0.5 | 1.0 | 50 | **0.179** | **0.200** | **2.62 Å** |
 | 3 — binding weights up | 0.5 | 3.0 | 50 | 0.156 | 0.197 | 9.69 Å |
 | 4 — step budget up | 0.5 | 1.0 | **200** | 0.163 | 0.189 | 10.4 Å |
+| 5 — free footprint | 0.5 | 1.0 | 100 | 0.134 | 0.137 | 20.1 Å |
 
-**All four miss the bar. Condition 2 remains the best, and it was the second thing tried.**
+**All five miss the bar. Condition 2 remains the best, and it was the second thing tried.**
 
 #### The matched pairs
 
@@ -463,6 +472,81 @@ The self-test covers the two ways this reading can be made to lie: the step coun
 zero when the soft phase hands off to the sharp phase, so a naive parse concatenates two phases
 into one apparent trajectory; and a term absent from a log line must come back as absent rather
 than as zero, since a zero would manufacture a downward trend.
+
+### 6.4 Removing the epitope restriction: the one testable cause, eliminated
+
+§6.3 left three candidate causes for the flat interface term and only one was testable in the
+remaining time: that the nine pinned epitope positions admit no gradient path to a bound pose. The
+test removes the restriction — `--epitope none` on both legs, so contact is rewarded against any of
+the 456 human and 296 species target residues and the optimiser selects its own footprint. **The
+anchor stays pinned in both arms**, because the pH mechanism needs its one cation contact; this is
+a free footprint with a pinned anchor, not an unconstrained affinity problem.
+
+Everything else is held: the same weights as condition 2, the same two lengths, the same two seeds.
+100 steps rather than 50, chosen because a flat result at 50 could not be distinguished from "the
+binder never had time to find a site" — and because the soft phase does not anneal against its own
+length, so the longer run contains the matched 50-step comparison as a prefix.
+
+**The restriction was not the blocker.**
+
+| length / seed | pinned, 50 steps | free, 100 steps | difference |
+|---|---|---|---|
+| 76 / 0 | 0.175 | 0.135 | −0.040 |
+| 76 / 1 | 0.115 | 0.137 | +0.022 |
+| 84 / 0 | 0.183 | 0.133 | −0.050 |
+| 84 / 1 | 0.200 | 0.134 | −0.066 |
+| **mean** | **0.168** | **0.135** | **−0.034 ± 0.039** |
+
+The trajectory is flat on the same reading as the other twelve: a four-run rise of
+**+0.004 ± 0.013** across 75 soft steps, with one run marginally climbing, one falling and two
+flat. **Twice the step budget of the pinned arm, a footprint 50× larger to choose from, and the
+interface objective still does not improve.**
+
+The endpoint difference is reported with its interval because it is **negative**: freeing the
+footprint made the final score worse by 0.034, and the 2 SE interval is [−0.072, +0.005]. The
+honest statement is **worse or no different, and certainly not better** — this work does not claim
+a significant degradation from n = 4.
+
+#### Two observations that were not predicted, and one that matters mechanistically
+
+**The histidine moved away from the anchor.** Median nearest-histidine distance by condition:
+22.8 Å pinned at 50 steps, 23.6 Å pinned at 200, and **34.8 Å free** — the worst of the three, with
+one run at 54.5 Å. This is coherent rather than surprising once stated: the anchor is a single
+pinned point on a 456-residue surface, and the epitope restriction was the only term holding the
+binder in the anchor's neighbourhood. **Removing it let the binder drift away from the one contact
+the mechanism requires.** The pinned epitope was not an obstacle to the pH objective; it was its
+scaffold.
+
+**The free-footprint scores cluster far more tightly than the pinned ones.** Four runs spanning two
+lengths and two seeds returned 0.1327, 0.1336, 0.1351 and 0.1372 — a range of **0.0045**, against
+0.085 for the pinned condition. Seed and length, which dominated every previous comparison, stopped
+mattering. The reading offered, and it is an interpretation rather than a measurement: with no
+epitope term the optimiser converges on the same generic surface contact regardless of where it
+starts, and that solution is reproducible and mediocre. A tight distribution at a low value is not
+better than a wide one; it is a sign of a single attractor that is not the one wanted.
+
+#### What this eliminates, and what survives
+
+**Cause 1 is eliminated.** The footprint restriction does not explain the flat interface term,
+because removing it does not change the term. Causes 2 and 3 of §6.3 — sampling noise in the
+structure predictor swamping the gradient, and interaction among the eleven weighted terms —
+survive, and neither is testable within the remaining time at this budget.
+
+**A prediction that failed, recorded because it was made in writing first.** The five-step smoke
+run that validated this code path returned an interface confidence of **0.2932, the highest figure
+this project has produced**, against a previous best of 0.200. It was recorded at the time as not
+evidence — n = 1, five steps optimising nothing, binder pLDDT 0.34, and a histidine fraction of
+13.2% against an 8% cap. **The four real runs maxed at 0.1372.** The flagged number did not
+reproduce, and the reason to record this is that it was the most interesting-looking result of the
+day and acting on it would have been wrong.
+
+**Total: 16 trajectories, 5 conditions, 2 step budgets, 2 footprint families. The interface
+objective improved in none of them.** The generation method does not produce bound complexes
+against this target, and the search space in which it might have — weights, steps, footprint — is
+exhausted at this budget. Cumulative compute: approximately $36.
+
+*Results from the production method do not exist, and on this evidence will not. Nothing in this
+section is a claim about submitted designs.*
 
 ---
 
@@ -631,13 +715,13 @@ for experimental testing.** No retired score is used as a calibrated prediction.
 ### What exists right now, counted rather than estimated
 
 Candidate material is not hypothetical, and stating its size is more useful than describing the
-intended allocation. **Twenty-one distinct sequences exist**, one per trajectory across every
+intended allocation. **Twenty-five distinct sequences exist**, one per trajectory across every
 condition run, at two lengths. That is more than the twenty slots. **None of them is a success by
 this work's own instruments:**
 
-| | count of 21 |
+| | count of 25 |
 |---|---|
-| sequences, all distinct | 21 |
+| sequences, all distinct | 25 |
 | clearing the 0.45 interface gate | **0** |
 | therefore carrying a geometry verdict other than `n/a` | **0** |
 | histidine fraction above the 8% cap | 3 |
@@ -659,10 +743,11 @@ presented as verified switches when it is not. The instruments that would have l
 otherwise are the four retired in §4 and the gate in §5, and they were built and tested before
 these designs existed, which is why they can refuse them.
 
-**Diversity is the binding constraint on this material, not count.** All 21 belong to one footprint
-family — the pinned nine positions — and span two lengths. §14 records single-epitope dependence as
-the largest correlated risk in the submission, and 21 sequences from one family do not reduce it.
-The second family is the subject of the test in §6.3's open causes.
+**Diversity is now real but does not help.** 21 of the 25 belong to the pinned footprint family and
+4 to the free-footprint family (§6.4), so the two families PK required do exist. They do not reduce
+the risk §14 names, because the second family scores *worse* than the first on both the interface
+term and histidine placement. Two families of non-binders is better coverage of a space that does
+not contain a binder.
 
 ---
 
@@ -743,6 +828,21 @@ have redirected the search after the first condition instead of the fourth. **An
 cannot distinguish a method that is being tuned badly from a method that is not optimising**, and
 only one of those is worth more tuning. Roughly $15 of the $26 spent on the search went to a
 question the first run's own log could have answered.
+
+**The same error class recurred within hours, and the guard built that morning caught it.** The
+condition table gained a fifth row, and its closest-histidine cell was filled with the condition's
+**median** (34.8 Å) in a column that holds the **minimum** (20.1 Å). This is the identical mistake
+as the two median cells above — a real statistic of the right data placed in a cell that holds a
+different statistic — committed by the same author on the same day, hours after writing the entry
+describing it. It was caught in seconds by `bin/check_p2_stats.py`, which recomputes every cell in
+that table from the design tables and had been written specifically because the first instance was
+invisible to proofreading.
+
+**Two things follow, and the second is the useful one.** First, knowing about an error class does
+not prevent committing it; the prose entry above was written by someone who then made the mistake
+again. Second, **the value of a mechanical check is not that it finds errors a careful reader would
+miss — it is that it does not get tired or confident.** The check cost roughly twenty minutes to
+write and has now caught the thing it was built for, once, in the same session.
 
 ## 12. The inverted-objective pilot
 
@@ -990,41 +1090,52 @@ those are marked.
     block of steps to the last (§6.3). The generation method as configured is not optimising the
     quantity it is written to optimise, and **no result in this document should be read as
     evidence that gradient descent on this loss produces interfaces.**
-31. **The cause of that flatness is unidentified.** Three candidates remain open — the pinned
-    epitope admitting no gradient path, sampling noise in the structure predictor swamping the
-    gradient, or an interaction among the eleven weighted terms. Only the first is scheduled to be
-    tested (§10's free-footprint family), and it is being run for an independent reason.
+31. **The cause of that flatness is unidentified, and the only testable candidate was
+    eliminated.** Three were proposed. The pinned epitope admitting no gradient path was tested
+    directly and **ruled out**: removing the restriction on both legs changed nothing (§6.4).
+    Sampling noise in the structure predictor swamping the gradient, and interaction among the
+    eleven weighted terms, both survive and **neither is testable within the remaining time at
+    this budget.** The method therefore fails for a reason this work cannot name.
 32. **The step budget is therefore unjustified by measurement.** 50 steps and 200 steps give
     indistinguishable results, so whichever is used for the submitted designs is chosen on cost,
     not on evidence that it is sufficient.
-33. **Design-time scores are optimistic by an amount that is not a constant.** Measured
+33. **The epitope restriction was load-bearing for the pH objective, not an obstacle to it.**
+    Freeing the footprint moved the median nearest-histidine distance from 22.8 Å to **34.8 Å**,
+    the worst of any condition, with one run at 54.5 Å. The anchor is one pinned point on a
+    456-residue surface, and the epitope term was the only thing holding the binder near it. Any
+    future free-footprint attempt needs a replacement for that term, not simply its removal.
+34. **A tight score distribution was obtained and is not good news.** The four free-footprint runs
+    span 0.0045 against 0.085 for the pinned condition, so seed and length stopped mattering. The
+    interpretation offered — a single generic surface-contact attractor, reproducible and mediocre
+    — is an interpretation, not a measurement.
+35. **Design-time scores are optimistic by an amount that is not a constant.** Measured
     design-to-re-predicted translation across four paired runs: +17%, −0%, −49%, −60%, with the
     two largest drops on the two highest design-time scores. No design-time number in this work is
     comparable to a re-predicted threshold, and no correction factor exists.
 
 ### The submission
 
-34. **The CSV ordering is not a calibrated prediction.** No instrument available to us ranks by
+36. **The CSV ordering is not a calibrated prediction.** No instrument available to us ranks by
     predicted affinity, so the order is a documented nomination priority and is labelled
     provisional.
-35. **The matched pairs are only interpretable together**, and Track 3 does not guarantee both
+37. **The matched pairs are only interpretable together**, and Track 3 does not guarantee both
     members are synthesised.
-36. **Novelty was assessed with the platform's checker**, which changed during the competition and
+38. **Novelty was assessed with the platform's checker**, which changed during the competition and
     whose implementation is not published, so we cannot reproduce its verdicts locally.
-37. **The pH mechanism and developability are in tension.** Raising free pKa raises pI, and
+39. **The pH mechanism and developability are in tension.** Raising free pKa raises pI, and
     elevated pI is associated with faster clearance. This challenge does not measure that side.
-38. **The inverted-objective pilot, if any design comes from it, rests on an unvalidated
+40. **The inverted-objective pilot, if any design comes from it, rests on an unvalidated
     inversion** — the published validation concerns acidic-pH binding to a different target.
 
 ### This document
 
-39. **Sections 8–10 and 12 describe methods whose results did not exist when written**, and are
+41. **Sections 8–10 and 12 describe methods whose results did not exist when written**, and are
     marked as such rather than filled with projections.
-40. **Several numbers in this work were corrected after first being recorded.** The computed pKa
+42. **Several numbers in this work were corrected after first being recorded.** The computed pKa
     shift was described as "measured"; a 10× ratio was described as a requirement when the
     published objective names none; a geometry check measured the wrong protomer of a homotrimer
     for a full day. Each is recorded in §11 with its consequence.
-41. **The errors found in §11 are the ones we found.** Two of them were invisible to the tests
+43. **The errors found in §11 are the ones we found.** Two of them were invisible to the tests
     written to catch them, and one was inside a fix that had already been reported as complete.
     The rate at which this work discovers its own faults is not evidence that it has run out of
     them.

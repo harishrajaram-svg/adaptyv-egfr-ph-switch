@@ -26,6 +26,7 @@ CONDITIONS = {
     2: ["p2probe-a", "p2probe-b", "p2probe-c", "p2probe-d"],
     3: ["p2probe2-e", "p2probe2-f", "p2probe2-g", "p2probe2-h"],
     4: ["p2deep-p", "p2deep-q", "p2deep-r", "p2deep-s"],
+    5: ["p2free-p", "p2free-q", "p2free-r", "p2free-s"],
 }
 
 
@@ -91,6 +92,50 @@ def close(stated_text, actual):
     return abs(float(stated_text) - actual) <= 0.5 * 10 ** -d + 1e-12
 
 
+INVENTORY_LABELS = {
+    "sequences, all distinct": "distinct_sequences",
+    "clearing the 0.45 interface gate": "clear_iptm_gate",
+    "histidine fraction above the 8% cap": "over_his_cap",
+    "nearest histidine within the 4.0 \u00c5 criterion": "within_placement_bar",
+}
+
+
+def parse_inventory(text):
+    """Pull {label: stated count} from the s10 inventory table."""
+    got = {}
+    for line in text.splitlines():
+        cells = [c.strip().replace("**", "") for c in line.strip().strip("|").split("|")]
+        if len(cells) != 2:
+            continue
+        label = cells[0]
+        if label in INVENTORY_LABELS:
+            m = re.match(r"^(\d+)", cells[1])
+            if m:
+                got[label] = int(m.group(1))
+    return got
+
+
+def check_inventory(doc_text, all_rows):
+    """The s10 counts must equal design_inventory's, which reads the same tables."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "di", os.path.join("analysis", "02-tnf", "design_inventory.py"))
+    di = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(di)
+    actual = di.summarise(all_rows)
+    fails = []
+    stated = parse_inventory(doc_text)
+    if not stated:
+        return ["could not parse the s10 inventory table at all"], {}
+    for label, key in INVENTORY_LABELS.items():
+        if label not in stated:
+            continue
+        if stated[label] != actual[key]:
+            fails.append(f"s10 inventory '{label}': doc says {stated[label]}, "
+                         f"recomputed {actual[key]}")
+    return fails, stated
+
+
 def check(doc_text, condition_rows):
     fails = []
     stated = parse_table(doc_text)
@@ -141,6 +186,12 @@ def selftest():
     assert any("closest_his" in x for x in check(doc.replace("18.0 Å", "2.62 Å"), rows))
     # a condition with no data on disk must fail loudly, not pass silently
     assert any("no run data" in x for x in check(doc, {}))
+    # the s10 inventory parser: a stated count must be read, and a wrong one rejected
+    inv = ("| | count of 3 |\n|---|---|\n| sequences, all distinct | 3 |\n"
+           "| clearing the 0.45 interface gate | 0 |\n")
+    assert parse_inventory(inv) == {"sequences, all distinct": 3,
+                                    "clearing the 0.45 interface gate": 0}, parse_inventory(inv)
+    assert parse_inventory("| nothing | here |") == {}
     print("check_p2_stats.py --selftest PASS")
 
 
@@ -150,8 +201,16 @@ def main():
     if not os.path.isfile(DOC):
         sys.exit(f"run me from the repo root: {DOC} not found")
     rows = {c: rows_for(d) for c, d in CONDITIONS.items()}
-    fails = check(open(DOC).read(), rows)
-    stated = parse_table(open(DOC).read())
+    doc = open(DOC).read()
+    fails = check(doc, rows)
+    # the s10 inventory counts EVERY run on disk, not only the five conditions
+    all_rows = []
+    for f in sorted(glob.glob(os.path.join(RUNS, "*", "designs.tsv"))):
+        with open(f) as fh:
+            all_rows += list(csv.DictReader(fh, delimiter="\t"))
+    inv_fails, inv_stated = check_inventory(doc, all_rows)
+    fails += inv_fails
+    stated = parse_table(doc)
     for c in sorted(stated):
         s = stats(rows.get(c, []))
         n = s["n"] if s else 0
@@ -163,8 +222,10 @@ def main():
         for f in fails:
             print(f"  {f}")
         sys.exit(1)
-    print(f"\nPASS: {len(stated)} condition(s), every median/max/distance recomputed from "
-          f"designs.tsv and agreeing to the precision shown.")
+    print(f"  s10 inventory: {len(inv_stated)} stated count(s), all recomputed from "
+          f"{len(all_rows)} rows on disk")
+    print(f"\nPASS: {len(stated)} condition(s) and the s10 inventory, every median, max, "
+          f"distance and count recomputed from designs.tsv.")
 
 
 if __name__ == "__main__":
