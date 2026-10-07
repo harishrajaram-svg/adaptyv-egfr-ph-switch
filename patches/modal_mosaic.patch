@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..4b79df6
+index 0000000..4d2389f
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1564 @@
+@@ -0,0 +1,1583 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -337,8 +337,13 @@ index 0000000..4b79df6
 +    print(f"[mosaic] [{label}] chains {chain_ids} crop={crop_t} "
 +          f"lens={[len(s) for s in target_seqs]} total={len(target_seq)}")
 +    print(f"[mosaic] [{label}] chain offsets (target-relative) {offsets}")
-+    print(f"[mosaic] [{label}] epitope {len(epitope_pos)} positions x {len(chain_ids)} "
-+          f"chains -> {len(epitope_idx)} target idx")
++    if epitope_pos:
++        print(f"[mosaic] [{label}] epitope {len(epitope_pos)} positions x {len(chain_ids)} "
++              f"chains -> {len(epitope_idx)} target idx")
++    else:
++        print(f"[mosaic] [{label}] FREE FOOTPRINT: no epitope restriction -- contact is "
++              f"rewarded against any of {len(target_seq)} target residues (s41 family B). "
++              f"The anchor is still pinned.")
 +    print(f"[mosaic] [{label}] anchor positional {anchor} on chain {anchor_chain} "
 +          f"-> target idx {anchor_local} = {anchor_aa}")
 +
@@ -779,7 +784,17 @@ index 0000000..4b79df6
 +    crop_t = None if crop.lower() in ("none", "", "full") else tuple(
 +        int(v) for v in crop.split(":")
 +    )
-+    epitope_pos = [int(v) for v in epitope.split(",")]
++    # --epitope none is the FREE-FOOTPRINT family. Upstream BinderTargetContact does
++    # `if self.epitope_idx is not None: log_contact_inter = log_contact_inter[:, idx]`, so
++    # None means "reward contact with ANY target residue" rather than a chosen patch. That is
++    # the setup Mosaic's own author used to win Nipah de novo 9/10 -- he gave the model the
++    # target with no epitope and let the optimizer find the site (s41).
++    #
++    # The ANCHOR is still required: the pH mechanism needs a histidine against a specific
++    # cation, so the footprint is free but the one functional contact is not. That is the
++    # difference between this and Boyd's unconstrained affinity problem.
++    _free_epitope = epitope.strip().lower() in ("", "none", "free")
++    epitope_pos = [] if _free_epitope else [int(v) for v in epitope.split(",")]
 +    length_list = [int(v) for v in lengths.split(",")]
 +    for L in length_list:
 +        if not 56 <= L <= 90:
@@ -824,7 +839,10 @@ index 0000000..4b79df6
 +    chain_ids = HU["chain_ids"]
 +    chains_prepared = HU["chains_prepared"]
 +    offsets = HU["offsets"]
-+    epitope_idx = HU["epitope_idx"]
++    # None (not []) when free: an empty list would slice the contact map to zero columns and
++    # silently kill the binding term, which is the quiet-wrong-answer failure mode this file
++    # keeps producing. None is the documented upstream "no restriction" value.
++    epitope_idx = HU["epitope_idx"] or None
 +    anchor_local = HU["anchor_local"]
 +    anchor_aa = HU["anchor_aa"]
 +    target_seq = HU["target_seq"]
@@ -1121,7 +1139,8 @@ index 0000000..4b79df6
 +                w_iptm * sp.BinderTargetIPTM()
 +                + w_pae * sp.BinderTargetPAE()
 +                + w_contact * sp.BinderTargetContact(
-+                    epitope_idx=MO["epitope_idx"], contact_distance=14.0, paratope_size=8
++                    epitope_idx=MO["epitope_idx"] or None, contact_distance=14.0,
++                    paratope_size=8
 +                )
 +                # BRANCH ON MECHANISM, like the human leg. This hardcoded HisNearCation, so
 +                # under --mechanism acid_near_his the species anchor is validated as H, the

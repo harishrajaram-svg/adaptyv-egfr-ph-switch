@@ -300,6 +300,20 @@ def main():
         raise SystemExit("species-leg fixtures missing: "
                          f"{spec_file} and {mouse_pdb} are required")
 
+    # 3c-bis. FREE FOOTPRINT (§41 family B). --epitope none must give epitope_idx = None, the
+    # documented upstream "no restriction" value -- NOT an empty list. An empty list slices the
+    # contact map to zero columns and silently kills the binding term, which looks like a
+    # design that will not bind rather than a configuration error.
+    free = prep_set("t-free", Path("targets/tnf/tnf_trimer_renum.pdb"), "A,B,C", None,
+                    [], 27, "B", "his_near_cation")
+    assert free["epitope_idx"] == [], free["epitope_idx"]
+    assert (free["epitope_idx"] or None) is None, "empty epitope must collapse to None"
+    # the ANCHOR is still pinned -- that is what separates this from an unconstrained design
+    assert free["anchor_aa"] == "R", free["anchor_aa"]
+    assert free["anchor_local"] == 178, free["anchor_local"]
+    print("free footprint  --epitope none -> 0 positions, epitope_idx collapses to None "
+          "(not []),\n                anchor still pinned at target idx 178 = R")
+
     # 4. a distant carboxylate must FAIL the 4.0 A bar -- the bar is the whole point.
     # The reported distance is the min over ND1 AND NE2, so it is not the planted offset;
     # the bar is what is being tested here, not the arithmetic.
