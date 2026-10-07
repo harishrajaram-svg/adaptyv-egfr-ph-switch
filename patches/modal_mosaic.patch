@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..55b4227
+index 0000000..51a8aa6
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1677 @@
+@@ -0,0 +1,1679 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -1081,8 +1081,10 @@ index 0000000..55b4227
 +        loss over several structure+confidence passes from a single trunk output, which is the
 +        variance reduction the flat-trajectory question needs. The MONOMER leg deliberately
 +        does NOT go through here: it carries pLDDT, within-binder contact and globularity and
-+        no interface term, so averaging it costs GPU memory -- the binding constraint on an
-+        L40S, which already cannot hold three protomers -- for no bearing on the question.
++        no interface term, so averaging it costs GPU memory for no bearing on the question.
++        NB: the human trimer alone is NOT the ceiling (456 res / 532 tokens, 21.7 s/step). It is
++        the DUAL-SPECIES graph that OOMs with a mouse trimer (~976 tokens); mouse dimer at 828
++        tokens runs at 25.9 s/step. An earlier comment here overstated this and ruled out options.
 +        """
 +        if grad_samples > 1:
 +            return model.build_multisample_loss(

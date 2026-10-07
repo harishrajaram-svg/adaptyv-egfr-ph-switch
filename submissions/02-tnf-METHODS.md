@@ -668,8 +668,11 @@ sixteen trajectories shared is now a parameter, and an arm exists that varies it
 
 Four samples go through `build_multisample_loss` on the **human and species legs only**. The monomer
 leg stays single-sample: it carries pLDDT, within-binder contact and globularity and **no interface
-term**, so averaging it spends GPU memory — the binding constraint on an L40S that already cannot
-hold three protomers (§14) — on a leg that cannot answer the question.
+term**, so averaging it spends GPU memory on a leg that cannot answer the question. **Correction,
+stated because an earlier draft of this section had it wrong:** the human trimer is *not* the memory
+ceiling — 456 residues / 532 tokens runs at 21.7 s/step. What exceeds the card is the dual-species
+graph with a mouse trimer (~976 tokens); the mouse dimer at 828 tokens runs at 25.9 s/step, which is
+why the species leg uses two protomers (§14).
 
 **The bar is pre-registered, before any number exists**, and is the same statistic and tool as the
 free-footprint probe so the two are comparable: **four-run mean rise in `iptm_repred` across the
