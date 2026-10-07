@@ -771,6 +771,20 @@ backbones, with the direction verified independently of the objective being opti
 stops at half a day if the comparison is not interpretable or reproducible. A negative result is
 reported. Method novelty alone does not displace a better-supported candidate.
 
+🔴 **This pilot inherits the same precondition as §9, and the inheritance is the point.** It
+redesigns sequences onto de novo backbones and compares three directions on them. With 0 of 21
+backbones clearing the interface gate, all three arms would be built on scaffolds that do not bind,
+and the comparison would resolve a question about pH selectivity on complexes that have no measured
+affinity to be selective about.
+
+**Stated once, because it applies to three sections at the same time.** §9's controls, §10's
+submission and this pilot all assume a binding design upstream of them, and §6.3 reports that the
+generation method did not produce one. **The failure is upstream of every downstream instrument in
+this work**, which is why those instruments read `n/a` rather than `False`, and why this document
+reports the generation result as the finding rather than burying it as a caveat under each
+dependent section. The instruments are sound and unexercised in the direction that matters; the
+generator is the thing that did not work.
+
 ---
 
 ## 13. Reproducibility, measured in a fresh clone
