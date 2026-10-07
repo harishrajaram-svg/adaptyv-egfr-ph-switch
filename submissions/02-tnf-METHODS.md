@@ -744,7 +744,8 @@ otherwise are the four retired in §4 and the gate in §5, and they were built a
 these designs existed, which is why they can refuse them.
 
 **Diversity is now real but does not help.** 21 of the 25 belong to the pinned footprint family and
-4 to the free-footprint family (§6.4), so the two families PK required do exist. They do not reduce
+4 to the free-footprint family (§6.4), so the two distinct footprint families an external
+reviewer asked for do exist. They do not reduce
 the risk §14 names, because the second family scores *worse* than the first on both the interface
 term and histidine placement. Two families of non-binders is better coverage of a space that does
 not contain a binder.
