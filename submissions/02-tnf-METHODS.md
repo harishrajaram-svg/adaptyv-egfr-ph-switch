@@ -10,9 +10,14 @@ prediction of our own results.
 
 **What this document leads with.** The strongest results in this work are negative: four ranking
 instruments were tested against measured data and all four were retired, one of them against a
-threshold that was committed to version control before the number existed. The most reusable
-finding is in §7 — it concerns the instrument rather than our designs, and it applies to anyone
-modelling an epitope that spans two protomers.
+threshold that was committed to version control before the number existed.
+
+Two findings are reusable independently of whether our designs succeed. **§7** concerns the
+scoring instrument: an approved antibody's interface score collapses 18-fold when the target is
+modelled as one protomer instead of three, which makes such a score uninterpretable without its
+protomer count. **§6.1** concerns multi-objective design generally: a conditional objective can be
+weighted above the objective it depends on, and the resulting failure looks like an insufficient
+compute budget while in fact being a weight ratio.
 
 ---
 
@@ -230,6 +235,69 @@ is **top-2, not a sum**. This matters, and the reason is recorded in §11.
 numerically flat beyond ~30 Å, where trajectories begin — so the contact terms must bring the
 binder into range before the pH objective contributes any gradient at all. A short schedule spends
 its budget in the regime where the mechanism is invisible.
+
+### 6.1 The weight balance, and a tuning pathology worth reporting
+
+Multi-objective design has a failure mode that is rarely written down: an objective can be
+weighted strongly enough to compete with the objective it depends on. We hit it, and the diagnosis
+is reportable independently of whether our designs succeed.
+
+**The shipped balance was:**
+
+| term | weight | what it asks for |
+|---|---|---|
+| `BinderTargetIPTM` | 1.0 | interface confidence |
+| `BinderTargetContact` | 1.0 | contact with the epitope |
+| `BinderTargetPAE` | 0.05 | interface precision |
+| **pH term** | **2.0** | **a binder histidine against the target cation** |
+
+**The pH objective carried twice the weight of the two binding objectives combined with
+themselves** — on designs that were not binding. Measured at 50 optimisation steps, four
+trajectories:
+
+| | iptm_repred | nearest His → anchor |
+|---|---|---|
+| L76 seed 0 | 0.153 | 18.0 Å |
+| L76 seed 1 | 0.120 | 24.8 Å |
+| L84 seed 0 | 0.111 | 47.9 Å |
+| L84 seed 1 | 0.156 | 39.2 Å |
+
+**The distances are not measurements of histidine placement.** They are distances measured on
+poses whose interface confidence is **0.11–0.16 against a 0.45 threshold** — i.e. poses where the
+binder is not bound to anything. Our own gate (§8) classifies all four as *not applicable* rather
+than as placement failures, which is the distinction the gate exists to enforce.
+
+**Two independent observations point at the weighting rather than at the step budget.**
+
+1. **Step count did not move the interface.** Five-step runs on the same configuration gave
+   iptm_repred 0.178; fifty-step runs gave a median of **0.135**. A tenfold increase in
+   optimisation produced no improvement in the quantity that has to improve first.
+2. **The pH term cannot act at these distances.** Its sigmoid, at `d0 = 6.5 Å` and
+   `width = 1.5 Å`, reads 1.2 × 10⁻⁴ at 20 Å and 1.4 × 10⁻¹¹ at 44 Å. It is numerically flat
+   where the trajectories sit. So the weight it carries is not buying histidine placement — it is
+   competing with the terms that would bring the binder close enough for placement to be
+   achievable at all.
+
+**The mechanism of the pathology.** A gradient-based multi-objective design has no notion that one
+of its objectives is a precondition for another. The pH term is only meaningful inside ~20 Å; the
+contact terms are what get the binder there. Weighting the conditional objective above the
+precondition asks the optimiser to satisfy a constraint in a regime where the constraint is
+unmeasurable, at the expense of reaching that regime. **The fix is a weight ratio, not more
+compute** — which is the opposite of the conclusion a step-count sweep would have reached.
+
+**Why it went unnoticed.** Six of the eleven loss weights — including both binding terms — were
+present on the remote design function but absent from the command-line interface. Retuning the
+balance required editing the source, so the shipped ratio was never treated as a parameter. **A
+weight that cannot be passed is a weight nobody tunes.** All eleven are now exposed with identical
+defaults, and the test suite asserts that every weight on the design function is reachable from
+the interface with a matching default — verified by deleting one and confirming the test names it.
+
+**Status.** A controlled single-variable probe is in progress at the time of writing: identical
+configuration and step count, pH weight reduced from 2.0 to 0.5, four trajectories against the
+four-trajectory baseline above. Since only the ratio of weights affects a weighted sum, reducing
+the pH weight is equivalent to raising the binding weights, and it was the change reachable
+without modifying code mid-experiment. The success criterion was fixed before the probe was
+launched: **a median iptm_repred of 0.20 or above** indicates the ratio is a usable lever.
 
 *Results from this method do not yet exist. Nothing in this section is a claim about output.*
 
