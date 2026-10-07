@@ -1005,7 +1005,7 @@ Re-levelled on FoldSeek-vs-PDB results for every design we hold structures for:
 | 4 De Novo | 0 |
 
 **114 of 238 clear Level ≥ 3. The old single bar passed 0 of 238** — including the entire
-BindCraft pool, which supplies 10 of the 16 submitted designs. Nothing in the pool
+BindCraft pool, which supplies 11 of the 16 submitted designs. Nothing in the pool
 reaches Level 4 under the general-protein rule; every design that clears does so through the
 Level 3 clause (moderate structural similarity *or* >30% sequence identity, exactly one of
 them), which is worth saying plainly: **this is a pool of partly novel designs, not de novo
@@ -1998,7 +1998,7 @@ is free for academic and non-profit use and needs a paid University of Washingto
 otherwise, which does not describe this entry. `setup-checklist.md` had already reached that
 conclusion — *"Recommendation: avoid it"* — and recorded that Anthropic excluded Rosetta/PyRosetta
 from their own campaign on licence grounds; FreeBindCraft was named as the substitute and **was
-never actually substituted**. The BindCraft pool supplies **10 of the 16 submitted designs**, so
+never actually substituted**. The BindCraft pool supplies **11 of the 16 submitted designs**, so
 this is not a stray dependency.
 
 The honest statement: every other tool listed above is open-source and commercially usable, and

@@ -199,6 +199,16 @@ def rules(a):
     rule('denominator "our N rows"', n,
          r'our ' + NUM + r'(?= rows?\b)', optional=True)
 
+    # BindCraft supply. ADDED 2026-10-07: the denominator rules above guard "of the N
+    # submitted designs" but never looked at the NUMERATOR, so when the 10-06 removals took
+    # out two BoltzGen designs the BindCraft count was carried over from the previous
+    # 16-design set -- which had a different composition -- and read 10 where it is 11.
+    # Composition staleness survives a denominator check; this is the rule that catches it.
+    bcn = sum(1 for r in rows
+              if r['name'].startswith(('bc_', 'bcr_', 'ss_bc_', 'd2c_')))
+    rule('BindCraft supply "N of the M submitted designs"', bcn,
+         r'BindCraft pool,? (?:which )?supplies \*?\*?(\d+) of the \d+ submitted designs')
+
     # family count from the generator's own map
     try:
         sys.path.insert(0, 'bin')
