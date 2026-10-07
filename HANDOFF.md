@@ -5,6 +5,15 @@
 message, not from our own notes. Adaptyv extended it; the original Oct 4 date is wrong
 everywhere it still appears.
 
+## 🔴 FOUR MODAL JOBS LIVE as of 2026-10-07 1:45 AM
+
+`p2deep-p/q/r/s`, 200 steps at `--w-acid 0.5`. Check with `modal app list | grep ephemeral` and
+`for t in p q r s; do echo "$t: $(grep -cE '^[0-9]+ loss:' /tmp/deep_$t.log)/200"; done`.
+Completed designs persist to the `mosaic-weights` Volume; recover with
+`mkdir -p /tmp/rec && cd /tmp/rec && modal volume get mosaic-weights runs/p2deep-p`
+(the destination must be the CWD — passing it as an argument raises Errno 21). Full context in
+`ROADMAP.md`'s LIVE RUNS block.
+
 ## 🧭 PROBLEM 2's PLAN IS `ROADMAP.md` IN THE OTHER REPO
 
 `~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (2026-10-06 11:20 PM) is the
