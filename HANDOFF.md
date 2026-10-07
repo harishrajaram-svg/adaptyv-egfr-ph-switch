@@ -19,9 +19,13 @@ launchers refuse to start if they fail.
 
 ## 🔵 THIS FILE IS PROBLEM 1 ONLY. Problem 2 is live and lives elsewhere.
 
-**Problem 1 is SUBMITTED** — 16 designs, 10/5 12:49 PM, DESIGNATED. **RESUBMISSION IN
-FLIGHT 10/6:** all 18 re-uploaded after the organisers recalibrated nanobody novelty; the
-final count is whatever their check clears (16, 17 or 18). See METHODS limitation 37.
+**✅ PROBLEM 1 IS CLOSED — submitted 2026-10-07, 16 designs, all 16 cleared novelty.**
+Nothing owed. Methodology box pasted, METHODS attached, repo public and pushed, 22 gates
+green. The resubmission swapped the set's composition rather than its size: both designs
+the 10-05 check rejected were accepted, and two it had passed at 3/4 were rejected on
+byte-identical sequences — their novelty check is not stable, and every novelty level we
+state is one run of their pipeline on one day. METHODS limitation 37; carry-forward lessons
+10 and 11 in `projects/anthropic-adaptyv-2026/lessons-problem-1.md` (context-directory).
 
 **Problem 2 (conditional TNF-α binder: bind at pH 7.4, release at pH 6.0, plus mouse
 cross-reactivity) closes Mon 2026-10-12 07:59 EDT**, retry-preserving upload Sun 10/11. Its
