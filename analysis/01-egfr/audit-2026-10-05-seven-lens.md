@@ -19,16 +19,16 @@ Verified by hand before publishing this file: clusters A, B, C(rank 4), D, G.
 
 ## HIGH
 
-### [pk-coverage] README's four headline claims re-assert four claims PK ordered withdrawn and METHODS retracts
+### [reviewer-coverage] README's four headline claims re-assert four claims the reviewer ordered withdrawn and METHODS retracts
 - `/Users/harish/code/adaptyv-2026/README.md`:21
 - verdict: CONFIRMED
 - quoted: 2. **A molecule with no reported KD reads a 5.27× switch.** Of 11 molecules Adaptyv measured on this / platform, the highest-scoring one on our own ranking metric is a design already measured / **not to bind** — and it ranks 8th of 2,009 on the competition's primary objective.
 3. ... it turns out to be the only specificity filter here that / measured data supports ... this is a statement / about r
-- artifact: All four are withdrawn elsewhere. (a) PK 2026-10-04 §1 + METHODS:367-371 — the ten are right-censored 'no KD reported', not 'measured not to bind'; and METHODS:701 lists 'a rank among 132 rankable molecules quoted against a denominator of 2,009 | overstated by ~15×'. (b) PK 2026-10-04 and METHODS:432-433 — 'no specificity filter in this pipeline is supported by measured data — including this one';
-- matters: README is the repository front door ('Start here') and these four lines are the submission's summary of itself. A grader or PK reading only them gets four claims the methods document spends sections retracting, including the two PK objected to most directly (censoring and the dual-species rescue). Ironically README:111-117 prints the censoring correction 90 lines below claim 2.
+- artifact: All four are withdrawn elsewhere. (a) the reviewer 2026-10-04 §1 + METHODS:367-371 — the ten are right-censored 'no KD reported', not 'measured not to bind'; and METHODS:701 lists 'a rank among 132 rankable molecules quoted against a denominator of 2,009 | overstated by ~15×'. (b) the reviewer 2026-10-04 and METHODS:432-433 — 'no specificity filter in this pipeline is supported by measured data — including this one';
+- matters: README is the repository front door ('Start here') and these four lines are the submission's summary of itself. A grader or the reviewer reading only them gets four claims the methods document spends sections retracting, including the two the reviewer objected to most directly (censoring and the dual-species rescue). Ironically README:111-117 prints the censoring correction 90 lines below claim 2.
 - gate: Add README.md to check_claims.py's citation-window scope with the existing banned-phrase rules ('measured not to bind', 'of 2,009', 'route past it is closed', 'no cost in predicted affinity'), and generate the 'four lines' block and the design count from the emitted CSV the way METHODS §11 blocks al
 
-### [pk-coverage] Three submitted designs contact the Asn420 glycan sequon; METHODS, README and limitation 14 report only one
+### [reviewer-coverage] Three submitted designs contact the Asn420 glycan sequon; METHODS, README and limitation 14 report only one
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:1011
 - verdict: CONFIRMED
 - quoted: | **glycan** | **1 of 17** touches an N-glycosylation sequon — and it is the top-ranked design |
@@ -37,7 +37,7 @@ Verified by hand before publishing this file: clusters A, B, C(rank 4), D, G.
 - matters: This is an undisclosed liability on two shipped rows. The two bcr_d3acid3_l60_s647537 designs were added on 2026-10-05 as the diversity replacements, and their CSV assessment strings list novelty, pose spread and 'Expression QC NOT RUN' but say nothing about a glycan contact — while the organisers' own answer (reference/organizer-answers-slack.md:49-51) is that screening uses 'glycosylated, tether
 - gate: Make §10b a GENERATED block in gen_methods_submission.py, sourced from finalist_footprints.json, emitting the per-design glycan hit list by name; and add a glycan_sequon_hits column (or an explicit sentence) to each CSV assessment string so a sequon contact cannot ship undeclared.
 
-### [pk-coverage] The graded CSV's rimA01_r15_L133E assessment carries five values METHODS §11.6 withdraws by name, contradicting its own numeric columns
+### [reviewer-coverage] The graded CSV's rimA01_r15_L133E assessment carries five values METHODS §11.6 withdraws by name, contradicting its own numeric columns
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr.csv`:15
 - verdict: CONFIRMED
 - quoted: all-site median 5.659x, above the 5.55x thermodynamic ceiling ... Two of five poses exceed the 7.94x one-proton bound ... Affinity HELD: human 0.594 -> 0.616 ... the pose spread is 4.24-11.64, i.e. 1.31x the median ... L133D at the same position reads 0.723x with human affinity 0.000 -- Asp spans ~2.5A from CB and LEU133 sits 6.28A from H370
@@ -45,18 +45,18 @@ Verified by hand before publishing this file: clusters A, B, C(rank 4), D, G.
 - matters: The CSV is THE graded upload and the assessment column is the only prose a grader sees. One row simultaneously reports spread 4.38 in its numeric column and '1.31x the median' in its text, and asserts an affinity gain the methods document calls five-pose noise. All nine gates pass (bin/gate_sweep.py: 9/9 green), so nothing catches it. It also mislabels the ranked basis: 5.659 is quoted as 'all-sit
 - gate: Extend emit_submission_csv.py --selftest to assert that every number appearing in an assessment string also appears in that row's own numeric columns or in the row's ph_sensitivity.json entry (tolerance 0.01), failing on any orphan figure; and add the retired values (5.659, 1.31x, 0.616, 0.723x) to 
 
-### [pk-coverage] METHODS §5 uses the EGF-derived controls' Potts ranks as validation and asserts their agonist activity — the exact inference PK ruled out
+### [reviewer-coverage] METHODS §5 uses the EGF-derived controls' Potts ranks as validation and asserts their agonist activity — the exact inference the reviewer ruled out
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:652
 - verdict: CONFIRMED
 - quoted: The controls validate it independently of us: all six positive controls fall in the lower
 half of the design distribution, and both EGF-derived "nonbinders" fall in the **top 14%** —
 a model that never saw this target says protonating H433 is maximally bad for an EGF-like
 complex, which is exactly right for a neutral-pH agonist.
-- artifact: PK 2026-10-04 §5, final line: 'The EGF-derived sequences' Potts ranks cannot independently establish their binding or agonism.' And PK §1: 'Relabel both EGF-derived controls as activity-unknown, document their provenance gap, and withdraw claims based on their supposed negative status.' METHODS §4.1 (lines 310-316) complies: 'Both EGF-derived controls are therefore relabelled **activity-unknown**.
-- matters: This is the one paragraph that still treats the EGF-derived molecules as a known agonist and uses their Potts rank as corroboration of the protonation model — the single inference PK named and forbade, in a section whose whole purpose is the third pH predictor's credibility. It also contradicts §4.1 eleven sections earlier and describes the panel's scare-quoted 'nonbinders' as validating 'independ
+- artifact: The reviewer 2026-10-04 §5 closed by noting that a Potts rank on the EGF-derived sequences settles nothing on its own about whether those molecules bind or act as agonists. Their §1 directed that both EGF-derived controls be re-tagged activity-unknown, that the hole in their provenance be written down, and that every claim resting on their presumed negative status be dropped. METHODS §4.1 (lines 310-316) complies: 'Both EGF-derived controls are therefore relabelled **activity-unknown**.
+- matters: This is the one paragraph that still treats the EGF-derived molecules as a known agonist and uses their Potts rank as corroboration of the protonation model — the single inference the reviewer named and forbade, in a section whose whole purpose is the third pH predictor's credibility. It also contradicts §4.1 eleven sections earlier and describes the panel's scare-quoted 'nonbinders' as validating 'independ
 - gate: Add a check_claims.py rule binding the tokens NEG_nonbinder / NEGd3_nonbinder / 'EGF-derived' to a required 'activity-unknown' qualifier within the same paragraph, and ban the words 'validate'/'agonist' in any sentence citing their scores.
 
-### [pk-coverage] §12 Declarations attest 17 sequences, name one that was removed, and omit two that shipped
+### [reviewer-coverage] §12 Declarations attest 17 sequences, name one that was removed, and omit two that shipped
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:1702
 - verdict: CONFIRMED
 - quoted: **Five sequences were added on 2026-10-05 and their review is recorded separately, because it is
@@ -70,7 +70,7 @@ a human attestation and must not be inflated by restating a count.** They are
 - matters: §12 is the declarations section the organisers require, and it states in its own words that a human attestation 'must not be inflated by restating a count'. As written, two shipped sequences are covered by no human review and no coded provenance check, and the document attests to a sequence that is not in the upload. The 'checked by code over all seventeen' provenance claim (no G532 ancestry, max 
 - gate: Make the §12 attestation list a GENERATED block keyed on the emitted CSV, with gen_methods_submission.py --check failing if any CSV name is absent from the review lists or any listed name is absent from the CSV.
 
-### [pk-coverage] CONTROL-TABLE still calls the ten control molecules 'measured negatives' four lines after printing the correction that they are not
+### [reviewer-coverage] CONTROL-TABLE still calls the ten control molecules 'measured negatives' four lines after printing the correction that they are not
 - `/Users/harish/code/adaptyv-2026/outbox/CONTROL-TABLE.md`:363
 - verdict: CONFIRMED
 - quoted: (Corrected 2026-10-05: a missing KD is right-censoring, not a measured zero, so this
@@ -78,8 +78,8 @@ a human attestation and must not be inflated by restating a count.** They are
   The highest-scoring molecule in the entire measured panel is a measured **non-binder** —
   `EXPNEG_gitter-yolo10` at 0.5893 against EGF's 0.3549.
 [and §2, line 29:] **10 designs expressed, tested against EGFR on this platform, NO binding detected
-- artifact: PK 2026-10-04 §1 required the opposite framing, and the same file's §6 header already applies it: 'NO KD REPORTED (right-censored; affinity weaker than the quantifiable limit, or an expression/QC failure)'. METHODS:366-371 states it fully. data/proteinbase/egfr_round1_second.csv reports no KD for these ten; it does not report non-binding.
-- matters: PK named this file as one of the two prerequisites for the next decision ('Please send the scorer/fixtures and the new control table first'). It is unsent, and in its current state it answers his central correction by restating the error twice — once in the section that introduces the panel and once in the sentence that carries the panel's headline result. §2's 'These are *measured* negatives, not
+- artifact: The reviewer 2026-10-04 §1 required the opposite framing, and the same file's §6 header already applies it: 'NO KD REPORTED (right-censored; affinity weaker than the quantifiable limit, or an expression/QC failure)'. METHODS:366-371 states it fully. data/proteinbase/egfr_round1_second.csv reports no KD for these ten; it does not report non-binding.
+- matters: The reviewer named this file as one of the two prerequisites for the next decision — they wanted the scorer with its fixtures, and the rebuilt control table, in hand ahead of anything else. It is unsent, and in its current state it answers their central correction by restating the error twice — once in the section that introduces the panel and once in the sentence that carries the panel's headline result. §2's 'These are *measured* negatives, not
 - gate: Run check_claims.py over outbox/ as well as submissions/, with 'measured negative(s)', 'measured non-binder' and 'NO binding detected' banned outside a quoted-correction block.
 
 ### [arithmetic] §11.7 and limitation 17 both assert no design holds top-3 in >50% of draws; the artifact says 60%
@@ -122,7 +122,7 @@ hold it in 0–18%.
 - verdict: CONFIRMED
 - quoted: | **glycan** | **1 of 17** touches an N-glycosylation sequon — and it is the top-ranked design |
 - artifact: finalist_footprints.json: glycan_sequon_hits = [420] for c5_cf_short__boltzgen_egfr_cropfree_short_48 AND for bcr_d3acid3_l60_s647537_mpnn3 AND for bcr_d3acid3_l60_s647537_mpnn11 — 3 of 18 designs, all on the same sequon (mature N420, contacted by 3/18 designs).
-- matters: The glycan check is one of the four footprint checks PK asked for by name, and the section's follow-up ("The glycan flag is on rank 1", line 1017), limitation 14 (line 1801) and README line 172 all present it as a single-design liability. Two further shipped designs — ranks 8 and 9, both added on 2026-10-05 — carry the same liability and are nowhere flagged. The designs were scored against glycan-
+- matters: The glycan check is one of the four footprint checks the reviewer asked for by name, and the section's follow-up ("The glycan flag is on rank 1", line 1017), limitation 14 (line 1801) and README line 172 all present it as a single-design liability. Two further shipped designs — ranks 8 and 9, both added on 2026-10-05 — carry the same liability and are nowhere flagged. The designs were scored against glycan-
 - gate: Emit the glycan row of the §10b table as a generated block that counts designs with non-empty glycan_sequon_hits and names every one of them, and add a CSV column or assessment sentence for any row with a sequon hit.
 
 ### [arithmetic] The two bcr replacement designs are 86.7% identical to each other, while both CSV rows and §11.3 claim "<0.47 to anything else submitted"
@@ -130,7 +130,7 @@ hold it in 0–18%.
 - verdict: CONFIRMED
 - quoted: Highest sequence identity to any other submitted design: <0.47.
 - artifact: Recomputed pairwise over the 18 shipped sequences: bcr_d3acid3_l60_s647537_mpnn3 and bcr_d3acid3_l60_s647537_mpnn11 are both 60 aa and differ at 8 positions — identity 0.867. The same "<0.47" claim is in the mpnn11 row (CSV line 10), and METHODS repeats it as "at most 0.467 identical to anything else submitted" at lines 979 and 1275. METHODS' own generated FAMILY-LIST (line 1290) already shows the
-- matters: This number is the entire stated justification for the swap: two additions were pulled for being 0.985/0.986 near-duplicates of shipped designs and replaced by this pair, declared non-duplicative at <0.47. The replacement pair is itself an 86.7% pair — the fourth-closest pair in the submission — so the fix reproduced the problem PK asked to avoid ("avoid filling available slots with nearly identic
+- matters: This number is the entire stated justification for the swap: two additions were pulled for being 0.985/0.986 near-duplicates of shipped designs and replaced by this pair, declared non-duplicative at <0.47. The replacement pair is itself an 86.7% pair — the fourth-closest pair in the submission — so the fix reproduced the problem the reviewer asked to avoid ("avoid filling available slots with nearly identic
 - gate: Compute the full pairwise identity matrix over the emitted CSV sequences in the emitter and generate both the "three pairs exceed 90%" table and each row's max-identity sentence from it; fail the gate if any assessment string's stated identity bound is below the computed value.
 
 ### [arithmetic] The L133E assessment string in the graded CSV carries four figures §11.6 explicitly retracted, each contradicting its own row's columns
@@ -156,7 +156,7 @@ hold it in 0–18%.
 `rimA02_d3_rimA_14_vhh` leads the submission at 4.838× ... **The cost, stated:** rimA02 carries the second-highest honest pH ratio in the submission and
 sits at rank 6, below a design at 1.774×.
 - artifact: The GENERATED rank table 25 lines above (lines 1211–1229) lists rimA01_r15_L133E at 5.656 and c5_cf_short at 5.546 ahead of rimA02's 4.838, and places rimA02 at rank 12; the design at 1.774 (bc_s831683_mpnn19_S15D) is rank 11. The 2nd-place / rank-6 figures are the pre-2026-10-05 twelve-design values.
-- matters: This paragraph is the stated justification for the one deliberate departure from ranking on the primary objective — PK's "apply eligibility and credible-interface checks first". The justification is built on a pH standing (leads / second-highest) that the section's own generated table refutes, and on a rank that is six places off, so the "cost, stated" is not the cost actually paid.
+- matters: This paragraph is the stated justification for the one deliberate departure from ranking on the primary objective — the reviewer's "apply eligibility and credible-interface checks first". The justification is built on a pH standing (leads / second-highest) that the section's own generated table refutes, and on a rank that is six places off, so the "cost, stated" is not the cost actually paid.
 - gate: Forbid bare rank references in METHODS §§10–11 prose (the document's own §11.4 note already says ranks drift) and generate the few that are load-bearing; or add a check that any "rank N" citation resolves to the same design in the generated RANK-TABLE.
 
 ### [unsupported] The graded CSV's rank-14 assessment is the pre-triad version: five numbers §11.6 explicitly retracted, three contradicting columns in the same row
@@ -207,13 +207,13 @@ a human attestation and must not be inflated by restating a count.** They are
 - matters: The line names exactly which designs lack a published pose, and it names two when the real answer is eight — including rank 1 and rank 2. A reviewer who wants the pose for the top-ranked design is told coverage is 83% when it is 56%. The sentence even flags that an earlier version of itself was wrong about this same count.
 - gate: Generate the coverage sentence by diffing the CSV name column against `ls submissions/structures/*.cif`; fail the gate sweep if the stated count or the named-missing list differs.
 
-### [contradiction] CONTROL-TABLE §2 still presents the ten Adaptyv molecules as measured non-binders — the exact relabel PK demanded and METHODS performed
+### [contradiction] CONTROL-TABLE §2 still presents the ten Adaptyv molecules as measured non-binders — the exact relabel the reviewer demanded and METHODS performed
 - `outbox/CONTROL-TABLE.md`:28
 - verdict: CONFIRMED
 - quoted: * **10 designs expressed, tested against EGFR on this platform, NO binding detected.**
     48–200 aa, from two independent groups. These are *measured* negatives, not presumed ones.
 - artifact: METHODS §4.4 line 364-373: "Earlier versions of this section called them 'measured non-binders'. That is not what the data says ... Throughout this section they are therefore **"no KD reported"**". CONTROL-TABLE's own §6 header (line 254) reads "NO KD REPORTED (right-censored; affinity weaker than the quantifiable limit, or an expression/QC failure)" and line 361-362 carries the "Corrected 2026-10
-- matters: CONTROL-TABLE is one of the two artifacts PK named as prerequisites for the next decision (2026-10-04 reply, closing line). Its introduction of the control class asserts the exact claim he asked to be withdrawn, and the document contradicts itself four sections later. A reviewer reading §2 concludes the project has assay-confirmed negatives; it does not.
+- matters: CONTROL-TABLE is one of the two artifacts the reviewer named as prerequisites for the next decision (2026-10-04 reply, closing line). Its introduction of the control class asserts the exact claim they asked to be withdrawn, and the document contradicts itself four sections later. A reviewer reading §2 concludes the project has assay-confirmed negatives; it does not.
 - gate: Add a check_claims.py rule banning "measured negative(s)", "measured non-binder" and "NO binding detected" applied to the EXPNEG class anywhere in submissions/ or outbox/, with the right-censored phrasing as the only permitted form.
 
 ### [contradiction] CONTROL-TABLE tells the reviewer the affinity_above_null column is still in the submission and that METHODS §4.5 agrees; §4.5 says it was removed and the CSV has no such column
@@ -223,7 +223,7 @@ a human attestation and must not be inflated by restating a count.** They are
 thing in METHODS §4.5 and §11 so all three documents now agree. If you would rather it came out,
 it is a one-line change and we have ~38 hours.
 - artifact: The CSV header is `name,sequence,molecule_class,ph_ratio_6p5_over_7p4_his_only_CONSERVATIVE,ipsae_min_human,ipsae_min_mouse,ph_poses_n,ph_pose_spread_over_median,ph_ratio_allsite_SENSITIVITY,ph_ratio_partnered_SENSITIVITY,ph_rank_range_across_bases,ph_tier_provisional,ph_ratio_target_only_SUPERSEDED,affinity_assessable,assessment` — no affinity_above_null. METHODS §4.5 line 558-559: "**The `affini
-- matters: This is the outgoing artifact to the external reviewer. It asks him to decide whether to remove a column that is already gone, and it cites METHODS §4.5 as agreeing with the opposite of what §4.5 says. The §4.5 pointer is a live cross-reference to content that states the reverse.
+- matters: This is the outgoing artifact to the external reviewer. It asks them to decide whether to remove a column that is already gone, and it cites METHODS §4.5 as agreeing with the opposite of what §4.5 says. The §4.5 pointer is a live cross-reference to content that states the reverse.
 - gate: Have check_claims.py assert that any document claiming a CSV column exists names a column present in the emitted CSV header, and that any "all three documents now agree" sentence is backed by a matching-string check across the three files.
 
 ### [contradiction] README and HANDOFF still quote "rank 8 of 2,009", a figure METHODS §7 lists as a ~15x overstatement it corrected
@@ -283,7 +283,7 @@ it is a one-line change and we have ~38 hours.
 - verdict: CONFIRMED
 - quoted: | **glycan** | **1 of 17** touches an N-glycosylation sequon — and it is the top-ranked design |
 - artifact: analysis/01-egfr/finalist_footprints.json (regenerated 07:28, now 18 designs): glycan_sequon_hits == [420] for THREE designs — c5_cf_short__boltzgen_egfr_cropfree_short_48 (rank 1), bcr_d3acid3_l60_s647537_mpnn3 (rank 8) and bcr_d3acid3_l60_s647537_mpnn11 (rank 9).
-- matters: A declared liability is understated three-fold, and Limitation 14 (line 1803, "**Rank 1 contacts a glycosylation sequon.**") names one design where three qualify. PK's 2026-10-03 reply made the glycan reassessment an explicit ask ("A sequon indicates potential occupancy... Include it when reassessing"). The two unnamed designs are the only members of the `d3acid3_l60_s647537` family, which §10/§11
+- matters: A declared liability is understated three-fold, and Limitation 14 (line 1803, "**Rank 1 contacts a glycosylation sequon.**") names one design where three qualify. The reviewer's 2026-10-03 reply made the glycan reassessment an explicit ask ("A sequon indicates potential occupancy... Include it when reassessing"). The two unnamed designs are the only members of the `d3acid3_l60_s647537` family, which §10/§11
 - gate: gen_methods_submission.py: generate the §10b check table and Limitation 14 from finalist_footprints.json (counts AND names), the way LIMIT-FAMILY and LIMIT-AFFINITY are already generated.
 
 ### [overclaim] The §12 human-review and provenance attestations cover 17 named sequences, one of which is not in the submission, and two submitted rows are attested nowhere
@@ -299,7 +299,7 @@ it is a one-line change and we have ~38 hours.
 - verdict: CONFIRMED
 - quoted: They occupy ranks 1, 2, 3, 6 and 8. Nothing was displaced — the submission was at 12 of 20 and the five use free slots. Three slots remain unused.
 - artifact: submissions/01-egfr.csv: 18 rows; the six 10-05 additions sit at ranks 1, 2, 5, 7, 8, 9 of the GENERATED rank table (§11.2). Rank 3 is `rimA01_r15_boltzgen_egfr_d3_rimA_20`, one of the original twelve. 20 − 18 = 2 slots unused, and §11.3 line 1286 of the same document states "The submission therefore stands at **18 of the 20 permitted**, with two slots deliberately unused rather than filled."
-- matters: The opening paragraph of §11 — the first thing a grader reads about the submission's composition — gets the addition count, every added rank, and the remaining allocation wrong, and contradicts §11.3 155 lines later. PK's closing instruction on 2026-10-03 was "I would not fill the allocation simply to reach twenty"; the paragraph answering that ask is the one that cannot count the allocation. 12 +
+- matters: The opening paragraph of §11 — the first thing a grader reads about the submission's composition — gets the addition count, every added rank, and the remaining allocation wrong, and contradicts §11.3 155 lines later. The reviewer's closing instruction on 2026-10-03 advised against topping the allocation up just to arrive at twenty designs; the paragraph answering that ask is the one that cannot count the allocation. 12 +
 - gate: gen_methods_submission.py: emit the whole "N designs / M added at ranks R / K slots unused" sentence as a generated block from the CSV plus the per-row ADDED/RESTORED markers.
 
 ### [overclaim] README declares three checks "Still open" that §10b and §4.4b in fact completed — and reports their results 14 lines earlier
@@ -307,7 +307,7 @@ it is a one-line change and we have ~38 hours.
 - verdict: CONFIRMED
 - quoted: **Still open.** The partner-deletion free leg is a fixed-conformation diagnostic, not a measurement of the apo state. Full-ECD, glycan and receptor-state checks have not been applied to the finalist footprints. The rAC1 comparison needs structural contact recovery against 4UIP rather than predicted confidence attached to crystallographic coordinates. These are recorded in METHODS §13 rather than r
 - artifact: All three were done. analysis/01-egfr/finalist_footprints.json carries n_outside_d3_crop, glycan_sequon_hits and hu_mo_identity_at_epitope for all 18 designs (METHODS §10b, lines 1007-1012, including the receptor-state verification at lines 1031-1041). analysis/01-egfr/rac1_contact_recovery.json + rac1_contact_recovery_chai.json are purely geometric contact recovery against 4UIP (METHODS §4.4b, li
-- matters: This is the underclaim case the lens names, in the entry document a grader reads first — METHODS line 19 links the repository, and the README's "Still open" paragraph gives away three completed pieces of work, including the rAC1 contact recovery that is the strongest negative result in the submission and the receptor-state check that PK's 10-03 reply demanded. The apo free leg in the same sentence
+- matters: This is the underclaim case the lens names, in the entry document a grader reads first — METHODS line 19 links the repository, and the README's "Still open" paragraph gives away three completed pieces of work, including the rAC1 contact recovery that is the strongest negative result in the submission and the receptor-state check that the reviewer's 10-03 reply demanded. The apo free leg in the same sentence
 - gate: Add a gate asserting that no item in README's "Still open" paragraph names an analysis artifact that exists under analysis/01-egfr/ — or generate that paragraph from a declared open-items list that §13 also reads.
 
 ### [overclaim] §1 presents a 5-row table as "a full PROPKA census of all 17 histidines" and concludes H433+H370 is the only bridgeable pair; the ectodomain coordinates contain four other pairs within 10.4 Å
@@ -318,12 +318,12 @@ it is a one-line change and we have ~38 hours.
 - matters: Line 101 then states "H433 + H370 is the only pair close enough for one binder to bridge: a two-site ceiling of **43.1×**. Everything in §3 is an attempt to reach it" — an exclusivity claim over all 17 sites, asserted from a table showing 5, and false on the coordinates in this repo (one pair is closer than H370–H433). The whole two-site narrative in §3.4, §8.1 and §8.2 ("the cap is a property of 
 - gate: Emit the census table from a script over targets/egfr/egfr_ecd_6aru.pdb (all 17 rows, or a row count that matches the header), and compute the "only pair within X Å" claim rather than asserting it.
 
-### [overclaim] CONTROL-TABLE still calls the 10 no-KD molecules "measured negatives" and gitter-yolo10 a "measured non-binder" — the exact relabel PK required and the same file corrects elsewhere
+### [overclaim] CONTROL-TABLE still calls the 10 no-KD molecules "measured negatives" and gitter-yolo10 a "measured non-binder" — the exact relabel the reviewer required and the same file corrects elsewhere
 - `outbox/CONTROL-TABLE.md`:29
 - verdict: CONFIRMED
 - quoted: 48–200 aa, from two independent groups. These are *measured* negatives, not presumed ones.
 - artifact: The same file's §6 table heading (line 254) reads "**NO KD REPORTED (right-censored; affinity weaker than the quantifiable limit, or an expression/QC failure)**", and METHODS §4.4 line 364-373 records the correction: "Earlier versions of this section called them 'measured non-binders'. That is not what the data says... A molecule with no reported KD is one whose affinity is **right-censored**... W
-- matters: CONTROL-TABLE is one of the two deliverables PK named as prerequisites ("Please send the scorer/fixtures and the new control table first"), and it carries the retracted label in two load-bearing places: line 29 introduces the whole panel as measured negatives, and line 363 — inside the bullet whose own parenthetical two lines up says "Corrected 2026-10-05: a missing KD is right-censoring, not a me
+- matters: CONTROL-TABLE is one of the two deliverables the reviewer named as prerequisites — the scorer and its fixtures, together with the rebuilt control table, were to arrive before any further decision — and it carries the retracted label in two load-bearing places: line 29 introduces the whole panel as measured negatives, and line 363 — inside the bullet whose own parenthetical two lines up says "Corrected 2026-10-05: a missing KD is right-censoring, not a me
 - gate: check_claims RULE over all DOCS: fail on /measured (non-?binder|negative)s?/ outside an explicitly quoted retraction block — the regex rules already cover phrasings of this kind for counts, and this is the same class.
 
 ### [adversarial-grader] Nine CSV rows quote the SUPERSEDED pH basis as the design's result, unlabelled, while their own graded column reads below the no-switch floor
@@ -347,7 +347,7 @@ it is a one-line change and we have ~38 hours.
 - verdict: CONFIRMED
 - quoted: Both were removed and replaced by `bcr_d3acid3_l60_s647537_mpnn3` and `_mpnn11`, which are at most 0.467 identical to anything else submitted and open a backbone family that had no representation.
 - artifact: Both sequences are exactly 60 aa and differ at 8 positions (1 V/I, 2 E/K, 4 E/K, 7 K/E, 15 K/E, 23 R/M, 40 R/E, 51 R/N) = 52/60 = 0.8667 positional identity; any gapped alignment can only raise this. The same false figure appears in the graded CSV on lines 9 and 10 ('Highest sequence identity to any other submitted design: <0.47.'), again at METHODS:979, and as the justification comment in bin/gen
-- matters: This is the swap made specifically to satisfy PK's instruction, quoted in the document itself at METHODS:1268 — 'avoid filling available slots with nearly identical variants' — and the replacement pair is an 87%-identical sibling pair presented as the diverse alternative. Unlike the three >90% pairs, it is NOT declared a parent/mutant comparison, so by the document's own test at METHODS:1270 ('A n
+- matters: This is the swap made specifically to satisfy the reviewer's instruction, cited in the document itself at METHODS:1268 — open slots were not to be spent on variants that barely differ from one another — and the replacement pair is an 87%-identical sibling pair presented as the diverse alternative. Unlike the three >90% pairs, it is NOT declared a parent/mutant comparison, so by the document's own test at METHODS:1270 ('A n
 - gate: Generate the identity claim rather than assert it: have bin/gen_methods_submission.py emit each design's max pairwise identity into a GENERATED block and into the CSV, and lower the check_claims.py near-duplicate disclosure threshold from 0.90 to ~0.80 so the sibling tier is reported, not just the p
 
 ### [adversarial-grader] The §12 human-review attestation names a sequence that is not in the submission and omits two that are; the provenance check covers 17 of 18 rows
@@ -363,7 +363,7 @@ it is a one-line change and we have ~38 hours.
 - verdict: CONFIRMED
 - quoted: | check | result across all 17 |
 - artifact: analysis/01-egfr/finalist_footprints.json contains exactly 17 entries. Set difference against the CSV: present in the artifact but not submitted = ['sd_d2c_101_l147_s144898_m_T65D']; submitted but absent from the artifact = ['bcr_d3acid3_l60_s647537_mpnn3', 'bcr_d3acid3_l60_s647537_mpnn11']. So '0 of 17 have any contact outside the 170 aa domain-III crop', '1 of 17 touches an N-glycosylation sequo
-- matters: These are the four checks PK asked for by name on 2026-10-03 ('Compare the complete binder footprint in tethered and ligand-bound extended assemblies, including the second receptor, glycans and membrane-facing orientation'), and §10b opens by quoting that request. Presenting them as 'across all 17' invites a grader to read them as the submission's glycan, crop-adequacy and cross-species-epitope pr
+- matters: These are the four checks the reviewer asked for by name on 2026-10-03 — they wanted each finalist's whole binder footprint set side by side across the tethered form and the extended, ligand-occupied assembly, taking in the partner receptor, the glycans, and how the binder sits with respect to the membrane — and §10b opens by citing that request. Presenting them as 'across all 17' invites a grader to read them as the submission's glycan, crop-adequacy and cross-species-epitope pr
 - gate: Add a gate_sweep.py coverage check: every analysis JSON that METHODS cites as 'across all N' must have its key set equal the CSV name set, and the N in the prose must come from a GENERATED block rather than be typed.
 
 ### [adversarial-grader] README.md and HANDOFF.md — both named deliverables — describe a 10-design submission ranked on the retired metric
@@ -377,74 +377,74 @@ it is a one-line change and we have ~38 hours.
 
 ## MED
 
-### [pk-coverage] PREREGISTRATION records the instrument falsifier as surviving on the dual-species rescue PK ordered withdrawn
+### [reviewer-coverage] PREREGISTRATION records the instrument falsifier as surviving on the dual-species rescue the reviewer ordered withdrawn
 - `/Users/harish/code/adaptyv-2026/outbox/PREREGISTRATION.md`:402
 - verdict: CONFIRMED
 - quoted: * **The instrument fails** if ipSAE_min does not separate the 10 measured non-binders from the
   **one** measured binder ... **Status: fired on the human leg, survives on the
   dual-species leg — see §2.5, answered 2026-10-04 before outcomes.**
 [§2.5:] Both molecules that beat it on human / are at **exactly 0.0000 on mouse, 5 of 5 dead seeds** — no interface, not a near miss. So the / separation r
-- artifact: PK 2026-10-04, quoted verbatim in METHODS:402-405: 'a zero predicted interface is not an experimentally demonstrated specificity mechanism. Without matched mouse outcomes, this does not validate mouse binding or rescue the failed human control criterion.' METHODS:429-433 and CONTROL-TABLE:369-387 both withdraw the argument: 'That argument is withdrawn ... The human criterion failed and stays faile
-- matters: This is not a stale number — it is the committed falsification verdict that the December analysis will be read against, and it records 'survives' on the one argument PK explicitly refused. The inbox status table for this email already says 'control recovery answered and its falsifier recorded as fired'. Left as is, the frozen plan tells a December reader that the instrument passed its own falsifie
+- artifact: The reviewer 2026-10-04, restated at METHODS:402-405: a prediction of no interface whatsoever is not the same thing as a specificity mechanism shown in an experiment, and in the absence of mouse measurements on the same molecules it neither confirms that the designs bind mouse nor repairs the human control criterion that had failed. METHODS:429-433 and CONTROL-TABLE:369-387 both withdraw the argument: 'That argument is withdrawn ... The human criterion failed and stays faile
+- matters: This is not a stale number — it is the committed falsification verdict that the December analysis will be read against, and it records 'survives' on the one argument the reviewer explicitly refused. The inbox status table for this email already logs the control-recovery point as answered and logs its falsifier as having fired. Left as is, the frozen plan tells a December reader that the instrument passed its own falsifie
 - gate: Add an amendment note under §2.7 (the file's established pattern) stating the dual-species rescue is withdrawn and the falsifier is fired, and add a check_claims.py rule that any occurrence of 'survives on the dual-species' or 'mechanism rather than ... margin' must sit inside a withdrawal block.
 
-### [pk-coverage] §10b concludes 'the crop is adequate' from footprints computed on crop-docked poses, contradicting limitation 15
+### [reviewer-coverage] §10b concludes 'the crop is adequate' from footprints computed on crop-docked poses, contradicting limitation 15
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:1010
 - verdict: CONFIRMED
 - quoted: | **full-ECD** | **0 of 17** have any contact outside the 170 aa domain-III crop (mature 311–480), so the crop is adequate and no footprint required the full ECD to assess |
 - artifact: bin/finalist_footprints.py's own docstring describes this check as 'whether contacts fall OUTSIDE the 170 aa domain-III crop most of these binders were designed against -- i.e. whether the footprint is even assessable on the crop', and computes footprints 'from its own human-leg poses'. METHODS:1810 states '16 of 18 submitted designs are scored on the crop', so for 16 of 18 a contact outside matur
-- matters: PK asked for the finalist footprints to be compared across assemblies, not for a self-consistency check; the result as written tells a grader the construct question is settled in the submission's favour while limitation 15 says the opposite on the only molecule with a solved complex. The '0 of 17' row can only ever read zero.
+- matters: The reviewer asked for the finalist footprints to be compared across assemblies, not for a self-consistency check; the result as written tells a grader the construct question is settled in the submission's favour while limitation 15 says the opposite on the only molecule with a solved complex. The '0 of 17' row can only ever read zero.
 - gate: Have finalist_footprints.py refuse to emit the CROP verdict for designs whose poses were folded against the crop (report them as 'not assessable on this arm', the pattern §11.8 already uses for the relaxed-leg coverage table), and cross-reference limitation 15 in the generated block.
 
-### [pk-coverage] PK's tethered-vs-extended footprint comparison was never done, and §10b presents 'the four checks' as the complete answer
+### [reviewer-coverage] the reviewer's tethered-vs-extended footprint comparison was never done, and §10b presents 'the four checks' as the complete answer
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:1014
 - verdict: CONFIRMED
 - quoted: **Domain II is not in play.** The earlier assessment concerned domain II; these binders do not
 touch it. That resolves the question in the designs' favour but by irrelevance, not by passing.
 [and 1031:] **Receptor state: the construct matches the assay, and I had this backwards for an hour.**
-- artifact: PK 2026-10-03: 'Compare the complete binder footprint in tethered and ligand-bound extended assemblies, including the second receptor, glycans and membrane-facing orientation. Distance from one tether contact cannot settle this.' and 'A tethered-biased unliganded preparation is a reasonable working hypothesis; the proportions in Adaptyv's reagent are unknown.' finalist_footprints.json contains one
-- matters: Three of the five things PK listed — extended/ligand-bound assembly, the second receptor, membrane-facing orientation — are absent from both the analysis and the limitations list, while the section reads as having discharged the request. Limitation 12 records only the Fab-templating caveat. A grader sees a four-row table marked 'result across all 17' with no indication that the comparison PK actua
-- gate: List the unattempted checks explicitly in §10b and as a numbered limitation, and add a 'PK ask -> artifact' coverage manifest to gate_sweep.py that fails when an ask has no artifact file backing it.
+- artifact: The reviewer 2026-10-03 asked for each finalist's binder footprint to be examined in full in both the tethered form and the extended, ligand-occupied assembly, counting the partner receptor, the glycans and the membrane-facing orientation, and said the distance to a single tether contact is not enough to decide the matter; they also allowed that treating the preparation as unliganded and tethered-biased is a defensible working assumption, while noting that nobody knows the actual proportions in Adaptyv's reagent. finalist_footprints.json contains one
+- matters: Three of the five things the reviewer listed — extended/ligand-bound assembly, the second receptor, membrane-facing orientation — are absent from both the analysis and the limitations list, while the section reads as having discharged the request. Limitation 12 records only the Fab-templating caveat. A grader sees a four-row table marked 'result across all 17' with no indication that the comparison the reviewer actua
+- gate: List the unattempted checks explicitly in §10b and as a numbered limitation, and add a 'reviewer ask -> artifact' coverage manifest to gate_sweep.py that fails when an ask has no artifact file backing it.
 
-### [pk-coverage] The glycan scan still misses the N-X-C sequon PK supplied, and §10b presents its eleven-sequon list as the ectodomain's full set
+### [reviewer-coverage] The glycan scan still misses the N-X-C sequon the reviewer supplied, and §10b presents its eleven-sequon list as the ectodomain's full set
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:1018
 - verdict: PLAUSIBLE
 - quoted: **Asn420**, one of eleven N-X-S/T sequons in the human ectodomain and one of four in domain III
 (N328, N337, N389, N420).
-- artifact: PK 2026-10-03: 'EGFR also has a documented atypical glycosylation site at mature N32, canonical N56, in an N-X-C motif, which your N-X-S/T scan misses. Include it when reassessing the domain-I fallback.' bin/finalist_footprints.py:56 implements only `re.finditer(r'N[^P][ST]', seq)` and prints 'N-glycosylation sequons in the human ECD: 11 (Asn at 104, 151, 172, 328, 337, 389, 420, 504, 544, 579, 59
-- matters: Low direct consequence — all 18 designs sit in domain III and mature N32 is in domain I — but the document asserts a complete sequon count for the whole ectodomain that is known to be short by one, using the scan PK told us is incomplete, with no note of the gap. It also exposes the numbering problem: these positions are mature (mature 420 = canonical 444) while H433/H370 elsewhere in the document
+- artifact: The reviewer 2026-10-03 flagged a further glycosylation site on EGFR, atypical but documented, that sits at mature N32, canonical N56, inside an N-X-C motif no N-X-S/T scan will ever return, and asked for it to be folded into any reassessment of the domain-I fallback. bin/finalist_footprints.py:56 implements only `re.finditer(r'N[^P][ST]', seq)` and prints 'N-glycosylation sequons in the human ECD: 11 (Asn at 104, 151, 172, 328, 337, 389, 420, 504, 544, 579, 59
+- matters: Low direct consequence — all 18 designs sit in domain III and mature N32 is in domain I — but the document asserts a complete sequon count for the whole ectodomain that is known to be short by one, using the scan the reviewer told us is incomplete, with no note of the gap. It also exposes the numbering problem: these positions are mature (mature 420 = canonical 444) while H433/H370 elsewhere in the document
 - gate: Add the N-X-C motif to sequons() with a separate 'atypical' label, and have the printed line state the numbering convention; assert in --selftest that mature 32 is in the atypical set.
 
-### [pk-coverage] The mature/canonical/PDB/mouse numbering table PK asked for twice does not exist, and the document mixes all three conventions
+### [reviewer-coverage] The mature/canonical/PDB/mouse numbering table the reviewer asked for twice does not exist, and the document mixes all three conventions
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:120
 - verdict: CONFIRMED
 - quoted: **ASP344 in PDB numbering, D368 canonical**, the convention H370 itself is quoted in — sits a
 few Å from its ring. (The two numbering systems were mixed inside one sentence here ...)
-- artifact: PK 2026-09-29, correction 1: 'Put mature, canonical, PDB-chain and aligned mouse positions in one table before generating constraints,' repeated in his closing ask: 'please send the numbering/alignment table'. He supplied the mappings (H409 = canonical H433; I467/S468 = canonical I491/S492; the seven acidic positions as D347, D368, D379, D388, D416, E391, E455; mouse Q01279 alignment). Grep across
+- artifact: The reviewer 2026-09-29, correction 1, directed that the mature, canonical and PDB-chain numbering plus the aligned mouse positions be collected into a single table, and that the table exist before any constraints were generated; their closing ask repeated the request for that numbering/alignment table. They supplied the mappings (H409 = canonical H433; I467/S468 = canonical I491/S492; the seven acidic positions as D347, D368, D379, D388, D416, E391, E455; mouse Q01279 alignment). Grep across
 - matters: This was the first of five pre-ranking corrections and remains unbuilt after three emails. Its absence is live in the deliverables: §1 and §3 use canonical (H433, H370), §2 mixes PDB and canonical in one sentence and says so, §4.4b and §10b use mature (epitope 411-489, footprint 316-474, sequons N328-N420), so the shared-epitope list at §10b:1055 contains '409' — which is mature numbering for the 
 - gate: Generate one numbering table (mature / canonical P00533 / 6ARU chain A / aligned mouse Q01279) from targets/egfr/*.faa by alignment, publish it as a §1 GENERATED block, and have check_claims.py require a convention tag on any residue reference matching /[HDEN]\d{2,3}/.
 
-### [pk-coverage] CONTROL-TABLE describes the affinity_above_null column as shipped, the exclusion count as 38, and the family split as unfixed — all three superseded
+### [reviewer-coverage] CONTROL-TABLE describes the affinity_above_null column as shipped, the exclusion count as 38, and the family split as unfixed — all three superseded
 - `/Users/harish/code/adaptyv-2026/outbox/CONTROL-TABLE.md`:80
 - verdict: CONFIRMED
 - quoted: We have left the column in the submission rather than dropping it mid-flight, and said the same
 thing in METHODS §4.5 and §11 so all three documents now agree.
 [line 222:] §10 of the methods document lists 38 molecules rejected on it.
 [line 394:] **One thing I have not fixed.** You asked twice for the historical EGFR data to be split by design family.
-- artifact: submissions/01-egfr.csv has 15 columns and no affinity_above_null; METHODS:1229-1233 states 'The `affinity_above_null` column has therefore been REMOVED from the emitted CSV (2026-10-05)'. METHODS §10 now reports 15 distinct List-A sequences and a 75-molecule union, and §10 itself says the '38 distinct molecules' figure was an artefact of name-keyed double counting. The family split PK asked for I
-- matters: This file is one of the two artifacts PK named as prerequisites and it is still unsent. In its current state it tells him a column is in the graded CSV that is not, quotes a molecule count the methods document retracted, and says a request is unfixed on the same page where it is answered — three ways to make the reply look careless about exactly the bookkeeping he has been pressing on.
+- artifact: submissions/01-egfr.csv has 15 columns and no affinity_above_null; METHODS:1229-1233 states 'The `affinity_above_null` column has therefore been REMOVED from the emitted CSV (2026-10-05)'. METHODS §10 now reports 15 distinct List-A sequences and a 75-molecule union, and §10 itself says the '38 distinct molecules' figure was an artefact of name-keyed double counting. The family split the reviewer asked for I
+- matters: This file is one of the two artifacts the reviewer named as prerequisites and it is still unsent. In its current state it tells them a column is in the graded CSV that is not, quotes a molecule count the methods document retracted, and says a request is unfixed on the same page where it is answered — three ways to make the reply look careless about exactly the bookkeeping they have been pressing on.
 - gate: Bring outbox/*.md inside check_claims.py's inventory check (CSV column names must match the emitted header; retired literals 38, 0.2218-as-shipped, 0.778 banned), and delete or date-stamp §5/§6's superseded paragraphs.
 
-### [pk-coverage] §12 reports published-structure coverage as 10 of 12 when the submission is 18 and eight designs have no structure
+### [reviewer-coverage] §12 reports published-structure coverage as 10 of 12 when the submission is 18 and eight designs have no structure
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:1731
 - verdict: CONFIRMED
 - quoted: **Coverage is 10 of 12**: the two designs added latest, `bc_s360518_mpnn9_A22D` and
 `rimA01_r15_L133E`, have no published structure yet.
 - artifact: submissions/structures/ contains 10 .cif files plus a README. The CSV has 18 rows, so eight designs have no published structure: bc_s360518_mpnn9_A22D, rimA01_r15_L133E, c5_cf_short__boltzgen_egfr_cropfree_short_48, c5_cr_crop_patch__boltzgen_egfr_crop_patch_05, ss_bc_s831683_mpnn6_S15D_S62H_routeA, cons_gap_h370_only__boltzgen_egfr_h370_018, bcr_d3acid3_l60_s647537_mpnn3 and bcr_d3acid3_l60_s6475
-- matters: The sentence exists precisely because an earlier version overstated coverage ('an earlier version of this line claimed full coverage of "all ten designs" when the submission held twelve'), and it now understates the denominator by six. PK's 10-03 ask was a finalist table with model provenance; a grader who wants to inspect the six highest-ranked designs' poses finds that five of the top six have n
+- matters: The sentence exists precisely because an earlier version overstated coverage ('an earlier version of this line claimed full coverage of "all ten designs" when the submission held twelve'), and it now understates the denominator by six. The reviewer's 10-03 ask was a finalist table with model provenance; a grader who wants to inspect the six highest-ranked designs' poses finds that five of the top six have n
 - gate: Make the coverage line a GENERATED block computed as len(glob('submissions/structures/*.cif')) over the CSV row count, naming the missing designs; fail gen_methods_submission.py --check on drift.
 
-### [pk-coverage] HANDOFF.md's verified-state section describes a 10-design submission on the superseded ranking basis
+### [reviewer-coverage] HANDOFF.md's verified-state section describes a 10-design submission on the superseded ranking basis
 - `/Users/harish/code/adaptyv-2026/HANDOFF.md`:48
 - verdict: CONFIRMED
 - quoted: **Submission: `submissions/01-egfr.csv`, 10 designs** (Track 3 allows 20; we gave half back
@@ -456,7 +456,7 @@ on purpose — see METHODS §11). `bin/check_discards.py` PASSES, exit 0.
 - matters: HANDOFF is in the graded artifact set and is the document a reader picks up to learn the submission's current state. It asserts verification over a ten-row ladder whose top design is now last and whose ratios come from the basis the project renamed SUPERSEDED. It also still records 'All 10 of our designs switch on the target's native H433', where the generated block in METHODS says 17 of 18 switch
 - gate: Generate HANDOFF's state ladder from the emitted CSV via gen_methods_submission.py, or mark the section with an as-of timestamp and point to §11.2 as the live table; add HANDOFF.md to the --check inventory.
 
-### [pk-coverage] Ranks 1 and 2 are the two weakest predicted interfaces in the submission, ordered there by the pH ratio alone
+### [reviewer-coverage] Ranks 1 and 2 are the two weakest predicted interfaces in the submission, ordered there by the pH ratio alone
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:1233
 - verdict: PLAUSIBLE
 - quoted: **Assessable designs rank ahead of unassessable ones within tier 1.** ... We neither demote it on the pH axis nor score it at 0.0000
@@ -465,47 +465,47 @@ on purpose — see METHODS §11). `bin/check_discards.py` PASSES, exit 0.
 defensible frame, following the reviewer instruction to apply eligibility and interface checks
 before the challenge priorit
 - artifact: The CSV's rank-1 and rank-2 rows read ipsae_min_human 0.2415 / 0.1812 and 0.1324 / 0.2041 — the two weakest assessable interfaces of the sixteen. bin/emit_submission_csv.py rank_key() orders tier 1 by the pH ratio with only a format penalty and a SPREAD_BAR penalty; no interface quality enters the ordering, and MIN_AFFINITY is None. METHODS §10:966 flagged the eventual rank 1 on arrival: '`c5_cf_s
-- matters: 'Credible-interface-first' is the stated ordering principle and the stated reason the two VHH rows sit at 12-13, but it is applied only to format-unassessable rows. The designs with the weakest readable interfaces lead the file on apparent selectivity, which is the specific failure mode PK named. Limitation 3 admits the objective does not discriminate binders in general; it does not say the orderi
+- matters: 'Credible-interface-first' is the stated ordering principle and the stated reason the two VHH rows sit at 12-13, but it is applied only to format-unassessable rows. The designs with the weakest readable interfaces lead the file on apparent selectivity, which is the specific failure mode the reviewer named. Limitation 3 admits the objective does not discriminate binders in general; it does not say the orderi
 - gate: Either state in §11.2 that tier-1 order is the pH ratio alone and that ranks 1-2 carry the set's weakest interfaces, or add an explicit interface floor to rank_key() and record it in the selection history; add a --selftest assertion that the top-ranked row is not the minimum of ipsae_min_human acros
 
-### [pk-coverage] The seed-instability pilot PK specified (20-30 candidates, ~10 seeds each) was never run and is not recorded as outstanding
+### [reviewer-coverage] The seed-instability pilot the reviewer specified (20-30 candidates, ~10 seeds each) was never run and is not recorded as outstanding
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:339
 - verdict: CONFIRMED
 - quoted: We therefore require **n ≥ 5 poses** before a ratio may rank a design, and we
 report the per-pose spread
-- artifact: PK 2026-10-03: 'To study seed instability, a practical pilot is 20–30 diverse candidates, enriched near decision boundaries, with approximately ten seeds each; assess rank changes, pose consistency and threshold crossings. This is a diagnostic starting point, not a powered validation sample.' The deepest sampling in the repository is the three-variant L133 triad at 15 seeds (runs/esmfold2/w3_triad
+- artifact: The reviewer 2026-10-03 sketched a workable pilot for seed instability: 20–30 varied candidates, picked so they cluster near the decision boundaries, each run at roughly ten seeds, then scored on how far ranks move, how consistent the poses are, and how often a threshold gets crossed — offered as an opening diagnostic rather than a validation sample with power behind it. The deepest sampling in the repository is the three-variant L133 triad at 15 seeds (runs/esmfold2/w3_triad
 - matters: §11.6 is the evidence that this pilot was the right diagnostic: quadrupling the sampling on one design took the measured spread from 1.31x to 4.38x and moved it out of tier 1, and §6 reports that 5 of 12 single-pose switches fell below threshold on re-measurement. Fourteen of eighteen shipped rows still sit at 5-11 poses. The document reports the n>=5 floor as the answer to instability without not
-- gate: Add it as a numbered limitation naming the design and seed counts actually achieved, and add a 'PK ask -> artifact or declared-open' manifest to gate_sweep.py so an unmet methodological ask cannot be silently absent from §13.
+- gate: Add it as a numbered limitation naming the design and seed counts actually achieved, and add a 'reviewer ask -> artifact or declared-open' manifest to gate_sweep.py so an unmet methodological ask cannot be silently absent from §13.
 
-### [pk-coverage] §4.4b attributes the rAC1 control poses to ESMFold2-Fast; the folding path defaults to the Full model
+### [reviewer-coverage] §4.4b attributes the rAC1 control poses to ESMFold2-Fast; the folding path defaults to the Full model
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:523
 - verdict: CONFIRMED
 - quoted: **ESMFold2 is not the weak link here.** An architecturally independent model ... reproduces its
 crop failure to within rounding on every column. Whatever is wrong is not specific to
 ESMFold2-Fast, which removes the most convenient explanation for the zero-scoring positives.
 - artifact: biomodals/modal_esmfold2.py:41 sets ESMFOLD2_HF_REPO default to 'biohub/ESMFold2' (its own comment: 'Full (default)'; 'Fast: ESMFOLD2_HF_REPO=biohub/ESMFold2-Fast'). bin/score-esmfold2.sh — the script that produced the design and control folds, including runs/esmfold2/w1_rac1 — sets no repo override, so it runs Full. The only Fast arms on disk are runs/esmfold2-fast/ipsae-probe-fast and runs/gate/
-- matters: The sentence's whole load is which model arm produced the failure, in the project's only crystallographic control. Naming the Fast arm suggests the primary scoring ran on Fast — the configuration PK demoted to a robustness check — when the pipeline in fact followed his instruction. The Fast and Boltz robustness arms exist on disk (runs/gate/fast, runs/gate/boltz) and are reported nowhere, so a rea
+- matters: The sentence's whole load is which model arm produced the failure, in the project's only crystallographic control. Naming the Fast arm suggests the primary scoring ran on Fast — the configuration the reviewer demoted to a robustness check — when the pipeline in fact followed their instruction. The Fast and Boltz robustness arms exist on disk (runs/gate/fast, runs/gate/boltz) and are reported nowhere, so a rea
 - gate: Record the model repo and revision per run directory and have gen_methods_submission.py emit the predictor identity as a generated string, so no prose can name an arm the run did not use.
 
-### [pk-coverage] Mechanism A is asserted twice to have been ruled out, with no mechanism-A result reported anywhere
+### [reviewer-coverage] Mechanism A is asserted twice to have been ruled out, with no mechanism-A result reported anywhere
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:1188
 - verdict: CONFIRMED
 - quoted: the same mechanism as
 the 0.702× steric floor of §6, and the same physics that defeated mechanism A (§3.5).
 [and 1448:] a desolvation shift with no electrostatic partner, the same artefact class
 this project used to rule out Mechanism A
-- artifact: PK 2026-09-29, answer 3: 'Give A most of the initial design effort, conditional on finding a suitable local acidic surface; retain B as a smaller exploratory branch.' METHODS §1 instead reads 'Mechanism B ... We used this', and §3.5 — the section cited as the evidence that mechanism A was defeated — contains no mechanism-A analysis at all; it is the retraction of the binding/switching trade-off. T
-- matters: PK's primary mechanism recommendation was inverted, and the two sentences that justify the inversion point at a section that does not contain the evidence — while 540 scored mechanism-A complexes sit unreported in the analysis directory. Either the arm's result belongs in the document (it would be the direct answer to his answer 3) or the 'defeated / ruled out' claims need the data behind them.
+- artifact: The reviewer 2026-09-29, answer 3, put the bulk of the opening design budget behind A so long as a usable local acidic surface turned up, with B held open as the smaller exploratory branch. METHODS §1 instead reads 'Mechanism B ... We used this', and §3.5 — the section cited as the evidence that mechanism A was defeated — contains no mechanism-A analysis at all; it is the retraction of the binding/switching trade-off. T
+- matters: The reviewer's primary mechanism recommendation was inverted, and the two sentences that justify the inversion point at a section that does not contain the evidence — while 540 scored mechanism-A complexes sit unreported in the analysis directory. Either the arm's result belongs in the document (it would be the direct answer to their answer 3) or the 'defeated / ruled out' claims need the data behind them.
 - gate: Report the mechanism-A arm (n, ratio distribution, best designs) as a short §3 subsection sourced from ph_gate_mechA_all.json, and extend bin/check_references.py from 'section exists' to 'cited section contains the named quantity'.
 
-### [pk-coverage] The burial atom count is still the sole support for the H370 conclusion; no solvent-accessible surface area was computed
+### [reviewer-coverage] The burial atom count is still the sole support for the H370 conclusion; no solvent-accessible surface area was computed
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:206
 - verdict: CONFIRMED
 - quoted: H370
 carries 153 heavy atoms within 10 Å of its ring against H433's 57, so reaching it costs the
 interface area binding needs.
-- artifact: PK 2026-10-03: 'The burial atom count is a useful proxy, not a substitute for solvent-accessible surface area.' The strings 'SASA' and 'solvent-accessible' appear in no deliverable; biomodals/modal_sasa.py exists and was never run against the EGFR targets (no SASA artifact in analysis/01-egfr/).
-- matters: The 153-vs-57 count is load-bearing in three places — §3.4's conclusion that the two-site route cost interface area, §3.5's surviving site-specific trade-off, and §11.1's desolvation argument — and it is the only quantity offered for 'costs the interface area binding needs'. PK flagged the proxy explicitly and the substitute he named is one unrun script away. Neither the limitation nor the proxy's
+- artifact: The reviewer 2026-10-03 allowed that counting buried atoms serves well enough as a stand-in, while warning that it cannot stand in place of a solvent-accessible surface area calculation. The strings 'SASA' and 'solvent-accessible' appear in no deliverable; biomodals/modal_sasa.py exists and was never run against the EGFR targets (no SASA artifact in analysis/01-egfr/).
+- matters: The 153-vs-57 count is load-bearing in three places — §3.4's conclusion that the two-site route cost interface area, §3.5's surviving site-specific trade-off, and §11.1's desolvation argument — and it is the only quantity offered for 'costs the interface area binding needs'. The reviewer flagged the proxy explicitly and the substitute they named is one unrun script away. Neither the limitation nor the proxy's
 - gate: Compute per-histidine SASA with modal_sasa.py (or gemmi/freesasa locally) on 6ARU and report it beside the atom count; failing that, label the count a proxy in §3.4/§3.5 and add it to §13.
 
 ### [arithmetic] All three quoted pKa-perturbation rank spans disagree with ph_pka_perturbation.json, and "1–17" is called "the entire submission" of 18
@@ -561,7 +561,7 @@ one footing; across the 17 the analysis covers **158 human-leg poses**
 - quoted: The largest single mover is `d2c_mpnn13_S88D_serasp`, **3.526 → 5.041 (+43%)**, which rises
 from fifth to third.
 - artifact: ph_apo_freeleg.json: on the deletion basis d2c_mpnn13_S88D_serasp is 7th of the 17 designs with apo structures (5.6559, 5.5459, 4.838, 4.8125, 4.2561, 3.7377, then 3.5262) and 8th of 18 in the CSV; it rises to 3rd on apo, so the move is seventh-to-third. Its +43% is also not the largest fold move — bc_s831683_mpnn8_S15D moves 2.018×, mpnn9_WT 1.853×, mpnn9_S15D 1.756×. And line 1526's "every submi
-- matters: The apo arm is the half of PK's free-leg request that §11.7 presents as completed, and its coverage statement ("every submitted binder") is false for one shipped design while its internal check (8 + 9 = 17) silently drops that design. The rank-movement claim is two places off. Together they make the arm look more complete and its largest effect better placed than the artifact supports.
+- matters: The apo arm is the half of the reviewer's free-leg request that §11.7 presents as completed, and its coverage statement ("every submitted binder") is false for one shipped design while its internal check (8 + 9 = 17) silently drops that design. The rank-movement claim is two places off. Together they make the arm look more complete and its largest effect better placed than the artifact supports.
 - gate: Generate the apo coverage line (n folded, n with/without structure, named gaps) and the rank-movement sentence from ph_apo_freeleg.json, mirroring the §11.8 coverage table that already does this correctly.
 
 ### [arithmetic] Limitation 24 says seven designs then eight designs for the same set in one sentence; nine actually carry no binder histidine
@@ -590,8 +590,8 @@ re-gating
 - verdict: CONFIRMED
 - quoted: A human-leg-only pipeline would have submitted a
 molecule already measured not to bind.
-- artifact: The same section, lines 364–371: "Earlier versions of this section called them 'measured non-binders'. That is not what the data says ... A molecule with no reported KD is one whose affinity is **right-censored** ... It is not a measurement of zero affinity ... We do not know the true affinity of any of the ten." PK's 2026-10-03 reply: "Distinguish assay failure and missing KD from no binding dete
-- matters: gitter-yolo10 is a right-censored observation; the section says so three times and then states the retracted reading as fact in its punchline, which is the sentence most likely to be quoted. It is the exact labelling error PK corrected by name, surviving in the paragraph that was rewritten to fix it, and it converts a bound-from-above into a measured negative.
+- artifact: The same section, lines 364–371: "Earlier versions of this section called them 'measured non-binders'. That is not what the data says ... A molecule with no reported KD is one whose affinity is **right-censored** ... It is not a measurement of zero affinity ... We do not know the true affinity of any of the ten." The reviewer's 2026-10-03 reply: "Distinguish assay failure and missing KD from no binding dete
+- matters: gitter-yolo10 is a right-censored observation; the section says so three times and then states the retracted reading as fact in its punchline, which is the sentence most likely to be quoted. It is the exact labelling error the reviewer corrected by name, surviving in the paragraph that was rewritten to fix it, and it converts a bound-from-above into a measured negative.
 - gate: Add a check_claims regex forbidding "measured not to bind", "measured non-binder" and "non-binder" within §4.4/§4.5 and the CSV, with the approved phrasing "no KD reported" / "right-censored" as the only substitutes.
 
 ### [arithmetic] §9 attributes ranks 1–4 to the BindCraft pool; ranks 1–3 are BoltzGen designs
@@ -785,7 +785,7 @@ to the finalist footprints. The rAC1 comparison needs structural contact recover
 4UIP rather than predicted confidence attached to crystallographic coordinates. These are
 recorded in METHODS §13 rather than r
 - artifact: METHODS §10b ("Added 2026-10-05 at the reviewer's request") applies exactly the full-ECD, glycan and receptor-state checks to the finalist footprints, with analysis/01-egfr/finalist_footprints.json as its artifact. METHODS §4.4b ("Added 2026-10-05") runs the rAC1 structural contact recovery against 4UIP via bin/rac1_contact_recovery.py, explicitly "purely geometric; no ipSAE or PAE value is attach
-- matters: A method described as done in one place and as not done in another, 15 lines apart in the same file. These are three of the external reviewer's named requests, and the README tells him they are unresolved while the methods document reports results for all three.
+- matters: A method described as done in one place and as not done in another, 15 lines apart in the same file. These are three of the external reviewer's named requests, and the README tells them they are unresolved while the methods document reports results for all three.
 - gate: Derive README's "Still open" list from METHODS §13 by cross-referencing which limitations carry a "not done / unresolved" marker; fail if a bullet names work for which an analysis/ artifact and a §N.M write-up both exist.
 
 ### [contradiction] README asserts binder-histidine and near-duplicate-pair counts that METHODS lists as superseded hand counts
@@ -804,11 +804,11 @@ recorded in METHODS §13 rather than r
 ### [contradiction] CONTROL-TABLE cites METHODS §10 for 38 rejected molecules, a figure §10 was rebuilt to retract
 - `outbox/CONTROL-TABLE.md`:220
 - verdict: CONFIRMED
-- quoted: **And the ordering consequence we have not honoured.** Your instruction was to assess pose and
-protonation separately *before* using the pH gate to discard candidates. The gate has been used
+- quoted: **And the ordering consequence we have not honoured.** Your instruction was to judge pose and
+protonation independently of each other, ahead of any use of the pH gate to reject candidates. The gate has been used
 as a discard filter throughout — §10 of the methods document lists 38 molecules rejected on it.
 - artifact: METHODS §10 line 857-864: "It held two lists and never reconciled them. One was 45 run names that `bin/check_discards.py` warns on ... described here as \"38 distinct molecules\" because the gate is name-keyed on the discard side and alias pairs double-count." The rebuilt ledger (analysis/01-egfr/exclusion_ledger.json, verified: list_a_names 23, list_a_sequences 15, list_b_sequences 60, overlap 0,
-- matters: CONTROL-TABLE goes to the external reviewer as the answer to his gate-discard concern, and it quantifies the concern with the alias-inflated name count the methods document rebuilt itself to eliminate — understating the gate-only exclusions by 25 molecules.
+- matters: CONTROL-TABLE goes to the external reviewer as the answer to their gate-discard concern, and it quantifies the concern with the alias-inflated name count the methods document rebuilt itself to eliminate — understating the gate-only exclusions by 25 molecules.
 - gate: Have bin/exclusion_ledger.py emit a one-line summary ("N gate-only exclusions of an M-molecule union") and inject it as a generated block in both METHODS §10 and outbox/CONTROL-TABLE.md; forbid the literal "38" as an exclusion count.
 
 ### [contradiction] HANDOFF asserts all designs switch on H433; the generated census says one switches on H370 and it is rank 1
@@ -817,7 +817,7 @@ as a discard filter throughout — §10 of the methods document lists 38 molecul
 - quoted: evidence will be weighted more heavily to catch it. **All 10 of our designs switch on the
   target's native H433** (48 of 50 pool-wide; zero tag). Say so.
 - artifact: METHODS §1's GENERATED:SWITCH-SITE block at line 67: "17 of the 18 submitted designs switch on **H433**. The remaining 1: **H370** -- `c5_cf_short__boltzgen_egfr_cropfree_short_48` (rank 1)." analysis/01-egfr/master_rank.json records that sequence with "site": "H370".
-- matters: HANDOFF line 38-39 ends "Say so" — it is an instruction to make this claim to the organisers, in the context of their His-tag warning. The claim is false for the top-ranked design, which is also the design the glycan check flags (limitation 14). Saying "all" where the generated census says 17 of 18 is the kind of blanket claim the reviewer asked to be qualified in his 2026-09-29 reply ("qualify th
+- matters: HANDOFF line 38-39 ends "Say so" — it is an instruction to make this claim to the organisers, in the context of their His-tag warning. The claim is false for the top-ranked design, which is also the design the glycan check flags (limitation 14). Saying "all" where the generated census says 17 of 18 is the kind of blanket claim the reviewer asked to be qualified in their 2026-09-29 reply ("qualify th
 - gate: Reuse the GENERATED:SWITCH-SITE block verbatim in HANDOFF instead of a hand-typed "All N", and add a check_claims.py rule forbidding "all N of our designs switch on" unless the switch-site census is unanimous.
 
 ### [contradiction] §10 says rimA01_r15 is shipped at rank 1; the rank table puts it at rank 3, and §9/README attribute ranks 1-4 to the wrong generator
@@ -835,7 +835,7 @@ which is `bc_s360518_mpnn9_A22D` at rank 2) now found systematically.
 - verdict: CONFIRMED
 - quoted: It also carries the strongest independent corroboration in the submission: Chai-1 ipTM **0.838** with a **39-residue** interface, the joint-largest in the validation set and above both working positives (cetuximab scFv 0.793, human EGF 0.500)
 - artifact: `runs/chai1/w4_indep/` holds 13 complexes x 5 models = 65 .cif files (mtimes 2026-10-04 23:55 to 2026-10-05 00:38). Re-running `bin/chai_interface_summary.py` emits all 13 ipTM medians and interface sizes: fin_ss_bc_s831683...routeA 0.838/39res (the one quoted), fin_bc_s360518_mpnn9_A22D 0.788/39, fin_d2c_mpnn13_S88D_serasp 0.817/30, fin_rimA02_d3_rimA_14_vhh 0.440/22, fin_rimA01_r15 0.332/24, **f
-- matters: `bin/chai_interface_summary.py`'s docstring states the arm's purpose in the reviewer's own words: "run a bounded independent structure-prediction check on the failed positives and a diverse finalist subset; ESMFold2-Fast alone is not an independent validation," and its title asks "Does Chai-1 form an interface where ESMFold2 did not?" The arm answers yes on both failed positives -- Chai builds 35-
+- matters: `bin/chai_interface_summary.py`'s docstring states the arm's purpose as the reviewer framed it — a cost-capped, separately sourced structure-prediction pass over the positives that failed plus a varied slice of the finalists, on the ground that ESMFold2-Fast by itself does not amount to independent validation — and its title asks "Does Chai-1 form an interface where ESMFold2 did not?" The arm answers yes on both failed positives -- Chai builds 35-
 - gate: Add a `GENERATED:CHAI` block to `bin/gen_methods_submission.py` that emits the full `chai_interface_summary.json` table (tag, n_models, ipTM median, interface residues, clash count) and add a `gate_sweep.py` gate asserting (a) the artifact is regenerated from the current `runs/chai1/w4_indep/*` dire
 
 ### [arm-accountability] A design that is not in the submission is named in the pKa top-set and in the human-review attestation
@@ -851,7 +851,7 @@ which is `bc_s360518_mpnn9_A22D` at rank 2) now found systematically.
 - verdict: CONFIRMED
 - quoted: What has **not** been done for them: expression QC, which was only ever run on the original candidate set.
 - artifact: `analysis/01-egfr/express_qc.tsv` has 20 rows. Joined against the 18 names in `submissions/01-egfr.csv`, **8 submitted designs have no express-QC row**: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `bc_s360518_mpnn9_A22D`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d
-- matters: Expression is one of the three outcomes PREREGISTRATION Sec 2.1 prespecifies separately, on PK's instruction to "prespecify expression / binding / pH selectivity separately," and Sec 2 of the pipeline (line 113) lists express QC as a pipeline stage. A grader reading Sec 12 concludes the gap is confined to the five late additions; in fact it reaches four more rows, including `bc_s360518_mpnn9_A22D`
+- matters: Expression is one of the three outcomes PREREGISTRATION Sec 2.1 prespecifies separately, on the reviewer's instruction to "prespecify expression / binding / pH selectivity separately," and Sec 2 of the pipeline (line 113) lists express QC as a pipeline stage. A grader reading Sec 12 concludes the gap is confined to the five late additions; in fact it reaches four more rows, including `bc_s360518_mpnn9_A22D`
 - gate: Add a `GENERATED:EXPRESS-QC-COVERAGE` block to `bin/gen_methods_submission.py` that joins `submissions/01-egfr.csv` against `analysis/01-egfr/express_qc.tsv` and emits the coverage count plus the explicit list of uncovered submitted names, so the sentence cannot drift from the join. Generalise to on
 
 ### [overclaim] "All 8 designs carrying binder histidines move" — nine carry them, and the ninth has no apo structure at all
@@ -907,7 +907,7 @@ which is `bc_s360518_mpnn9_A22D` at rank 2) now found systematically.
 - verdict: CONFIRMED
 - quoted: measured example we have, it is **anti-correlated**.
 - artifact: The same file, lines 169-173: "*Second, four rows cannot establish an inverse relationship.* The observation that the tightest binder scores lowest is a four-point ordering with no replication across molecules and no error model... on its own it does not show that score runs *opposite* to affinity, and it is not offered as such." The underlying data is 4 molecules from one published series (G532 0
-- matters: The correction and the claim it withdraws sit 40 lines apart in the document PK named as a prerequisite for his next decision, and the stronger wording is the one in the numbered "Three consequences" list a reader will quote. METHODS §4.5 line 587 inherits it ("on the single measured example available it points the **wrong way**"), and CONTROL-TABLE line 216-218 repeats it as "not merely uninforma
+- matters: The correction and the claim it withdraws sit 40 lines apart in the document the reviewer named as a prerequisite for their next decision, and the stronger wording is the one in the numbered "Three consequences" list a reader will quote. METHODS §4.5 line 587 inherits it ("on the single measured example available it points the **wrong way**"), and CONTROL-TABLE line 216-218 repeats it as "not merely uninforma
 - gate: No mechanical gate fits a self-contradicting inference; the checkable version is a RULE that fails when /anti-?correlated|inverted|points the wrong way/ appears in a file that also contains its own "cannot establish an inverse relationship" retraction.
 
 ### [overclaim] README publishes the superseded leave-one-family-out range, 0.778–1.000, which CONTROL-TABLE names as the figure it replaced
@@ -915,7 +915,7 @@ which is `bc_s360518_mpnn9_A22D` at rank 2) now found systematically.
 - verdict: CONFIRMED
 - quoted: 0.778–1.000. No interval is reported and no effective-n is substituted into Clopper–Pearson.
 - artifact: bin/control_family_balance.py, run now: "SENSITIVITY: leave-one-family-out range [0.867, 1.000] around 0.889." CONTROL-TABLE line 309-310 says so explicitly: "the sensitivity is much tighter: leave-one-family-out now spans **0.867–1.000** rather than 0.778–1.000, because no single family carries nine molecules any more."
-- matters: README quotes the two-family version that PK ruled out ("A shared submitting group is a clue, not a family definition"), i.e. the number produced by the construction he rejected — and it understates the panel's robustness, so it is an underclaim that also advertises the discarded method. The adjacent raw 8/10 = 0.800 and family-balanced 0.889 in the same bullet are both current, which makes the st
+- matters: README quotes the two-family version that the reviewer ruled out — on their reading, molecules arriving from the same submitting group is a hint about family structure and not a way of defining one — i.e. the number produced by the construction they rejected — and it understates the panel's robustness, so it is an underclaim that also advertises the discarded method. The adjacent raw 8/10 = 0.800 and family-balanced 0.889 in the same bullet are both current, which makes the st
 - gate: check_claims RULE: assert the three control-balance figures (raw, family-balanced, LOFO range) in every document against bin/control_family_balance.py's computed values, as the "control panel human-leg count" rule already does for 8/10.
 
 ### [overclaim] Stale rank citations throughout, in the one document that declares a rule against them
@@ -955,19 +955,19 @@ which is `bc_s360518_mpnn9_A22D` at rank 2) now found systematically.
 - verdict: CONFIRMED
 - quoted: It reads 3.52x as the median over 11 refold poses against that design's 5.43x
 - artifact: The same row's ph_poses_n column reads 26. CSV line 16 (`bc_s831683_mpnn9_S15D`) likewise says 'Median over 5 refold poses' against its own ph_poses_n of 20. Every other row agrees with its column. README.md:138-139 records the recount that created the gap ('three submitted designs had more poses on disk than the submission was counting (n=5 -> 20, 5 -> 20, 11 -> 26)') but the CSV prose was not up
-- matters: PK asked twice, in writing, for pose consistency and seed counts to be reported per finalist ('Keep five seeds and their median as the provisional primary summary, with individual values and pose consistency retained'). A grader who spot-checks the n a row claims against the n the row reports finds two of eighteen disagreeing by factors of 2.4 and 4, which undercuts the pose-count audit the projec
+- matters: The reviewer asked twice, in writing, for pose consistency and seed counts to be reported per finalist: five seeds together with their median were to stand as the provisional headline summary, and the per-seed values and the pose-consistency information were to be kept alongside it rather than collapsed away. A grader who spot-checks the n a row claims against the n the row reports finds two of eighteen disagreeing by factors of 2.4 and 4, which undercuts the pose-count audit the projec
 - gate: Generate the pose-count clause of the assessment string from ph_poses_n in bin/emit_submission_csv.py, and add a check_claims.py rule that any 'over N ... poses' in an assessment must equal that row's ph_poses_n.
 
 
 ## LOW
 
-### [pk-coverage] §3.7 describes d2c_mpnn13 as binding, which PK asked to be phrased as a predicted candidate
+### [reviewer-coverage] §3.7 describes d2c_mpnn13 as binding, which the reviewer asked to be phrased as a predicted candidate
 - `/Users/harish/code/adaptyv-2026/submissions/01-egfr-METHODS.md`:239
 - verdict: CONFIRMED
 - quoted: `d2c_mpnn13` binds and does not switch (0.70×). A single Ser→Asp at position 88 gives
 **4.57×** over 5 poses.
-- artifact: PK 2026-10-03: 'Describe d2d_mpnn9 and d2c_mpnn13 as predicted binding candidates with no supported pH switch, not established cross-species binders.' The project complied everywhere else: all 18 CSV assessment strings open 'COMPUTATIONAL CANDIDATE -- not shown to bind', and the d2c row reads 'parent wild-type 0.70x (no switch)'. The only measurement behind 'binds' is an ipSAE_min of 0.603 human /
-- matters: It is the opening sentence of §3.7, the section the document calls 'the only causal result in the project', and it states as fact the one thing PK named this design in order to have withdrawn. Small in isolation; it is the kind of unqualified verb the rest of the submission was systematically scrubbed of, surviving in the highest-traffic result section.
+- artifact: The reviewer 2026-10-03 asked for d2d_mpnn9 and d2c_mpnn13 to be written up as candidates predicted to bind whose pH switch has nothing supporting it, rather than as cross-species binders already established. The project complied everywhere else: all 18 CSV assessment strings open 'COMPUTATIONAL CANDIDATE -- not shown to bind', and the d2c row reads 'parent wild-type 0.70x (no switch)'. The only measurement behind 'binds' is an ipSAE_min of 0.603 human /
+- matters: It is the opening sentence of §3.7, the section the document calls 'the only causal result in the project', and it states as fact the one thing the reviewer named this design in order to have withdrawn. Small in isolation; it is the kind of unqualified verb the rest of the submission was systematically scrubbed of, surviving in the highest-traffic result section.
 - gate: Add 'binds' / 'is a binder' as banned verbs in check_claims.py when the subject is a design name, requiring 'predicted'/'computational candidate' phrasing — the rule already exists in spirit for the CSV assessment strings.
 
 ### [arithmetic] §11.7 says the emitter "reports 17 of 17" for the conservative-envelope check; it reports 18 of 18

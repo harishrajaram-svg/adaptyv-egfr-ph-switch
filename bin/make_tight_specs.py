@@ -29,7 +29,7 @@ Three facts then decide the arms:
      place on EGFR where a >10x switch is geometrically reachable is a domain IV
      cluster: canonical H584 + H615, 6.9 A apart, combined ceiling 23.4x.
      -> ARM dom4_pair. Caveat recorded, not hidden: mature 560 sits in the tether
-        region, so this collides with the conformational question PK raised for
+        region, so this collides with the conformational question the reviewer raised for
         domain II. High information either way.
 
 The carboxylate arms vary only the pinned chemistry at the tight site, holding the

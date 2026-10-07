@@ -44,7 +44,7 @@ while :; do
     fi
   elif [ "$A" -eq 0 ]; then
     log "ZERO accepted designs with output present. 120-160 aa did not fix it."
-    log "DECISION FOR HARISH: pivot to nanobody (Germinal) — PK email Q2. Not spending more. STOPPING."
+    log "DECISION FOR HARISH: pivot to nanobody (Germinal) — reviewer email Q2. Not spending more. STOPPING."
     break
   fi
 

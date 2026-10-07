@@ -25,7 +25,7 @@ indexed 83 (sequence, species) pairs from runs/esmfold2
  19     -   1.114  0.0000  0.0000   5     1   0.0000  rimA01_r01_boltzgen_egfr_d3_rimA_18
  20     -   0.699  0.0000  0.0000   5     1   0.0000  bg03_r04_boltzgen_egfr_d3_17
 
-=== v2  ipSAE_min, MEDIAN over seeds  (PK's estimator) ============
+=== v2  ipSAE_min, MEDIAN over seeds  (the reviewer's estimator) ============
   #  tier   ratio   score   mouse   n  runs  spread  name
   1    pH   2.472  0.0000  0.0000   5     2 * 0.0000  bg04_r03_boltzgen_egfr_d3_00
   2    pH   2.151  0.5018  0.1524   5     5 * 0.4647  rimA01_r02_boltzgen_egfr_d3_rimA_26

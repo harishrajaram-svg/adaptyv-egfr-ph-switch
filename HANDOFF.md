@@ -19,7 +19,9 @@ launchers refuse to start if they fail.
 
 ## 🔵 THIS FILE IS PROBLEM 1 ONLY. Problem 2 is live and lives elsewhere.
 
-**Problem 1 is SUBMITTED** — 16 designs, 10/5 12:49 PM, DESIGNATED. Nothing owed.
+**Problem 1 is SUBMITTED** — 16 designs, 10/5 12:49 PM, DESIGNATED. **RESUBMISSION IN
+FLIGHT 10/6:** all 18 re-uploaded after the organisers recalibrated nanobody novelty; the
+final count is whatever their check clears (16, 17 or 18). See METHODS limitation 37.
 
 **Problem 2 (conditional TNF-α binder: bind at pH 7.4, release at pH 6.0, plus mouse
 cross-reactivity) closes Mon 2026-10-12 07:59 EDT**, retry-preserving upload Sun 10/11. Its
@@ -44,8 +46,8 @@ What a reader of **this repo** needs to know, because the code is here:
 * **`bin/mosaic_selftest.py` runs with bare `python3`, no numpy, no GPU, no Modal account.**
   `bin/design-mosaic.sh` calls it first. Keep it dependency-free — `bin/gate_sweep.py:32`
   records what hardcoding `.venv/bin/python` cost: two gates dead in every fresh clone.
-* ⚠️ **Do not launch a Mosaic production wave.** The target and anchor are an open question for
-  PK; R108 is in the smoke command only because the smoke needed something.
+* ⚠️ **Do not launch a Mosaic production wave.** The target and anchor are an open question for the
+  reviewer; R108 is in the smoke command only because the smoke needed something.
 
 ## ⚠️ READ THIS FIRST — THE RULES LIVE IN A CHANNEL WE ARE NOT IN
 
@@ -87,7 +89,8 @@ the git remote exists. What is left is upload.
 
 ## 1. STATE — everything below is verified, not remembered
 
-**Submission: `submissions/01-egfr.csv`, 16 designs.** Track 3 allows 20 — see METHODS §11.
+**Submission: `submissions/01-egfr.csv`, 18 designs** (the resubmission set). Track 3
+allows 20 — see METHODS §11.
 Ranked on the two-partner histidine-only pH product, not the superseded target-only basis.
 `bin/check_discards.py` PASSES, exit 0. **`bin/gate_sweep.py`: 14 gates, all green at 16
 designs** (d63c61f).

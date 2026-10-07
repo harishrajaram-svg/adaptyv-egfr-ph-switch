@@ -1,6 +1,9 @@
-# Predicted complexes for the 10 submitted designs
+# Predicted complexes for 10 of the 18 submitted designs
 
-One structure per submitted design. **Chain A is the binder, chain B is the target.**
+**Chain A is the binder, chain B is the target.** These ten files were cut when the
+submission stood at ten designs and have not been regenerated since; the submission has
+since grown to 18, so eight submitted designs have no structure here. Which ten are
+covered is an artifact of that history, not a judgement about them.
 
 | file | target construct | ipSAE_min of this pose | poses available |
 |---|---|---|---|
@@ -35,7 +38,8 @@ are reported for completeness and mean nothing.
 
 **Numbering.** On the d3 crop, target H433 is residue **99** and H370 is residue **36**
 (crop + 334 = canonical). On the full ECD, H433 is residue **409** (ECD + 24 = canonical). The
-switching residue for all ten designs is the target's native H433.
+switching residue for all ten designs here is the target's native H433; across the full
+18-design submission 17 switch on H433 and one on H370.
 
 The pose cache these were drawn from (6,011 scored outputs) is not published; see the
 reproducibility note in the methods document. Ask if you want it.

@@ -19,8 +19,9 @@ RANKING = the challenge page's stated priority order, not our old iptm order:
           cross-reactivity ABOVE affinity to human EGFR, which our previous
           iptm-descending order did not reflect.
 
-THE CUT -- settled 2026-10-04 with Harish, on PK's advice ("I would not fill the
-allocation simply to reach twenty"). LIMIT is 10, not the allowed 20.
+THE CUT -- settled 2026-10-04 with Harish, following the reviewer's guidance that the
+allocation should not be padded out just to reach its ceiling of twenty. LIMIT is 10,
+not the allowed 20.
 
 Ranks 11-20 of the 20-design build did not stand on a measurement. Eight of them read
 BELOW 1.0x, on the 0.702x value a large share of designs return.
@@ -57,9 +58,9 @@ SUB   = "analysis/01-egfr/submission_final.json"
 OUT   = "submissions/01-egfr.csv"
 # RAISED 12 -> 17 on 2026-10-05, with Harish, after the exclusion ledger was rebuilt.
 #
-# PK's advice -- "I would not fill the allocation simply to reach twenty" -- was about
-# padding the submission with designs that did not stand on a measurement. These five do
-# not pad it. They come from the 63 gate-only exclusions that METHODS 10 reopened, they
+# The reviewer's guidance against using up the whole allocation merely to reach its ceiling
+# was aimed at padding the submission with designs that rested on no measurement. These five
+# do not pad it. They come from the 63 gate-only exclusions that METHODS 10 reopened, they
 # were re-scored on the SAME histidine-only gate as the original finalists over their own
 # human-leg poses, they clear the same tier-1 rule, they clear novelty Level 3 on the same
 # FoldSeek gate, and each one outranks the weakest shipped tier-1 design on the basis this
@@ -78,16 +79,17 @@ OUT   = "submissions/01-egfr.csv"
 # 17 -> 18 on 2026-10-05: ss_bc_s831683_mpnn6_S15D_S62H_routeA restored as a DECLARED
 # parent/mutant pair with bc_s831683_mpnn6_S15D (see its assessment column). 18 of the 20
 # permitted; two slots remain deliberately unused.
-LIMIT = 16        # 18 uploaded, 2 removed on the organisers' own novelty check -- see
-                  # INELIGIBLE below. NOT the allowed 20 -- see THE CUT.
+LIMIT = 18        # 18 of the 20 permitted; two slots deliberately unused -- see THE CUT.
 
-# REMOVED BY THE ORGANISERS' NOVELTY CHECK, 2026-10-05, not by us.
+# RESUBMISSION, 2026-10-06. Both designs the platform's novelty check rejected are RESTORED
+# and will be re-uploaded, because the rule they were rejected under has since changed.
 #
-# The submission was uploaded with 18 designs. Proteinbase runs its own novelty check at
-# upload and scored 16 of them 3/4 and TWO of them 2/4, below the 3/4 bar, and blocks
-# submission until they are removed. Our own gate had cleared all 18, which is exactly the
-# failure limitation 33 predicted: our whole-chain qtmscore only approximates their
-# domain-segmented computation.
+# History. On 2026-10-05 this submission was uploaded with 18 designs. Proteinbase runs its
+# own novelty check at upload; it scored 16 of them 3/4 and TWO of them 2/4, below the 3/4
+# bar, and blocks submission until the failing rows are removed. They were removed and 16
+# were submitted. Our own gate had cleared all 18, which is the failure limitation 33
+# predicted in advance: our whole-chain qtmscore only approximates their domain-segmented
+# computation.
 #
 #   bc_s360518_mpnn9_A22D   ours: level 3 at qTM 0.7924 -- clearing the level-2 cliff by
 #                           0.0076, the tightest margin in the submission and named in
@@ -95,18 +97,29 @@ LIMIT = 16        # 18 uploaded, 2 removed on the organisers' own novelty check 
 #                           The margin was real and it fell the wrong way.
 #   h370_020_vhh            ours: level 4 on the ANTIBODY branch (CDRH3 identity 0.273,
 #                           global 0.526). Theirs: 2/4. Its whole-chain qTM is 0.8714, above
-#                           the 0.80 HIGH line, so their pipeline does not appear to apply
-#                           the antibody rule here -- but rimA02_d3_rimA_14_vhh at qTM 0.8552
-#                           PASSED at 3/4, so it is not a simple general-rule substitution
-#                           either. Two data points do not characterise the difference and we
-#                           do not claim to understand it.
+#                           the 0.80 HIGH line, so their pipeline did not appear to apply the
+#                           antibody rule here -- but rimA02_d3_rimA_14_vhh at qTM 0.8552
+#                           PASSED at 3/4, so it was not a simple general-rule substitution
+#                           either. Two data points did not characterise the difference.
 #
-# Removing both breaks no declared parent/mutant pair: A22D's wild-type was never shipped
-# and h370_020_vhh is not half of a pair.
-INELIGIBLE = {
-    "bc_s360518_mpnn9_A22D": "organisers' novelty check 2/4 (ours: level 3, margin 0.0076)",
-    "h370_020_vhh": "organisers' novelty check 2/4 (ours: level 4 on the antibody branch)",
-}
+# WHY THEY ARE BACK. The organisers recalibrated the novelty scale on 2026-10-05 at 17:20
+# EDT, after our upload: the nanobody/VNAR global novel-similarity cut drops to 0.66 against
+# PLAbDab-Nano as the reference database, the stated reason being that some nanobodies had
+# been scored as generic de novo proteins and so could not reach level 3. That is precisely
+# the failure mode we inferred for h370_020_vhh from its 0.8714 whole-chain qTM, and it makes
+# the design a genuine candidate to clear now. The recalibration does NOT change the rule for
+# general proteins, so bc_s360518_mpnn9_A22D is expected to be rejected a second time; it is
+# re-uploaded anyway because the only authority on their novelty score is their own check,
+# their code is still unreleased, and an upload costs nothing but the removal of a failing row.
+#
+# WHAT THIS DOES NOT ASSUME. The platform may still reject either design. The upload is the
+# measurement; this map is emptied so that both rows reach it, not because we believe they
+# pass. Whatever the check rejects gets removed before the set is submitted, exactly as on
+# 10-05, and the submitted count will be 16, 17 or 18 accordingly.
+#
+# Restoring both breaks no declared parent/mutant pair and creates none: A22D's wild-type was
+# never shipped and h370_020_vhh is not half of a pair.
+INELIGIBLE = {}
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
 # PROTEINBASE'S VOCABULARY, NOT OURS. Verified 2026-10-05 against the live submission form
@@ -178,8 +191,8 @@ SENSITIVITY = "analysis/01-egfr/ph_sensitivity.json"   # three pH bases, bin/ph_
 #   bc_s831683_mpnn9_WT     3.522 -> 0.593     three, worst 0.338
 #
 # Every binder histidine moves DOWN, 0.33 to 0.98, none up. The earlier note here argued that
-# "PROPKA noise would scatter both ways", so a one-sided shift had to be real. PK rejected that
-# and he is right: it is not a validation argument, because a consistent one-sided shift is
+# "PROPKA noise would scatter both ways", so a one-sided shift had to be real. The reviewer
+# rejected that reasoning, correctly: it is not a validation argument, because a one-sided shift is
 # exactly what a SYSTEMATIC model bias produces. A uniform downward shift is equally consistent
 # with desolvation physics and with the protonation model being biased on buried histidines, and
 # this data cannot separate them. Guard 4 fires on nearly all of them (nearest counter-charge
@@ -190,12 +203,13 @@ SENSITIVITY = "analysis/01-egfr/ph_sensitivity.json"   # three pH bases, bin/ph_
 #
 # WHAT IT COSTS. Two VHH-format rows rise to ranks 1 and 5 on a pH estimate while their affinity
 # is UNASSESSABLE by this instrument -- METHODS 4.5 shows it scores a measured 294 nM antibody
-# below its own non-switching comparator. PK warned that "a nonbinding pose must not rise to the
-# top through apparent selectivity." We are not demoting them for it, because demoting a design
-# on an affinity reading we have shown to be inverted would be treating 0.219 as a measurement,
-# which is the error METHODS 4.2 documents. Instead his other instruction is followed literally:
-# "keep a diverse, eligible panel with separate columns for human binding evidence, mouse
-# compatibility, pH hypothesis and uncertainty." The uncertainty is a column, not a demotion.
+# below its own non-switching comparator. The reviewer cautioned that a design whose pose does
+# not bind must not be carried to the top of a ranking on the strength of apparent selectivity
+# alone. We are not demoting them for it, because demoting a design on an affinity reading we
+# have shown to be inverted would be treating 0.219 as a measurement, which is the error
+# METHODS 4.2 documents. Instead we follow their other instruction literally: hold an eligible
+# panel that stays diverse, and give human binding evidence, mouse compatibility, the pH
+# hypothesis and the uncertainty each its own column. The uncertainty is a column, not a demotion.
 
 
 # A pose-to-pose spread WIDER THAN THE MEDIAN ITSELF is not a measurement. METHODS 6 already
@@ -279,13 +293,14 @@ def multisite():
 def sensitivity():
     """name -> the three pH bases for the SAME poses and the SAME code path.
 
-    PK, 2026-10-05: the gate behind the shipped column composes HISTIDINES only; the
-    acids it parses never enter the product, which matters most here because the
-    designed intervention IS an acid in most families. He asked for the alternatives
-    to be reported "as a SENSITIVITY ANALYSIS, not a CI", with provisional tiers if the
-    ranking moves, and explicitly not to present a new order as established.
+    Raised by the reviewer on 2026-10-05: the gate behind the shipped column composes
+    HISTIDINES only, and the acids it parses are never multiplied into the product -- which
+    bites hardest here, because in most families the designed intervention IS an acid. They
+    asked that the alternative bases be presented as a sensitivity analysis rather than as a
+    confidence interval, that tiers be marked provisional if the ranking shifts, and that no
+    revised order be put forward as settled.
 
-    It moves. Kendall tau between the shipped basis and the partnered basis is +0.000
+    It moves. Kendall tau between the shipped basis and the partnered basis is +0.046
     -- the two orderings are uncorrelated -- and designs shift by up to 8 ranks.
 
     WHY THE SHIPPED ORDER IS NEVERTHELESS KEPT. The histidine-only value is the MINIMUM
@@ -325,17 +340,17 @@ def pooled_affinity():
 # the time and misleading the rest is worse than no column.
 MIN_N = 5          # poses required before a ratio may put a design in tier 1
 
-# AFFINITY PRECONDITION — RETIRED AS A HARD GATE on PK's review, 2026-10-04.
+# AFFINITY PRECONDITION — RETIRED AS A HARD GATE on review, 2026-10-04.
 #
-# PK: "I would not replace the compromised bar with another universal number ... If adequate
-# calibration is infeasible within the existing budget, retain continuous scores and flag
-# uncertainty rather than inventing a hard gate."
+# The reviewer's position: do not substitute one universal cutoff for the compromised one. If
+# the budget will not support calibrating a bar properly, keep the scores continuous and declare
+# the uncertainty instead of inventing a hard gate.
 #
-# The 0.1493 / 0.2218 bars came from `NEG_nonbinder`, which is 81% mature human EGF. PK's
+# The 0.1493 / 0.2218 bars came from `NEG_nonbinder`, which is 81% mature human EGF. The reviewer's
 # correction to our own reading of that: the sequence similarity is enough to STOP treating it
-# as an established nonbinder, but it does NOT establish that the altered sequence retains
-# EGF's affinity or agonist activity, and the higher domain-III score is not proof of binding
-# either — changing the target crop changes prediction behaviour. Both EGF-derived controls are
+# as an established nonbinder, but it says nothing about whether the modified sequence still has
+# the affinity or the agonist behaviour of EGF, and a higher domain-III score does not demonstrate
+# binding either — changing the target crop changes prediction behaviour. Both EGF-derived controls are
 # therefore **activity-unknown**, not "binders". Claims resting on their negative status are
 # withdrawn, and the original numbers are preserved for the audit trail.
 #
@@ -384,7 +399,7 @@ def rank_key(r):
     read 0.2097/0.4255 on one seed and 0.0000/0.0000 on five.
     """
     n = r.get("ratio_n", 0)
-    # Affinity no longer EXCLUDES (PK, 2026-10-04): it orders within tier 2 and is reported with
+    # Affinity no longer EXCLUDES (the reviewer, 2026-10-04): it orders within tier 2 and is reported with
     # a flag. A hard gate here would launder a compromised control into a yes/no decision.
     binds = True if MIN_AFFINITY is None else max(r["hu"], r["mo"]) >= MIN_AFFINITY
     # rank on the all-site product when we have it; fall back to target-only and say so
@@ -401,9 +416,10 @@ def rank_key(r):
 
     # ASSESSABLE DESIGNS RANK AHEAD OF UNASSESSABLE ONES WITHIN TIER 1 (Harish, 2026-10-04).
     #
-    # PK's ranking instruction was "apply eligibility and credible-interface checks FIRST, then
-    # use the challenge priorities", with the guardrail "a nonbinding pose must not rise to the
-    # top through apparent selectivity." On a pure pH ordering, rimA02_d3_rimA_14_vhh leads the
+    # The reviewer's ranking instruction was to clear eligibility and interface credibility
+    # before applying the challenge's stated priorities, guarded by the rule that a pose which
+    # does not bind must not be lifted to the top on apparent selectivity. On a pure pH
+    # ordering, rimA02_d3_rimA_14_vhh leads the
     # submission on a human ipSAE of 0.219 -- and we cannot say whether that is a weak interface
     # or an unreadable one, because METHODS 4.5 shows this instrument scores a measured 294 nM
     # antibody (G532, 0.0135) BELOW its own non-switching comparator (G532Ctrl, 0.2503) while
@@ -482,7 +498,7 @@ def main():
                            # over n=20/n=26.
                            ratio_n=int((ms.get(x["seq"]) or (None, None, None))[2]
                                        or x.get("ratio_n", 0)),
-                           # per-design assessment text must be carried through, or PK's
+                           # per-design assessment text must be carried through, or the reviewer's
                            # uncertainty column silently collapses to one default string.
                            # Same class of bug as ratio_n, which emptied tier 1 earlier today.
                            assessment=x.get("assessment", "computational candidate"),
@@ -626,7 +642,8 @@ def main():
                         # basis rank these designs with Kendall tau = +0.046.
                         "provisional" if _rk else "",
                         f"{r['ratio']:.3f}",
-                        # PK: "a failed run must not silently become a valid score of zero" --
+                        # Per the reviewer, a run that failed must never be allowed to pass
+                        # itself off as a legitimate score of zero --
                         # a VHH affinity reading here is not low, it is UNINTERPRETABLE. METHODS
                         # 4.5: this instrument scores a measured 294 nM antibody below its own
                         # non-switching comparator. So the column says so rather than implying
@@ -634,7 +651,7 @@ def main():
                         "no -- antibody format, see METHODS 4.5"
                             if r["molecule_class"] in ("nanobody", "scfv", "fab_kappa", "fab_lambda")
                             else "yes",
-                        # PK: separate columns for binding evidence, pH hypothesis and uncertainty
+                        # The reviewer: separate columns for binding evidence, pH hypothesis and uncertainty
 
                         r.get("assessment", "computational candidate")])
     print(f"\nwrote {OUT}: {len(scored)} designs, {len(cols)} columns")

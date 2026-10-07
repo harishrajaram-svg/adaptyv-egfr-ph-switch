@@ -85,7 +85,7 @@ C-terminal His tag, and the organisers have said explicitly that a binder engagi
 evidence will be weighted more heavily to catch it. Across our whole pool of 50 designs that
 switch at n ≥ 5, the engaged site is **H433 in 48, H370 in 1 and H383 in 1** — zero tag.
 <!-- GENERATED:SWITCH-SITE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
-15 of the 16 submitted designs switch on **H433**. The remaining 1: **H370** -- `c5_cf_short__boltzgen_egfr_cropfree_short_48` (rank 1).
+17 of the 18 submitted designs switch on **H433**. The remaining 1: **H370** -- `c5_cf_short__boltzgen_egfr_cropfree_short_48` (rank 1).
 <!-- /GENERATED:SWITCH-SITE --> We designed against a tag-free crystal structure, so the tag
 was not available to optimise against even accidentally.
 - **Mechanism A** — the inverse: histidine on the binder, carboxylate on the target.
@@ -685,22 +685,22 @@ reporting §13 warns about.
 <!-- GENERATED:CHAI-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 | complex | Chai-1 ipTM (median of 5) | interface residues | clashing models |
 |---|---|---|---|
-| **`ss_bc_s831683_mpnn6_S15D_S62H_routeA`** (rank 4) | **0.838** | 39 | 0 |
-| **`d2c_mpnn13_S88D_serasp`** (rank 5) | **0.818** | 30 | 0 |
-| **`rimA02_d3_rimA_14_vhh`** (rank 11) | **0.440** | 22 | 0 |
+| **`ss_bc_s831683_mpnn6_S15D_S62H_routeA`** (rank 5) | **0.838** | 39 | 0 |
+| **`d2c_mpnn13_S88D_serasp`** (rank 6) | **0.818** | 30 | 0 |
+| **`bc_s360518_mpnn9_A22D`** (rank 4) | **0.788** | 39 | 0 |
+| **`rimA02_d3_rimA_14_vhh`** (rank 12) | **0.440** | 22 | 0 |
 | **`rimA01_r15_boltzgen_egfr_d3_rimA_20`** (rank 3) | **0.332** | 24 | 0 |
 | **`c5_cf_short__boltzgen_egfr_cropfree_short_48`** (rank 1) | **0.201** | 22 | 0 |
 | *— calibration and reference complexes —* | | | |
 | `barnase_barstar` | 0.877 | 22 | 0 |
 | `cetuximab_scfv_ecd` | 0.793 | 29 | 0 |
-| `fin_bc_s360518_mpnn9_A22D` | 0.788 | 39 | 0 |
 | `egf_hu` | 0.500 | 25 | 0 |
 | `g532_ecd` | 0.340 | 35 | 0 |
 | `nano2_ecd` | 0.167 | 44 | 0 |
 
-Six of the 16 shipped designs were folded by Chai-1, and it does **not** rate them alike: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` reads 0.838 against `c5_cf_short__boltzgen_egfr_cropfree_short_48` at 0.201, a spread of 0.637 ipTM across designs our own pH objective orders quite differently. 2 of the six sit at or above the cetuximab scFv positive control (0.793): `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `d2c_mpnn13_S88D_serasp`. 3 sit **below human EGF** (0.500): `rimA02_d3_rimA_14_vhh`, `rimA01_r15_boltzgen_egfr_d3_rimA_20`, `c5_cf_short__boltzgen_egfr_cropfree_short_48`. Chai emits no residue-level PAE, so ipSAE cannot be computed on these and ipTM is not comparable to our ranking metric. It is a second opinion on whether an interface forms at all, not a second measurement of the objective.
+Six of the 18 shipped designs were folded by Chai-1, and it does **not** rate them alike: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` reads 0.838 against `c5_cf_short__boltzgen_egfr_cropfree_short_48` at 0.201, a spread of 0.637 ipTM across designs our own pH objective orders quite differently. 2 of the six sit at or above the cetuximab scFv positive control (0.793): `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `d2c_mpnn13_S88D_serasp`. 3 sit **below human EGF** (0.500): `rimA02_d3_rimA_14_vhh`, `rimA01_r15_boltzgen_egfr_d3_rimA_20`, `c5_cf_short__boltzgen_egfr_cropfree_short_48`. Chai emits no residue-level PAE, so ipSAE cannot be computed on these and ipTM is not comparable to our ranking metric. It is a second opinion on whether an interface forms at all, not a second measurement of the objective.
 
-**And the calibration set says not to over-read it.** `g532_ecd` is a PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 scores it **0.340** -- below 3 of our six designs and well below human EGF. `nano2_ecd` reads 0.167 on 44 interface residues, the largest interface in the set and the lowest score. So a low Chai ipTM is **not** evidence that a design does not bind: on the one molecule here with a real measured answer, this metric is wrong. The table supports the positive direction only -- three designs form an interface an independent predictor rates at or near the level of the cetuximab control -- and it cannot be used to argue against the designs at the bottom, including rank 1. Reporting it the other way round would be the single most tempting over-read available in this submission.
+**And the calibration set says not to over-read it.** `g532_ecd` is a PUBLISHED, experimentally-confirmed pH-switchable EGFR binder, and Chai-1 scores it **0.340** -- below 4 of our six designs and well below human EGF. `nano2_ecd` reads 0.167 on 44 interface residues, the largest interface in the set and the lowest score. So a low Chai ipTM is **not** evidence that a design does not bind: on the one molecule here with a real measured answer, this metric is wrong. The table supports the positive direction only -- three designs form an interface an independent predictor rates at or near the level of the cetuximab control -- and it cannot be used to argue against the designs at the bottom, including rank 1. Reporting it the other way round would be the single most tempting over-read available in this submission.
 <!-- /GENERATED:CHAI-TABLE -->
 
 **What separates the arms is the target construct, and the separation is 5-for-5 rather than a
@@ -715,7 +715,7 @@ between crop and ECD is the stronger.
 and 2 fall in domain IV. The crop contains almost the whole epitope and both predictors still
 miss it.
 
-**Why this matters to the submission: 15 of the 16 submitted designs were scored against that
+**Why this matters to the submission: 17 of the 18 submitted designs were scored against that
 crop** — every design except `d2c_mpnn13_S88D_serasp`, which is scored against the full
 ectodomain and sees all 17 target histidines rather than the crop's 5. (This read "16 of the
 18"; the count is derived from each design's own target-histidine census.) The one molecule in this project with a solved complex is never docked correctly on the
@@ -999,7 +999,7 @@ Re-levelled on FoldSeek-vs-PDB results for every design we hold structures for:
 | 4 De Novo | 0 |
 
 **114 of 238 clear Level ≥ 3. The old single bar passed 0 of 238** — including the entire
-BindCraft pool, which supplies 10 of the 16 submitted designs. Nothing in the pool
+BindCraft pool, which supplies 11 of the 18 submitted designs. Nothing in the pool
 reaches Level 4 under the general-protein rule; every design that clears does so through the
 Level 3 clause (moderate structural similarity *or* >30% sequence identity, exactly one of
 them), which is worth saying plainly: **this is a pool of partly novel designs, not de novo
@@ -1158,7 +1158,7 @@ were unused. It now carries **18 of 20** — two of the molecules tabulated belo
 subsequently shipped, which is what this section was for. Three of the ten failures are flagged
 ANTIBODY and were scored by the general-protein rule, which §9 notes is *stricter* than the
 antibody rule — including `ss_rimA02_d3_rimA_14_vhh_T28H_routeA` at 3.209×, a variant of
-`rimA02_d3_rimA_14_vhh` (shipped, now rank 11) — so those three
+`rimA02_d3_rimA_14_vhh` (shipped, now rank 12) — so those three
 need an ANARCI re-check before being treated as excluded.
 
 The cases that most directly contradicted the ranking as it stood on 2026-10-04, all Level 3.
@@ -1167,7 +1167,7 @@ other four remain excluded and the contradiction they pose stands:
 
 | molecule | pH (his-only) | human | mouse | spread | compare |
 |---|---|---|---|---|---|
-| ✔ `ss_bc_s831683_mpnn6_S15D_S62H_routeA` **(now shipped, rank 4)** | **3.545×** | 0.765 | 0.744 | 0.358 | shipped alongside its parent `mpnn6_S15D` (1.835×) as a declared pair |
+| ✔ `ss_bc_s831683_mpnn6_S15D_S62H_routeA` **(now shipped, rank 5)** | **3.545×** | 0.765 | 0.744 | 0.358 | shipped alongside its parent `mpnn6_S15D` (1.835×) as a declared pair |
 | `sd_d2c_101_l147_s144898_m_T65D` † | **4.735×** | 0.585 | 0.366 | 0.944 | shipped `d2c_mpnn13_S88D`: 3.526×, 0.603, 0.528 |
 | `ss_bc_s831683_mpnn19_S15D_S62H_routeA` | **3.189×** | 0.642 | 0.601 | 0.591 | shipped `mpnn19_S15D`: 1.774×, 0.808, 0.786 |
 | `bcr_d3acid_l65_s831683_mpnn3_S15D` | 2.035× | 0.759 | 0.754 | 0.512 | beats shipped `mpnn6_S15D` at matched affinity |
@@ -1222,9 +1222,9 @@ d3-crop and full-ECD poses land on one coordinate system.*
 |---|---|
 <!-- GENERATED:FOOTPRINT-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 | **domain** | **every design, 100% of contacts, in domain III (L2)** -- no domain-II contact anywhere |
-| **full-ECD** | **0 of 16** have any contact outside the 170 aa domain-III crop (mature 311-480), so the crop is adequate and no footprint required the full ECD to assess |
-| **glycan** | **3 of 16** touch an N-glycosylation sequon, all of them Asn420: `c5_cf_short__boltzgen_egfr_cropfree_` (rank 1), `bcr_d3acid3_l60_s647537_mpnn3` (rank 7), `bcr_d3acid3_l60_s647537_mpnn11` (rank 8). Of 11 sequons in the construct, only 1 is contacted |
-| **human/mouse** | median identity **at the contacted positions** is **0.86**; range 0.77-0.92 over 16 designs |
+| **full-ECD** | **0 of 18** have any contact outside the 170 aa domain-III crop (mature 311-480), so the crop is adequate and no footprint required the full ECD to assess |
+| **glycan** | **3 of 18** touch an N-glycosylation sequon, all of them Asn420: `c5_cf_short__boltzgen_egfr_cropfree_` (rank 1), `bcr_d3acid3_l60_s647537_mpnn3` (rank 8), `bcr_d3acid3_l60_s647537_mpnn11` (rank 9). Of 11 sequons in the construct, only 1 is contacted |
+| **human/mouse** | median identity **at the contacted positions** is **0.86**; range 0.77-0.92 over 18 designs |
 <!-- /GENERATED:FOOTPRINT-TABLE -->
 
 **Domain II is not in play.** The earlier assessment concerned domain II; these binders do not
@@ -1232,7 +1232,7 @@ touch it. That resolves the question in the designs' favour but by irrelevance, 
 
 **The glycan flag is on three designs, including rank 1.**
 `c5_cf_short__boltzgen_egfr_cropfree_short_48` (rank 1), `bcr_d3acid3_l60_s647537_mpnn3`
-(rank 7) and `bcr_d3acid3_l60_s647537_mpnn11` (rank 8) all contact **Asn420**, one of eleven
+(rank 8) and `bcr_d3acid3_l60_s647537_mpnn11` (rank 9) all contact **Asn420**, one of eleven
 N-X-S/T sequons in the human ectodomain and one of four in domain III (N328, N337, N389, N420).
 It is the only sequon any design touches. None of our folded structures carries a glycan, so
 that contact is made against a surface that is glycosylated in a real cell and bare in every
@@ -1349,7 +1349,7 @@ the distinction that makes the third of those defensible where the first was not
 
 ## 11. The submission
 
-**16 designs, ranked on the two-partner histidine-only pH product.** Track 3 allows 20.
+**18 designs, ranked on the two-partner histidine-only pH product.** Track 3 allows 20.
 Twelve were submitted on 2026-10-04; **five were added on 2026-10-05 from the reopened
 exclusion pool of §10**, by a rule fixed before the result was examined (this file's own
 `rank_key` over the 25 eligible reopened molecules, capped at 2 additions per backbone and a
@@ -1367,7 +1367,7 @@ two.)
 
 Until 2026-10-04 we estimated the pH ratio with a gate that measures only the **target's**
 histidines. It never measured our own binders' titratable groups — and <!-- GENERATED:BINDER-HIS -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
-**eight of the sixteen submitted designs carry at least one histidine of their own**: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` (4); `bc_d3acid_l65_s831683_mpnn11`, `bc_s831683_mpnn19_S15D`, `bc_s831683_mpnn6_S15D`, `bc_s831683_mpnn8_S15D`, `bc_s831683_mpnn9_S15D`, `bc_s831683_mpnn9_WT` (3 each); `d2c_mpnn13_S88D_serasp` (2). The other eight carry none.
+**nine of the eighteen submitted designs carry at least one histidine of their own**: `ss_bc_s831683_mpnn6_S15D_S62H_routeA` (4); `bc_d3acid_l65_s831683_mpnn11`, `bc_s831683_mpnn19_S15D`, `bc_s831683_mpnn6_S15D`, `bc_s831683_mpnn8_S15D`, `bc_s831683_mpnn9_S15D`, `bc_s831683_mpnn9_WT` (3 each); `d2c_mpnn13_S88D_serasp` (2); `bc_s360518_mpnn9_A22D` (1). The other nine carry none.
 <!-- /GENERATED:BINDER-HIS -->
 (This count was wrong five times by hand — "six of the eleven", "seven of twelve",
 "eight of the seventeen" from a pre-addition count carried forward, "ten of seventeen",
@@ -1392,11 +1392,13 @@ histidine-only order is nevertheless the one retained.* Measured over 165 poses,
 | rimA02_d3_rimA_14_vhh | 5.186 | **4.838** | 0 | — |
 | c5_cr_crop_patch__boltzgen_egfr_crop_patch_05 | 5.265 | **4.812** | 0 | — |
 | rimA01_r15_boltzgen_egfr_d3_rimA_20 | 4.582 | **4.256** | 0 | — |
+| bc_s360518_mpnn9_A22D | 5.630 | **3.738** | 1 | 0.776 |
 | ss_bc_s831683_mpnn6_S15D_S62H_routeA | 5.386 | **3.545** | 4 | 0.66 |
 | d2c_mpnn13_S88D_serasp | 4.572 | **3.526** | 2 | 0.979 |
 | cons_gap_h370_only__boltzgen_egfr_h370_018 | 3.478 | **3.180** | 0 | — |
 | bcr_d3acid3_l60_s647537_mpnn3 | 3.154 | **2.914** | 0 | — |
 | bcr_d3acid3_l60_s647537_mpnn11 | 2.997 | **2.747** | 0 | — |
+| h370_020_vhh | 2.289 | **2.101** | 0 | — |
 | bc_s831683_mpnn6_S15D | 5.397 | **1.835** | 3 | 0.661 |
 | bc_s831683_mpnn19_S15D | 5.435 | **1.774** | 3 | 0.66 |
 | bc_s831683_mpnn9_S15D | 5.428 | **1.062** | 3 | 0.339 |
@@ -1442,19 +1444,21 @@ hardest case. The *direction* is consistent across 76 poses and mechanistically 
 | 1 | `c5_cf_short__boltzgen_egfr_cropfree_short_48` | single_chain | cf_cropfree_short (c5) | 70 | **5.546** | 5.685 | 5.779 | 2-10 | 0.26 | 5.819 | 6 | 0.241 | 0.181 | yes |
 | 2 | `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05` | single_chain | cr_crop_patch (c5) | 66 | **4.812** | 4.849 | 5.285 | 4-11 | 0.44 | 5.265 | 11 | 0.132 | 0.204 | yes |
 | 3 | `rimA01_r15_boltzgen_egfr_d3_rimA_20` | single_chain | rimA01_r15_d3_rimA_20 | 150 | **4.256** | 34.534 | 4.843 | 3-14 | 0.12 | 4.582 | 6 | 0.594 | 0.567 | yes |
-| 4 | `ss_bc_s831683_mpnn6_S15D_S62H_routeA` | single_chain | d3acid_l65_s831683 | 65 | **3.545** | 3.643 | 8.303 | 4-11 | 0.36 | 5.386 | 5 | 0.765 | 0.744 | yes |
-| 5 | `d2c_mpnn13_S88D_serasp` | single_chain | d2c_101_l147_s144898 | 147 | **3.526** | 6.681 | 6.663 | 5-9 | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
-| 6 | `cons_gap_h370_only__boltzgen_egfr_h370_018` | single_chain | h370_018 (gap) | 90 | **3.180** | 27.774 | 3.859 | 4-15 | 0.17 | 3.478 | 11 | 0.457 | 0.215 | yes |
-| 7 | `bcr_d3acid3_l60_s647537_mpnn3` | single_chain | d3acid3_l60_s647537 | 60 | **2.914** | 3.037 | 3.106 | 10-16 | 0.09 | 3.154 | 6 | 0.574 | 0.168 | yes |
-| 8 | `bcr_d3acid3_l60_s647537_mpnn11` | single_chain | d3acid3_l60_s647537 | 60 | **2.747** | 2.918 | 2.960 | 11-17 | 0.06 | 2.997 | 6 | 0.443 | 0.234 | yes |
-| 9 | `bc_s831683_mpnn6_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.835** | 5.949 | 12.995 | 2-13 | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
-| 10 | `bc_s831683_mpnn19_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-14 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
-| 11 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 4.976 | 5.183 | 3-13 | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
-| 12 | `rimA01_r15_L133E` | single_chain | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-6 | 4.38 | 4.619 | 20 | 0.598 | 0.434 | yes |
-| 13 | `bc_s831683_mpnn9_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.062** | 1.804 | 6.801 | 7-16 | 1.21 | 5.428 | 20 | 0.804 | 0.804 | yes |
-| 14 | `bc_s831683_mpnn9_WT` | single_chain | d3acid_l65_s831683 | 65 | **0.627** | 1.195 | 5.226 | 12-18 | 1.76 | 3.522 | 26 | 0.786 | 0.784 | yes |
-| 15 | `bc_d3acid_l65_s831683_mpnn11` | single_chain | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 5-17 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
-| 16 | `bc_s831683_mpnn8_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 8-17 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
+| 4 | `bc_s360518_mpnn9_A22D` | single_chain | d3acid3_l65_s360518 | 65 | **3.738** | 88.593 | 33.416 | 1-6 | 0.45 | 5.630 | 5 | 0.451 | 0.474 | yes |
+| 5 | `ss_bc_s831683_mpnn6_S15D_S62H_routeA` | single_chain | d3acid_l65_s831683 | 65 | **3.545** | 3.643 | 8.303 | 4-11 | 0.36 | 5.386 | 5 | 0.765 | 0.744 | yes |
+| 6 | `d2c_mpnn13_S88D_serasp` | single_chain | d2c_101_l147_s144898 | 147 | **3.526** | 6.681 | 6.663 | 5-9 | 0.48 | 4.572 | 5 | 0.603 | 0.528 | yes |
+| 7 | `cons_gap_h370_only__boltzgen_egfr_h370_018` | single_chain | h370_018 (gap) | 90 | **3.180** | 27.774 | 3.859 | 4-15 | 0.17 | 3.478 | 11 | 0.457 | 0.215 | yes |
+| 8 | `bcr_d3acid3_l60_s647537_mpnn3` | single_chain | d3acid3_l60_s647537 | 60 | **2.914** | 3.037 | 3.106 | 10-16 | 0.09 | 3.154 | 6 | 0.574 | 0.168 | yes |
+| 9 | `bcr_d3acid3_l60_s647537_mpnn11` | single_chain | d3acid3_l60_s647537 | 60 | **2.747** | 2.918 | 2.960 | 11-17 | 0.06 | 2.997 | 6 | 0.443 | 0.234 | yes |
+| 10 | `bc_s831683_mpnn6_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.835** | 5.949 | 12.995 | 2-13 | 0.04 | 5.397 | 5 | 0.780 | 0.751 | yes |
+| 11 | `bc_s831683_mpnn19_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.774** | 5.486 | 11.930 | 3-14 | 0.50 | 5.435 | 5 | 0.808 | 0.786 | yes |
+| 12 | `rimA02_d3_rimA_14_vhh` | nanobody | rimA02_d3_rimA_14 (VHH) | 129 | **4.838** | 4.976 | 5.183 | 3-13 | 0.30 | 5.186 | 6 | 0.219 | 0.447 | **no** |
+| 13 | `h370_020_vhh` | nanobody | h370_020 (VHH) | 98 | **2.101** | 2.140 | 2.267 | 12-18 | 0.59 | 2.289 | 11 | 0.417 | 0.709 | **no** |
+| 14 | `rimA01_r15_L133E` | single_chain | rimA01_r15_d3_rimA_20 | 150 | **5.656** | 52.181 | 7.288 | 1-6 | 4.38 | 4.619 | 20 | 0.598 | 0.434 | yes |
+| 15 | `bc_s831683_mpnn9_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.062** | 1.804 | 6.801 | 7-16 | 1.21 | 5.428 | 20 | 0.804 | 0.804 | yes |
+| 16 | `bc_s831683_mpnn9_WT` | single_chain | d3acid_l65_s831683 | 65 | **0.627** | 1.195 | 5.226 | 12-18 | 1.76 | 3.522 | 26 | 0.786 | 0.784 | yes |
+| 17 | `bc_d3acid_l65_s831683_mpnn11` | single_chain | d3acid_l65_s831683 | 65 | **0.737** | 1.841 | 7.685 | 5-17 | 0.64 | 4.010 | 6 | 0.796 | 0.784 | yes |
+| 18 | `bc_s831683_mpnn8_S15D` | single_chain | d3acid_l65_s831683 | 65 | **1.023** | 1.644 | 6.789 | 8-17 | 0.16 | 5.461 | 5 | 0.776 | 0.764 | yes |
 <!-- /GENERATED:RANK-TABLE -->
 
 **Before reading this order, read this about rank 1.** `c5_cf_short__boltzgen_egfr_cropfree_short_48`
@@ -1485,18 +1489,18 @@ its own non-switching comparator**. We neither demote it on the pH axis nor scor
 (the §4.2 error); we place it after the designs where both axes mean something.
 
 **The cost, stated:** `rimA02_d3_rimA_14_vhh` carries the **third-highest** pH ratio in the
-submission at 4.838× and sits at **rank 11**, below designs reading as low as 1.774×. (This
+submission at 4.838× and sits at **rank 12**, below designs reading as low as 1.774×. (This
 read "second-highest ... rank 6", both of which were true of a smaller submission.) If the organisers rank strictly on the primary
 objective, this ordering costs us. It is a judgement that credible-interface-first is the more
 defensible frame, following the reviewer instruction to apply eligibility and interface checks
 before the challenge priorities — not a claim that rimA02 is worse.
 
-### 11.3 Eight families, sixteen designs
+### 11.3 Ten families, eighteen designs
 
 <!-- GENERATED:FAMILY-LIST -- do not edit by hand; `bin/gen_methods_submission.py --write` -->
-`d3acid_l65_s831683` **x7** (ranks 4, 9, 10, 13, 14, 15, 16) - `rimA01_r15_d3_rimA_20` **x2** (ranks 3, 12) - `d3acid3_l60_s647537` **x2** (ranks 7, 8) - `cf_cropfree_short (c5)` (rank 1) - `cr_crop_patch (c5)` (rank 2) - `d2c_101_l147_s144898` (rank 5) - `h370_018 (gap)` (rank 6) - `rimA02_d3_rimA_14 (VHH)` (rank 11)
+`d3acid_l65_s831683` **x7** (ranks 5, 10, 11, 15, 16, 17, 18) - `rimA01_r15_d3_rimA_20` **x2** (ranks 3, 14) - `d3acid3_l60_s647537` **x2** (ranks 8, 9) - `cf_cropfree_short (c5)` (rank 1) - `cr_crop_patch (c5)` (rank 2) - `d3acid3_l65_s360518` (rank 4) - `d2c_101_l147_s144898` (rank 6) - `h370_018 (gap)` (rank 7) - `rimA02_d3_rimA_14 (VHH)` (rank 12) - `h370_020 (VHH)` (rank 13)
 
-**Effective n is 8 clusters, not 16 designs.** The largest cluster, `d3acid_l65_s831683`, holds 7 designs at ranks 4, 9, 10, 13, 14, 15, 16; 5 families contribute a single design each. Any interval must be computed on families, not designs.
+**Effective n is 10 clusters, not 18 designs.** The largest cluster, `d3acid_l65_s831683`, holds 7 designs at ranks 5, 10, 11, 15, 16, 17, 18; 7 families contribute a single design each. Any interval must be computed on families, not designs.
 <!-- /GENERATED:FAMILY-LIST -->
 
 **Three pairs of submitted designs exceed 90% sequence identity, and all three are declared
@@ -1532,7 +1536,7 @@ arm, raising its parent **1.93×** here and **1.80×** at the same position on t
 corroboration in the submission: Chai-1 ipTM **0.838** with a **39-residue** interface, the
 joint-largest in the validation set and above both working positives (cetuximab scFv 0.793, human
 EGF 0.500), while its predicted affinity is indistinguishable from its parent's (0.765/0.744
-against 0.780/0.751). The submission therefore stands at **16 of the 20 permitted**, with four
+against 0.780/0.751). The submission therefore stands at **18 of the 20 permitted**, with two
 slots deliberately unused rather than filled.
 
 **On the eligibility rule.** The organisers state that *iterating on any previously submitted
@@ -1725,7 +1729,7 @@ not reordering the submission on the strength of that judgement.
 
 **Unassessed sites.** The gate now records, per pose, any titratable site for which a pKa
 is unavailable in either leg, with the reason, instead of skipping it with a bare
-`continue`. Across all **149 poses of the sixteen submitted designs** the unassessed count is **0** — though **five site-poses are flagged `implausible`**, a different guard: `target:ASP13` on `c5_cf_short…_48`, `binder:ASP45` on `bc_s360518_mpnn9_A22D`, `binder:ASP58` on `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, and `binder:ASP101` on `rimA02_d3_rimA_14_vhh` in two poses. Each has an implied pKa_bound that could not be inverted inside the 0.5–9.0 window the gate allows for aspartate, so the site is reported and excluded rather than silently composed. So every site either entered the product
+`continue`. Across all **165 poses of the eighteen submitted designs** the unassessed count is **0** — though **five site-poses are flagged `implausible`**, a different guard: `target:ASP13` on `c5_cf_short…_48`, `binder:ASP45` on `bc_s360518_mpnn9_A22D`, `binder:ASP58` on `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, and `binder:ASP101` on `rimA02_d3_rimA_14_vhh` in two poses. Each has an implied pKa_bound that could not be inverted inside the 0.5–9.0 window the gate allows for aspartate, so the site is reported and excluded rather than silently composed. So every site either entered the product
 or was accounted for with a reason; none was dropped silently, which is the property this guard
 exists to give. Site-level detail for every pose is retained in
 `analysis/01-egfr/ph_sensitivity.json` so no later question requires a re-run.
@@ -1742,17 +1746,17 @@ own reported RMSD (~0.8 pKa units, worse for buried residues), not a tuned value
 <!-- GENERATED:SIGMA-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 | sigma (pKa units) | keep baseline rank | span >= 5 ranks |
 |---|---|---|
-| 0.4 | 6 of 16 | 12 of 16 |
-| **0.8 (PROPKA's own RMSD)** | **2 of 16** | **15 of 16** |
-| 1.2 | 1 of 16 | 16 of 16 |
+| 0.4 | 6 of 18 | 14 of 18 |
+| **0.8 (PROPKA's own RMSD)** | **2 of 18** | **17 of 18** |
+| 1.2 | 1 of 18 | 18 of 18 |
 <!-- /GENERATED:SIGMA-TABLE -->
 
 <!-- GENERATED:PERT-FINDINGS do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
-**At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp` spans ranks 1-18; `ss_bc_s831683_mpnn6_S15D_S62H_rout` spans ranks 1-17; `bcr_d3acid3_l60_s647537_mpnn3` spans ranks 2-15. The widest span is 17 of 16 ranks.
+**At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp` spans ranks 1-18; `ss_bc_s831683_mpnn6_S15D_S62H_rout` spans ranks 1-17; `bc_s360518_mpnn9_A22D` spans ranks 1-16. The widest span is 17 of 18 ranks.
 
-**The single most-stable design holds a top-three slot in 60% of draws** (`rimA01_r15_L133E`: rank 1 on the unperturbed pH ratio, which is the quantity being perturbed, and rank 12 in the shipped CSV, which also applies the pose-spread and antibody penalties; perturbed median 3). An earlier version of this section claimed no design exceeded 50%; it did, and it is the design the pH ratio puts first, so the error ran in the submission's favour. The conclusion does not depend on sigma: it already holds at the optimistic 0.4.
+**The single most-stable design holds a top-three slot in 60% of draws** (`rimA01_r15_L133E`: rank 1 on the unperturbed pH ratio, which is the quantity being perturbed, and rank 14 in the shipped CSV, which also applies the pose-spread and antibody penalties; perturbed median 3). An earlier version of this section claimed no design exceeded 50%; it did, and it is the design the pH ratio puts first, so the error ran in the submission's favour. The conclusion does not depend on sigma: it already holds at the optimistic 0.4.
 
-**What does survive.** Two things. First, the **bottom group is robustly at the bottom**: `bc_s831683_mpnn9_S15D` stays at rank 10 or worse in 95% of draws, `bc_d3acid_l65_s831683_mpnn11` stays at rank 10 or worse in 95% of draws, `bc_s831683_mpnn9_WT` stays at rank 14 or worse in 95% of draws -- 3 designs take a top-three slot in 0% of draws. "These are not switches" is stable under the noise. Second, a **top set exists even though its order does not**: 5 designs `rimA01_r15_L133E` (60%), `c5_cf_short__boltzgen_egfr_cro` (49%), `rimA02_d3_rimA_14_vhh` (43%), `d2c_mpnn13_S88D_serasp` (28%), `rimA01_r15_boltzgen_egfr_d3_ri` (26%) hold a top-three slot in at least 25% of draws, against 0-16% for the other 11.
+**What does survive.** Two things. First, the **bottom group is robustly at the bottom**: `bc_s831683_mpnn9_S15D` stays at rank 10 or worse in 95% of draws, `bc_d3acid_l65_s831683_mpnn11` stays at rank 10 or worse in 95% of draws, `bc_s831683_mpnn9_WT` stays at rank 14 or worse in 95% of draws -- 3 designs take a top-three slot in 0% of draws. "These are not switches" is stable under the noise. Second, a **top set exists even though its order does not**: 5 designs `rimA01_r15_L133E` (60%), `c5_cf_short__boltzgen_egfr_cro` (49%), `rimA02_d3_rimA_14_vhh` (43%), `d2c_mpnn13_S88D_serasp` (28%), `rimA01_r15_boltzgen_egfr_d3_ri` (26%) hold a top-three slot in at least 25% of draws, against 0-17% for the other 13.
 <!-- /GENERATED:PERT-FINDINGS -->
 
 **One thing this understates, in the submission's favour.** The perturbation moves the pH ratio
@@ -1793,7 +1797,7 @@ none move by exactly nothing. The free-leg choice affects only the designs whose
 enter the product, which is what it should do and is evidence the comparison isolates what it
 claims to.
 
-**The ordering is largely preserved — Kendall τ = +0.868**, against τ = +0.000 for the
+**The ordering is largely preserved — Kendall τ = +0.868**, against τ = +0.046 for the
 partnered composition basis. On this axis the submission is far more stable than on the
 composition axis or under pKa noise.
 
@@ -1951,13 +1955,11 @@ number here was computed by code in the published repository, and the code was w
 collaboration. The errors in §7 were found the same way.
 
 <!-- GENERATED:DECL-REVIEW do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
-**Human review.** The submitting researcher has reviewed all **16** submitted sequences -- their `molecule_class` labels, their lengths, and the claims made about them in this document and in the CSV.
+**Human review.** The submitting researcher has reviewed all **18** submitted sequences -- their `molecule_class` labels, their lengths, and the claims made about them in this document and in the CSV.
 
-Of these, **10** were in the submission as it stood on 2026-10-04 and **6** were added on 2026-10-05. The additions are `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`.
+Of these, **12** were in the submission as it stood on 2026-10-04 and **6** were added on 2026-10-05. The additions are `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`.
 
-Designs that were in the 2026-10-04 set and are **no longer submitted**: `bc_s360518_mpnn9_A22D`, `h370_020_vhh`.
-
-What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC. Measured rather than asserted -- `analysis/01-egfr/express_qc.tsv` joins to **16 of the 16** submitted designs, so 0 have no expression-QC row. Novelty IS established for all 16: `bin/check_novelty_coverage.py` is green, and the four designs that had no levelled record were re-run on 2026-10-05 (`analysis/01-egfr/novelty_gap4.tsv`). This sentence said the checker was RED, which it was for about an hour before the gap was closed.
+What has been verified for the 6 additions by code, and is reproducible from the repository: each comes from this project's own generation runs (§10); each was re-scored on the same three pH bases over its own human-leg poses; and the provenance audit below covers them. What has **not** been done for them: expression QC. Measured rather than asserted -- `analysis/01-egfr/express_qc.tsv` joins to **18 of the 18** submitted designs, so 0 have no expression-QC row. Novelty IS established for all 18: `bin/check_novelty_coverage.py` is green, and the four designs that had no levelled record were re-run on 2026-10-05 (`analysis/01-egfr/novelty_gap4.tsv`). This sentence said the checker was RED, which it was for about an hour before the gap was closed.
 <!-- /GENERATED:DECL-REVIEW -->
 
 **Provenance.** All eighteen sequences are de novo designs from this project's own generation
@@ -1985,7 +1987,7 @@ is free for academic and non-profit use and needs a paid University of Washingto
 otherwise, which does not describe this entry. `setup-checklist.md` had already reached that
 conclusion — *"Recommendation: avoid it"* — and recorded that Anthropic excluded Rosetta/PyRosetta
 from their own campaign on licence grounds; FreeBindCraft was named as the substitute and **was
-never actually substituted**. The BindCraft pool supplies **10 of the 16 submitted designs**, so
+never actually substituted**. The BindCraft pool supplies **11 of the 18 submitted designs**, so
 this is not a stray dependency.
 
 The honest statement: every other tool listed above is open-source and commercially usable, and
@@ -2007,7 +2009,7 @@ one claim now withdrawn is the inference that Anthropic's own exclusion of Roset
 their campaign implied a prohibition on ours — it did not.
 
 <!-- GENERATED:DECL-STRUCT do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
-**Structures.** Predicted complexes are published at `submissions/structures/`, one median-ipSAE pose each -- not the best pose, which would be selection on the outcome. **Coverage is 9 of 16.** Without a published structure: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Their poses exist and are scored; they are simply not exported. Stated rather than implied.
+**Structures.** Predicted complexes are published at `submissions/structures/`, one median-ipSAE pose each -- not the best pose, which would be selection on the outcome. **Coverage is 10 of 18.** Without a published structure: `c5_cf_short__boltzgen_egfr_cropfree_short_48`, `c5_cr_crop_patch__boltzgen_egfr_crop_patch_05`, `bc_s360518_mpnn9_A22D`, `ss_bc_s831683_mpnn6_S15D_S62H_routeA`, `cons_gap_h370_only__boltzgen_egfr_h370_018`, `bcr_d3acid3_l60_s647537_mpnn3`, `bcr_d3acid3_l60_s647537_mpnn11`, `rimA01_r15_L133E`. Their poses exist and are scored; they are simply not exported. Stated rather than implied.
 <!-- /GENERATED:DECL-STRUCT -->
 
 **Funding and compute.** Self-funded. $503 of personal Modal spend on this target. No
@@ -2080,7 +2082,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     0.0000 — identical to the nine poses that recover no crystal contact at all (§4.4b).
 14. **Three shipped designs contact a glycosylation sequon, not one.**
     `c5_cf_short__boltzgen_egfr_cropfree_short_48` (rank 1),
-    `bcr_d3acid3_l60_s647537_mpnn3` (rank 7) and `bcr_d3acid3_l60_s647537_mpnn11` (rank 8)
+    `bcr_d3acid3_l60_s647537_mpnn3` (rank 8) and `bcr_d3acid3_l60_s647537_mpnn11` (rank 9)
     all contact
     **Asn420**; no structure we folded carries a glycan (§10b). This limitation read "rank 1
     contacts a glycosylation sequon" while §10b read "1 of 17", so the exposure looked like
@@ -2109,7 +2111,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     submission and none of the seven failures is. Read the S62H and L133E rows as two
     successes out of twelve attempts, not as a working method.
 19. <!-- GENERATED:LIMIT-FAMILY do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
-    **Effective n is 8, not 16.** 7 of the 16 submitted designs sit on one backbone (`d3acid_l65_s831683`, ranks 4, 9, 10, 13, 14, 15, 16), and 2 further families are two-design clusters: `d3acid3_l60_s647537` (ranks 7, 8); `rimA01_r15_d3_rimA_20` (ranks 3, 12). Any hit rate or interval computed over designs rather than sequence families overstates n by up to 7-fold on the arm carrying our only causal claim. See §11.3 for the partition.
+    **Effective n is 10, not 18.** 7 of the 18 submitted designs sit on one backbone (`d3acid_l65_s831683`, ranks 5, 10, 11, 15, 16, 17, 18), and 2 further families are two-design clusters: `d3acid3_l60_s647537` (ranks 8, 9); `rimA01_r15_d3_rimA_20` (ranks 3, 14). Any hit rate or interval computed over designs rather than sequence families overstates n by up to 7-fold on the arm carrying our only causal claim. See §11.3 for the partition.
 <!-- /GENERATED:LIMIT-FAMILY -->
 20. **The reproducibility boundary is one gate wide, measured rather than asserted.** In a
     fresh clone with no local state: the emit command reproduces the graded CSV byte-identically,
@@ -2125,7 +2127,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     n = 1. BindCraft also beat BoltzGen on every axis we measured, on 11 invocations against
     1,944 designs. We did not resolve them, and the submission is poorer for it.
 22. <!-- GENERATED:LIMIT-AFFINITY do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
-    **The organisers rank outcomes partly on affinity at pH 6.5, and 1 of the 16 submitted rows have no usable affinity reading at all** (§4.5): `rimA02_d3_rimA_14_vhh`. We submitted them anyway, because excluding them would mean scoring them at 0.0000, which is the error §4.2 documents — but it means 6% of the submission cannot compete on one of the stated criteria.
+    **The organisers rank outcomes partly on affinity at pH 6.5, and 2 of the 18 submitted rows have no usable affinity reading at all** (§4.5): `rimA02_d3_rimA_14_vhh`, `h370_020_vhh`. We submitted them anyway, because excluding them would mean scoring them at 0.0000, which is the error §4.2 documents — but it means 11% of the submission cannot compete on one of the stated criteria.
 <!-- /GENERATED:LIMIT-AFFINITY -->
 23. **The shipped pH basis is optimistic, by a measured and signed amount.** The relaxed free
     leg (§11.8) moves all ten testable designs **down** — median 0.842×, worst 0.623× — so
@@ -2156,7 +2158,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     poses on a median effect smaller than the instrument's stated error. We report it because
     the mechanism is specifically controlled — Glu reaches, Asp does not — not because the
     magnitude is resolved.
-27. **The reviewer's tethered-versus-extended footprint comparison was never run.** He asked for the
+27. **The reviewer's tethered-versus-extended footprint comparison was never run.** They asked for the
     complete binder footprint compared across tethered and ligand-bound extended assemblies,
     taking in the second receptor, the glycans and the membrane-facing orientation, and said
     explicitly that distance from one tether contact cannot settle it. §10b runs four other
@@ -2172,7 +2174,7 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     explicitly not a replacement for solvent-accessible surface area. It is still the sole
     support for the H370 burial conclusion. `biomodals/modal_sasa.py` exists and was never
     run; "SASA" appears in no deliverable.
-30. **The seed-instability pilot the reviewer specified was never run.** He asked for 20–30 diverse
+30. **The seed-instability pilot the reviewer specified was never run.** They asked for 20–30 diverse
     candidates clustered around the decision boundaries at roughly ten seeds each, assessing rank changes,
     pose consistency and threshold crossings. What exists instead is 5 seeds per design on the
     shipped set and a 15-seed triad on one design (§11.6). The pKa-perturbation study (§11.7)
@@ -2251,8 +2253,9 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     cannot reach any of the qualifications those rows rely on. The repository is public at
     `https://github.com/harishrajaram-svg/adaptyv-egfr-ph-switch` and the pointer is now
     included in each row's assessment text; before 2026-10-05 it was not.
-37. **Two designs were removed by the organisers' own novelty check, and our gate had
-    cleared both.** The submission was uploaded on 2026-10-05 with 18 designs. Proteinbase
+37. **Two designs were removed by the organisers' own novelty check, our gate had cleared
+    both, and both are restored in this resubmission.** The submission was first uploaded on
+    2026-10-05 with 18 designs. Proteinbase
     runs its novelty filter at upload and scored 16 at 3/4 and two at **2/4**, below the
     required bar, blocking submission until they were removed:
     - **`bc_s360518_mpnn9_A22D`** — our gate: Level 3 at qTM 0.7924, clearing the level-2
@@ -2270,7 +2273,30 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
       and we do not claim to understand it. **Our antibody-branch levelling should be read
       as unvalidated.**
     Removing both broke no declared parent/mutant pair: A22D's wild-type was never shipped
-    and `h370_020_vhh` was not half of a pair. The submission is now **16 of 20**, with one
-    antibody-format design remaining. The removals are recorded in
-    `bin/emit_submission_csv.py` as an `INELIGIBLE` map rather than by hand-deleting rows,
-    so the reason travels with the code and a re-emit cannot quietly reinstate them.
+    and `h370_020_vhh` was not half of a pair.
+
+    **RESUBMITTED 2026-10-06 with both designs restored, because the rule they failed has
+    since changed.** Several hours after our upload, the organisers recalibrated the novelty
+    scale: for nanobody and VNAR formats the global novel-similarity cut drops to **0.66**
+    against **PLAbDab-Nano** as the reference database, the stated reason being that some
+    nanobodies had been scored as generic de novo proteins and so could not reach Level 3.
+    That is exactly the failure mode we inferred for `h370_020_vhh` from its 0.8714
+    whole-chain qTM, and it makes the design a genuine candidate to clear now. The
+    recalibration does **not** change the rule for general proteins, so
+    `bc_s360518_mpnn9_A22D` is expected to be rejected a second time; it is re-uploaded
+    anyway, because the only authority on their novelty score is their own check, their
+    code remains unreleased, and an upload costs nothing but the removal of a failing row.
+
+    **What this does not assume.** Restoring a design is not a claim that it passes. The
+    upload is the measurement. Whatever the platform's check rejects is removed again before
+    the set is submitted, exactly as on 10-05, so the finally submitted count is 16, 17 or
+    18 and this document describes the **18 uploaded**. The `INELIGIBLE` map in
+    `bin/emit_submission_csv.py` is now empty, and its history — both designs, both reasons,
+    both qTM margins — is retained in the comment above it, so the removal cannot be
+    forgotten and a re-emit cannot quietly reinstate anything without that record being read.
+
+    **What the episode still shows, unchanged:** our whole-chain `qtmscore` is not their
+    computation, our antibody-branch levelling should be read as **unvalidated**, and a
+    design can be ineligible on a rule we cannot reproduce. The 0.0076 margin on A22D was
+    real and it fell the wrong way; that it may now fall differently is the organisers'
+    recalibration, not a vindication of our gate.

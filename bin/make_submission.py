@@ -6,7 +6,7 @@ and `submission_final.json` had NO generator anywhere in the repo -- grep for th
 across every .py/.sh/.md outside .venv/.git/runs returned zero hits. The submission could
 not be regenerated, re-checked, or re-ranked. It also found the shipped ranking is v1 MAX
 (21/21 `ips` values match a cached v1 max exactly; only 9/21 match a v2 median) even though
-PK's review replaced max-over-seeds with median-over-seeds. This script makes the ordering
+The reviewer's review replaced max-over-seeds with median-over-seeds. This script makes the ordering
 executable so both estimators can be compared instead of one being swapped in silently.
 
 THE JOIN IS BY SEQUENCE, NOT BY NAME. Ranking names (`rimA01_r02_boltzgen_egfr_d3_rimA_26`)
@@ -196,7 +196,7 @@ def rank(rows, idx, agg, bar=None):
         t1 = sorted([x for x in out if x["real"]], key=lambda x: -x["ratio"])
         t2 = sorted([x for x in out if not x["real"]], key=lambda x: -x["primary"])
         return t1 + t2
-    # v3: the pH tier is GATED on a credible interface, per PK -- "the conditional term
+    # v3: the pH tier is GATED on a credible interface, per the reviewer -- "the conditional term
     # must be gated on a credible interface rather than weighted beside the primary score".
     # A pH ratio on a design the instrument says does not bind is not evidence of a switch.
     for x in out:
@@ -253,7 +253,7 @@ if __name__ == "__main__":
     v3 = rank(rows, idx, "v2", bar=bars["permissive"])
     v3s = rank(rows, idx, "v2", bar=bars["strict"])
     show("v1  ipSAE_min, MAX over seeds  (what shipped)", v1)
-    show("v2  ipSAE_min, MEDIAN over seeds  (PK's estimator)", v2)
+    show("v2  ipSAE_min, MEDIAN over seeds  (the reviewer's estimator)", v2)
     show(f"v3  v2 GATED on binding >= {bars['permissive']:.4f} (permissive: beats the nonbinder control)", v3)
     show(f"v3s v2 GATED on binding >= {bars['strict']:.4f} (strict: matches a real nM binder)", v3s)
     for lbl, r in (("permissive", v3), ("strict", v3s)):

@@ -47,7 +47,7 @@ def sequons(seq, first_idx=1, atypical=True):
     """N-glycosylation sequons. Returns [(1-based index of the Asn, motif)].
 
     Canonical N-X-S/T with X != P, PLUS the atypical N-X-C motif when `atypical`.
-    PK flagged the omission on 2026-10-03: EGFR carries a documented atypical
+    The reviewer flagged the omission on 2026-10-03: EGFR carries a documented atypical
     N-X-C site at mature N32 / canonical N56 (motif NNC) that an N-X-S/T-only
     scan cannot see. Scanning for it finds FOUR N-X-C sequons on the ECD
     (canonical 56, 234, 468, 497), lifting the sequon count from 11 to 15.
@@ -224,7 +224,7 @@ def self_test():
     assert sequons("AANPSA", 1) == [], "X=P must be rejected"
     assert sequons("AANASA", 1) == [(3, 'NAS')], sequons("AANASA", 1)
     # N-A-C used to be asserted as a non-sequon here. That assertion encoded the
-    # very omission PK flagged: N-X-C is a real, if atypical, glycosylation motif.
+    # very omission the reviewer flagged: N-X-C is a real, if atypical, glycosylation motif.
     assert sequons("AANACA", 1) == [(3, 'NAC')], sequons("AANACA", 1)
     assert sequons("AANACA", 1, atypical=False) == [], "S/T-only mode must still reject it"
     assert sequons("AANAVA", 1) == [], "+2 must be S, T or C"
@@ -232,7 +232,7 @@ def self_test():
     # re.finditer pass consumes the first match's characters and misses the second.
     assert sequons("ANNSTX", 1) == [(2, 'NNS'), (3, 'NST')], sequons("ANNSTX", 1)
     assert sequons("AANAT", 5) == [(7, 'NAT')], "first_idx offset"
-    # the atypical N-X-C motif PK flagged -- EGFR mature N32 is NNC
+    # the atypical N-X-C motif the reviewer flagged -- EGFR mature N32 is NNC
     assert sequons("AANNCA") == [(3, 'NNC')], sequons("AANNCA")
     assert sequons("AANNCA", atypical=False) == [], "N-X-C must be opt-out-able"
     assert sequons("AANPCA") == [], "X=P must be rejected for N-X-C too"

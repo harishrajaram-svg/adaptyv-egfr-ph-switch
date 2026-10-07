@@ -21,7 +21,7 @@ median. Names are provenance; sequences are the thing being submitted.
 
 Output: analysis/01-egfr/ph_pooled_by_sequence.json
     [{seq, n, median, max, min, site, poses_by_arm{...}, names[...]}]
-Median, not max, is the headline -- PK's v2. Max is kept beside it so the gap between
+Median, not max, is the headline -- the reviewer's v2. Max is kept beside it so the gap between
 the two is visible rather than chosen.
 
 Usage:  ph_pool_by_sequence.py [run_dir ...]      (default: every runs/esmfold2/*/)

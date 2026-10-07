@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Epitope footprint of every submitted design, with the four checks PK asked for.
+"""Epitope footprint of every submitted design, with the four checks the reviewer asked for.
 
-Reviewer, 2026-10-05: "Apply full-ECD, glycan, receptor-state and human/mouse contact
-checks to the actual finalist footprints -- my earlier domain-II assessment does not
-clear these designs."
+On 2026-10-05 the reviewer required that the footprints of the designs actually submitted
+be put through four tests -- the complete ECD, glycosylation, the receptor's conformational
+state, and a human-versus-mouse comparison at the contacts themselves -- and stated that
+their own earlier read on domain II grants these designs no clearance.
 
 That assessment was made against a construct and a target region, not against where
 these particular binders actually land. This computes the footprint per design from its

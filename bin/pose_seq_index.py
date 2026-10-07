@@ -6,7 +6,7 @@ WHY. Every sequence->pose join in this project went through
 matching basename existed in a score_* directory. That index is incomplete by
 construction -- a new Modal run has no .faa until someone writes one -- and it is held
 together by 8 untracked symlinks (score_w1_*, score_w2_*) that exist purely so a glob
-would match. PK flagged the symlinks as missing from the public tree; the deeper problem
+would match. The reviewer flagged the symlinks as missing from the public tree; the deeper problem
 is that a missing index entry is silent: the pose is simply not pooled, and the design's
 n is quietly too small.
 

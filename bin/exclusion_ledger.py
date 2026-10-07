@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """The exclusion ledger, keyed on binder SEQUENCE and classified by reason.
 
-WHY THIS REPLACES METHODS SECTION 10'S PROSE LEDGER. Reviewer note, 2026-10-05:
-
-  "Reopen the 38-molecule ledger, reconcile aliases by exact sequence, assess the
-   additional omitted high-ranking molecules, and establish overlap before combining
-   counts. Separate eligibility failures, inadequate computational assessment, and
-   pH-gate-only exclusions. Restore gate-only exclusions to consideration and apply one
-   documented assessment across the reconsidered pool AND the current finalists."
+WHY THIS REPLACES METHODS SECTION 10'S PROSE LEDGER. In a note of 2026-10-05 the reviewer
+asked that the 38-molecule ledger be opened up again: de-duplicate its aliases on exact
+binder sequence, work up the further high-ranking molecules that had been left out, and
+measure how far the lists overlap before any counts are added together. They also asked
+that three failure modes be kept strictly apart -- ineligibility, assessment that was
+never adequate, and rejections resting on the pH gate alone -- and that the last of those
+be returned to consideration, with one documented assessment applied uniformly across
+that reopened pool and across the designs currently submitted.
 
 Section 10 held two lists and never reconciled them:
 

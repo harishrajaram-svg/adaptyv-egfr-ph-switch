@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build case 12: a TRUE matched chain-order swap of case 01.
 
-PK, 2026-10-05: "Case 06 is a different complex in opposite chain order, not a
-matched swap." Correct. Case 06 shows the pipeline handles a binder-first file,
+On 2026-10-05 the reviewer pointed out that case 06 is an altogether different complex which
+merely happens to list its chains the other way round -- it is not one complex and its PAE
+re-ordered against itself. Correct. Case 06 shows the pipeline handles a binder-first file,
 but it has no target-first counterpart, so it cannot show that ipSAE_min is
 INVARIANT to chain order -- which is the property the submission depends on,
 since 29 of 69 run directories place the target in chain A and 40 do not.

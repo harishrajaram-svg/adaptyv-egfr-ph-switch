@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Relaxed free leg: the third rung of PK's free-state ladder.
+"""Relaxed free leg: the third rung of the reviewer's free-state ladder.
 
-Reviewer, 2026-10-05:
-  "A separately predicted apo structure is another approximation, not automatically the
-   correct answer. [...] compare the deletion estimate with consistently prepared
-   apo/relaxed alternatives [...] Use this as a sensitivity analysis, not a measured
-   confidence interval."
+The reviewer's position, 2026-10-05, in our own words: predicting the unbound chain on
+its own yields one more approximation and carries no guarantee of being the right one.
+Their instruction was to line the deletion number up against apo and relaxed numbers
+built under a matched preparation, and to read the resulting spread as SENSITIVITY --
+never as a measured confidence interval.
 
 Three ways to estimate the FREE-state pKa, with the BOUND leg held identical in all three:
 
@@ -24,7 +24,7 @@ sensitivity analysis over that one axis, not a confidence interval.
 
 Unlike the apo arm, the relaxed arm also covers the TARGET leg for three designs
 (31 poses), so the target-side free pKa can be moved too -- the bounded target-leg
-comparison PK asked for.
+comparison the reviewer asked for.
 
     ph_relaxed_freeleg.py [--out analysis/01-egfr/ph_relaxed_freeleg.json]
 """

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Does Chai-1 form an interface where ESMFold2 did not? The independent check.
 
-Reviewer, 2026-10-05: "If feasible, run a bounded independent structure-prediction check
-on the failed positives and a diverse finalist subset; ESMFold2-Fast alone is not an
-independent validation."
+The reviewer, on 2026-10-05, asked for a size-limited cross-check with a second
+structure predictor -- over the positives that failed plus a spread of the finalists --
+where resources allow, and was explicit that ESMFold2-Fast on its own does not amount to
+validation from an independent source.
 
 WHAT CAN AND CANNOT BE COMPARED. Chai-1 emits no residue-level PAE -- its score file
 carries aggregate_score, ptm, iptm, per_chain_pair_iptm and clash flags only -- so

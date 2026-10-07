@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Pose check for the G532 ladder -- run BEFORE any pKa calculation.
 
-PK, 2026-10-03: "A failure to recover this control could arise from the predicted pose or
-the protonation model. Assess those separately before using the pH gate to discard
-candidates." This script is the pose half. If the predicted complex does not put the
+The reviewer, on 2026-10-03, named two possible culprits for a miss on this control --
+the pose that was predicted, and the model of protonation -- and required each be weighed
+on its own before the pH gate is allowed to throw any candidate out. This script is the
+pose half. If the predicted complex does not put the
 antibody carboxylates near the target histidines, a pH-gate miss says nothing about PROPKA.
 
 The published mechanism (Liu et al., Mol Ther Oncolytics 2022, PMID 36458200) is a

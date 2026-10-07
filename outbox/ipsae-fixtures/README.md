@@ -1,11 +1,12 @@
 # ipSAE_min — fixture package for independent review
 
-Built 2026-10-04, in answer to: *"please send the actual code and fixtures. I have not reviewed
-`bin/ipsae_min.py` or reproduced 0.8887. Include the exact PAE/structure inputs, versions,
-cutoffs and expected directional values. The reference implementation distinguishes asymmetric
-scores from its maximum summary; your minimum must be tested explicitly. Reproducing
-barnase/barstar alone would not cover asymmetric chains, chain-order changes, empty interfaces
-or indexing errors."*
+Built 2026-10-04, in answer to your request for the code and the fixtures themselves. You had
+neither audited `bin/ipsae_min.py` nor regenerated 0.8887 at your end, and you wanted the
+precise PAE and structure inputs, the versions, the cutoffs, and the directional values we
+expect. You also flagged that the reference implementation keeps its asymmetric scores
+separate from its maximum summary, so our minimum needs a test of its own — and that
+barnase/barstar by itself would leave chain-order changes, asymmetric chains, empty
+interfaces and indexing errors untested.
 
 **Nothing in this bundle has been independently reviewed.** The scorer, the expected values and
 this README are all ours. The 0.8887 figure reproduces here (case 01) but reproducing our own
@@ -99,7 +100,7 @@ spread 0.0099, which is the seed-level evidence for keeping the median as the pr
 
 ## The VHH zeros, traced end to end
 
-You asked that a failed run must not silently become a valid score of zero. It does not.
+You insisted that a run which errors out must never pass itself off as a legitimate zero. It does not.
 Traced through parse → PAE → reference output → interface mask → aggregation:
 
 ```
@@ -146,8 +147,9 @@ on uses them.
 
 ## Your named checks, and where each one is
 
-You asked for: *"an asymmetric complex, chain-order swaps, full-ECD versus cropped inputs, and
-empty-interface cases"*, plus the barnase/barstar regression, plus a trace of the VHH zeros.
+You asked to see chain-order swaps, an asymmetric complex, the full ECD input set judged against
+the cropped one, and interfaces that come out empty — plus the barnase/barstar regression, plus a
+trace of the VHH zeros.
 
 | your check | case | what it shows |
 |---|---|---|

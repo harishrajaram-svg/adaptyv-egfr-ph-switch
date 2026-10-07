@@ -4,7 +4,7 @@
 # conserved + exposed + glycan-clear (2026-10-02) leaves domain III with no usable acidic
 # surface, while domain II yields E319/E320/D321 -- three CONTIGUOUS acidic residues,
 # conserved human<->mouse, exposed, nearest modelled glycan 22-28 A. That is the "suitable
-# local acidic surface" PK made Mechanism A conditional on.
+# local acidic surface" the reviewer made Mechanism A conditional on.
 #
 # Why the WHOLE ECD and not a domain II trim: the cluster sits in a groove whose 25 A
 # neighbourhood draws residues from mature 253-338, 554-579 and 587-607 -- it is a

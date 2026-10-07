@@ -9,7 +9,7 @@ Scores each case with the PINNED Dunbrack reference (../../ipsae/ipsae.py, commi
 separately before taking the minimum, so the min-over-DIRECTIONS step is visible and
 auditable rather than buried.
 
-NOTE ON A DISTINCTION PK RAISED: the reference's own `max` row is a maximum across chain
+NOTE ON A DISTINCTION THE REVIEWER RAISED: the reference's own `max` row is a maximum across chain
 DIRECTIONS of one interface. That is a different question from our max-versus-median across
 SEEDS. This script only concerns the former. Seed aggregation happens in
 bin/instrument_v2.py and is reported separately.
@@ -30,7 +30,7 @@ if not IPSAE.exists():
     sys.exit(f"reference implementation not found at {IPSAE}")
 # A CLONE HAS NO .venv -- see the same fix in bin/gate_sweep.py. Hardcoding it meant the
 # fixture bundle, whose entire purpose is to let a reviewer reproduce the scorer, could not
-# run in a fresh checkout. PK reported exactly this class of problem for the vendored
+# run in a fresh checkout. The reviewer reported exactly this class of problem for the vendored
 # reference (a 404); this was the same failure one level up.
 import sys as _sys
 _PV = REPO / ".venv" / "bin" / "python"
@@ -42,13 +42,14 @@ PAE_CUT, DIST_CUT = 10, 10
 # ---------------------------------------------------------------------------
 # THE PRODUCTION PARSERS, loaded from bin/ and exercised on every case.
 #
-# PK, 2026-10-05: "The runner invokes the reference and does its own parsing --
-# it does NOT exercise bin/ipsae_min.py." That was correct, and it was the whole
+# The reviewer observed on 2026-10-05 that this runner shells out to the reference and
+# then parses the result itself, so bin/ipsae_min.py never actually runs. That was correct,
+# and it was the whole
 # weakness of this bundle: it proved the REFERENCE reproduces, not that OUR code
 # reads it correctly. Three separate copies of the parse logic existed (bin/
 # ipsae_min.py for live scoring, bin/instrument_v2.py for seed aggregation, and
 # bin/master_rank.py for the canonical file the submission is built from), and
-# the two faults PK found lived in the copies, not in this runner's.
+# the two faults the reviewer found lived in the copies, not in this runner's.
 #
 # Every case is now scored FOUR ways -- the reference, plus all three production
 # parsers -- and --check requires all four to agree. A divergence between the
@@ -201,8 +202,9 @@ def main():
             # until the binder:target pair is named, and the correct behaviour is to refuse.
             # The earlier version of this loop assumed every case yields a number and crashed
             # with KeyError on the refusal case -- i.e. the check could not express "the right
-            # answer here is an error", which is the one behaviour PK asked us to demonstrate
-            # ("a failed run must not silently become a valid score of zero").
+            # answer here is an error", which is the one behaviour the reviewer asked us to
+            # demonstrate: a run that errors out must never quietly turn into a legitimate
+            # zero.
             if "error" in v:
                 ok = "error" in got and got["error"] == v["error"]
                 print(f"{'OK  ' if ok else 'FAIL'} {k}: expected REFUSAL -> "
@@ -213,8 +215,9 @@ def main():
                 print(f"{'OK  ' if ok else 'FAIL'} {k}: expected {v['ipsae_min']:.6f} got {g}")
                 # BOTH DIRECTIONAL VALUES, not just the minimum.
                 #
-                # Reviewer, 2026-10-05: "Its check compares the final minimum, not both
-                # directional values." Correct -- the directions were printed and never
+                # On 2026-10-05 the reviewer pointed out that this comparison looked only at
+                # the resulting minimum and left each direction's own value unasserted.
+                # Correct -- the directions were printed and never
                 # asserted. Two different (A->B, B->A) pairs can share a minimum, so a
                 # check on the min alone passes while the asymmetry underneath it has
                 # changed. That asymmetry is the whole quantity this bundle exists to

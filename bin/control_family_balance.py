@@ -33,12 +33,14 @@ NO_KD = 'exp_neg_no_kd'
 
 # FAMILY MAP: SEQUENCE-BASED, FROZEN BEFORE SCORES WERE READ.
 #
-# Reviewer, 2026-10-05: "First freeze a sequence/backbone-based family map without looking
-# at scores. A SHARED SUBMITTING GROUP IS A CLUE, NOT A FAMILY DEFINITION."
+# On 2026-10-05 the reviewer directed that the family map be derived from sequence and
+# backbone similarity and settled before anyone looked at a score, and warned that designs
+# arriving from the same submitter are at most a hint toward a family, never a definition
+# of one.
 #
 # The first version of this script used the submitter-group prefix (gitter-yolo /
-# deepsatflow), which is exactly what he ruled out. Rebuilt by clustering the binder
-# sequences themselves.
+# deepsatflow), which is exactly what the reviewer ruled out. Rebuilt by clustering the
+# binder sequences themselves.
 #
 # Plain sequence identity does not work here: the deepsatflow design is 48 aa and the
 # gitter-yolo designs are 150-200 aa, so a short-vs-long alignment reports 54-65%

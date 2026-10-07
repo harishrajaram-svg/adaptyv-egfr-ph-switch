@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """pH sensitivity analysis: all-titratable-site product vs the histidine-only product.
 
-PK, 2026-10-05, on the gate behind the shipped ranking:
-  "it does NOT compose every titratable site: it parses HIS/ASP/GLU but adds only
-   HISTIDINES to `sites`; the acids never enter the product. Please call this a
-   two-partner histidine-only approximation until that is corrected, with explicit
-   reporting of unassessed sites. This matters particularly when the design
-   intervention introduces Asp or Glu."
-and, on how to present the result:
-  "Compare the deletion estimate with consistently prepared alternatives and
-   plausible pKa perturbations as a SENSITIVITY ANALYSIS, not a CI. If rankings
-   change materially use provisional tiers. Do not revert to target-only; do not
-   present the new order as established."
+The reviewer, 2026-10-05, on the gate behind the shipped ranking: the composition is
+incomplete. HIS, ASP and GLU are all parsed, yet only the histidines are ever pushed
+into `sites`, so no acid ever reaches the multiplied product. Until that is fixed, they
+directed us to label the number for what it is -- a two-partner, HISTIDINE-ONLY
+approximation -- and to state outright which sites went unassessed. They noted the gap
+bites hardest where the designed change is itself the addition of an Asp or a Glu.
+
+On presentation, they were equally specific: hold the deletion estimate up against
+matched-preparation alternatives and against pKa values nudged within their plausible
+error, treat the comparison as SENSITIVITY rather than a CI, and fall back to
+provisional tiers if the ordering moves by much. Two things were ruled out: going back
+to a target-only gate, and ANNOUNCING THE REVISED ORDER AS SETTLED.
 
 This script re-scores every submitted design on BOTH bases from the same poses and
 the same code path, so the difference is attributable to the acids alone and to

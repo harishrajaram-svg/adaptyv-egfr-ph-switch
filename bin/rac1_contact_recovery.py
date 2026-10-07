@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """rAC1 vs the 4UIP crystal interface, by STRUCTURAL CONTACT RECOVERY.
 
-Reviewer, 2026-10-05: "Compare predictions with the 4UIP interface using structural
-contact recovery. Do not attach predicted PAE to crystallographic coordinates."
+On 2026-10-05 the reviewer framed the comparison against the 4UIP interface as a question
+of how many structural contacts come back, and ruled out pinning a predicted PAE onto
+coordinates that came out of crystallography.
 
 The second half is the important half. A PAE matrix is a property of a PREDICTION -- it
 describes the predictor's uncertainty about its own output. Scoring crystallographic

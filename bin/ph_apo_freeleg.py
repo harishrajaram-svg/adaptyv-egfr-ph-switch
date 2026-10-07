@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
-"""Apo free leg vs partner-deletion free leg: the other half of PK's sensitivity ask.
+"""Apo free leg vs partner-deletion free leg: the other half of the reviewer's sensitivity ask.
 
-Reviewer, 2026-10-05:
-  "Deleting the partner already removes its atoms from the burial calculation, so an
-   interface histidine can become exposed without moving the binder. THE LIMITATION IS THE
-   RETAINED BOUND CONFORMATION: side-chain relaxation, water penetration, conformational
-   populations and protonation coupling in the actual free protein are not represented.
-   This limitation applies to both partners. A SEPARATELY PREDICTED APO STRUCTURE IS
-   ANOTHER APPROXIMATION, NOT AUTOMATICALLY THE CORRECT ANSWER. [...] compare the deletion
-   estimate with consistently prepared apo/relaxed alternatives [...] Use this as a
-   sensitivity analysis, not a measured confidence interval."
+What the reviewer told us on 2026-10-05, in substance:
+
+  - Taking the partner out of the file is by itself enough to drop its atoms from the
+    burial sum, which is why a histidine in the interface can read as solvent-exposed
+    even when the binder has not shifted at all.
+  - WHAT THE METHOD CANNOT ESCAPE IS THAT IT KEEPS THE BOUND GEOMETRY. Everything the
+    genuinely unbound chain does -- side chains settling into new rotamers, water
+    working its way in, the redistribution of conformational populations, protonation
+    states coupling to one another -- is simply absent from the model. That shortfall is
+    symmetric: it hits the target leg and the binder leg alike.
+  - FOLDING THE CHAIN BY ITSELF AND CALLING THAT THE APO TRUTH DOES NOT REPAIR THIS. It
+    is a second approximation, with no guarantee that it is the right one.
+  - The prescribed handling: set the deletion number beside apo and relaxed numbers
+    produced under the same preparation, and read the spread as SENSITIVITY -- never as
+    a measured confidence interval.
 
 So this is a COMPARISON OF TWO APPROXIMATIONS, not a correction of one by the other.
 

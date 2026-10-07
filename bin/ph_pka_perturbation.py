@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """pKa-perturbation sensitivity: does the submission's order survive PROPKA's own error?
 
-Reviewer, 2026-10-05, on the reordered submission:
-  "For the candidates whose selection changes, compare the deletion estimate with
-   consistently prepared apo/relaxed alternatives AND PLAUSIBLE pKa PERTURBATIONS,
-   retaining the individual results. Use this as a SENSITIVITY ANALYSIS, NOT a measured
-   confidence interval. If rankings change materially, use provisional tiers."
+The reviewer's direction on the reordered submission, 2026-10-05, restated: wherever a
+candidate's selection flips, the deletion estimate has to be checked both against
+alternatives prepared the same way (apo, relaxed) AND AGAINST pKa VALUES PUSHED AROUND
+WITHIN THEIR PLAUSIBLE ERROR, with the per-candidate results kept rather than collapsed.
+The output is a SENSITIVITY ANALYSIS and must not be dressed up as a measured confidence
+interval; a ranking that shifts appreciably gets provisional tiers.
 
 The three-basis comparison in METHODS 11.7 answered a different question -- how much the
 COMPOSITION RULE moves the answer. This one asks how much PROPKA'S OWN UNCERTAINTY moves
-it, which is what he asked for. The apo/relaxed half of his request needs new folding and
-is recorded as unresolved.
+it, which is the half of the ask addressed here. The apo/relaxed half needs new folding
+and is recorded as unresolved.
 
 METHOD. Every site's pKa_free and pKa_bound is already stored per pose in
 ph_sensitivity.json. Each draw perturbs BOTH by independent Gaussian noise, recomputes

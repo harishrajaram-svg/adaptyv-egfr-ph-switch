@@ -34,7 +34,7 @@ Thermodynamic linkage for one titratable site:
 
 Independent sites multiply. The one-proton bound over this pH pair is 10^0.9 = 7.943x; for
 a site with pKa_free = 6.22 the attainable range is 0.699x to 5.554x (both figures
-independently confirmed by PK, 2026-10-03).
+independently confirmed by the reviewer, 2026-10-03).
 
 THE FREE LEG, ON BOTH SIDES, BY DELETION IN PLACE
 -------------------------------------------------
@@ -172,11 +172,12 @@ def score_pose(cif):
 
         # COMPOSE OVER EVERY TITRATABLE SITE ON BOTH PARTNERS -- HIS, ASP and GLU.
         #
-        # PK, 2026-10-05: "it does NOT compose every titratable site: it parses HIS/ASP/GLU
-        # but adds only HISTIDINES to `sites`; the acids never enter the product [...] This
-        # matters particularly when the design intervention introduces Asp or Glu."
+        # The reviewer, 2026-10-05, named the defect: the old code read pKa values for HIS,
+        # ASP and GLU alike, but only histidines were ever appended to `sites`, which left
+        # every acid out of the multiplied product. They flagged that this is most damaging
+        # precisely where a design's intervention is the introduction of an Asp or a Glu.
         #
-        # He was right, and it was the worst possible place for that gap: the designed
+        # They were right, and it was the worst possible place for that gap: the designed
         # intervention in this submission IS an acid introduction in most families (A22D,
         # S88D, S15D, L133E, T65D, S60D). propka already returned the acid pKa values in
         # both legs and this function discarded them, so the gate was blind to the very

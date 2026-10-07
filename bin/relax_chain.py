@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Side-chain relaxation of a single chain extracted from a bound complex.
 
-This is the "relaxed" leg of the reviewer's sensitivity request:
-  "the limitation is the retained bound conformation: SIDE-CHAIN RELAXATION, water
-   penetration, conformational populations and protonation coupling in the actual free
-   protein are not represented."
+This is the "relaxed" leg of the sensitivity analysis the reviewer asked for. What they
+identified as the binding constraint is that the bound conformation is held on to: nothing
+in such an estimate stands in for SIDE CHAINS SETTLING, for water working its way in, for
+which conformers are populated, or for how protonation couples to any of that once the
+protein is genuinely without its partner.
 
 It sits between the two legs already computed, and that is the point of it:
 

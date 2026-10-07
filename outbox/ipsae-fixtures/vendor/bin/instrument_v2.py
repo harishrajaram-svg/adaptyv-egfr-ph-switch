@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """Instrument v2: ipSAE_min summarised by the MEDIAN of five seeds, not the max.
 
-WHY (2026-10-03, on PK's review). v1 aggregated per-design seed scores with max-over-five.
-PK: "a max can preserve false positives as readily as true positives", and the two ESMFold2
-arms are not an independent ensemble. His proposed default is one primary score -- a verified
+WHY (2026-10-03, on review). v1 aggregated per-design seed scores with max-over-five.
+The reviewer observed that taking a maximum carries a spurious hit forward just as
+willingly as a genuine one, and the two ESMFold2 arms are not an independent ensemble.
+Their proposed default is one primary score -- a verified
 ipSAE_min on ESMFold2-Full, summarised by the MEDIAN of five seeds -- with max-over-five kept
 as a secondary analysis and the other metrics as diagnostics until they show incremental value.
 
 This does NOT silently replace v1. It recomputes both from the same per-seed files so every
-candidate is rescored consistently, which is the condition PK set for a correction not to
-invalidate December: "A correction does not invalidate December's analysis if every candidate
-can be rescored consistently before outcomes are examined; silent selective changes would."
+candidate is rescored consistently, which is the condition the reviewer set for a
+correction not to invalidate December: a fix leaves December's analysis standing provided
+every candidate goes back through the same rescoring while the outcomes are still unseen;
+what would wreck it is quietly rescoring some and not others.
 
 The per-design score comes from the *_ipsae.json files written per seed, grouped by stripping
 the trailing _seed<N>_sample_<N>, exactly as bin/ipsae_min.py does.

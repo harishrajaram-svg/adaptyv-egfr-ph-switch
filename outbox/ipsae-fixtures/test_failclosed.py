@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the two fail-OPEN faults PK found on 2026-10-05.
+"""Regression tests for the two fail-OPEN faults the reviewer found on 2026-10-05.
 
     python3 test_failclosed.py        # exits non-zero if either fault returns
 
@@ -73,7 +73,7 @@ with tempfile.TemporaryDirectory() as td:
     check("master_rank refuses a 3-pair file", CANON.ipsae_min(three) is None,
           f"returned {CANON.ipsae_min(three)!r} (min across INTERFACES, not directions)")
 
-# ---- FAULT 1: a failed run must not return the previous run's number -----
+# ---- FAULT 1: a crashed run must not return the previous run's number -----
 src = HERE / "cases" / "01_barnase_barstar_positive_regression"
 with tempfile.TemporaryDirectory() as td:
     d = Path(td) / "case"; shutil.copytree(src, d)
