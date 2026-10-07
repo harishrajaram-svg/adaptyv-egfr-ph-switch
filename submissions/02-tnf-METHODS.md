@@ -776,6 +776,42 @@ run, not to reason about it.
 - The `ipSAE_min` pre-registration is a commit timestamped **2026-10-06 16:24:41**, preceding the
   scoring run, so the ordering of registration and measurement is checkable rather than asserted.
 
+### Which code produced which number
+
+Every number in §6 was produced by a different build of the same wrapper, because the wrapper was
+being fixed on the same day the conditions were run. That makes provenance a claim this document
+has to support rather than assume, so it was checked mechanically rather than from memory.
+
+**The last change with any effect on a result landed before the first reported run.** Four
+behavioural fixes — the protomer-selecting geometry check, the top-2 histidine reduction, the
+cation-atom guard moved out of the jitted loss, and the timeout safety factor — were all committed
+by 20:15. The earliest run contributing a reported number started about three hours later. Four
+earlier runs exist and **none of them supplies a figure in this document**; they were smoke and
+configuration tests, and they are excluded for that reason rather than by argument.
+
+**One commit does fall inside the reporting window**, between the baseline condition and the three
+that followed it. Since that boundary separates condition 1 from conditions 2–4, and the +31%
+figure in §6.2 is a comparison across it, it was checked rather than assumed. It changed one
+function, in one statement: the call forwarding six newly CLI-settable weights. Each new default
+was then compared against the weights the baseline run actually recorded — all six identical. The
+forwarded values are the values that were already in use, so the comparison spans no behavioural
+change.
+
+**The free-footprint fixes do not reach any reported number either.** They were made after every
+figure above was recorded, and the method used to establish that is worth stating because reading
+the diff is not sufficient: the pre-fix and post-fix sources were reconstructed from their
+committed patches and compared function by function at the level of parsed syntax, not text. Of 18
+functions, 17 are identical — including every scoring, geometry and gating function. The one that
+differs reduces to **ten minimal differing syntax nodes**: two display strings, two error-message
+strings on a path that never executed, one guard whose outcome is unchanged for the inputs used,
+and the parsing statements, which were then tested for equivalence across every epitope string any
+run has passed. None lies inside the loss, the optimiser call, the metric computation or the
+output writer.
+
+**This is a weaker claim than it looks, and the limit is worth naming.** It establishes that the
+code paths differ only in display, not that the runs are numerically reproducible — they are not,
+for the reasons below. A trajectory re-run today would not return the same sequence.
+
 ### What is not reproducible
 
 - **Pose caches** under `runs/` are gitignored and run to tens of gigabytes; available on request.
