@@ -55,8 +55,21 @@ def soft(path):
 
 
 def blocks(vals, size):
-    return [statistics.mean(v) for i in range(0, len(vals), size)
-            if (v := [x for x in vals[i:i + size] if x is not None])]
+    """(mean, count) per block. The count matters: a trailing partial block on a
+    live run can hold 2 steps, and a 2-step mean printed like a 25-step mean is
+    noise rendered as signal. One such block read 0.220 mid-run, higher than any
+    full block in any of the 12 pinned trajectories, from two steps."""
+    out = []
+    for i in range(0, len(vals), size):
+        v = [x for x in vals[i:i + size] if x is not None]
+        if v:
+            out.append((statistics.mean(v), len(v)))
+    return out
+
+
+def fmt_blocks(bs, size):
+    """Full blocks plain; a partial block carries its step count and a marker."""
+    return " ".join(f"{m:.3f}" if n == size else f"[{m:.3f}/{n}st]" for m, n in bs)
 
 
 def slope(y):
@@ -73,9 +86,12 @@ def slope(y):
 
 
 def selftest():
-    assert blocks([1.0, 3.0, 2.0, 4.0], 2) == [2.0, 3.0]
+    assert blocks([1.0, 3.0, 2.0, 4.0], 2) == [(2.0, 2), (3.0, 2)]
     assert blocks([], 2) == []
-    assert blocks([1.0, None, 3.0], 3) == [2.0]          # None skipped, not zeroed
+    assert blocks([1.0, None, 3.0], 3) == [(2.0, 2)]     # None skipped, not zeroed
+    # a trailing partial block must be MARKED, never printed like a full one
+    assert fmt_blocks(blocks([1.0] * 27, 25), 25) == "1.000 [1.000/2st]"
+    assert fmt_blocks(blocks([1.0] * 25, 25), 25) == "1.000"
     assert slope([1.0] * 5) == (None, None)              # too short to fit
     b, se = slope([float(i) for i in range(20)])
     assert abs(b - 1.0) < 1e-9 and se < 1e-9, (b, se)    # a clean ramp recovers slope 1
@@ -111,6 +127,7 @@ def main():
         print(f"  {'max':>9} {max(pin):>10.4f} {max(fre):>9.4f}")
 
     print("\nTRAJECTORY SHAPE  <-- THE READING THAT DECIDES  (25-step block means)")
+    print("  [x/Nst] = a PARTIAL block of N steps, not a 25-step mean. Ignore it on a live run.")
     slopes = []
     for k in sorted(FREE):
         y = soft(LOGS[FREE[k]])
@@ -122,7 +139,7 @@ def main():
             slopes.append((b, se))
             rise, mde = b * len(y), 2 * se * len(y)
             verdict = "CLIMBS" if rise > mde else ("falls" if -rise > mde else "flat")
-            print(f"  {FREE[k]:<10} n={len(y):>3}  " + " ".join(f"{v:.3f}" for v in bs)
+            print(f"  {FREE[k]:<10} n={len(y):>3}  " + fmt_blocks(bs, 25)
                   + f"   rise {rise:+.3f} +/- {mde:.3f}  {verdict}")
         else:
             print(f"  {FREE[k]:<10} n={len(y):>3}  too short to fit")
