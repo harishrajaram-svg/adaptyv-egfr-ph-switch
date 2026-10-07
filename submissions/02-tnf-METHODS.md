@@ -575,7 +575,15 @@ better than a wide one; it is a sign of a single attractor that is not the one w
 **Cause 1 is eliminated.** The footprint restriction does not explain the flat interface term,
 because removing it does not change the term. Causes 2 and 3 of §6.3 — sampling noise in the
 structure predictor swamping the gradient, and interaction among the eleven weighted terms —
-survive, and neither is testable within the remaining time at this budget.
+survive. **Correction, 2026-10-07: cause 2 is testable, and the claim that it was not was wrong.**
+Mosaic's own API at the pinned commit exposes `build_multisample_loss(..., num_samples=4)`, which
+re-runs the structure and confidence modules several times from a single trunk output and averages
+— four samples halve the gradient-noise SD for well under 4× the cost. Momentum, the other half of
+the same question, is two hardcoded literals in our wrapper (0.9 soft, 0.5 sharp). **Every one of the
+sixteen trajectories drew one sample per gradient evaluation and integrated it under momentum 0.9,
+on a per-step interface SD of 0.0345 against a signal of ~0.13**, which is a mechanism for a flat
+trajectory on its own. That configuration was never varied, and calling it untestable was a failure
+to read the dependency's API rather than a fact about the budget. Cause 3 remains untestable here.
 
 **A prediction that failed, recorded because it was made in writing first.** The five-step smoke
 run that validated this code path returned an interface confidence of **0.2932, the highest figure
@@ -1248,12 +1256,16 @@ those are marked.
     block of steps to the last (§6.3). The generation method as configured is not optimising the
     quantity it is written to optimise, and **no result in this document should be read as
     evidence that gradient descent on this loss produces interfaces.**
-34. **The cause of that flatness is unidentified, and the only testable candidate was
-    eliminated.** Three were proposed. The pinned epitope admitting no gradient path was tested
-    directly and **ruled out**: removing the restriction on both legs changed nothing (§6.4).
-    Sampling noise in the structure predictor swamping the gradient, and interaction among the
-    eleven weighted terms, both survive and **neither is testable within the remaining time at
-    this budget.** The method therefore fails for a reason this work cannot name.
+34. **The cause of that flatness is unidentified, and only one of three candidates was
+    actually tested.** The pinned epitope admitting no gradient path was tested directly and
+    **ruled out**: removing the restriction on both legs changed nothing (§6.4). Sampling noise
+    swamping the gradient and interaction among the eleven weighted terms both survive. *An earlier
+    version of this limitation called both untestable within the remaining time; for sampling noise
+    that was wrong* — the dependency exposes four-sample gradient averaging directly and momentum is
+    a literal in our own wrapper, so **the configuration that every one of the sixteen trajectories
+    shared (one sample per gradient, momentum 0.9) was never varied, and could have been.** The
+    method fails for a reason this work cannot name, and one of the three candidate reasons was left
+    untested by an unchecked assumption rather than by the budget.
 35. **The step budget is therefore unjustified by measurement.** 50 steps and 200 steps give
     indistinguishable results, so whichever is used for the submitted designs is chosen on cost,
     not on evidence that it is sufficient.
