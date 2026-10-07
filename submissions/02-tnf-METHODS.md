@@ -309,14 +309,14 @@ a median iptm_repred of 0.20 or above.**
 
 | | baseline (pH weight 2.0) | probe (pH weight 0.5) |
 |---|---|---|
-| median iptm_repred | 0.153 | **0.183** |
+| median iptm_repred | 0.136 | **0.179** |
 | max iptm_repred | 0.156 | **0.200** |
 
-**Against the prespecified criterion, this is a miss: the median is 0.183 against a bar of 0.20.**
+**Against the prespecified criterion, this is a miss: the median is 0.179 against a bar of 0.20.**
 Reported as registered — median, not maximum.
 
 **The ratio is nonetheless a measured lever.** A single-variable change moved the median by
-**+20%**, and the quantity it moved is the one that has to move first.
+**+31%**, and the quantity it moved is the one that has to move first.
 
 **A second observation, not prespecified and therefore reported separately.** One trajectory placed
 its histidine **2.62 Å from the anchor nitrogen** — inside the 4.0 Å criterion. Across the
@@ -333,8 +333,8 @@ limited by its own weight but by the binder never entering the ~20 Å range in w
 any gradient. Allowing the binder to arrive does more for the conditional objective than weighting
 the conditional objective more heavily.
 
-**Scope, stated narrowly.** n = 4 per condition. The median difference (0.153 → 0.183) rests on
-four pairs and is not a significance claim. The 2.62 Å placement is a single observation. Neither
+**Scope, stated narrowly.** n = 4 per condition. The median difference (0.136 → 0.179) rests on
+four trajectories per condition and is not a significance claim. The 2.62 Å placement is a single observation. Neither
 result establishes that this configuration can produce a bound complex: **the best interface
 confidence obtained anywhere in this work is 0.200 against a 0.45 threshold**, and no design has
 yet reached a value at which this work would report a geometry verdict at all.
@@ -342,10 +342,127 @@ yet reached a value at which this work would report a geometry verdict at all.
 **Next test, launched before these results were written up.** Binding weights raised directly —
 `w_iptm` and `w_contact` from 1.0 to 3.0, pH weight held at 0.5 — which was not expressible from
 the command line until the interface gap described in §6.1 was closed. Same step count, same four
-trajectories, same criterion.
+trajectories, same criterion. Its result, and the step-budget test that followed it, are §6.3.
 
 *Results from the production method do not yet exist. Nothing in this section is a claim about
 submitted designs.*
+
+### 6.3 Two more conditions, and the measurement that ended the search
+
+Two further single-variable tests followed §6.2, both prespecified, both against the same bar of a
+**median iptm_repred of 0.20**.
+
+**Condition 3 — binding weights tripled.** `w_iptm` and `w_contact` raised from 1.0 to 3.0, pH
+weight held at 0.5, step count unchanged. If the interface was under-weighted, this is the direct
+intervention.
+
+**Condition 4 — step budget quadrupled.** 50 steps to 200 (150 soft + 50 sharp), weights identical
+to §6.2's probe, **same two lengths and same two seeds**, so every one of the four trajectories is
+a matched pair with a §6.2 trajectory and the step count is the only difference.
+
+| condition | pH weight | binding weights | steps | median | max | closest His |
+|---|---|---|---|---|---|---|
+| 1 — baseline | 2.0 | 1.0 | 50 | 0.136 | 0.156 | 18.0 Å |
+| 2 — pH weight down | 0.5 | 1.0 | 50 | **0.179** | **0.200** | **2.62 Å** |
+| 3 — binding weights up | 0.5 | 3.0 | 50 | 0.156 | 0.197 | 9.69 Å |
+| 4 — step budget up | 0.5 | 1.0 | **200** | 0.163 | 0.189 | 10.4 Å |
+
+**All four miss the bar. Condition 2 remains the best, and it was the second thing tried.**
+
+#### The matched pairs
+
+Condition 4 is the only paired comparison in this work, so it is reported pair by pair:
+
+| length / seed | 50 steps | 200 steps | difference |
+|---|---|---|---|
+| 76 / 0 | 0.175 | 0.161 | −0.015 |
+| 76 / 1 | 0.115 | 0.189 | +0.074 |
+| 84 / 0 | 0.183 | 0.165 | −0.018 |
+| 84 / 1 | 0.200 | 0.150 | −0.050 |
+| **mean** | **0.168** | **0.166** | **−0.002** |
+
+**Four times the compute changed the mean by −0.002.** Three of the four pairs got worse. The one
+that improved was the weakest trajectory of the 50-step set, which is what regression to the mean
+looks like and is not evidence of a step effect. Against this, the spread produced by seed and
+length alone across the eight runs is **0.115 to 0.200** — a range of 0.085, roughly **forty times**
+the size of the step effect.
+
+#### The trajectories, which are the actual result
+
+The step-budget test was designed to read a curve shape, not only an endpoint. The prespecified
+reading was: if the design-time interface score plateaus by step 60–80, more steps are useless; if
+it is still climbing at step 200, more steps are the answer. **Neither was observed.** Averaged in
+25-step blocks — necessary because each step re-predicts with a stochastic structure-prediction
+pass, so single-step values bounce by more than the whole optimisation moves:
+
+| run | 0–24 | 25–49 | 50–74 | 75–99 | 100–124 | 125–149 |
+|---|---|---|---|---|---|---|
+| 76 / 0 | 0.132 | 0.126 | 0.133 | 0.130 | 0.132 | 0.126 |
+| 76 / 1 | 0.112 | 0.133 | 0.162 | 0.126 | 0.127 | 0.132 |
+| 84 / 0 | 0.137 | 0.120 | 0.134 | 0.139 | 0.144 | 0.131 |
+| 84 / 1 | 0.133 | 0.129 | 0.122 | 0.123 | 0.124 | 0.142 |
+| **mean** | **0.129** | **0.127** | **0.138** | **0.130** | **0.132** | **0.133** |
+
+**The interface term does not climb.** It does not plateau after rising; there is no rise. Across
+150 gradient steps the four-run mean moves from 0.129 to 0.133, which is smaller than the
+step-to-step noise and smaller than the movement between any two adjacent blocks.
+
+**The same measurement was then run on the eight 50-step trajectories from conditions 1–3**, where
+it had not been looked at before. All eight are flat on the same reading, spanning 0.115 to 0.152
+with no trend in any of them. So the finding is not specific to the long runs:
+
+> **In twelve gradient-descent trajectories across three weight conditions and two step budgets,
+> the interface objective never improved.**
+
+**This is reported as the central negative result of the generation method**, because it changes
+what kind of problem this is. A median that misses a bar invites more tuning. A flat trajectory
+says the tuning surface is the wrong place to look: the optimiser is descending — total loss moves,
+the composition and histidine-content constraints are satisfied and held — but it is not descending
+on the interface. Searching weight space and step space more finely cannot fix a term that is not
+responding to either.
+
+#### What it does not establish
+
+**It does not identify the cause**, and three candidates remain open:
+
+1. **The pinned epitope.** The binder's footprint is restricted to nine specified positions. If no
+   gradient path exists from the initial pose to a bound pose inside that restriction, the term
+   would be flat for a reason that has nothing to do with weights or steps. This is testable by
+   removing the restriction, and the free-footprint family (§10) does exactly that — a design
+   choice made for an independent reason that now also serves as this test.
+2. **Gradient quality through the structure predictor.** The per-step interface value swings between
+   0.11 and 0.25 under a fixed sequence-space neighbourhood. If the gradient is dominated by that
+   sampling noise, no step count recovers signal.
+3. **Competing terms.** Eleven weighted terms share one scalar. Condition 3 is evidence *against*
+   the simplest version of this — tripling the interface weights made the median worse, not better,
+   and pushed histidine content through its 8% cap — but it does not rule out a subtler interaction.
+
+**It also does not establish that the designs are bad**, only that this loss was not optimising
+the quantity the loss intended. The distinction matters for §8: every reported number comes from an
+independent re-prediction, not from inside a trajectory.
+
+**Cost of the four conditions: approximately $26 of compute, against a production wave budgeted at
+$49.** The negative result was bought at roughly half the price of the thing it was protecting.
+
+*Results from the production method do not yet exist. Nothing in this section is a claim about
+submitted designs.*
+
+#### Reproducing the trajectory reading
+
+The twelve run logs are committed at `analysis/02-tnf/traj/`, the endpoint table at
+`analysis/02-tnf/deep_vs_probe.tsv`, and the block-averaging tool at
+`analysis/02-tnf/loss_traj.py`, which carries a self-test:
+
+```
+analysis/02-tnf/loss_traj.py --selftest
+analysis/02-tnf/loss_traj.py analysis/02-tnf/traj/deep_*.log
+analysis/02-tnf/loss_traj.py --block 13 analysis/02-tnf/traj/probe_*.log
+```
+
+The self-test covers the two ways this reading can be made to lie: the step counter restarts at
+zero when the soft phase hands off to the sharp phase, so a naive parse concatenates two phases
+into one apparent trajectory; and a term absent from a log line must come back as absent rather
+than as zero, since a zero would manufacture a downward trend.
 
 ---
 
@@ -552,6 +669,24 @@ values are PROPKA output on our own poses, and the published objective names no 
 
 ---
 
+**Two summary cells in this document reported a row value as a median.** The condition comparison
+in §6.2 gave the baseline median as 0.153 and the probe median as 0.183. Recomputed from the design
+tables, the medians are **0.136 and 0.179**. Both wrong figures are real numbers from the tables —
+0.1527 is the baseline's first row, 0.183 is the probe's third — so a cell meant to hold a statistic
+had been filled with the row above it, twice, in the same table. The derived claim moved too: the
+effect of the intervention is **+31%**, not the +20% stated. Caught by recomputing every summary
+statistic in the document from the source tables rather than by reading the prose, and the direction
+of the conclusion is unchanged. **Numbers that are individually real are the hardest transcription
+errors to see**, because every spot-check of a cell against the data succeeds.
+
+**A flat optimisation curve was not looked at until four conditions had been run.** Three weight
+conditions were tested and compared on their endpoints before anyone plotted the interface term
+against step number. The plot (§6.3) shows the term never improving in any of them, which would
+have redirected the search after the first condition instead of the fourth. **An endpoint comparison
+cannot distinguish a method that is being tuned badly from a method that is not optimising**, and
+only one of those is worth more tuning. Roughly $15 of the $26 spent on the search went to a
+question the first run's own log could have answered.
+
 ## 12. The inverted-objective pilot
 
 *Time-boxed; result pending, and reportable either way.*
@@ -720,7 +855,8 @@ those are marked.
     is treated as verified.
 21. **Weight tuning appears to have a ceiling.** Three weight conditions spanning a sixfold range
     in the pH-to-binding ratio give medians of 0.136, 0.179 and 0.156. The best is the middle
-    condition, which indicates an optimum rather than a direction.
+    condition, which indicates an optimum rather than a direction. Quadrupling the step budget at
+    that optimum gives 0.163 — a fourth condition inside the same band.
 22. **The weights interact.** Tripling the binding weights pushed histidine content to 9.2%
     against an 8% cap and moved the closest histidine placement from 2.62 Å to 9.69 Å. The loss
     terms are not independent knobs.
@@ -731,8 +867,10 @@ those are marked.
 25. **The pH term is measured CA-to-cation**, because design-time features give the binder no
     sidechains. The all-atom distance is only available on re-prediction.
 26. **Seed variance is large relative to the effects being measured.** Four trajectories at
-    identical settings spanned 0.111–0.156. Differences between conditions of that order are not
-    resolvable at n = 4.
+    identical settings spanned 0.111–0.156, and across the eight runs at the best weight setting
+    seed and length alone span 0.115–0.200 — a range about forty times the measured effect of
+    quadrupling the step budget. Differences between conditions of that order are not resolvable
+    at n = 4, and every condition difference reported in §6 is of that order.
 27. **The epitope is restricted to nine positions conserved to mouse.** *Deliberate:* four
     positions that differ were dropped, including one deleted in mouse, which forgoes whatever
     affinity those contacts offered on human.
@@ -740,30 +878,46 @@ those are marked.
     epitope choice fails the set at once rather than independently. This is the largest correlated
     risk in the submission.
 29. **Cysteine is excluded from the alphabet**, so no design can use a disulfide for stability.
+30. **The interface objective did not improve in any trajectory run.** Twelve trajectories, three
+    weight conditions, two step budgets: the design-time interface term is flat from the first
+    block of steps to the last (§6.3). The generation method as configured is not optimising the
+    quantity it is written to optimise, and **no result in this document should be read as
+    evidence that gradient descent on this loss produces interfaces.**
+31. **The cause of that flatness is unidentified.** Three candidates remain open — the pinned
+    epitope admitting no gradient path, sampling noise in the structure predictor swamping the
+    gradient, or an interaction among the eleven weighted terms. Only the first is scheduled to be
+    tested (§10's free-footprint family), and it is being run for an independent reason.
+32. **The step budget is therefore unjustified by measurement.** 50 steps and 200 steps give
+    indistinguishable results, so whichever is used for the submitted designs is chosen on cost,
+    not on evidence that it is sufficient.
+33. **Design-time scores are optimistic by an amount that is not a constant.** Measured
+    design-to-re-predicted translation across four paired runs: +17%, −0%, −49%, −60%, with the
+    two largest drops on the two highest design-time scores. No design-time number in this work is
+    comparable to a re-predicted threshold, and no correction factor exists.
 
 ### The submission
 
-30. **The CSV ordering is not a calibrated prediction.** No instrument available to us ranks by
+34. **The CSV ordering is not a calibrated prediction.** No instrument available to us ranks by
     predicted affinity, so the order is a documented nomination priority and is labelled
     provisional.
-31. **The matched pairs are only interpretable together**, and Track 3 does not guarantee both
+35. **The matched pairs are only interpretable together**, and Track 3 does not guarantee both
     members are synthesised.
-32. **Novelty was assessed with the platform's checker**, which changed during the competition and
+36. **Novelty was assessed with the platform's checker**, which changed during the competition and
     whose implementation is not published, so we cannot reproduce its verdicts locally.
-33. **The pH mechanism and developability are in tension.** Raising free pKa raises pI, and
+37. **The pH mechanism and developability are in tension.** Raising free pKa raises pI, and
     elevated pI is associated with faster clearance. This challenge does not measure that side.
-34. **The inverted-objective pilot, if any design comes from it, rests on an unvalidated
+38. **The inverted-objective pilot, if any design comes from it, rests on an unvalidated
     inversion** — the published validation concerns acidic-pH binding to a different target.
 
 ### This document
 
-35. **Sections 8–10 and 12 describe methods whose results did not exist when written**, and are
+39. **Sections 8–10 and 12 describe methods whose results did not exist when written**, and are
     marked as such rather than filled with projections.
-36. **Several numbers in this work were corrected after first being recorded.** The computed pKa
+40. **Several numbers in this work were corrected after first being recorded.** The computed pKa
     shift was described as "measured"; a 10× ratio was described as a requirement when the
     published objective names none; a geometry check measured the wrong protomer of a homotrimer
     for a full day. Each is recorded in §11 with its consequence.
-37. **The errors found in §11 are the ones we found.** Two of them were invisible to the tests
+41. **The errors found in §11 are the ones we found.** Two of them were invisible to the tests
     written to catch them, and one was inside a fix that had already been reported as complete.
     The rate at which this work discovers its own faults is not evidence that it has run out of
     them.

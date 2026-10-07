@@ -5,14 +5,30 @@
 message, not from our own notes. Adaptyv extended it; the original Oct 4 date is wrong
 everywhere it still appears.
 
-## 🔴 FOUR MODAL JOBS LIVE as of 2026-10-07 1:20 AM
+## 🟢 NOTHING RUNNING as of 2026-10-07 7:30 AM — the deep jobs finished
 
-`p2deep-p/q/r/s`, 200 steps at `--w-acid 0.5`. Check with `modal app list | grep ephemeral` and
-`for t in p q r s; do echo "$t: $(grep -cE '^[0-9]+ loss:' /tmp/deep_$t.log)/200"; done`.
-Completed designs persist to the `mosaic-weights` Volume; recover with
-`mkdir -p /tmp/rec && cd /tmp/rec && modal volume get mosaic-weights runs/p2deep-p`
-(the destination must be the CWD — passing it as an argument raises Errno 21). Full context in
-`ROADMAP.md`'s LIVE RUNS block.
+`p2deep-p/q/r/s` completed 200/200 steps each; `modal app list` is empty. Results are fetched into
+`runs/mosaic-p2/p2deep-{p,q,r,s}/` and the 12 run logs are committed at `analysis/02-tnf/traj/`.
+
+**The result: steps are not the lever, and the interface term never improves.** Four times the
+compute moved the mean iptm_repred by −0.002 (0.168 → 0.166) on matched pairs, and the design-time
+interface score is flat across all 150 soft steps in all four runs — plus flat in the eight earlier
+50-step runs when the same reading was applied to them. Twelve trajectories, three weight
+conditions, two step budgets, no improvement in any. Best anywhere is 0.200 against a 0.45 bar.
+
+```
+analysis/02-tnf/deep_vs_probe.tsv            endpoint table, all 8 paired runs
+analysis/02-tnf/loss_traj.py --selftest      block-averaging tool, self-tested
+analysis/02-tnf/loss_traj.py analysis/02-tnf/traj/deep_*.log
+```
+
+**~$26 spent on tuning. The $49 wave is unspent and now blocked on a decision** (ROADMAP item 8):
+spend ~$11 on a free-footprint probe to test the one remaining testable cause, or go straight to
+a methods-first submission. Recommendation and the reasoning are in ROADMAP note 8.
+
+If a Volume recovery is ever needed again: `mkdir -p /tmp/rec && cd /tmp/rec && modal volume get
+mosaic-weights runs/<name>` — the destination must be the CWD, passing it as an argument raises
+Errno 21.
 
 ## 🧭 PROBLEM 2's PLAN IS `ROADMAP.md` IN THE OTHER REPO
 
