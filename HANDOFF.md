@@ -5,6 +5,18 @@
 message, not from our own notes. Adaptyv extended it; the original Oct 4 date is wrong
 everywhere it still appears.
 
+## 🧭 PROBLEM 2's PLAN IS `ROADMAP.md` IN THE OTHER REPO
+
+`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (2026-10-06 11:20 PM) is the
+live plan: the 20-slot allocation, the wave, what the dry run established, the order of work, and
+what is decided vs open. Read it before anything in this file.
+
+**What a reader of THIS repo needs:** `bin/plan_wave.py` prints the wave split and launches only
+under `--launch`. `biomodals/` is gitignored — the wrappers survive only via
+`patches/modal_mosaic.patch` and `patches/modal_esmfold2.patch`, so regenerate after every edit.
+`bin/mosaic_selftest.py` and `bin/esmfold2_selftest.py` run with bare `python3`, no GPU, and the
+launchers refuse to start if they fail.
+
 ## 🔵 THIS FILE IS PROBLEM 1 ONLY. Problem 2 is live and lives elsewhere.
 
 **Problem 1 is SUBMITTED** — 16 designs, 10/5 12:49 PM, DESIGNATED. Nothing owed.
