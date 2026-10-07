@@ -9,7 +9,7 @@ forward (`lessons-problem-1.md`), not because anything is pending. **The repo is
 `adaptyv-egfr-ph-switch` after problem 1**, which is worth renaming or noting before submission,
 since the methods document links it.
 
-## 🟢 NOTHING RUNNING as of 2026-10-07 9:15 AM — the search is finished
+## 🟢 NOTHING RUNNING as of 2026-10-07 10:55 AM — the search is finished, `C+` is applied
 
 All 16 trajectories complete, `modal app list` empty, ~$36 spent, **the $49 wave unspent.**
 
@@ -46,11 +46,14 @@ families, plus the measured negative result. The organisers confirmed on Oct 6 t
 review what you share and use it for selection"* and that the methodology text is linked to a
 public Proteinbase Collection.
 
-**One unevaluated alternative:** Ken Osumi's structural carryover
-(`github.com/ken-osumi/ArcRefine`), 6/10 TNF-α designs bound vs 1/10 unoptimized, BLI-measured at
-Adaptyv, built on Boltz-2. But ~$677 for their campaign, PolyForm Noncommercial, the author's own
-caveat that the comparison does not isolate the mechanism or establish the binding site, and no
-statement that it rescues non-binders. Read before deciding item 10.
+**The alternative has been read in full and is not recommended.** See
+`projects/anthropic-adaptyv-2026/arcrefine-evaluation.md` — do not re-derive it. It **needs a parent
+that already binds** and 0 of our 25 clear the gate (its own inputs were pre-filtered to Boltz-2
+ipSAE > 0.4); its loss has **no histidine term**, so as shipped it deletes our pH mechanism; and its
+6/10 vs 1/10 is a hit-rate delta between independently selected pools, not a rescue rate. **`C+`
+— folding its corroboration and an unrelated dependency-pin fix into the methods — is DONE as of
+10:55 AM.** What is left of item 10: **ship plan C now, or spend ~$11 on the warm-start probe (W)
+first.** Recommendation: ship C.
 
 ### Organiser facts confirmed 2026-10-06, worth not re-deriving
 
@@ -71,7 +74,7 @@ modal volume get mosaic-weights runs/p2free-p     # destination must be the CWD;
 
 ## 🧭 THE PLAN LIVES IN `ROADMAP.md` IN THE OTHER REPO
 
-`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (updated 2026-10-07 9:15 AM)
+`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (updated 2026-10-07 10:55 AM)
 is the live plan: the result, the one outstanding decision, the 20-slot allocation, and what blocks
 what. Read it before anything in this file. Then `challenges/02-tnf-alpha.md` §1–§44 for the
 decision record.
@@ -130,18 +133,30 @@ against the full trimer or a single chain, and whether the trimer stays intact a
 **METHODS §7 and §9 carry the contingencies; they stand.** Also open: the exact mouse TNF-α
 sequence and vendor, and whether the expression system and C-terminal tag match challenge 1.
 
-## 🔭 ONE UNEVALUATED ALTERNATIVE
+## 🔭 THE ALTERNATIVE, READ AND CLOSED — do not re-derive
 
-Mosaic's author pointed at **Ken Osumi's "structural carryover"**
-(`github.com/ken-osumi/ArcRefine`): **6 of 10 optimized TNF-α designs bound vs 1 of 10
-unoptimized**, measured by BLI at Adaptyv, built on Boltz-2 which we already run. Relevant because
-1-of-10 means their starting designs mostly did not bind either — which is our position.
+**Full memo: `projects/anthropic-adaptyv-2026/arcrefine-evaluation.md`.** Four premises an earlier
+version of this file carried were wrong: the cost is **$2.59/design**, not $677 for a campaign; the
+mechanism is **MIT upstream Mosaic**, not PolyForm (Boyd's own stateful-loss code, deleted as dead
+code in April 2026); the licence question **was answered 2026-10-06**; and the data is fully released.
 
-**Not a recommendation yet.** The author's own caveat: candidates "were selected independently for
-each group… They do not isolate the effect of structural carryover alone or establish that binding
-occurs at the predicted site." Their campaign cost **~$677**, roughly 14× our unspent budget.
-PolyForm Noncommercial licence, and a tool-licence question in `#design-methods` is unanswered.
-Nothing states whether it rescues non-binders. **Read before deciding ROADMAP item 10.**
+**Why it is still not recommended.** It **needs a parent that already binds and does not claim to
+rescue non-binders** — the arms are explicitly *"not matched experimental parent–child pairs"*, and
+its 60 starting designs were pre-filtered to Boltz-2 **ipSAE > 0.4** while **0 of our 25 clear
+0.45**. Its loss carries **no histidine term**: every sequence in both its TNF-α examples has zero
+histidines, with alanine at 29–34%. Run as shipped it would delete the pH mechanism.
+
+**What was worth taking, and was taken (`C+`, done 10:55 AM, $0).** Our **target** is corroborated
+outright (both canonical, both **Asp143**); our **epitope** partially, with a measured-non-binder
+counterexample on the same surface; **8%** (the organisers' own 12/150) replaces 60% as the honest
+calibration; and AlphaProteo's published reason for 0-of-54 — *"a flat, highly polar binding site at
+an interface between 2 subunits in a homotrimer"* — is the **best available explanation for sixteen
+flat trajectories.** All folded into METHODS §1, §2, §6.5, §11, §13.
+
+**One open axis it exposed, stated so nobody claims otherwise:** all sixteen trajectories held the
+gradient estimator and initialization constant, so **optimizer space is unsearched** — weights,
+steps and footprint were the three axes we varied. That is what the ~$11 W probe would test, and
+the recommendation is still to skip it.
 
 ## 📛 THE REPO WAS RENAMED 2026-10-07 — and problem 1's artifacts deliberately were not updated
 

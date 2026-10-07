@@ -50,6 +50,17 @@ work's choice therefore agrees with the confirmed target, and the agreement is r
 sequence evidence a day before the confirmation existed. The vendor construct is the authority on
 residue range and tag, and nothing in this work depends on either.
 
+**Independently corroborated by a second campaign, read 2026-10-07.** A published TNF-α
+optimization campaign (ArcRefine; manuscript DOI `10.5281/zenodo.23115832`, example data CC BY 4.0)
+designed against canonical mature residues **12–157**, carrying **Asp143**. This work's target is
+**6–157**, also Asp143; the two constructs differ only by six disordered N-terminal residues, and
+that campaign produced a BLI-confirmed binder at this challenge's own assay vendor. So the
+construct here agrees with the only TNF-α target on this challenge that has measured binders behind
+it, reached by a route independent of both the sequence evidence and the organisers' answer. One
+difference is recorded rather than reconciled: that campaign designed against **predicted**
+structures, where this work locked the sequence-corrected crystal trimer. Both carry Asp143, so the
+gap is small, and no decision here was reopened on the strength of it.
+
 **Numbering.** Five schemes are live in this project, and conflating them has cost real compute
 here. The anchor, in all of them:
 
@@ -97,6 +108,40 @@ at least one local difference that an average conceals.
 anchor and −4 further along**: human `16,27,28,70,72,81,82,85,86` maps to mouse
 `13,24,25,66,68,77,78,81,82`. Mouse 68, 81 and 82 collide numerically with human 68, 81 and 82
 while denoting different residues.
+
+**External corroboration, and exactly how far it goes.** The campaign of §1 released per-design
+lineage, assay outcomes and archived coordinates, which lets this epitope choice be checked against a
+**measured** binder instead of against our own predictions alone. Its confirmed binder
+`TNFA_OPT_07` — apparent K_D **66.2 nM** by BLI — was optimized from an archived starting scaffold
+whose footprint we computed ourselves from the released coordinates:
+
+| contact cutoff | target residues contacted | protomers | overlap with our 9 conserved positions | reaches R108 | reaches K166 |
+|---|---|---|---|---|---|
+| 4.5 Å | 10 | A, B | 2 of 9 | no | no |
+| 6.0 Å | 20 | A, B | **7 of 9** | yes | yes |
+| 8.0 Å | 38 | A, B | **9 of 9** | yes | yes |
+
+Nearest approach **R108 at 5.12 Å and K166 at 4.92 Å**, spanning the A/B protomer interface — the
+same inter-protomer surface and the same two candidate anchors chosen here. The 4.5 Å row reads low
+for a mechanical reason, not a structural one: the archived binder is backbone-only (`C, CA, N, O,
+OXT`, 4.0 atoms per residue), so an all-atom 4.5 Å cutoff registers only backbone-to-sidechain
+contacts and undercounts.
+
+The link from that scaffold to the confirmed binder is **measured retention rather than assumption**.
+Re-predicted with the carried optimization state removed, `TNFA_OPT_07` keeps 60–70% of the
+scaffold's contacts under seven predictors that supplied no gradients to the design: Boltz-2 0.703,
+Protenix 0.676, OpenFold3 0.676, ESMFold2 0.649, OpenDDE 0.622, AlphaFold2 0.595, RF3 0.595.
+
+**What this does not establish, including a counterexample on the same surface.** Every pose above is
+predicted. The archived file is explicitly an *input* scaffold whose binder side chains may be `UNK`
+placeholders — the release says in terms not to read it as a prediction of the parent sequence — and
+the author states the experiments *"do not … establish that binding occurs at the predicted site."*
+And the same surface hosts the scaffold of `TNFA_UNOPT_04`, which **was tested and did not bind**.
+One scaffold on this epitope led to a confirmed binder; another was itself a measured failure.
+
+**So the claim, at its true strength: this epitope was chosen independently by a campaign that got a
+binder on it, and not that it is a measured binding epitope.** A first reading of the same data
+overstated this, counting a non-binder's scaffold as support; the correction is recorded in §11.
 
 ---
 
@@ -550,6 +595,56 @@ section is a claim about submitted designs.*
 
 ---
 
+### 6.5 What four other campaigns measured on this target
+
+The search above ended flat. Before reading that as a defect peculiar to this method, it is worth
+recording what other groups measured on the same target. The comparison below was assembled on
+2026-10-07 from the published TNF-α campaign of §1 and its cited references, and it is external to
+this work in every row.
+
+| method | TNF-α outcome |
+|---|---|
+| AlphaProteo | **0 binders of 54 tested** |
+| BoltzGen | no binders; missed TNF-α in **both** the nanobody and the protein arm |
+| PXDesign | no binders — *"our pipeline encountered difficulty with one challenging target, TNF-α"* |
+| Complexa | no binders |
+| the challenge organisers' own TNF-α campaign | **12 of 150 = 8.0%**, best apparent K_D 0.70 nM |
+| ArcRefine | 6 of 10 optimized vs 1 of 10 unoptimized, n = 10, selection-confounded (below) |
+
+**AlphaProteo's published reason for failing is a description of the epitope this work chose.** It
+names *"a flat, highly polar binding site at an interface between 2 subunits in a homotrimer."* That
+is the protomer-spanning surface of §2, and it is the most direct explanation available for an
+interface term that did not improve in sixteen trajectories — an explanation that is neither a
+tuning fault nor reachable by any weight, step budget or footprint this work could have varied. It is
+offered as the leading external hypothesis, not as a measurement of these runs, and it was found
+*after* the search closed rather than used to justify closing it.
+
+**The honest calibration for this target is 8%, not 60%.** A competent pipeline here returns roughly
+one hit in twelve. The 6-of-10 figure is a hit-rate delta between two pools selected independently
+from a common top-60 cohort — the source states they *"do not constitute matched experimental
+parent–child pairs"* — so it is not a per-design rescue rate and should anchor nothing.
+
+**Two consequences, both recorded before the submission closed.** First, the fully-specified
+BoltzGen arm in this repository (`targets/tnf/boltzgen_tnf_2his.yaml`, histidines pinned at
+generation, repointed at the corrected target) was deliberately **not launched**: BoltzGen is on the
+zero-binder list above, and none of that campaign's 60 starting designs came from BoltzGen either, so
+launching it on the theory that it produces binders by itself is unsupported. Second, the one axis
+this work never varied is the **optimizer**. All sixteen trajectories held the gradient estimator and
+the initialization constant while weights, steps and footprint were varied, so "the search is
+exhausted" is true of weight space, step space and footprint space, and not of optimizer space. That
+is stated here because it bounds the claim, and the budget to test it was not spent.
+
+**The method that reports rescuing failed designs is not the one examined here.** HalluDesign
+(bioRxiv 2025.11.08.686881) carries *coordinates* rather than trunk representations, noising the
+previous iteration's structure through a truncated AF3 diffusion trajectory, and it reports wet-lab
+rescue of designs that had already failed: **12 of 16** on PD-L1 and **8 of 16** on IL7RA, each
+candidate derived from a previously failed design, against RFdiffusion baselines of 12/95 and 32/96.
+Preprint, n = 16, with baselines taken from another group's paper. It is AF3-based and was out of
+reach in the days remaining. It is cited as the honest pointer to what this work would try with more
+runway — nothing here used it.
+
+---
+
 ## 7. Protomer count is a measured confound for any inter-protomer epitope
 
 The challenge recommends an epitope spanning two protomers. Any ipSAE-type score computed for such
@@ -845,6 +940,25 @@ again. Second, **the value of a mechanical check is not that it finds errors a c
 miss — it is that it does not get tired or confident.** The check cost roughly twenty minutes to
 write and has now caught the thing it was built for, once, in the same session.
 
+**An external corroboration was overstated, and half of it was withdrawn an hour later.** Reading
+the released data of the campaign in §1, this work first reported that *two* archived structures
+docked on our chosen epitope were binders of that campaign, and cited both as support for the epitope
+choice. Both halves were wrong. The release's own README states that the archived files are **input
+scaffolds**, not predictions of any assayed molecule, and that binder side chains may be `UNK`
+placeholders; and the lineage table shows the parent of the repository's flagship TNF-α example,
+`TNFA_UNOPT_04`, **was tested and did not bind**. So one of the two footprints cited as support is a
+measured non-binder's scaffold. The claim was withdrawn and §2 now states what survives — one
+scaffold, on our epitope, whose optimized child bound at 66.2 nM while retaining 60–70% of its
+contacts across seven predictors — together with the counterexample.
+
+**Why this one is worth the space.** The error was not caught by a test or by re-reading the prose. It
+was caught by downloading the primary data release and checking a claim this work had already written
+down, which took about fifteen minutes and reversed a conclusion. **A corroboration is the easiest
+kind of finding to accept without checking, because it agrees with a decision already made** — this
+one arrived on a morning when the method had just failed, and it was welcome. The surviving claim is
+weaker than the one first written, and the target corroboration of §1, which is clean, was never in
+doubt either way.
+
 ## 12. The inverted-objective pilot
 
 *Time-boxed; result pending, and reportable either way.*
@@ -984,6 +1098,32 @@ output writer.
 code paths differ only in display, not that the runs are numerically reproducible — they are not,
 for the reasons below. A trajectory re-run today would not return the same sequence.
 
+### A dependency was unpinned, and the claim was wider than the evidence
+
+**Found 2026-10-07 while evaluating an external method, not by a test.** The Modal image installed
+Mosaic as `uv_pip_install("git+https://github.com/escalante-bio/mosaic")` with **no revision**. A
+fresh clone therefore resolved the design dependency to whatever that repository's HEAD was on the
+day it ran, which makes "reproducible in a fresh clone" a weaker statement than it reads as — the
+tests above pin nothing about the optimizer that produced the design numbers.
+
+**What the exposure actually was, measured rather than assumed.** The commit the wrapper's API was
+read against is `b94b9d4` (2026-09-24). Only two Mosaic commits landed between that and the end of
+this project's run window, `59492d4` and `1eb4af6`, both on 2026-10-06, and the compare across them
+is **+21 / −0 lines across `CITATION.cff` and `README.md`** — measured on the GitHub compare API,
+with **no Python file touched**. So every run in this project executed the same optimizer code, and
+none of the comparisons in §6.1–§6.5 is confounded by a dependency moving underneath it. That is luck
+rather than method: nothing in the setup would have revealed it if a commit had changed the
+optimizer mid-campaign.
+
+**Fixed.** The install is now pinned to the full revision
+`b94b9d4eb9907a700a6d78ed2d29d3704c5df46c`, chosen because it is both the commit the wrapper was read
+against and the code every run in this project actually ran — so the pin reproduces the campaign
+rather than freezing it at an arbitrary later point. The change is in `patches/modal_mosaic.patch`,
+which is the tracked artifact a reader applies; `biomodals/` is gitignored, so a pin landing only in
+the working file would not have reached anyone. **`bin/check-pins.sh` now asserts the revision in both
+places**, and the guard was mutation-tested in each direction — stripping the pin from the working
+file alone, and from the patch alone, each turns it red.
+
 ### What is not reproducible
 
 - **Pose caches** under `runs/` are gitignored and run to tens of gigabytes; available on request.
@@ -1053,90 +1193,121 @@ those are marked.
     objective 2. A design that releases at 6.0 may be assessed differently depending on whether
     mouse is measured at both points.
 
+19. **Four published methods measured zero binders on this target.** AlphaProteo (0 of 54 tested),
+    BoltzGen, PXDesign and Complexa each tested TNF-α designs and obtained none, and AlphaProteo
+    attributes its failure to *"a flat, highly polar binding site at an interface between 2 subunits
+    in a homotrimer"* — a description of the epitope chosen here (§6.5). The realistic calibration for
+    this target is the organisers' own **12 of 150 = 8%**, not any higher figure. This limitation is
+    about the target, not this method, and it is the leading external explanation for §6.3–§6.4.
+20. **The external epitope corroboration rests on predicted poses, and the same surface hosts a
+    measured non-binder.** The scaffold footprint in §2 was computed from archived *input*
+    coordinates, every pose involved is predicted, the source states its experiments do not establish
+    that binding occurs at the predicted site, and `TNFA_UNOPT_04` — whose scaffold also sits on this
+    epitope — was tested and did not bind. The epitope is corroborated as an independently chosen,
+    binder-producing site and **not** as a measured binding epitope.
+21. **The external target corroboration comes from a campaign that designed against predicted
+    structures**, where this work locked a sequence-corrected crystal trimer. Both carry Asp143, so
+    the gap is six disordered N-terminal residues plus a structure-source difference that was recorded
+    rather than reconciled.
+
 ### The design method
 
-19. **The species leg uses two protomers rather than three.** *Deliberate, forced:* three exhausts
+22. **The species leg uses two protomers rather than three.** *Deliberate, forced:* three exhausts
     a 48 GB GPU. A control establishes two recover 86% of the three-protomer signal, with ~20% seed
     attrition to non-assembly.
-20. **Interface confidence has not exceeded 0.200 in this work**, against 0.45 as the threshold at
+23. **Interface confidence has not exceeded 0.200 in this work**, against 0.45 as the threshold at
     which a geometry verdict is reported at all. No design has reached a value at which placement
     is treated as verified.
-21. **Weight tuning appears to have a ceiling.** Three weight conditions spanning a sixfold range
+24. **Weight tuning appears to have a ceiling.** Three weight conditions spanning a sixfold range
     in the pH-to-binding ratio give medians of 0.136, 0.179 and 0.156. The best is the middle
     condition, which indicates an optimum rather than a direction. Quadrupling the step budget at
     that optimum gives 0.163 — a fourth condition inside the same band.
-22. **The weights interact.** Tripling the binding weights pushed histidine content to 9.2%
+25. **The weights interact.** Tripling the binding weights pushed histidine content to 9.2%
     against an 8% cap and moved the closest histidine placement from 2.62 Å to 9.69 Å. The loss
     terms are not independent knobs.
-23. **The composition cap is a soft hinge, not a constraint.** It has been exceeded. A design can
+26. **The composition cap is a soft hinge, not a constraint.** It has been exceeded. A design can
     ship above its nominal cap.
-24. **The pH term is numerically flat beyond ~30 Å**, so it supplies no gradient at the distances
+27. **The pH term is numerically flat beyond ~30 Å**, so it supplies no gradient at the distances
     trajectories begin from. The mechanism depends on the contact terms succeeding first.
-25. **The pH term is measured CA-to-cation**, because design-time features give the binder no
+28. **The pH term is measured CA-to-cation**, because design-time features give the binder no
     sidechains. The all-atom distance is only available on re-prediction.
-26. **Seed variance is large relative to the effects being measured.** Four trajectories at
+29. **Seed variance is large relative to the effects being measured.** Four trajectories at
     identical settings spanned 0.111–0.156, and across the eight runs at the best weight setting
     seed and length alone span 0.115–0.200 — a range about forty times the measured effect of
     quadrupling the step budget. Differences between conditions of that order are not resolvable
     at n = 4, and every condition difference reported in §6 is of that order.
-27. **The epitope is restricted to nine positions conserved to mouse.** *Deliberate:* four
+30. **The epitope is restricted to nine positions conserved to mouse.** *Deliberate:* four
     positions that differ were dropped, including one deleted in mouse, which forgoes whatever
     affinity those contacts offered on human.
-28. **A single epitope carries the whole submission.** All candidates target one site, so a wrong
+31. **A single epitope carries the whole submission.** All candidates target one site, so a wrong
     epitope choice fails the set at once rather than independently. This is the largest correlated
     risk in the submission.
-29. **Cysteine is excluded from the alphabet**, so no design can use a disulfide for stability.
-30. **The interface objective did not improve in any trajectory run.** Twelve trajectories, three
+32. **Cysteine is excluded from the alphabet**, so no design can use a disulfide for stability.
+33. **The interface objective did not improve in any trajectory run.** Twelve trajectories, three
     weight conditions, two step budgets: the design-time interface term is flat from the first
     block of steps to the last (§6.3). The generation method as configured is not optimising the
     quantity it is written to optimise, and **no result in this document should be read as
     evidence that gradient descent on this loss produces interfaces.**
-31. **The cause of that flatness is unidentified, and the only testable candidate was
+34. **The cause of that flatness is unidentified, and the only testable candidate was
     eliminated.** Three were proposed. The pinned epitope admitting no gradient path was tested
     directly and **ruled out**: removing the restriction on both legs changed nothing (§6.4).
     Sampling noise in the structure predictor swamping the gradient, and interaction among the
     eleven weighted terms, both survive and **neither is testable within the remaining time at
     this budget.** The method therefore fails for a reason this work cannot name.
-32. **The step budget is therefore unjustified by measurement.** 50 steps and 200 steps give
+35. **The step budget is therefore unjustified by measurement.** 50 steps and 200 steps give
     indistinguishable results, so whichever is used for the submitted designs is chosen on cost,
     not on evidence that it is sufficient.
-33. **The epitope restriction was load-bearing for the pH objective, not an obstacle to it.**
+36. **The epitope restriction was load-bearing for the pH objective, not an obstacle to it.**
     Freeing the footprint moved the median nearest-histidine distance from 22.8 Å to **34.8 Å**,
     the worst of any condition, with one run at 54.5 Å. The anchor is one pinned point on a
     456-residue surface, and the epitope term was the only thing holding the binder near it. Any
     future free-footprint attempt needs a replacement for that term, not simply its removal.
-34. **A tight score distribution was obtained and is not good news.** The four free-footprint runs
+37. **A tight score distribution was obtained and is not good news.** The four free-footprint runs
     span 0.0045 against 0.085 for the pinned condition, so seed and length stopped mattering. The
     interpretation offered — a single generic surface-contact attractor, reproducible and mediocre
     — is an interpretation, not a measurement.
-35. **Design-time scores are optimistic by an amount that is not a constant.** Measured
+38. **Design-time scores are optimistic by an amount that is not a constant.** Measured
     design-to-re-predicted translation across four paired runs: +17%, −0%, −49%, −60%, with the
     two largest drops on the two highest design-time scores. No design-time number in this work is
     comparable to a re-predicted threshold, and no correction factor exists.
 
+39. **Optimizer space was never varied, so "the search is exhausted" is narrower than it sounds.**
+    All sixteen trajectories held the gradient estimator and the initialization constant: one sample
+    per gradient evaluation, momentum 0.9 throughout the soft phase, and a binder starting undocked at
+    44–93 Å. Weights, step budget and footprint were varied; sampling, momentum and initialization
+    were not. An external method differing on exactly those axes reports binders on this target, and
+    the budget to test that axis here was deliberately not spent (§6.5).
+
 ### The submission
 
-36. **The CSV ordering is not a calibrated prediction.** No instrument available to us ranks by
+40. **The CSV ordering is not a calibrated prediction.** No instrument available to us ranks by
     predicted affinity, so the order is a documented nomination priority and is labelled
     provisional.
-37. **The matched pairs are only interpretable together**, and Track 3 does not guarantee both
+41. **The matched pairs are only interpretable together**, and Track 3 does not guarantee both
     members are synthesised.
-38. **Novelty was assessed with the platform's checker**, which changed during the competition and
+42. **Novelty was assessed with the platform's checker**, which changed during the competition and
     whose implementation is not published, so we cannot reproduce its verdicts locally.
-39. **The pH mechanism and developability are in tension.** Raising free pKa raises pI, and
+43. **The pH mechanism and developability are in tension.** Raising free pKa raises pI, and
     elevated pI is associated with faster clearance. This challenge does not measure that side.
-40. **The inverted-objective pilot, if any design comes from it, rests on an unvalidated
+44. **The inverted-objective pilot, if any design comes from it, rests on an unvalidated
     inversion** — the published validation concerns acidic-pH binding to a different target.
 
 ### This document
 
-41. **Sections 8–10 and 12 describe methods whose results did not exist when written**, and are
+45. **Sections 8–10 and 12 describe methods whose results did not exist when written**, and are
     marked as such rather than filled with projections.
-42. **Several numbers in this work were corrected after first being recorded.** The computed pKa
+46. **Several numbers in this work were corrected after first being recorded.** The computed pKa
     shift was described as "measured"; a 10× ratio was described as a requirement when the
     published objective names none; a geometry check measured the wrong protomer of a homotrimer
     for a full day. Each is recorded in §11 with its consequence.
-43. **The errors found in §11 are the ones we found.** Two of them were invisible to the tests
+47. **The errors found in §11 are the ones we found.** Two of them were invisible to the tests
     written to catch them, and one was inside a fix that had already been reported as complete.
     The rate at which this work discovers its own faults is not evidence that it has run out of
     them.
+
+48. **The design dependency was unpinned for the whole campaign.** Mosaic was installed from an
+    unrevisioned git URL until 2026-10-07, so a fresh clone resolved it to that day's HEAD. The
+    exposure was then measured and found empty — the only commits in the run window changed
+    `CITATION.cff` and `README.md`, +21/−0, no Python — and the install is now pinned to
+    `b94b9d4eb9907a700a6d78ed2d29d3704c5df46c`. **The absence of a confound here was established after
+    the fact, not guaranteed by the setup**, and nothing in the test suite would have caught it.

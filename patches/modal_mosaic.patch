@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..3932a58
+index 0000000..0819bd1
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1630 @@
+@@ -0,0 +1,1635 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -53,7 +53,12 @@ index 0000000..3932a58
 +    # README warns it "may require substantial hand-holding (tuning learning rates, etc)"
 +    # and "often produces proteins that fail simple in-silico tests" -- downstream
 +    # protein-qc filtering is mandatory, not optional (constraint C4).
-+    .uv_pip_install("git+https://github.com/escalante-bio/mosaic")
++    # PINNED 2026-10-07. Unpinned, a fresh clone resolved Mosaic to whatever HEAD was that
++    # day, so the reproducibility claim in METHODS 13 was wider than the evidence. b94b9d4
++    # (2026-09-24) is the commit the wrapper was read against and the code every run in
++    # this project executed: b94b9d4..1eb4af6 is +21/-0 across CITATION.cff and README.md,
++    # measured against the GitHub compare API, so no Python changed under us mid-campaign.
++    .uv_pip_install("git+https://github.com/escalante-bio/mosaic@b94b9d4eb9907a700a6d78ed2d29d3704c5df46c")
 +)
 +
 +app = App("mosaic", image=image)

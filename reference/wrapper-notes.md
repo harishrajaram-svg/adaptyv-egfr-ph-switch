@@ -386,11 +386,12 @@ most likely to rot. Recorded after two successful runs.
 
 | | |
 |---|---|
-| image | `Image.debian_slim(python_version="3.12")`, `uv_pip_install("jax[cuda12]")`, then `uv_pip_install("git+https://github.com/escalante-bio/mosaic")` |
+| image | `Image.debian_slim(python_version="3.12")`, `uv_pip_install("jax[cuda12]")`, then `uv_pip_install("git+https://github.com/escalante-bio/mosaic@b94b9d4eb9907a700a6d78ed2d29d3704c5df46c")` — **pinned 2026-10-07**, previously unpinned |
 | jax | **0.11.2**, reporting `[CudaDevice(id=0)]` |
 | GPU | **L40S** (48 GB). Domain-III target + L76 binder ≈ 246 tokens fits with a backward pass; the full 609-residue ECD ≈ 700 tokens is expected not to |
 | weights | **8.03 GB / 45,230 files** on the `mosaic-weights` Volume, cached 2026-10-02. Startup off the cache is ~3–5 min, not a download |
 | local clone read for the API | `escalante-bio/mosaic` at `b94b9d4` (Sep 24) — every call matched what the image installed |
+| the pin, and why that commit | `b94b9d4` is both the commit read above and the code every run executed. The two commits after it, `59492d4` and `1eb4af6` (both 2026-10-06), are **+21/−0 across `CITATION.cff` and `README.md`** — measured on the GitHub compare API, no Python touched. Pinning to `b94b9d4` therefore reproduces the campaign rather than freezing it at an arbitrary point |
 
 **Mosaic has no PyPI release and no CLI.** It is driven by its Python API, so this wrapper
 *embeds* the design script instead of shelling out — the only one in `biomodals/` that does.
