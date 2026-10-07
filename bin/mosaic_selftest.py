@@ -675,6 +675,24 @@ def main():
         assert _checked, "no probe launchers found to check"
         print("probe flags     every flag exists on main() -- " + ", ".join(_checked))
 
+    # 8b. ANY launcher aimed at a TNF target must pass --epitope EXPLICITLY on every leg it
+    # uses. DEFAULT_EPITOPE is problem 1's EGFR site (403-409, TKQHGQF, anchor H433), so an
+    # omitted --epitope on a TNF run silently means "the wrong protein". It fails closed in
+    # STEP 4 -- that is how the s45 smoke run died -- but only after a container is billed, and
+    # nothing local caught it. "none" counts as explicit: that is the free-footprint arm.
+    for _sh in sorted(pathlib.Path("bin").glob("probe-*.sh")):
+        _txt = _sh.read_text()
+        if "tnf" not in _txt.lower():
+            continue
+        assert re.search(r"(?m)^\s+--epitope\s+\S", _txt), (
+            f"{_sh} targets TNF but never passes --epitope; it would inherit "
+            f"DEFAULT_EPITOPE, which is EGFR's 403-409")
+        if "--target2 " in _txt:
+            assert re.search(r"(?m)^\s+--target2-epitope\s+\S", _txt), (
+                f"{_sh} runs the species leg but never passes --target2-epitope")
+    print("probe epitopes  every TNF launcher names its epitope on both legs "
+          "(DEFAULT_EPITOPE is EGFR's)")
+
     print("\nselftest OK")
 
 

@@ -48,6 +48,14 @@ ARGS=(
   --anchor-chain B
   --crop none
   --anchor 27
+  # PASSED EXPLICITLY, both legs. The smoke run died here: DEFAULT_EPITOPE in the wrapper is
+  # problem 1's EGFR site ("403,...,409" = TKQHGQF, anchor H433), so omitting --epitope on a TNF
+  # run does not mean "the pinned 9 positions", it means "design against the wrong protein".
+  # It failed closed -- STEP 4 refused because 403-409 are not in the TNF chain -- but nothing
+  # local would have caught it, and a launcher that relies on this default is a trap for the
+  # next one too. These are condition 2's values, read back from runs/mosaic-p2/p2probe-a.
+  --epitope 16,27,28,70,72,81,82,85,86
+  --target2-epitope 13,24,25,66,68,77,78,81,82
   --mechanism his_near_cation
   --his-d0 6.5
   --target2 ../targets/tnf/tnf_mouse_trimer_renum.pdb
@@ -63,8 +71,12 @@ ARGS=(
   --grad-samples 4               # THE VARIABLE. 1 everywhere before 2026-10-07
   --momentum-soft 0.0            # THE OTHER VARIABLE. 0.9 everywhere before 2026-10-07
 )
-# NOTE: --epitope is deliberately NOT passed, so the default pinned 9 positions apply. This is
-# the matched arm to condition 2, not to the free-footprint probe.
+# NOTE: this is the matched arm to CONDITION 2 (runs p2probe-a..d: w_acid 0.5 with the binding
+# weights at 1.0), NOT to condition 3 (p2probe2-e..h, which raised iptm and contact to 3.0) and
+# NOT to the free-footprint probe. Every other value here is design()'s default and already
+# agrees with p2probe-a/config.json: iptm 1.0, contact 1.0, pae 0.05, within 1.0, plddt 1.0,
+# glob 0.3, mpnn 3.0, comp 10.0, monomer 0.5, caps V.12/G.08/H.08, sharpen 1.3,
+# sampling_steps 10, recycling_steps 1, stepsize 0.0 (-> 0.1*sqrt(L)).
 
 cd biomodals
 GPU="${GPU:-L40S}" TIMEOUT="${TIMEOUT:-120}" \
