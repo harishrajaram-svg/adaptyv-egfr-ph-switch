@@ -597,21 +597,119 @@ reported. Method novelty alone does not displace a better-supported candidate.
 
 ## 14. Limitations
 
-1. **The pKa shifts are computed, not measured.** PROPKA on our own poses. The 2.8–3.9× two-site
-   estimate inherits that status.
-2. **No measured de novo binder against TNF-α exists** to anchor a confidence threshold, so the
-   iptm gate in §8 is a necessary condition only.
-3. **n = 4 on the affinity ladder.** Sufficient to retire a prespecified use, insufficient to
-   characterise the method.
-4. **Target stability at assay concentrations is unconfirmed** (§9). Handled by the matched pairs
-   rather than assumed away; the surviving exposure is that both members of a pair must be
-   synthesised.
-5. **The assay's detection limits for this challenge are unconfirmed.** "No detectable binding"
-   depends on them, and the limits used elsewhere in this project were carried over from a
-   different target.
-6. **The pH mechanism and developability are in tension** (§8), and this challenge does not measure
-   the developability side.
-7. **The species leg uses two protomers rather than three** because three exhaust GPU memory. A
-   control establishes two recover 86% of the signal, with ~20% seed attrition to non-assembly.
-8. **Avidity is uncharacterised.** A trimeric analyte over immobilised binders can engage more than
-   one site, which raises apparent affinity and compresses the pH ratio being ranked.
+Grouped by what each one threatens. Several are consequences of decisions made deliberately, and
+those are marked.
+
+### The mechanism
+
+1. **The pKa shifts are computed, not measured.** PROPKA 3.5.1 on our own poses. The 2.8–3.9×
+   two-site estimate inherits that status entirely, and no experimental pKa was obtained for any
+   design in this work.
+2. **PROPKA's own accuracy bounds the estimate.** Published RMSD for histidine is of the order of
+   ±0.8 pKa units. A 0.40-unit computed shift is inside that envelope, so the sign of the effect is
+   better supported than its magnitude.
+3. **The per-site ceiling is thermodynamic and cannot be designed around.** Over the 7.4 → 6.0
+   window a single titratable site cannot exceed ~25× regardless of geometry, and reaches 1.92× at
+   a free pKa of 6.0. No amount of interface optimisation moves that bound.
+4. **Two sites are assumed independent.** The linkage arithmetic treats the sites as
+   non-interacting. Coupled sites would give less than the product, and we have not measured
+   coupling.
+5. **A zero-histidine control is not pH-inert.** Other titratable groups and the target itself
+   contribute. The controls bound the *engineered* contribution, not the total.
+
+### The instruments
+
+6. **n = 4 on the affinity ladder.** Sufficient to retire a prespecified use of the metric,
+   insufficient to characterise the metric. ρ = 0.400 is also not distinguishable from chance.
+7. **The four constructs in that ladder are not independent.** They are one antibody and three of
+   its engineered variants, so the effective sample size is below four.
+8. **The labelled-negative control is one pair, repeated.** Five seeds of adalimumab against LT-α
+   are five predictions of the same two molecules, not five biological controls. It cannot
+   establish sensitivity or specificity for de novo binders.
+9. **No measured de novo binder against TNF-α exists** to anchor a confidence threshold, so the
+   iptm gate is a necessary condition only and its upper side is unanchored.
+10. **Design-time interface scores are systematically optimistic on the best-looking runs.**
+    Measured translation from design-time to re-predicted: +17%, −0%, −49% and −60% across four
+    cases, with the two largest drops on the two highest design-time scores. Any figure quoted
+    from inside an optimisation run should be treated as an upper bound.
+11. **The instruments we retired were tested on histidine point-variants**, not on de novo
+    minibinders. The retirement is valid for our use; transfer to other formats is not established.
+
+### The target and the assay
+
+12. **The target omits five residues.** Mature 1–5 (`VRSSS`) are disordered and absent from the
+    crystal. Designs are made against 152 of 157 residues.
+13. **One sidechain is rebuilt.** Mature 143 was point-mutated from Leu to Asp with PDBFixer to
+    match the canonical sequence. The backbone is crystallographic; that sidechain is modelled.
+14. **Target stability at assay concentrations is unconfirmed.** Published kinetics give a ~7 minute
+    trimer half-life with trimer formation setting in only above ~10 nM. *Deliberate:* handled by
+    the matched pairs rather than assumed away, with the residual exposure that both members of a
+    pair must be synthesised.
+15. **The assay's detection limits are unconfirmed for this challenge.** "No detectable binding"
+    depends on them, and the limits referenced elsewhere in this project were carried over from a
+    different target and are not assumed here.
+16. **Avidity is uncharacterised.** A trimeric analyte over immobilised binders can engage more
+    than one site, raising apparent affinity and compressing the pH ratio being ranked.
+17. **Buffer composition at the acidic point is unconfirmed** for this target, and ionic strength
+    affects an electrostatically driven mechanism directly.
+18. **Mouse pH coverage is unspecified in the published objective**, which names pH 7.4 only for
+    objective 2. A design that releases at 6.0 may be assessed differently depending on whether
+    mouse is measured at both points.
+
+### The design method
+
+19. **The species leg uses two protomers rather than three.** *Deliberate, forced:* three exhausts
+    a 48 GB GPU. A control establishes two recover 86% of the three-protomer signal, with ~20% seed
+    attrition to non-assembly.
+20. **Interface confidence has not exceeded 0.200 in this work**, against 0.45 as the threshold at
+    which a geometry verdict is reported at all. No design has reached a value at which placement
+    is treated as verified.
+21. **Weight tuning appears to have a ceiling.** Three weight conditions spanning a sixfold range
+    in the pH-to-binding ratio give medians of 0.136, 0.179 and 0.156. The best is the middle
+    condition, which indicates an optimum rather than a direction.
+22. **The weights interact.** Tripling the binding weights pushed histidine content to 9.2%
+    against an 8% cap and moved the closest histidine placement from 2.62 Å to 9.69 Å. The loss
+    terms are not independent knobs.
+23. **The composition cap is a soft hinge, not a constraint.** It has been exceeded. A design can
+    ship above its nominal cap.
+24. **The pH term is numerically flat beyond ~30 Å**, so it supplies no gradient at the distances
+    trajectories begin from. The mechanism depends on the contact terms succeeding first.
+25. **The pH term is measured CA-to-cation**, because design-time features give the binder no
+    sidechains. The all-atom distance is only available on re-prediction.
+26. **Seed variance is large relative to the effects being measured.** Four trajectories at
+    identical settings spanned 0.111–0.156. Differences between conditions of that order are not
+    resolvable at n = 4.
+27. **The epitope is restricted to nine positions conserved to mouse.** *Deliberate:* four
+    positions that differ were dropped, including one deleted in mouse, which forgoes whatever
+    affinity those contacts offered on human.
+28. **A single epitope carries the whole submission.** All candidates target one site, so a wrong
+    epitope choice fails the set at once rather than independently. This is the largest correlated
+    risk in the submission.
+29. **Cysteine is excluded from the alphabet**, so no design can use a disulfide for stability.
+
+### The submission
+
+30. **The CSV ordering is not a calibrated prediction.** No instrument available to us ranks by
+    predicted affinity, so the order is a documented nomination priority and is labelled
+    provisional.
+31. **The matched pairs are only interpretable together**, and Track 3 does not guarantee both
+    members are synthesised.
+32. **Novelty was assessed with the platform's checker**, which changed during the competition and
+    whose implementation is not published, so we cannot reproduce its verdicts locally.
+33. **The pH mechanism and developability are in tension.** Raising free pKa raises pI, and
+    elevated pI is associated with faster clearance. This challenge does not measure that side.
+34. **The inverted-objective pilot, if any design comes from it, rests on an unvalidated
+    inversion** — the published validation concerns acidic-pH binding to a different target.
+
+### This document
+
+35. **Sections 8–10 and 12 describe methods whose results did not exist when written**, and are
+    marked as such rather than filled with projections.
+36. **Several numbers in this work were corrected after first being recorded.** The computed pKa
+    shift was described as "measured"; a 10× ratio was described as a requirement when the
+    published objective names none; a geometry check measured the wrong protomer of a homotrimer
+    for a full day. Each is recorded in §11 with its consequence.
+37. **The errors found in §11 are the ones we found.** Two of them were invisible to the tests
+    written to catch them, and one was inside a fix that had already been reported as complete.
+    The rate at which this work discovers its own faults is not evidence that it has run out of
+    them.
