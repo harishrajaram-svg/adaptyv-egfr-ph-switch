@@ -292,14 +292,60 @@ weight that cannot be passed is a weight nobody tunes.** All eleven are now expo
 defaults, and the test suite asserts that every weight on the design function is reachable from
 the interface with a matching default — verified by deleting one and confirming the test names it.
 
-**Status.** A controlled single-variable probe is in progress at the time of writing: identical
-configuration and step count, pH weight reduced from 2.0 to 0.5, four trajectories against the
-four-trajectory baseline above. Since only the ratio of weights affects a weighted sum, reducing
-the pH weight is equivalent to raising the binding weights, and it was the change reachable
-without modifying code mid-experiment. The success criterion was fixed before the probe was
-launched: **a median iptm_repred of 0.20 or above** indicates the ratio is a usable lever.
+### 6.2 The weight ratio is a lever, measured — and it did not reach the threshold
 
-*Results from this method do not yet exist. Nothing in this section is a claim about output.*
+A controlled single-variable probe tested the hypothesis: identical configuration and step count,
+**pH weight reduced from 2.0 to 0.5**, four trajectories against the four-trajectory baseline in
+§6.1. Since only the ratio of weights affects a weighted sum, reducing the pH weight is equivalent
+to raising the binding weights. The success criterion was **fixed before the probe was launched:
+a median iptm_repred of 0.20 or above.**
+
+| | iptm_repred | binder pLDDT | histidine content | nearest His → anchor |
+|---|---|---|---|---|
+| L76 seed 0 | 0.175 | 0.51 | 2.6% | 24.7 Å |
+| L76 seed 1 | 0.115 | 0.69 | 3.9% | 27.9 Å |
+| L84 seed 0 | 0.183 | 0.57 | 7.1% | 21.0 Å |
+| **L84 seed 1** | **0.200** | 0.37 | 2.4% | **2.62 Å** |
+
+| | baseline (pH weight 2.0) | probe (pH weight 0.5) |
+|---|---|---|
+| median iptm_repred | 0.153 | **0.183** |
+| max iptm_repred | 0.156 | **0.200** |
+
+**Against the prespecified criterion, this is a miss: the median is 0.183 against a bar of 0.20.**
+Reported as registered — median, not maximum.
+
+**The ratio is nonetheless a measured lever.** A single-variable change moved the median by
+**+20%**, and the quantity it moved is the one that has to move first.
+
+**A second observation, not prespecified and therefore reported separately.** One trajectory placed
+its histidine **2.62 Å from the anchor nitrogen** — inside the 4.0 Å criterion. Across the
+preceding four-trajectory baseline the same measurement read 18.0, 24.8, 39.2 and 47.9 Å. The
+geometry verdict for this design is nonetheless recorded as **not applicable**, because its
+interface confidence of 0.200 is far below the 0.45 threshold at which this work treats a geometry
+measurement as meaningful (§8); the distance is real, the placement is not verified.
+
+**This result also falsifies the obvious objection to the intervention.** Reducing the weight on
+the pH objective might be expected to reduce histidine placement. The opposite was observed: the
+closest placement this work has produced came from the run in which the pH objective was weighted
+**four times lower**. That is consistent with the mechanism proposed in §6.1 — the term was not
+limited by its own weight but by the binder never entering the ~20 Å range in which the term has
+any gradient. Allowing the binder to arrive does more for the conditional objective than weighting
+the conditional objective more heavily.
+
+**Scope, stated narrowly.** n = 4 per condition. The median difference (0.153 → 0.183) rests on
+four pairs and is not a significance claim. The 2.62 Å placement is a single observation. Neither
+result establishes that this configuration can produce a bound complex: **the best interface
+confidence obtained anywhere in this work is 0.200 against a 0.45 threshold**, and no design has
+yet reached a value at which this work would report a geometry verdict at all.
+
+**Next test, launched before these results were written up.** Binding weights raised directly —
+`w_iptm` and `w_contact` from 1.0 to 3.0, pH weight held at 0.5 — which was not expressible from
+the command line until the interface gap described in §6.1 was closed. Same step count, same four
+trajectories, same criterion.
+
+*Results from the production method do not yet exist. Nothing in this section is a claim about
+submitted designs.*
 
 ---
 
