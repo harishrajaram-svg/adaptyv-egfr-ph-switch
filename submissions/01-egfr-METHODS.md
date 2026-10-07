@@ -301,9 +301,15 @@ measuring the pairwise distances; the distance matrix would have ruled it out fo
 ### 3.4 We could not build the two-site route from scratch. One point mutation may have. See §8.1 and §11.6.
 **This section has been wrong twice.** It first read "the two-site route is closed" — it is not.
 It was then corrected to "we could not build it" — which was true of our *generative* search and
-is no longer true of the submission: `rimA01_r15_L133E`, a single Leu→Glu at position 133 of our
-rank-1 design, reads **5.656× on the histidine-only basis, above H433's 5.55× single-site
-ceiling**, with H370 contributing 0.921–6.229× while H433 holds steady (§11.6). *(Two
+is no longer true of our *data*: `rimA01_r15_L133E`, a single Leu→Glu at position 133 of a
+BoltzGen design, reads **5.656× on the histidine-only basis, above H433's 5.55× single-site
+ceiling**, with H370 contributing 0.921–6.229× while H433 holds steady (§11.6).
+⚠️ **That design is NOT in the submission.** It and its matched parent were removed on
+2026-10-06 when the organisers' novelty check rejected both — having accepted the same two
+sequences a day earlier (limitation 37). **So the shipped submission contains no two-site
+design at all**, and its best histidine-only ratio is **5.546×**, below H433's single-site
+ceiling. The L133E observation stands as a result in our data and is retained here because it
+is evidence about the route; it is not something we are asking anyone to test. *(Two
 corrections in this sentence: the value was 5.659× on five poses and is 5.656× on the twenty
 now pooled, and the basis is the two-partner histidine-only gate, not the all-site product —
 §11.7 explains why those are different quantities.)* That is one molecule with a wide pose
@@ -1579,14 +1585,20 @@ changed on 2026-10-05 — `SUB_CSV = "submissions/01-egfr.csv"` — and now vali
 shipped set on the graded basis, matching by sequence. The note is kept because it describes why
 the earlier threshold was 1.263 instead of 2.289 and why 19 unshipped candidates were skipped.
 
-### 11.6 `rimA01_r15_L133E` — a specific mechanism with an unreproducible magnitude
+### 11.6 `rimA01_r15_L133E` — a specific mechanism with an unreproducible magnitude, and NOT SUBMITTED
+
+> ⚠️ **Removed from the submission on 2026-10-06, with its matched parent, on the organisers'
+> novelty check** — which had accepted both sequences the day before (limitation 37). This
+> section is kept in full because the mechanism and its controls are a result either way, and
+> because the design was in the designated 10-05 submission. Read it as a finding about the
+> two-site route, not as a description of anything now shipping.
 
 *Rewritten 2026-10-05 after a 15-seed-per-variant L133 triad landed (`runs/esmfold2/w3_triad`).
 Three numbers in the previous version of this section were measured on five poses and did not
 survive deeper sampling. They are corrected below and the old values named.*
 
-A single Leu→Glu at position 133 of rank 1, which is submitted unmodified alongside it as the
-matched parent. We folded **Gln** and **Asp** at the same position as controls, 15 seeds each,
+A single Leu→Glu at position 133 of what was then rank 1, which shipped unmodified alongside it
+as the matched parent until both were removed on eligibility. We folded **Gln** and **Asp** at the same position as controls, 15 seeds each,
 human and mouse legs. The triad's L133E binder sequence is byte-identical to the submitted one,
 so its poses are pooled with the original five: **n = 20**, not 5.
 
@@ -1743,17 +1755,17 @@ own reported RMSD (~0.8 pKa units, worse for buried residues), not a tuned value
 <!-- GENERATED:SIGMA-TABLE do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
 | sigma (pKa units) | keep baseline rank | span >= 5 ranks |
 |---|---|---|
-| 0.4 | 5 of 16 | 13 of 16 |
+| 0.4 | 6 of 16 | 14 of 16 |
 | **0.8 (PROPKA's own RMSD)** | **2 of 16** | **15 of 16** |
-| 1.2 | 1 of 16 | 16 of 16 |
+| 1.2 | 2 of 16 | 16 of 16 |
 <!-- /GENERATED:SIGMA-TABLE -->
 
 <!-- GENERATED:PERT-FINDINGS do not edit between these markers; python3 bin/gen_methods_submission.py --write -->
-**At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp` spans ranks 1-18; `ss_bc_s831683_mpnn6_S15D_S62H_rout` spans ranks 1-17; `bc_s360518_mpnn9_A22D` spans ranks 1-16. The widest span is 17 of 16 ranks.
+**At PROPKA's own stated accuracy the ordering is not identifiable.** `d2c_mpnn13_S88D_serasp` spans ranks 1-16; `ss_bc_s831683_mpnn6_S15D_S62H_rout` spans ranks 1-15; `bc_s831683_mpnn6_S15D` spans ranks 3-16. The widest span is 15 of 16 ranks.
 
-**The single most-stable design holds a top-three slot in 49% of draws** (`c5_cf_short__boltzgen_egfr_cropfree_short_48`: rank 2 on the unperturbed pH ratio, which is the quantity being perturbed, and rank 1 in the shipped CSV, which also applies the pose-spread and antibody penalties; perturbed median 4). An earlier version of this section claimed no design exceeded 50%; it did, and it is the design the pH ratio puts first, so the error ran in the submission's favour. The conclusion does not depend on sigma: it already holds at the optimistic 0.4.
+**The single most-stable design holds a top-three slot in 63% of draws** (`c5_cf_short__boltzgen_egfr_cropfree_short_48`: rank 1 on the unperturbed pH ratio, which is the quantity being perturbed, and rank 1 in the shipped CSV, which also applies the pose-spread and antibody penalties; perturbed median 3). An earlier version of this section claimed no design exceeded 50%; it did, and it is the design the pH ratio puts first, so the error ran in the submission's favour. The conclusion does not depend on sigma: it already holds at the optimistic 0.4.
 
-**What does survive.** Two things. First, the **bottom group is robustly at the bottom**: `bc_s831683_mpnn9_S15D` stays at rank 10 or worse in 95% of draws, `bc_d3acid_l65_s831683_mpnn11` stays at rank 10 or worse in 95% of draws, `bc_s831683_mpnn9_WT` stays at rank 14 or worse in 95% of draws -- 3 designs take a top-three slot in 0% of draws. "These are not switches" is stable under the noise. Second, a **top set exists even though its order does not**: 3 designs `c5_cf_short__boltzgen_egfr_cro` (49%), `rimA02_d3_rimA_14_vhh` (43%), `d2c_mpnn13_S88D_serasp` (28%) hold a top-three slot in at least 25% of draws, against 0-17% for the other 13.
+**What does survive.** Two things. First, the **bottom group is robustly at the bottom**: `bc_d3acid_l65_s831683_mpnn11` stays at rank 8 or worse in 95% of draws, `bc_s831683_mpnn9_WT` stays at rank 12 or worse in 95% of draws -- 2 designs take a top-three slot in 0% of draws. "These are not switches" is stable under the noise. Second, a **top set exists even though its order does not**: 5 designs `c5_cf_short__boltzgen_egfr_cro` (63%), `rimA02_d3_rimA_14_vhh` (52%), `d2c_mpnn13_S88D_serasp` (36%), `c5_cr_crop_patch__boltzgen_egf` (30%), `ss_bc_s831683_mpnn6_S15D_S62H_` (27%) hold a top-three slot in at least 25% of draws, against 0-22% for the other 11.
 <!-- /GENERATED:PERT-FINDINGS -->
 
 **One thing this understates, in the submission's favour.** The perturbation moves the pH ratio
@@ -1794,7 +1806,7 @@ none move by exactly nothing. The free-leg choice affects only the designs whose
 enter the product, which is what it should do and is evidence the comparison isolates what it
 claims to.
 
-**The ordering is largely preserved — Kendall τ = +0.868**, against τ = +0.017 for the
+**The ordering is largely preserved — Kendall τ = +0.848**, against τ = +0.017 for the
 partnered composition basis. On this axis the submission is far more stable than on the
 composition axis or under pKa noise.
 
@@ -1861,40 +1873,40 @@ a bounded three-design subset (`rimA01_r15_L133E`, `bc_s360518_mpnn9_A22D`,
 
 **Completed 2026-10-05 01:17.** 191 relaxations, 0 failures, 60.8 min wall-clock.
 
-**Coverage, stated before the result.** Of the 18 shipped designs, the relaxed leg can only move
+**Coverage, stated before the result.** Of the 16 shipped designs, the relaxed leg can only move
 a design that carries a histidine on a chain that was relaxed:
 
 | | designs | why |
 |---|---|---|
-| compared | 10 | a binder histidine, or a relaxed target, or both |
-| relaxed, no movable site | 7 | **zero binder histidines** — the pH signal is carried by the target's own H370/H433, and a binder-only relaxation cannot touch it |
+| compared | 9 | a binder histidine, or a relaxed target, or both |
+| relaxed, no movable site | 6 | **zero binder histidines** — the pH signal is carried by the target's own H370/H433, and a binder-only relaxation cannot touch it |
 | no relaxed structure | 1 | `ss_bc_s831683_mpnn6_S15D_S62H_routeA` entered the submission after the relax queue was built — a real gap, not a filtered one |
 
-The seven "no movable site" designs are not missing data and their deletion numbers are not in
+The six "no movable site" designs are not missing data and their deletion numbers are not in
 doubt; they are simply outside this arm's reach. Reporting them as uncovered would overstate the
 arm, and dropping them silently would overstate its coverage.
 
-**Result 1 — the direction is one-way.** All ten designs move **down**:
+**Result 1 — the direction is one-way.** All nine designs move **down**:
 
 | | fold (relaxed ÷ deletion) |
 |---|---|
-| median | **0.842** |
+| median | **0.833** |
 | range | 0.623 – 0.971 |
-| moving ≥10% | 8 of 10 |
-| moving up | **0 of 10** |
+| moving ≥10% | 7 of 9 |
+| moving up | **0 of 9** |
 
 This is a bias, not scatter. Relaxing the free state lets a partially buried histidine's side
 chain reorganise and recover part of its solvated pKa; the free-state pKa rises toward normal,
 the bound-minus-free gap narrows, and the linkage ratio falls. **The shipped deletion basis is
-therefore optimistic on the pH ratio — by about 16% at the median and up to 38% at the worst.**
+therefore optimistic on the pH ratio — by about 17% at the median and up to 38% at the worst.**
 It is stated here as a signed bias rather than a symmetric uncertainty, because that is what the
 data show.
 
 **Result 2 — the ordering survives.** Kendall τ between the deletion and relaxed orderings is
-**+0.956**, and the largest single-design rank shift is **1**.
+**+0.944**, and the largest single-design rank shift is **1**.
 
 This is the opposite of §11.7's perturbation result, and the contrast is the point. Perturbing
-the pKa values at PROPKA's own accuracy moves 17 of 18 designs by ≥5 ranks (§11.7's
+the pKa values at PROPKA's own accuracy moves 15 of 16 designs by ≥5 ranks (§11.7's
 generated σ table; this read "16 of 17", the pre-addition figure). Changing the
 free-leg definition — a much larger conceptual change — barely moves the ordering at all. So the
 ranking is fragile with respect to **pKa accuracy** and robust with respect to **free-leg
@@ -2097,11 +2109,11 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
 16. **The "not a switch" verdict is free-leg dependent.** Four designs read below the 1.20×
     bar on the partner-deletion free leg and only one does on a separately-folded apo free
     leg; two cross 1.0× on that change alone (§11.7). The two legs order the submission
-    consistently (τ = +0.868) but disagree about its floor.
+    consistently (τ = +0.848) but disagree about its floor.
 17. **The pH ratio cannot order this submission.** Under PROPKA's own reported accuracy
-    (±0.8 pKa units) 17 of 18 designs span five or more ranks, and the widest span is 17 of
-    18 (§11.7). The most stable design holds a top-three slot in 60% of draws and the next
-    two in 49% and 43%; everything below the top five holds one in at most 17%. A top set
+    (±0.8 pKa units) 15 of 16 designs span five or more ranks, and the widest span is 15 of
+    16 (§11.7). The most stable design holds a top-three slot in 63% of draws and the next
+    two in 52% and 36%; everything below the top five holds one in at most 22%. A top set
     and a bottom set are defensible; a rank order is not. (This limitation previously read
     "no design holds a top-three slot in more than half of draws", which was false — one
     does, at 60%, and it is the top-ranked design.)
@@ -2260,10 +2272,11 @@ it implicates were supplied by a collaborator reviewing this work, not discovere
     - **`bc_s360518_mpnn9_A22D`** — our gate: Level 3 at qTM 0.7924, clearing the level-2
       cliff by **0.0076**. Limitation 33 named this as the submission's sharpest eligibility
       exposure and said our whole-chain `qtmscore` only approximates their domain-segmented
-      computation. The margin was real and it fell the wrong way. It was the
-      best-corroborated design in the submission — the largest causal swing (0.826× →
-      5.630× against its own matched wild-type), the tightest seed reproducibility, a
-      2.78 Å ASP22–H433 pair, and Chai-1 ipTM 0.788.
+      computation. The margin was real and that day it fell the wrong way. **It is back in
+      the submission and is the best-corroborated design in it** — the largest causal swing
+      (0.826× → 5.630× against its own matched wild-type, which is measured in our data and
+      is not itself shipped), the tightest seed reproducibility, a 2.78 Å ASP22–H433 pair,
+      and Chai-1 ipTM 0.788.
     - **`h370_020_vhh`** — our gate: Level **4**, on the antibody branch (CDRH3 identity
       0.273, global 0.526). Theirs: 2/4. Its whole-chain qTM is 0.8714, above the 0.80 HIGH
       line, so their pipeline does not appear to apply the antibody rule here — but

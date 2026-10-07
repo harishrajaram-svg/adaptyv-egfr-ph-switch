@@ -17,14 +17,6 @@
    "apo_seeds": 5
   },
   {
-   "name": "rimA01_r15_boltzgen_egfr_d3_rimA_20",
-   "deletion": 4.2561,
-   "apo": 4.2561,
-   "fold": 1.0,
-   "n_binder_his_remapped": 0,
-   "apo_seeds": 5
-  },
-  {
    "name": "bc_s360518_mpnn9_A22D",
    "deletion": 3.7377,
    "apo": 3.6809,
@@ -80,14 +72,6 @@
    "name": "h370_020_vhh",
    "deletion": 2.1013,
    "apo": 2.1013,
-   "fold": 1.0,
-   "n_binder_his_remapped": 0,
-   "apo_seeds": 5
-  },
-  {
-   "name": "rimA01_r15_L133E",
-   "deletion": 5.6559,
-   "apo": 5.6559,
    "fold": 1.0,
    "n_binder_his_remapped": 0,
    "apo_seeds": 5
