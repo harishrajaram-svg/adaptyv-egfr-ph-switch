@@ -35,7 +35,7 @@ ARGS=(
   --step 4
   --run-name "p2free-$TAG"
   --out-dir ../runs/mosaic-p2
-  --target tnf_trimer_renum.pdb
+  --target ../targets/tnf/tnf_trimer_renum.pdb
   --target-chain A,B,C
   --anchor-chain B
   --crop none
@@ -43,7 +43,7 @@ ARGS=(
   --anchor 27
   --mechanism his_near_cation
   --his-d0 6.5
-  --target2 tnf_mouse_trimer_renum.pdb
+  --target2 ../targets/tnf/tnf_mouse_trimer_renum.pdb
   --target2-chain A,B
   --target2-anchor 24
   --target2-epitope none         # FREE on mouse -- required, see above
