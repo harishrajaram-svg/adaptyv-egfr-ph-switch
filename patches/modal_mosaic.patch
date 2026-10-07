@@ -1,9 +1,9 @@
 diff --git a/modal_mosaic.py b/modal_mosaic.py
 new file mode 100644
-index 0000000..2871ad4
+index 0000000..3932a58
 --- /dev/null
 +++ b/modal_mosaic.py
-@@ -0,0 +1,1597 @@
+@@ -0,0 +1,1630 @@
 +# /// script
 +# requires-python = ">=3.12"
 +# dependencies = ["modal>=1.0"]
@@ -278,6 +278,31 @@ index 0000000..2871ad4
 +    if len(sequence) != len(resnums) or "X" in sequence:
 +        raise SystemExit(f"STEP 4 FAILED: non-standard residue in target: {sequence}")
 +    return chain, sequence, resnums
++
++
++def parse_epitope(spec):
++    """Positions from an epitope spec. '', 'none' and 'free' all mean a FREE FOOTPRINT.
++
++    Module level, and used by BOTH legs, for the reason his_reduce is module level: when
++    only the human leg understood 'none', the free-footprint family was unreachable with
++    the species leg on. --epitope none freed the human leg, then the species validation
++    rejected an empty --target2-epitope as a MISSING FLAG rather than a deliberate free
++    footprint, so there was no way to express "both legs free" -- the only configuration
++    the symmetry check below will accept once the human leg is free.
++    """
++    if spec is None or str(spec).strip().lower() in ("", "none", "free"):
++        return []
++    return [int(v) for v in str(spec).split(",")]
++
++
++def fmt_epitope(epitope_idx):
++    """Render the footprint for the run banner, tolerating the free-footprint None.
++
++    epitope_idx is None (not []) on the free path, because upstream BinderTargetContact
++    reads None as "no restriction". A bare len() here raised TypeError AFTER the container
++    had paid for cold start and the Boltz-2 weight load.
++    """
++    return "free" if epitope_idx is None else str(len(epitope_idx))
 +
 +
 +def _prepare_target_set(label, target_path, chain_csv, crop_t, epitope_pos,
@@ -793,8 +818,8 @@ index 0000000..2871ad4
 +    # The ANCHOR is still required: the pH mechanism needs a histidine against a specific
 +    # cation, so the footprint is free but the one functional contact is not. That is the
 +    # difference between this and Boyd's unconstrained affinity problem.
-+    _free_epitope = epitope.strip().lower() in ("", "none", "free")
-+    epitope_pos = [] if _free_epitope else [int(v) for v in epitope.split(",")]
++    epitope_pos = parse_epitope(epitope)
++    _free_epitope = not epitope_pos
 +    length_list = [int(v) for v in lengths.split(",")]
 +    for L in length_list:
 +        if not 56 <= L <= 90:
@@ -861,16 +886,21 @@ index 0000000..2871ad4
 +    # backbone, and no choice of which sidechains to contact fixes a backbone difference.
 +    MO = None
 +    if target2_pdb:
-+        if not target2_epitope or not target2_anchor:
-+            raise SystemExit("STEP 4 FAILED: --target2 needs --target2-epitope and "
-+                             "--target2-anchor. They are NOT the human numbers: a deletion "
-+                             "near human positional 68 shifts the register (-3 at the anchor, "
-+                             "-4 further along). See analysis/02-tnf/epitope_conserved.json.")
-+        epi2 = [int(v) for v in target2_epitope.split(",")]
++        # The ANCHOR is required on both legs -- the pH mechanism needs its one cation
++        # contact in either species. The EPITOPE is not: 'none' is a deliberate free
++        # footprint, and the symmetry check below is what forces the two legs to agree.
++        if not target2_anchor:
++            raise SystemExit("STEP 4 FAILED: --target2 needs --target2-anchor. It is NOT "
++                             "the human number: a deletion near human positional 68 shifts "
++                             "the register (-3 at the anchor, -4 further along). See "
++                             "analysis/02-tnf/epitope_conserved.json.")
++        epi2 = parse_epitope(target2_epitope)
 +        if len(epi2) != len(epitope_pos):
 +            raise SystemExit(f"STEP 4 FAILED: species epitope has {len(epi2)} positions, "
 +                             f"human has {len(epitope_pos)} -- the two legs must reward the "
-+                             f"SAME epitope, mapped, or they are not the same objective")
++                             f"SAME epitope, mapped, or they are not the same objective. "
++                             f"A free footprint must be free on BOTH: pass --epitope none "
++                             f"AND --target2-epitope none.")
 +        MO = _prepare_target_set("species", target2_path, target2_chain, None, epi2,
 +                                 target2_anchor, target2_anchor_chain, mechanism)
 +        if MO["anchor_aa"] != anchor_aa:
@@ -878,7 +908,10 @@ index 0000000..2871ad4
 +                             f"{MO['anchor_aa']} on the species target -- one pH mechanism "
 +                             f"cannot serve both")
 +        print(f"[mosaic] SPECIES LEG ON: w={w_species}, anchor {anchor_aa} conserved, "
-+              f"{len(epi2)} mapped epitope positions")
++              f"{len(epi2)} mapped epitope positions"
++              if epi2 else
++              f"[mosaic] SPECIES LEG ON: w={w_species}, anchor {anchor_aa} conserved, "
++              f"FREE FOOTPRINT on both legs")
 +
 +    # --- the one loss term the whole programme has failed to control -----------------
 +    class AcidNearHis(LossTerm):
@@ -1191,7 +1224,7 @@ index 0000000..2871ad4
 +            raise SystemExit("STEP 4 FAILED on C1:\n  " + "\n  ".join(c1_violations))
 +        print(f"[mosaic] C1 audit clean. loss terms: {', '.join(term_names)}")
 +        step = stepsize if stepsize > 0 else 0.1 * float(np.sqrt(L))
-+        print(f"[mosaic] L={L} stepsize={step:.3f} epitope={len(epitope_idx)} "
++        print(f"[mosaic] L={L} stepsize={step:.3f} epitope={fmt_epitope(epitope_idx)} "
 +              f"terms={'+mpnn' if mpnn else 'no-mpnn'}")
 +
 +        for s in range(n_seeds):

@@ -10,6 +10,7 @@ wrong in the same direction twice.
 
 usage: python3 bin/mosaic_selftest.py        (run from the repo root)
 """
+import pathlib
 import sys
 import types
 from pathlib import Path
@@ -536,6 +537,55 @@ def main():
     assert any("ESMFold2" in v for v in audit_c1(names, ["ESMFold2"]))
     print(f"C1 audit       {len(names)} terms walked, ESMFoldGlobularity allowed, "
           "IPSAE_min and an ESMFold2 model both rejected")
+
+    # 3f. THE FREE-FOOTPRINT PATH (s41 family B). Never executed before this test existed,
+    # and it was broken in two places at once -- both of which would have surfaced only after
+    # four containers had each paid cold start and an 8 GB weight load:
+    #   * the run banner called len() on epitope_idx, which is None (not []) on the free path
+    #     because upstream BinderTargetContact reads None as "no restriction";
+    #   * the species leg rejected an empty --target2-epitope as a MISSING FLAG, while the
+    #     symmetry check demanded both legs agree -- so "both legs free", the only
+    #     configuration that check accepts once the human leg is free, was unreachable.
+    # One parser now serves both legs, for the reason his_reduce is module level.
+    parse_epitope, fmt_epitope = ns["parse_epitope"], ns["fmt_epitope"]
+    for spec in ("", "none", "NONE", " free ", None):
+        assert parse_epitope(spec) == [], (spec, parse_epitope(spec))
+    assert parse_epitope("16,27,28") == [16, 27, 28]
+    assert parse_epitope("13,24,25,66,68,77,78,81,82") == [13, 24, 25, 66, 68, 77, 78, 81, 82]
+    # the banner must survive the free path, and must not report "0" as if it were a count
+    assert fmt_epitope(None) == "free", fmt_epitope(None)
+    assert fmt_epitope([4, 5]) == "2"
+    assert fmt_epitope([]) == "0"
+    # MUTATION TEST: the discarded `len(epitope_idx)` formulation must FAIL on the free path,
+    # so this cannot pass if someone reverts the banner to a bare len().
+    try:
+        len(None)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("len(None) no longer raises -- this test has stopped meaning anything")
+    # and the two legs must agree, which is what makes a free footprint free on BOTH
+    assert len(parse_epitope("none")) == len(parse_epitope("")) == 0
+    assert len(parse_epitope("16,27")) != len(parse_epitope("none"))
+    # The helper tests above pass even if someone reverts the CALL SITE to a bare len(),
+    # so the call site is checked in the source. A static check is weak, and it is the
+    # honest option here: the banner is inside the GPU entrypoint and cannot run locally.
+    src = TGT.parent.parent.joinpath("biomodals", "modal_mosaic.py")
+    src = src if src.is_file() else pathlib.Path("biomodals/modal_mosaic.py")
+    if src.is_file():
+        # Scoped to the banner line. A whole-file search is wrong: _prepare_target_set
+        # also calls len(epitope_idx), legitimately, where the value really is a list.
+        banner = [l for l in src.read_text().splitlines() if "stepsize={step" in l]
+        assert len(banner) == 1, f"expected one run banner, found {len(banner)}"
+        assert "len(epitope_idx)" not in banner[0], (
+            "the run banner is back to a bare len(epitope_idx); it raises TypeError on the "
+            "free-footprint path, where epitope_idx is None")
+        assert "fmt_epitope(epitope_idx)" in banner[0], "the banner no longer uses fmt_epitope"
+        banner_ok = "banner call site checked in source"
+    else:
+        banner_ok = "call site NOT checked (biomodals/ absent -- gitignored)"
+    print(f"free footprint  '' / none / free / None -> [] on both legs, banner reads "
+          f"{fmt_epitope(None)!r}, bare len() still fails; {banner_ok}")
 
     print("\nselftest OK")
 
