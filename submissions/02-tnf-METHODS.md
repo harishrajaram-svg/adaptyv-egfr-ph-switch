@@ -95,14 +95,26 @@ objective 2 requires one sequence to bind both. Pairwise alignment of the observ
 | 16, 27, 28, 70, 72, 81, 82, 85, 86 | — | — | ✅ |
 | 15 | P | H | dropped |
 | 26 | R | Q | dropped — charge lost |
-| 68 | H | **absent** | dropped — **deleted in mouse** |
+| 68 | H | **Y** | dropped — substitution, see the correction below |
 | 80 | V | I | dropped |
 
-**Position 68 is why conservation could not be obtained by sidechain selection alone.** Human
-carries a histidine there; mouse has no corresponding residue. A deletion moves the local
-backbone, and no choice of which sidechains to contact repairs a backbone difference. Epitope Cα
-RMSD mouse-vs-human over the retained positions is **1.10 Å** — similar surfaces on average, with
-at least one local difference that an average conceals.
+🔴 **CORRECTION, 2026-10-07. An earlier version of this section said positional 68 is deleted
+in mouse. It is not.** Positional 68 (mature 73) is **H → Y**, an ordinary substitution. The
+alignment contains **exactly one gap**, and it falls on human **mature 71 = positional 66 (Ser),
+canonical 147** — two residues upstream, and not an epitope position. The error was an
+*attribution*: the register shift between the two chains is real (−3 then −4 along the epitope) and
+the mouse indices derived from it are correct, but the gap was ascribed to the wrong residue.
+Re-derived two independent ways — a full-mature-sequence alignment and an observed-chain alignment —
+and **the nine mouse epitope indices recompute unchanged**, so no shipped number depended on it.
+Stable at gap penalties −4 through −12. Checked by `bin/check_species_map.py`.
+
+**What the retained epitope therefore rests on.** Nine positions are identical by substitution, not
+by luck of gap placement. Epitope Cα RMSD mouse-vs-human over them is **1.10 Å** — similar surfaces
+on average, with local differences an average conceals. The four dropped positions are all
+substitutions (P→H, R→Q, H→Y, V→I); **none is a deletion**, so the earlier claim that a
+backbone difference made sidechain selection insufficient does not hold and is withdrawn. The
+honest statement is narrower: conservation was obtained by *restriction* — dropping four divergent
+positions — rather than by sidechain choice across all thirteen.
 
 **Mouse epitope indices are not the human ones.** The deletion shifts the register by **−3 at the
 anchor and −4 further along**: human `16,27,28,70,72,81,82,85,86` maps to mouse

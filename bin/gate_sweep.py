@@ -43,6 +43,10 @@ GATES = [
     ('emit --selftest',          [PY, 'bin/emit_submission_csv.py', '--selftest'], None),
     ('gen_methods --check',      [PY, 'bin/gen_methods_submission.py', '--check'], None),
     ('check_claims',             [PY, 'bin/check_claims.py'], None),
+    # s2 asserted for days that positional 68 is DELETED in mouse and built an argument on
+    # it. It is H->Y; the single gap is at mature 71. The indices were right, the prose was
+    # wrong, and no check recomputed it. This one does, and refuses the old claim's return.
+    ('check_species_map',        [PY, 'bin/check_species_map.py'], None),
     ('check_discards',           [PY, 'bin/check_discards.py'], None),
     ('instrument_v2 --self-test',[PY, 'bin/instrument_v2.py', '--self-test'], None),
     ('control_family_balance',   [PY, 'bin/control_family_balance.py'], None),
