@@ -215,7 +215,7 @@ were scored and then wired into no analysis; they are reported here and feed not
    *Stated as one inverted pair, not as a correlation*: this same file says four lines earlier
    that "four rows cannot establish an inverse relationship", and "anti-correlated" claimed
    exactly the relationship those four rows cannot support. One inversion is what we have.
-3. **It bears directly on two of our eighteen submitted rows**, both VHH format. We already report
+3. **It bears directly on two of our sixteen submitted rows**, both VHH format. We already report
    their affinity as inadequately assessed rather than low. This strengthens that from a caveat
    to a measurement: on the only antibody in this project with a known KD, the affinity column
    points the wrong way.

@@ -79,7 +79,12 @@ OUT   = "submissions/01-egfr.csv"
 # 17 -> 18 on 2026-10-05: ss_bc_s831683_mpnn6_S15D_S62H_routeA restored as a DECLARED
 # parent/mutant pair with bc_s831683_mpnn6_S15D (see its assessment column). 18 of the 20
 # permitted; two slots remain deliberately unused.
-LIMIT = 18        # 18 of the 20 permitted; two slots deliberately unused -- see THE CUT.
+# 18 were UPLOADED on 2026-10-06; the platform's novelty check rejected two, so 16 ship.
+# LIMIT is deliberately 16 and NOT 18: the trim below runs AFTER the INELIGIBLE drop, so
+# leaving it at 18 would top the set back up with the next two candidates by rank_key --
+# designs that were never novelty-levelled on the submit page, never covered by the
+# pre-registered family cap, and carry no assessment text. The allocation is not a target.
+LIMIT = 16
 
 # RESUBMISSION, 2026-10-06. Both designs the platform's novelty check rejected are RESTORED
 # and will be re-uploaded, because the rule they were rejected under has since changed.
@@ -119,7 +124,46 @@ LIMIT = 18        # 18 of the 20 permitted; two slots deliberately unused -- see
 #
 # Restoring both breaks no declared parent/mutant pair and creates none: A22D's wild-type was
 # never shipped and h370_020_vhh is not half of a pair.
-INELIGIBLE = {}
+# 🔴 REJECTED ON THE 10-06 RE-UPLOAD, AND NOT THE TWO WE EXPECTED.
+#
+# Both rows below were ACCEPTED at 3/4 by the same check on 2026-10-05 and shipped in the
+# designated 16-design submission. Their sequences are byte-identical to the accepted rows --
+# verified against commit d63c61f -- and no name or sequence in the file drifted. So the
+# platform's novelty computation itself changed between 10-05 and 10-06, for SINGLE_CHAIN
+# general proteins.
+#
+# That contradicts the stated scope of the recalibration, which was announced as applying to
+# nanobody/VNAR formats only, with no change for general proteins, Fabs or scFvs. We cannot
+# see their code and do not claim to know what changed. What we can say is narrow and
+# evidenced: the same sequence scored 3/4 on one day and below the bar on the next.
+#
+#   rimA01_r15_boltzgen_egfr_d3_rimA_20   rank 3. Our gate: level 3. Accepted 10-05.
+#   rimA01_r15_L133E                      rank 14. Our gate: level 3, TM 0.702 at 19.2%
+#                                         identity, margin 0.098. Accepted 10-05.
+#
+# WHAT IT COSTS, stated plainly because it is the most expensive removal of the campaign:
+#   - These two ARE the `rimA01_r15_d3_rimA_20` family, so a whole backbone family leaves the
+#     submission and the family count drops 10 -> 9.
+#   - They are a DECLARED parent/mutant pair (identity 0.993). Both go, so the pair is
+#     removed intact rather than orphaned -- no surviving row claims a parent that is absent.
+#   - L133E was the submission's only two-site mechanism and the single most pose-stable
+#     design under the §11.8 perturbation (a top-three slot in 60% of draws). Its magnitude
+#     was already the least reproducible figure in the set (pose spread 4.38x the median), so
+#     what is lost is a mechanism worth testing, not a measurement.
+# Ineligible is not tradeable, and none of that is an argument against removing them.
+#
+# The two designs restored this round (bc_s360518_mpnn9_A22D, h370_020_vhh) are NOT listed
+# here: the check that rejected them on 10-05 passed them on 10-06. Taken together with the
+# two rejections above, the novelty result moved in BOTH directions on identical sequences
+# within 24 hours. Limitation 37 records this; it is the clearest evidence we have that our
+# whole-chain qtmscore does not reproduce their computation, and it is now evidence that
+# their computation is not stable either.
+INELIGIBLE = {
+    "rimA01_r15_boltzgen_egfr_d3_rimA_20":
+        "organisers' novelty check 10-06, below 3/4 (ACCEPTED at 3/4 on 10-05, same sequence)",
+    "rimA01_r15_L133E":
+        "organisers' novelty check 10-06, below 3/4 (ACCEPTED at 3/4 on 10-05, same sequence)",
+}
 RATIO_BAR = 1.20
 MIN_AA, MAX_AA = 10, 250
 # PROTEINBASE'S VOCABULARY, NOT OURS. Verified 2026-10-05 against the live submission form
@@ -300,7 +344,7 @@ def sensitivity():
     confidence interval, that tiers be marked provisional if the ranking shifts, and that no
     revised order be put forward as settled.
 
-    It moves. Kendall tau between the shipped basis and the partnered basis is +0.046
+    It moves. Kendall tau between the shipped basis and the partnered basis is +0.017
     -- the two orderings are uncorrelated -- and designs shift by up to 8 ranks.
 
     WHY THE SHIPPED ORDER IS NEVERTHELESS KEPT. The histidine-only value is the MINIMUM
@@ -679,11 +723,60 @@ def main():
         a = r.get("allsite")
         a_s = f"{a:>8.3f}" if a is not None else f"{'n/a':>8}"
         print(f"{i:>3} {a_s} {r['ratio']:>8.3f} {r['mo']:>7.4f} {r['hu']:>7.4f}  {r['name'][:44]}")
+    # COMPUTED, not hardcoded. This line carried a literal "+0.000" from the 12-design era
+    # through every later change of the submission, and then a literal "+0.046 over 18"
+    # after the 10-06 re-upload -- both of which went stale the moment the set changed.
+    # A statistic printed beside a set it was not computed on is the failure mode this
+    # whole file exists to prevent, so it is derived from `scored` on every emit.
+    _tau, _ntau = _kendall_hisonly_partnered(scored, _sv)
+    _tau_s = (f"{_tau:+.3f} over {_ntau} designs" if _tau is not None
+              else f"not computable ({_ntau} designs carry both bases)")
     print(f"  his_only = two-partner HISTIDINE-ONLY pH gate; the RANKING basis, and the\n"
           f"             conservative envelope min(his_only, allsite, partnered) for "
           f"{n_env} of {len(scored)}.\n"
           "  tgtonly  = superseded target-only ratio. All tiers are PROVISIONAL:\n"
-          "             Kendall tau(his_only, partnered) = +0.046 over 18 designs. See ph_sensitivity.json.")
+          f"             Kendall tau(his_only, partnered) = {_tau_s}. See ph_sensitivity.json.")
+
+
+def _kendall_hisonly_partnered(scored, sv):
+    """Kendall tau-b between the shipped (his-only) and partnered pH orderings.
+
+    Over the designs ACTUALLY EMITTED, joined on sequence, so it cannot describe a
+    different set than the one beside it. Ties are handled tau-b style; returns
+    (None, n) when fewer than two designs carry both bases.
+    """
+    pairs = []
+    for r in scored:
+        rec = next((v for v in sv.values()
+                    if v.get("seq", "").strip().upper() == r["sequence"].strip().upper()),
+                   None)
+        if not rec:
+            continue
+        a, b = rec.get("hisonly_median"), rec.get("partnered_median")
+        if a is None or b is None:
+            continue
+        pairs.append((a, b))
+    n = len(pairs)
+    if n < 2:
+        return None, n
+    conc = disc = tx = ty = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            da = pairs[i][0] - pairs[j][0]
+            db = pairs[i][1] - pairs[j][1]
+            if da == 0 and db == 0:
+                tx += 1; ty += 1
+            elif da == 0:
+                tx += 1
+            elif db == 0:
+                ty += 1
+            elif (da > 0) == (db > 0):
+                conc += 1
+            else:
+                disc += 1
+    n0 = n * (n - 1) / 2
+    denom = ((n0 - tx) * (n0 - ty)) ** 0.5
+    return ((conc - disc) / denom if denom else None), n
 
 
 def selftest():

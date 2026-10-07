@@ -1,9 +1,15 @@
-# Predicted complexes for 10 of the 18 submitted designs
+# Predicted complexes — 9 of the 16 submitted designs, plus one withdrawn
 
 **Chain A is the binder, chain B is the target.** These ten files were cut when the
-submission stood at ten designs and have not been regenerated since; the submission has
-since grown to 18, so eight submitted designs have no structure here. Which ten are
-covered is an artifact of that history, not a judgement about them.
+submission stood at ten designs and have not been regenerated since, so coverage is an
+artifact of that history rather than a judgement about any design.
+
+⚠️ **`rimA01_r15_boltzgen_egfr_d3_rimA_20.cif` is no longer a submitted design.** It and
+its mutant `rimA01_r15_L133E` were removed on 2026-10-06 when the organisers’ novelty
+check rejected them — having accepted the same two sequences the day before (METHODS
+limitation 37). The file is kept because the pose and its scores are real and were cited
+in the methods document; it is simply not part of the submission. So nine of these ten
+cover a submitted design, and seven submitted designs have no structure here.
 
 | file | target construct | ipSAE_min of this pose | poses available |
 |---|---|---|---|
@@ -38,8 +44,8 @@ are reported for completeness and mean nothing.
 
 **Numbering.** On the d3 crop, target H433 is residue **99** and H370 is residue **36**
 (crop + 334 = canonical). On the full ECD, H433 is residue **409** (ECD + 24 = canonical). The
-switching residue for all ten designs here is the target's native H433; across the full
-18-design submission 17 switch on H433 and one on H370.
+switching residue for all ten designs here is the target's native H433; across the
+16-design submission 15 switch on H433 and one on H370.
 
 The pose cache these were drawn from (6,011 scored outputs) is not published; see the
 reproducibility note in the methods document. Ask if you want it.
