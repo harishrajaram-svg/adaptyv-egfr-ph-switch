@@ -1,34 +1,70 @@
-# HANDOFF — Adaptyv challenge 1 (EGFR pH-switch)
-# Written 2026-10-04 ~3:40 PM EDT. Supersedes the 2:00 PM / 3:10 PM revisions entirely.
+# HANDOFF — Adaptyv challenge 2 (TNF-α conditional binder)
+# Updated 2026-10-07 8:30 AM EDT.
 
-**Deadline: Tue Oct 6, 23:59 AoE = Wed Oct 7, 07:59 EDT.** *(Weekdays corrected 2026-10-05: Oct 6 2026 is a TUESDAY and Oct 7 a WEDNESDAY. The dates and times were always right; both weekday labels were wrong, which is the kind of error that makes someone plan a final upload a full day late.)* Confirmed from an organiser
-message, not from our own notes. Adaptyv extended it; the original Oct 4 date is wrong
-everywhere it still appears.
+**Problem 2 is the live work. Due Mon Oct 12, 7:59 AM EDT.** 20 slots, Track 3.
 
-## 🟢 NOTHING RUNNING as of 2026-10-07 7:30 AM — the deep jobs finished
+**Problem 1 is CLOSED** — submitted, 16 designs, deadline Wed Oct 7 07:59 EDT now passed. Nothing
+in this file is a problem-1 action any more; its history is kept below because the lessons carry
+forward (`lessons-problem-1.md`), not because anything is pending. **The repo is still named
+`adaptyv-egfr-ph-switch` after problem 1**, which is worth renaming or noting before submission,
+since the methods document links it.
 
-`p2deep-p/q/r/s` completed 200/200 steps each; `modal app list` is empty. Results are fetched into
-`runs/mosaic-p2/p2deep-{p,q,r,s}/` and the 12 run logs are committed at `analysis/02-tnf/traj/`.
+## 🔴 FOUR JOBS LIVE — the free-footprint probe, launched 7:50 AM
 
-**The result: steps are not the lever, and the interface term never improves.** Four times the
-compute moved the mean iptm_repred by −0.002 (0.168 → 0.166) on matched pairs, and the design-time
-interface score is flat across all 150 soft steps in all four runs — plus flat in the eight earlier
-50-step runs when the same reading was applied to them. Twelve trajectories, three weight
-conditions, two step budgets, no improvement in any. Best anywhere is 0.200 against a 0.45 bar.
+`p2free-p/q/r/s` — 100 steps, both legs free, `--w-acid 0.5`. **ETA ~9:05 AM, ~$10.**
+Launched by `bin/probe-free-footprint.sh`, which carries the full reasoning in its header.
+
+| job | length | seed | modal app |
+|---|---|---|---|
+| `p2free-p` | 76 | 0 | `ap-PGWvwUkeikba6ELA9qaEj8` |
+| `p2free-q` | 76 | 1 | `ap-5M9hJZB42Kj3QeMYZJpT2M` |
+| `p2free-r` | 84 | 0 | `ap-BV41Z6craHnT764ik15V75` |
+| `p2free-s` | 84 | 1 | `ap-RXuElogSVo1uTx0WZUlkyF` |
+
+### If you are a new session, run exactly this
 
 ```
-analysis/02-tnf/deep_vs_probe.tsv            endpoint table, all 8 paired runs
-analysis/02-tnf/loss_traj.py --selftest      block-averaging tool, self-tested
-analysis/02-tnf/loss_traj.py analysis/02-tnf/traj/deep_*.log
+cd ~/code/adaptyv-2026
+modal app list | grep -c ephemeral                 # 4 = still running, 0 = landed
+for t in p q r s; do echo "$t: $(grep -cE '^[0-9]+ loss:' /tmp/free_$t.log)/100"; done
+python3 analysis/02-tnf/score_free_probe.py        # THE READING. Verdict included.
 ```
 
-**~$26 spent on tuning. The $49 wave is unspent and now blocked on a decision** (ROADMAP item 8):
-spend ~$11 on a free-footprint probe to test the one remaining testable cause, or go straight to
-a methods-first submission. Recommendation and the reasoning are in ROADMAP note 8.
+`score_free_probe.py` prints the paired endpoints against the pinned probe, the 25-step block
+means, each run's fitted rise with a 2-SE interval, and which decision-table row the four-run mean
+lands on. **It withholds the verdict until all four runs are in**, so it is safe to run early.
 
-If a Volume recovery is ever needed again: `mkdir -p /tmp/rec && cd /tmp/rec && modal volume get
-mosaic-weights runs/<name>` — the destination must be the CWD, passing it as an argument raises
-Errno 21.
+**Do not decide on the medians.** The decision is the trajectory shape. Reading only endpoints is
+what made the 200-step test cost $15 for half an answer (METHODS §11).
+
+### What it decides
+
+| reading | next |
+|---|---|
+| the interface term **climbs** | the pinned epitope was the blocker → ROADMAP item 10, the ~$49 wave, weighted to free footprint |
+| **flat**, like all 12 pinned runs | cause 2 or 3 in METHODS §6.3 → **plan C**, the methods-first submission |
+
+**As of 8:25 AM at ~40 of 100 steps it is reading flat** (four-run rise −0.0029 ± 0.0162). That is
+not the result — the interval is still wide and the runs are not half done. It is a warning not to
+expect a rescue.
+
+### Recovery, if a client died
+
+```
+mkdir -p /tmp/rec && cd /tmp/rec
+modal volume get mosaic-weights runs/p2free-p     # destination must be the CWD; an argument raises Errno 21
+```
+
+### What landed before this
+
+The four 200-step jobs finished: **steps are not the lever, and the interface term never
+improves** — 12 trajectories, 3 weight conditions, 2 step budgets, flat in every one. Best anywhere
+0.200 against a 0.45 bar. Evidence at `analysis/02-tnf/{deep_vs_probe.tsv,traj/,loss_traj.py}`,
+write-up at METHODS §6.3. ~$36 spent in total; the $49 wave is unspent.
+
+**Candidate material, counted:** `python3 analysis/02-tnf/design_inventory.py` — 21 distinct
+sequences, more than the 20 slots, and **0 of 21 clear the 0.45 gate**, so every geometry verdict is
+`n/a`. Two sit under the 4.0 Å placement bar and neither is defensible (METHODS §10).
 
 ## 🧭 PROBLEM 2's PLAN IS `ROADMAP.md` IN THE OTHER REPO
 
