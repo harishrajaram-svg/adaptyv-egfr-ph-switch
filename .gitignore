@@ -56,3 +56,9 @@ runs/g50mono-out/
 # tools/pyrosetta: the official installer exits silently; install from the wheel url directly
 #   python3 -m venv tools/pyrosetta/.venv && tools/pyrosetta/.venv/bin/pip install \
 #     https://west.rosettacommons.org/pyrosetta/release/release/PyRosetta4.Release.python39.m1.cxx11thread.serialization.wheel/pyrosetta-0-cp39-cp39-macosx_12_0_arm64.whl
+tools/novelty-approx/
+# tools/novelty-approx: community approximation of the organisers' novelty score, shared
+# in-channel 2026-10-07. Re-clone with
+#   git clone https://github.com/lbquinto/adaptyv-novelty-scoring-approx.git tools/novelty-approx
+# Its four reference databases live OUTSIDE the repo at ~/novelty_db (12 GB), rebuilt with
+#   bash ~/novelty_db/fetch_dbs.sh      (foldseek 941cd33 static binary alongside them)
