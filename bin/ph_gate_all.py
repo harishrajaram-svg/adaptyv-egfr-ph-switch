@@ -28,9 +28,19 @@ ECD  = {23:'H47',121:'H145',159:'H183',209:'H233',280:'H304',334:'H358',346:'H37
         359:'H383',394:'H418',409:'H433',483:'H507',535:'H559',560:'H584',566:'H590',
         591:'H615',594:'H618',597:'H621'}
 
-def link(free, bound):
+def link(free, bound, ph_lo=None, ph_hi=None):
+    """Thermodynamic linkage ratio K(ph_lo)/K(ph_hi).
+
+    PARAMETERISED 2026-10-08. The pH pair used to be read from this module's globals while
+    bin/ph_gate_multisite.py kept its OWN PH_LO/PH_HI copy. Setting the multisite copy for
+    problem 2 (6.0/7.4) would have left this function silently computing problem 1's
+    6.5/7.4 -- a wrong answer with no error. Callers now pass the pair; the defaults are
+    problem 1's and are unchanged, so every existing result reproduces byte for byte.
+    """
+    lo = PH_LO if ph_lo is None else ph_lo
+    hi = PH_HI if ph_hi is None else ph_hi
     K = lambda ph: (1 + 10**(bound-ph)) / (1 + 10**(free-ph))
-    return K(PH_LO)/K(PH_HI)
+    return K(lo)/K(hi)
 
 def pkas(st, wd, tag, chain='B'):
     st.write_pdb(os.path.join(wd, tag+'.pdb'))

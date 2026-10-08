@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
-"""Structure-based histidine pKa for problem 2's designs. Tier 2, and it was never run.
+"""Structure-based histidine pKa for problem 2's designs. A SCREEN, NOT THE pH GATE.
+
+🔴 READ THIS FIRST. This file reports the pKa of each histidine in ONE structure and how
+much it titrates between the two assay pH values. That is NOT the pH-selectivity quantity. The
+mechanism depends on the pKa SHIFT ON BINDING and on its DIRECTION:
+
+    K(pH) = (1 + 10^(pKa_bound - pH)) / (1 + 10^(pKa_free - pH)),   ratio = K(6.0)/K(7.4)
+
+Problem 2 binds at 7.4 and must be silent at 6.0, so protonation must WEAKEN the complex:
+pKa_bound < pKa_free, ratio < 1. The opposite sign designs for low-pH binding, which is
+problem 1's brief and this problem's antithesis. Nothing in this file can tell those apart.
+
+bin/ph_gate_multisite.py is the gate. It computes both legs by deleting each partner in place,
+composes over ALL sites rather than the helpful ones, and carries five guards written after an
+earlier version manufactured a false claim by selecting on the outcome. Use it with --problem 2.
+
+Keep this file for what it is good for: a cheap first look at whether a design has any histidine
+whose local environment lets it titrate in the assayed range at all. If it does not, there is no
+mechanism for the gate to score.
 
 WHY. express_qc_p2.py computes net charge from a Bjellqvist/EMBOSS table whose His value is
 5.98 -- the MODEL COMPOUND pKa, i.e. the free amino acid in water. Inside a folded protein the

@@ -76,11 +76,46 @@ USAGE
     ph_gate_multisite.py --dir <run_dir> [--tsv out.tsv]    # all poses under a run
     ph_gate_multisite.py --selftest                         # no I/O, pure arithmetic
 """
-import argparse, glob, json, math, os, subprocess, sys, tempfile
+import argparse, glob, json, math, os, re, subprocess, sys, tempfile
 from pathlib import Path
 
-PH_LO, PH_HI = 6.5, 7.4
-ONE_PROTON_BOUND = 10 ** (PH_HI - PH_LO)      # 7.943x, the general one-proton maximum
+# THE pH PAIR IS PER PROBLEM, AND GETTING IT FROM THE WRONG MODULE IS A SILENT WRONG ANSWER.
+# Problem 1 is bind-at-6.5 / silent-at-7.4. Problem 2 is bind-at-7.4 / silent-at-6.0. Until
+# 2026-10-08 this module held its own PH_LO/PH_HI while ph_gate_all.link() read ph_gate_all's,
+# so setting the pair here for problem 2 would have left the physics on 6.5 with no error.
+# link() now takes the pair, and EVERY call in this file goes through _link() so no call site
+# can forget. The selftest greps this source to prove there is no bare link( left.
+PROBLEMS = {
+    # problem: (ph_lo, ph_hi, merit_direction, what the design must do)
+    1: (6.5, 7.4, 'above_1', 'bind at 6.5, silent at 7.4 -- acid must TIGHTEN, ratio > 1'),
+    2: (6.0, 7.4, 'below_1', 'bind at 7.4, silent at 6.0 -- acid must WEAKEN, ratio < 1'),
+}
+PROBLEM = 1                                    # default preserves every problem-1 result
+PH_LO, PH_HI, MERIT, MERIT_TEXT = PROBLEMS[PROBLEM]
+ONE_PROTON_BOUND = 10 ** (PH_HI - PH_LO)      # 7.943x at 6.5/7.4; 25.119x at 6.0/7.4
+
+
+def set_problem(n):
+    """Switch the pH pair and the ceiling together. They must never move apart."""
+    global PROBLEM, PH_LO, PH_HI, MERIT, MERIT_TEXT, ONE_PROTON_BOUND
+    if n not in PROBLEMS:
+        sys.exit(f"REFUSE: unknown problem {n}; have {sorted(PROBLEMS)}")
+    PROBLEM = n
+    PH_LO, PH_HI, MERIT, MERIT_TEXT = PROBLEMS[n]
+    ONE_PROTON_BOUND = 10 ** (PH_HI - PH_LO)
+
+
+def _link(free, bound):
+    """The ONLY linkage path in this file. Always carries this module's pH pair."""
+    return link(free, bound, PH_LO, PH_HI)
+
+
+def merits(ratio):
+    """Does this ratio point the way THIS problem needs? Direction is not cosmetic: a
+    ratio of 5x is a success for problem 1 and a failure for problem 2."""
+    if abs(ratio - 1.0) < NOISE:
+        return 'noise'
+    return 'helps' if ((ratio > 1.0) == (MERIT == 'above_1')) else 'wrong_direction'
 NOISE = 0.05                                   # |ratio-1| below this is PROPKA noise
 # A pKa_bound outside the window for that residue's chemistry is suspect. Acids get
 # their own window: a carboxylate cannot titrate at a histidine's pKa.
@@ -98,11 +133,11 @@ BASE_N = {('HIS','ND1'),('HIS','NE2'),('LYS','NZ'),('ARG','NH1'),('ARG','NH2'),(
 def implied_pka_bound(ratio, free):
     """Invert the linkage equation for pKa_bound. Returns None if the ratio is unreachable."""
     lo, hi = free - 8.0, free + 20.0
-    if not (link(free, lo) <= ratio <= link(free, hi)):
+    if not (_link(free, lo) <= ratio <= _link(free, hi)):
         return None
     for _ in range(200):
         mid = (lo + hi) / 2
-        if link(free, mid) < ratio: lo = mid
+        if _link(free, mid) < ratio: lo = mid
         else: hi = mid
     return round((lo + hi) / 2, 2)
 
@@ -204,7 +239,7 @@ def score_pose(cif):
                 return
             sites[f'{partner}:{label}'] = dict(partner=partner, resname=rn, resnum=num,
                                                free=round(f, 2), bound=round(bo, 2),
-                                               ratio=round(link(f, bo), 4))
+                                               ratio=round(_link(f, bo), 4))
 
         # TARGET: histidines first, named from the construct's fingerprint, then its acids
         for num, nm in names.items():
@@ -295,13 +330,14 @@ def reconstruct(parent, singles, double):
 def selftest():
     # the physics
     # 40 / -20 stand in for the pKa_bound limits; 1e6 overflows the 10**x in link().
-    assert abs(link(6.22, 40.0) - 5.554) < 0.01, link(6.22, 40.0)
-    assert abs(link(6.22, -20.0) - 0.699) < 0.01, link(6.22, -20.0)
+    assert abs(link(6.22, 40.0, 6.5, 7.4) - 5.554) < 0.01   # P1 reference
+    assert abs(link(6.22, -20.0, 6.5, 7.4) - 0.699) < 0.01  # P1 reference
     assert abs(ONE_PROTON_BOUND - 7.943) < 0.001
-    assert abs(link(6.0, 6.0) - 1.0) < 1e-9, 'no shift must give exactly 1.0'
+    assert abs(link(6.0, 6.0, 6.5, 7.4) - 1.0) < 1e-9, 'no shift must give exactly 1.0'
+    assert abs(link(6.0, 6.0, 6.0, 7.4) - 1.0) < 1e-9, 'true at either pH pair'
     # inversion round-trips
     for free, pb in [(6.22, 9.0), (6.22, 7.0), (4.93, 8.0), (6.5, 6.6)]:
-        r = link(free, pb)
+        r = link(free, pb, 6.5, 7.4)
         assert abs(implied_pka_bound(r, free) - pb) < 0.05, (free, pb, r)
     assert implied_pka_bound(999.0, 6.22) is None, 'unreachable ratio must return None'
     # Guard 1: the historical bug. H370 6.056 x H383 1.503 while H433 reads 0.723
@@ -330,7 +366,39 @@ def selftest():
                        {'product': 4.59})
     assert not rec3['additive_in_log'], rec3
     print('selftest OK')
-    print(f'  single-site range at pKa_free 6.22 : {link(6.22,-20.0):.3f}x to {link(6.22,40.0):.3f}x')
+    # --- 2026-10-08: the pH pair and the direction of merit ---
+    # P1 and P2 run OPPOSITE ways. A 5x ratio is a success for problem 1 and a failure for
+    # problem 2, so a direction-blind gate would hand problem 2 its own antithesis as a win.
+    set_problem(1)
+    assert (PH_LO, PH_HI) == (6.5, 7.4) and abs(ONE_PROTON_BOUND - 7.943) < 0.001
+    assert merits(5.0) == 'helps' and merits(0.2) == 'wrong_direction', 'P1 wants acid-tightening'
+    set_problem(2)
+    assert (PH_LO, PH_HI) == (6.0, 7.4) and abs(ONE_PROTON_BOUND - 25.119) < 0.001
+    assert merits(5.0) == 'wrong_direction' and merits(0.2) == 'helps', 'P2 wants acid-weakening'
+    assert merits(1.0) == 'noise' and merits(1.0 + NOISE / 2) == 'noise'
+    # MUTATION: the ceiling must move WITH the pair. If set_problem changed one and not the
+    # other, a problem-2 product of 20x would be flagged IMPOSSIBLE against P1's 7.943.
+    assert ONE_PROTON_BOUND > 20.0, 'P2 ceiling must admit 20x on one site'
+    set_problem(1)
+    assert ONE_PROTON_BOUND < 20.0, 'P1 ceiling must refuse 20x on one site'
+    # MUTATION: _link must carry the module pair, not ph_gate_all's default
+    set_problem(2)
+    assert abs(_link(6.22, -20.0) - 0.401) < 0.01, _link(6.22, -20.0)
+    set_problem(1)
+    assert abs(_link(6.22, -20.0) - 0.699) < 0.01, _link(6.22, -20.0)
+    # MUTATION: no bare link( may survive outside _link and these known-answer tests, or a
+    # future call site could silently read the wrong pH pair -- the fault this closes.
+    src = open(os.path.abspath(__file__)).read()
+    body = src[:src.index('def selftest(')]
+    bare = [l for l in body.splitlines()
+            if re.search(r'(?<![_\w])link\(', l) and 'def _link' not in l
+            and 'PH_LO, PH_HI)' not in l and not l.strip().startswith('#')]
+    assert not bare, f'bare link( outside _link: {bare}'
+    print(f'  pH pair + direction: P1 {PROBLEMS[1][0]}/{PROBLEMS[1][1]} wants ratio > 1, '
+          f'P2 {PROBLEMS[2][0]}/{PROBLEMS[2][1]} wants ratio < 1')
+    print(f'  one-proton ceiling moves with the pair: 7.943x (P1) / 25.119x (P2)')
+    print(f'  MUTATION: no bare link( call sites remain outside _link')
+    print(f'  single-site range at pKa_free 6.22 : {link(6.22,-20.0,6.5,7.4):.3f}x to {link(6.22,40.0,6.5,7.4):.3f}x  (problem 1)')
     print(f'  one-proton bound                   : {ONE_PROTON_BOUND:.3f}x')
     print(f'  historical bug reproduced          : helpful-only 9.102x vs all-sites 6.581x')
     print(f'  S88D+S60D does NOT reconstruct     : observed 4.59 vs expected '
@@ -342,8 +410,16 @@ def main():
     ap.add_argument('cifs', nargs='*')
     ap.add_argument('--dir'); ap.add_argument('--tsv'); ap.add_argument('--json')
     ap.add_argument('--selftest', action='store_true')
+    ap.add_argument('--problem', type=int, default=1, choices=sorted(PROBLEMS),
+                    help='1 = bind 6.5 / silent 7.4 (default, EGFR). '
+                         '2 = bind 7.4 / silent 6.0 (TNF-alpha). Sets the pH pair, the '
+                         'one-proton ceiling AND the direction of merit together.')
     a = ap.parse_args()
     if a.selftest: selftest(); return
+    set_problem(a.problem)
+    print(f"problem {PROBLEM}: pH {PH_LO} vs {PH_HI}, one-proton ceiling "
+          f"{ONE_PROTON_BOUND:.3f}x per site")
+    print(f"  {MERIT_TEXT}\n")
     cifs = a.cifs or (sorted(glob.glob(os.path.join(a.dir, '**', '*.cif'), recursive=True))
                       if a.dir else [])
     if not cifs: raise SystemExit(__doc__)
@@ -362,8 +438,8 @@ def main():
             if v['implausible']: w.append(f"IMPLAUSIBLE pKa_bound={v['implied_pka_bound']}")
             if v['no_partner']: w.append(f"NO COUNTER-CHARGE within {PARTNER_CUT}A"
                                          + (f" (nearest {v['partner_dist']}A)" if v['partner_dist'] else ""))
-            print(f"      {k:<22} {v['ratio']:>7.3f}x  free {v['free']:.2f} -> bound {v['bound']:.2f}"
-                  f"  {'  '.join(w)}")
+            print(f"      {k:<22} {v['ratio']:>7.3f}x  {merits(v['ratio']):<16}"
+                  f"free {v['free']:.2f} -> bound {v['bound']:.2f}  {'  '.join(w)}")
     if a.json: json.dump(rows, open(a.json, 'w'), indent=1); print(f"\nwrote {a.json}")
     if a.tsv:
         import csv as _csv
