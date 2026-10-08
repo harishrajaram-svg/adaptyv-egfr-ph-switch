@@ -8,7 +8,14 @@ plan) → `challenges/02-tnf-alpha.md` §1–§48. Then nothing else unless a li
 
 ## 🟡 AS OF 2026-10-08 6:35 PM: the Genie arm ran, and the instrument that was missing all along says it failed. Nothing spending. The design search is CLOSED.
 
-`modal app list` is empty. **Two pre-registered arms ran on 10-07 and both returned nulls**, and both
+⚠️ **ONE JOB IS RUNNING as of 6:50 PM: `ap-gz7W6OayBW3WfvYx5RwwI3`**, 134/168 folds — 4 extra
+seeds on the 42 labelled-control designs, tightening §6.10e's AUC 0.794. ~33 min left, ~$1.20 more.
+It is `modal run`, NOT detached, so it dies with its client window; folds already in the
+`esmfold2-runs` Volume under `Aposctrl5` survive and are recoverable. It decides nothing — stage C
+is already closed on the single-seed read. (This paragraph said "`modal app list` is empty" until
+6:50 PM, which was wrong from 4:20 PM onward; a peer session caught it.)
+
+**Two pre-registered arms ran on 10-07 and both returned nulls**, and both
 carried hard stops written before the run. Those stops are honoured: **no further design arms.**
 
 | arm | what it varied | pre-registered bar | result |
