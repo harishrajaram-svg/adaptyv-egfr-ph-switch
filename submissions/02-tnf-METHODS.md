@@ -1133,6 +1133,66 @@ the only reason to rank it above `_22_s1` despite a lower human margin.
 ---
 
 
+#### 6.10e The margin is validated against measured outcomes, and it says our designs fall short of NON-binders
+
+Everything above measures how our designs score. Nothing measured whether our scoring tracks
+binding. The external calibration (§4.5) used **their** co-folding numbers; our own configuration
+— single-sequence ESMFold2, our own-length shuffled nulls, our margin — had never been run on a
+single sequence with a known outcome. That is the gap this closes, and it should have been closed
+before any of the scaling arguments above were made.
+
+**Construction.** 12 designs from the released campaign with **measured binding**, and 30 with
+**measured non-binding**, all length-matched into 78–85 aa so the margin cannot separate on size,
+each folded against the gated trimer with a shuffle of its own sequence as its null. 84 folds,
+~$4.20. An earlier attempt matched only 9 negatives because 8 of the 12 binders are 83 aa and only
+2 non-binders exist at that length; widening to the band found 49 unused negatives at 80 aa.
+
+**The instrument works.**
+
+```
+AUC = 0.794        one-sided permutation p = 0.0010  (n = 20,000)
+```
+
+**And on that scale our designs are not merely short of binders, they are short of non-binders.**
+All three populations, same script, same null construction:
+
+| | min | median | max |
+|---|--:|--:|--:|
+| measured **binders** (n=12) | +5.918 | **+7.814** | +8.209 |
+| measured **non-binders** (n=30) | −0.379 | **+6.347** | +8.625 |
+| **our Genie 48** | −1.732 | **+0.320** | +6.027 |
+| our Mosaic 35 | — | +0.20 / +0.35 | +3.03 |
+
+| our designs at or above | margin | count |
+|---|--:|--:|
+| the weakest real binder | +5.918 | **1 / 48** |
+| a typical **non**-binder | +6.347 | **0 / 48** |
+| a typical real binder | +7.814 | **0 / 48** |
+
+Our best design, +6.287 on five seeds, sits **below the median design that failed to bind**. Our
+median design sits at +0.320 where their non-binders sit at +6.347.
+
+🔴 **THE PRE-REGISTERED BAR WAS SATISFIED AND THE BAR WAS WRONG.** `analysis/02-tnf/
+PREREG-GENIE-ARM-2026-10-08.md` set ACTS at **5.64**, derived as half of TNFR2's 11.28 margin —
+anchored on a **natural receptor**. The relevant population is **designed** binders, and they sit
+at +7.814 with non-binders at +6.347, so 5.64 was set *below the non-binder median*. Two designs
+cleared it and that fact stands in the record; the bar was simply calibrated against the wrong
+reference. **The external measurement governs**, because it is calibrated on measured outcomes
+rather than on one natural protein. A bar abandoned when it becomes inconvenient is not a bar, so
+both halves are recorded: the pre-registration was met, and it was mis-set.
+
+**What this closes.** Stage C — generating 1000 backbones and co-folding 200 — is not justified.
+This is not the pre-registration's ambiguity clause but a clear negative on a validated
+instrument: reaching +7.814 from a distribution centred on +0.320 is not a sampling problem.
+
+**Honest caveat in the other direction.** Non-binders reach +8.625, above every binder, so the
+metric has real false positives and AUC 0.794 is not clean separation. A high margin would not
+have proved much either. The 12-versus-30 design also gives an AUC standard error near 0.09, and
+these are single-seed margins; a five-seed replication of the same 42 is running and should raise
+the AUC if the effect is real, since averaging removes noise that blunts it.
+
+---
+
 ### 6.9 Germinal: an attempted arm that never ran
 
 Recorded because an attempted-and-failed arm is part of the method. Germinal was wrapped
@@ -1959,3 +2019,13 @@ those are marked.
     positive in both, so selecting on one objective buys nothing on the other. Mouse used a dimer
     construct against human's trimer, so only margins are comparable, and no mouse margin has
     been replicated across seeds.
+
+58. **Our designs fall below the typical NON-binder on a margin validated against measured
+    outcomes.** §6.10e. Twelve measured binders against thirty measured non-binders, through our
+    own configuration, separate at AUC 0.794 (permutation p = 0.0010), so the instrument tracks
+    binding. On that scale binders sit at +7.814 and non-binders at +6.347, while our 48 sit at
+    +0.320 with a best of +6.287: **1 of 48 reaches the weakest real binder and 0 of 48 reach a
+    typical non-binder.** The pre-registered 5.64 bar was met by two designs and was itself
+    mis-set, being anchored on a natural receptor rather than on designed binders; both facts are
+    recorded and the external measurement governs. This is the strongest single reason to expect
+    these designs not to bind, and it supersedes limitation 50.
