@@ -1193,6 +1193,47 @@ the AUC if the effect is real, since averaging removes noise that blunts it.
 
 ---
 
+#### 6.10f Pose agreement was never measured, and it is near zero
+
+The organisers' protocol ranks every promotion step on **ipSAE and sc_DockQ together, 4:1**, where
+`sc_DockQ = DockQ(designed_complex, prediction)`. We computed the first and never the second. Every
+margin in this work asks whether the predicted interface beats a shuffled control; **none asks
+whether the binder ended up where it was designed to go.**
+
+`bin/sc_dockq.py` closes that, CA-based because the Genie 3 backbone carries one atom per residue,
+with all target-chain permutations tried and the maximum taken.
+
+| | 40 of 48 scored, 8 refused by the control |
+|---|--:|
+| sc_DockQ | median **0.025**, max 0.086 |
+| protocol `pose_PASS` default 0.23 | **0 / 40 pass** |
+| Fnat, designed contacts preserved | median **0.000**, max 0.026 |
+| ligand RMSD after target superposition | median **31.1 A**, min 15.0 A |
+| sc_DockQ vs our margin | **r = -0.159** |
+
+**ESMFold2 does not place the binder at the designed epitope.** Median 31 A away, essentially no
+designed contact surviving, and the quantity is **uncorrelated with our margin** -- so every margin
+reported here scored an interface the predictor chose rather than the one we designed.
+
+**Two readings we cannot separate.** Either the sequences do not encode the intended pose, or
+ESMFold2 cannot reproduce designed poses for this class of complex. Section 6.10e tilts toward the
+first: its margin separates measured binders from non-binders at AUC 0.794, so it carries real
+signal about binding.
+
+**The limitation we cannot close.** The released campaign gives binders' sequences but not their
+designed structures, so sc_DockQ cannot be calibrated here against known-good designs. The 0.23
+threshold is the protocol's own, measured on their pipeline.
+
+**This was first reported from a bug, and the control caught it.** The initial run gave the same
+figures from a five-residue register shift: the designed target is numbered 1-152 (mature 6-157)
+and the predicted target 1-157, so residue 1 was matched to residue 1 throughout. The target-only
+superposition read 13.9-19.3 A, impossible for a solved fold, which exposed it. The tool now
+REFUSES rather than scoring when the shared target fails to superpose within 4 A, with a mutation
+test proving a register shift is refused and recovers to DockQ 1.0000 once the offset is tried.
+
+---
+
+
 ### 6.9 Germinal: an attempted arm that never ran
 
 Recorded because an attempted-and-failed arm is part of the method. Germinal was wrapped
@@ -2029,3 +2070,12 @@ those are marked.
     mis-set, being anchored on a natural receptor rather than on designed binders; both facts are
     recorded and the external measurement governs. This is the strongest single reason to expect
     these designs not to bind, and it supersedes limitation 50.
+
+59. **Pose agreement was never measured until the last day, and it is near zero.** Section 6.10f.
+    sc_DockQ against the designed complex gives a median of 0.025 with **0 of 40 passing** the
+    protocol's 0.23 threshold, Fnat near 0, and a median ligand RMSD of 31 A -- the predictor does
+    not put the binder at the designed epitope. It is uncorrelated with our margin (r = -0.159),
+    so every margin in this work scored an interface we did not design. sc_DockQ cannot be
+    calibrated against known binders because the released data gives their sequences and not their
+    designed structures. The organisers' protocol weights ipSAE and sc_DockQ 4:1 at every
+    promotion step; we used only the first for the whole campaign.

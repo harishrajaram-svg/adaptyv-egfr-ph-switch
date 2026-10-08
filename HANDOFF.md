@@ -1,12 +1,12 @@
 # HANDOFF — Anthropic × Adaptyv 2026, Track 3 (all challenges)
-# Updated 2026-10-08 9:20 AM EDT. Covers BOTH challenges; problem 1 is closed and archived below.
+# Updated 2026-10-08 6:35 PM EDT. Covers BOTH challenges; problem 1 is closed and archived below.
 
 **Read order on a cold start:** this file → `projects/anthropic-adaptyv-2026/ROADMAP.md` (the live
 plan) → `challenges/02-tnf-alpha.md` §1–§48. Then nothing else unless a link below says so.
 
 ---
 
-## 🟢 NOTHING RUNNING as of 2026-10-08 9:20 AM. Nothing spending. The design search is CLOSED.
+## 🟡 AS OF 2026-10-08 6:35 PM: the Genie arm ran, and the instrument that was missing all along says it failed. Nothing spending. The design search is CLOSED.
 
 `modal app list` is empty. **Two pre-registered arms ran on 10-07 and both returned nulls**, and both
 carried hard stops written before the run. Those stops are honoured: **no further design arms.**
@@ -143,6 +143,57 @@ target.**
 **Honest expectations if any of this ever runs.** The Baker pH paper's TNF-α row: **72 designs → 48
 retained binding → 3 pH-sensitive**, best 79× weaker and that at **pH 5.4**, not 6.0. At a 20-design
 cap that is **~0.8 expected switches**. The best computational pH-**6.0** result anywhere is **>2×**.
+
+---
+
+## 🔴 2026-10-08 EVENING — THE GENIE ARM, AND THE TWO MEASUREMENTS THAT SETTLE IT
+
+Full write-up in METHODS §6.10a–f. Total spend today ~$35.
+
+**The arm works mechanically.** Genie 3 at 39.9 s and $0.023 per backbone, 3.39 GB peak, 4 chains
+of a 4-chain ceiling. **98 of 100** seed sequences clear the 0.70 monomer floor against **0 of 35**
+for the Mosaic designs. 48 designs co-folded, best margin **+6.287** on five seeds that excluded
+the selected one, which cleared the pre-registered 5.64 bar.
+
+**Then two measurements that should have come first.**
+
+**1. The margin is validated, and our designs fall below NON-binders (§6.10e).** 12 measured
+binders vs 30 measured non-binders through our own configuration: **AUC 0.794, p = 0.0010**. On
+that scale binders sit at **+7.814** and non-binders at **+6.347**, while our 48 sit at **+0.320**
+with a best of +6.287. **1 of 48** reaches the weakest real binder; **0 of 48** reach a typical
+non-binder. The pre-registered bar of 5.64 was anchored on TNFR2, a natural receptor, when the
+relevant population is designed binders — so it was set *below* the non-binder median. It was met
+and it was mis-set; both are in the record.
+
+**2. Pose agreement is near zero (§6.10f).** The protocol ranks on ipSAE **and sc_DockQ**, 4:1, at
+every promotion step. We never computed sc_DockQ. It gives median **0.025**, **0 of 40** passing
+the protocol's 0.23, **Fnat ≈ 0**, ligand RMSD median **31 Å** — the predictor does not put the
+binder at the designed epitope — and it is **uncorrelated with our margin** (r = −0.159). So every
+margin in this work scored an interface we did not design.
+
+**What the arm did establish, and it is worth keeping:**
+
+| | |
+|---|---|
+| sequence variance **1.6×** backbone variance | SD 1.462 vs 0.931; which sequence matters more than which backbone |
+| best-of-4 by MPNN score is worthless | 4 of 24 alternates beat the pick; the new best **+6.459** came from a backbone ranked 7th of 8 |
+| their 8 binders are **ONE** family | 23 Genie3 designs in 10 families; one family of 8 gave 8/8 binders, the other nine gave zero |
+| objective 3 is near-chance | mouse median **−1.264**, below its own scramble; human/mouse r = +0.122 |
+| novelty | **16–21 of 48 at level 2**, zero at level 4, driven by fold similarity (median TM 0.732) not sequence (median identity 0.000) |
+| prescreen | **48/48 pass**, `outbox/prescreen-genie48/` |
+
+**One design is not bad at anything:** `tnfa_corrected_30_s1` — human +5.814, mouse +1.991, pH
+linkage 0.149. Not good at anything either.
+
+**Two dramatic results today were bugs the controls caught before they were reported**: a
+design/null display collision in the Stage A margins, and a five-residue register shift in
+sc_DockQ that the target-superposition control exposed. Both tools now refuse rather than report
+when their own control fails.
+
+**What this closes.** Stage C — 1000 backbones, 200 co-folds, ~$47 — is **not justified**. Not by
+the pre-registration's ambiguity clause but by a clear negative on a validated instrument. And the
+plan as written was structurally wrong anyway: 1000 backbones × 1 sequence each scales the axis
+that matters least.
 
 ---
 
