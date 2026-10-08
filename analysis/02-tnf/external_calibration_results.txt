@@ -1,0 +1,249 @@
+External labels: 150 TNF-alpha designs, 12 measured binders (8.0%)
+Source: Anthropic/claude-protein-binder-design, CC BY 4.0. Assay vendor Acro TNA-H4211 -- the same construct as our challenge.
+
+==============================================================================
+1. WHAT PRODUCED THE 12 BINDERS
+==============================================================================
+  generator                       hits     n    rate
+  Genie3                             8    23   34.8%
+  PXDesign                           4    57    7.0%
+  RFdiffusion3                       0    40    0.0%
+  RFdiffusion                        0    20    0.0%
+  BoltzGen                           0     8    0.0%
+  FreeBindCraft (BindCraft)          0     2    0.0%
+
+  binder lengths : [80, 80, 80, 80, 83, 83, 83, 83, 83, 83, 83, 83]
+  all 150 tested : min 60  max 115
+  sequence design on all 12 binders: ['SolubleMPNN']
+
+  ALSO BIND MOUSE (our objective 2): 3 of 12
+    Genie3        L= 83  human KD     2.10 nM   mouse KD 135.10000000000002 nM
+    Genie3        L= 83  human KD     4.23 nM   mouse KD     66.0 nM
+    Genie3        L= 83  human KD    18.85 nM   mouse KD    297.0 nM
+
+==============================================================================
+2. DOES ANY METRIC SEPARATE BINDERS FROM NON-BINDERS?  (design-level AUC)
+==============================================================================
+   AUC 0.50 = chance.  p by permutation on labels, n=20000, one-sided.
+
+--- stoichiometry 1to3   <-- our construct: 1 binder : 3 protomers
+  model     metric                  AUC        p  binder med  non-bind med
+  af3of3    ipsae_min             0.877                0.703         0.192
+  af3of3    ipsae_max             0.941                0.875         0.423
+  af3of3    iptm_pae              0.896                0.920         0.693
+  af3of3    plddt_binder          0.762               91.684        87.045
+  af3of3    sc_dockq              0.764                0.782         0.585
+  af3of3    n_interface_contacts  0.853               64.500        39.000
+  af3of3    pae_interface_min     0.944                0.900         4.500
+  af3of3    pae_interface_mean    0.848                6.794        11.619
+  afm3      ipsae_min             0.853                0.715         0.304
+  afm3      ipsae_max             0.940                0.894         0.545
+  afm3      iptm_pae              0.810                0.926         0.884
+  afm3      plddt_binder          0.725               90.734        85.828
+  afm3      sc_dockq              0.799                0.772         0.361
+  afm3      n_interface_contacts  0.867               60.500        40.000
+  afm3      pae_interface_min     0.935                0.960         2.896
+  afm3      pae_interface_mean    0.774                6.396         9.483
+  boltz2    ipsae_min             0.781                0.823         0.452
+  boltz2    ipsae_max             0.827                0.912         0.729
+  boltz2    iptm_pae              0.784                0.967         0.938
+  boltz2    plddt_binder          0.568               86.109        85.231
+  boltz2    sc_dockq              0.606                0.650         0.634
+  boltz2    n_interface_contacts  0.778               60.000        42.500
+  boltz2    pae_interface_min     0.820                0.671         2.223
+  boltz2    pae_interface_mean    0.762                4.633         6.559
+  chai1     ipsae_min             0.703                0.620         0.012
+  chai1     ipsae_max             0.732                0.828         0.013
+  chai1     iptm_pae              0.743                0.932         0.781
+  chai1     plddt_binder          0.601               89.369        86.044
+  chai1     sc_dockq              0.612                0.637         0.561
+  chai1     n_interface_contacts  0.760               61.500        44.000
+  chai1     pae_interface_min     0.726                0.941         8.051
+  chai1     pae_interface_mean    0.687                6.071        17.446
+  ef2fast   ipsae_min             0.692                0.536         0.247
+  ef2fast   ipsae_max             0.753                0.837         0.592
+  ef2fast   iptm_pae              0.699                0.903         0.858
+  ef2fast   plddt_binder          0.471               84.928        85.400
+  ef2fast   sc_dockq              0.663                0.776         0.696
+  ef2fast   n_interface_contacts  0.761               63.500        47.000
+  ef2fast   pae_interface_min     0.745                1.265         2.914
+  ef2fast   pae_interface_mean    0.650                7.855         9.280
+  ef2full   ipsae_min             0.822                0.687         0.423
+  ef2full   ipsae_max             0.899                0.866         0.646
+  ef2full   iptm_pae              0.833                0.919         0.884
+  ef2full   plddt_binder          0.579               84.767        84.659
+  ef2full   sc_dockq              0.697                0.774         0.674
+  ef2full   n_interface_contacts  0.786               64.000        44.000
+  ef2full   pae_interface_min     0.901                0.650         1.755
+  ef2full   pae_interface_mean    0.760                7.098         9.014
+  odde      ipsae_min             0.881                0.574         0.343
+  odde      ipsae_max             0.944                0.860         0.661
+  odde      iptm_pae              0.910                0.933         0.890
+  odde      plddt_binder          0.606               94.384        93.821
+  odde      sc_dockq              0.685                0.796         0.708
+  odde      n_interface_contacts  0.768               66.000        44.500
+  odde      pae_interface_min     0.876                0.635         1.015
+  odde      pae_interface_mean    0.841                6.639         8.835
+  of3       ipsae_min             0.908                0.649         0.083
+  of3       ipsae_max             0.939                0.846         0.235
+  of3       iptm_pae              0.923                0.907         0.598
+  of3       plddt_binder          0.766               90.755        85.204
+  of3       sc_dockq              0.801                0.765         0.544
+  of3       n_interface_contacts  0.905               64.000        38.000
+  of3       pae_interface_min     0.943                1.143         6.658
+  of3       pae_interface_mean    0.878                7.370        13.742
+  ptxv2     ipsae_min             0.700                0.698         0.576
+  ptxv2     ipsae_max             0.783                0.848         0.780
+  ptxv2     iptm_pae              0.646                0.896         0.880
+  ptxv2     plddt_binder          0.432               92.682        94.598
+  ptxv2     sc_dockq              0.770                0.875         0.733
+  ptxv2     n_interface_contacts  0.785               62.500        41.000
+  ptxv2     pae_interface_min     0.844                0.495         0.770
+  ptxv2     pae_interface_mean    0.649                6.498         7.057
+  rf3       ipsae_min             0.951                0.132         0.000
+  rf3       ipsae_max             0.964                0.443         0.000
+  rf3       iptm_pae              0.947                0.686         0.622
+  rf3       plddt_binder          0.701               80.224        79.345
+  rf3       sc_dockq              0.754                0.789         0.619
+  rf3       n_interface_contacts  0.794               65.000        44.000
+  rf3       pae_interface_min     0.960                4.125        11.309
+  rf3       pae_interface_mean    0.954               12.433        18.609
+
+--- stoichiometry 3to3
+  model     metric                  AUC        p  binder med  non-bind med
+  af3of3    ipsae_min             0.775                0.753         0.591
+  af3of3    ipsae_max             0.775                0.754         0.595
+  af3of3    iptm_pae              0.688                0.932         0.910
+  af3of3    plddt_binder          0.565               93.396        93.781
+  af3of3    sc_dockq              0.764                0.697         0.460
+  af3of3    n_interface_contacts  0.851               64.500        45.000
+  af3of3    pae_interface_min     0.929                0.800         1.500
+  af3of3    pae_interface_mean    0.688                6.203         7.159
+  afm3      ipsae_min             0.807                0.725         0.497
+  afm3      ipsae_max             0.804                0.726         0.505
+  afm3      iptm_pae              0.743                0.931         0.903
+  afm3      plddt_binder          0.674               91.047        88.128
+  afm3      sc_dockq              0.799                0.702         0.448
+  afm3      n_interface_contacts  0.899               61.000        39.000
+  afm3      pae_interface_min     0.930                0.975         2.120
+  afm3      pae_interface_mean    0.725                6.277         7.871
+  boltz2    ipsae_min             0.655                0.854         0.771
+  boltz2    ipsae_max             0.658                0.859         0.798
+  boltz2    iptm_pae              0.609                0.970         0.961
+  boltz2    plddt_binder          0.525               88.115        88.915
+  boltz2    sc_dockq              0.779                0.709         0.508
+  boltz2    n_interface_contacts  0.736               62.000        46.000
+  boltz2    pae_interface_min     0.736                0.555         0.905
+  boltz2    pae_interface_mean    0.599                4.188         4.798
+  chai1     ipsae_min             0.609                0.331         0.135
+  chai1     ipsae_max             0.607                0.348         0.151
+  chai1     iptm_pae              0.604                0.858         0.719
+  chai1     plddt_binder          0.515               86.517        85.049
+  chai1     sc_dockq              0.783                0.650         0.455
+  chai1     n_interface_contacts  0.668               58.000        47.500
+  chai1     pae_interface_min     0.589                2.713         5.287
+  chai1     pae_interface_mean    0.566                8.602        13.013
+  ef2fast   ipsae_min             0.559                0.533         0.407
+  ef2fast   ipsae_max             0.543                0.541         0.443
+  ef2fast   iptm_pae              0.586                0.895         0.872
+  ef2fast   plddt_binder          0.413               85.349        86.084
+  ef2fast   sc_dockq              0.723                0.709         0.570
+  ef2fast   n_interface_contacts  0.628               53.500        45.000
+  ef2fast   pae_interface_min     0.595                1.164         1.676
+  ef2fast   pae_interface_mean    0.519                7.593         8.038
+  ef2full   ipsae_min             0.675                0.623         0.465
+  ef2full   ipsae_max             0.647                0.641         0.540
+  ef2full   iptm_pae              0.653                0.908         0.874
+  ef2full   plddt_binder          0.445               84.664        86.811
+  ef2full   sc_dockq              0.750                0.719         0.570
+  ef2full   n_interface_contacts  0.748               61.000        41.000
+  ef2full   pae_interface_min     0.739                1.014         1.800
+  ef2full   pae_interface_mean    0.602                7.478         8.307
+  odde      ipsae_min             0.887                0.802         0.521
+  odde      ipsae_max             0.884                0.815         0.538
+  odde      iptm_pae              0.874                0.961         0.926
+  odde      plddt_binder          0.652               94.886        94.081
+  odde      sc_dockq              0.707                0.703         0.565
+  odde      n_interface_contacts  0.824               65.500        46.000
+  odde      pae_interface_min     0.947                0.460         0.795
+  odde      pae_interface_mean    0.817                5.088         6.773
+  of3       ipsae_min             0.826                0.731         0.389
+  of3       ipsae_max             0.822                0.731         0.399
+  of3       iptm_pae              0.743                0.925         0.858
+  of3       plddt_binder          0.646               92.244        90.463
+  of3       sc_dockq              0.773                0.682         0.445
+  of3       n_interface_contacts  0.866               65.500        46.000
+  of3       pae_interface_min     0.944                0.778         2.453
+  of3       pae_interface_mean    0.728                6.733         9.419
+  ptxv2     ipsae_min             0.647                0.856         0.826
+  ptxv2     ipsae_max             0.639                0.858         0.829
+  ptxv2     iptm_pae              0.601                0.963         0.962
+  ptxv2     plddt_binder          0.498               94.126        95.129
+  ptxv2     sc_dockq              0.732                0.739         0.600
+  ptxv2     n_interface_contacts  0.855               65.000        43.000
+  ptxv2     pae_interface_min     0.936                0.370         0.555
+  ptxv2     pae_interface_mean    0.593                4.806         5.039
+  rf3       ipsae_min             0.896                0.324         0.022
+  rf3       ipsae_max             0.889                0.346         0.038
+  rf3       iptm_pae              0.958                0.757         0.597
+  rf3       plddt_binder          0.664               80.665        79.578
+  rf3       sc_dockq              0.789                0.721         0.501
+  rf3       n_interface_contacts  0.835               64.000        44.000
+  rf3       pae_interface_min     0.918                2.420         6.480
+  rf3       pae_interface_mean    0.915               10.128        15.787
+
+  TOP 8 DISCRIMINATORS across all models/stoichiometries/metrics
+  (permutation p computed only here -- 20000 label shuffles each):
+    AUC 0.964  p=0.00005   rf3 / 1to3 / ipsae_max
+    AUC 0.960  p=0.00005   rf3 / 1to3 / pae_interface_min
+    AUC 0.958  p=0.00005   rf3 / 3to3 / iptm_pae
+    AUC 0.954  p=0.00005   rf3 / 1to3 / pae_interface_mean
+    AUC 0.951  p=0.00005   rf3 / 1to3 / ipsae_min
+    AUC 0.947  p=0.00005   rf3 / 1to3 / iptm_pae
+    AUC 0.947  p=0.00005   odde / 3to3 / pae_interface_min
+    AUC 0.944  p=0.00005   of3 / 3to3 / pae_interface_min
+  Bonferroni bar for the 160 cells scanned, alpha 0.05: p < 0.00031
+  WORST 3 (anti-correlated = the metric points the wrong way):
+    AUC 0.413            ef2fast / 3to3 / plddt_binder
+    AUC 0.432            ptxv2 / 1to3 / plddt_binder
+    AUC 0.445            ef2full / 3to3 / plddt_binder
+
+==============================================================================
+3. OUR BARS, SCORED AGAINST REAL OUTCOMES
+==============================================================================
+  iptm >= 0.45 on af3of3   : admits 105/150 designs, 12/12 binders kept, precision  11.4%
+  iptm >= 0.45 on afm3     : admits 150/150 designs, 12/12 binders kept, precision   8.0%
+  iptm >= 0.45 on boltz2   : admits 150/150 designs, 12/12 binders kept, precision   8.0%
+  iptm >= 0.45 on chai1    : admits 150/150 designs, 12/12 binders kept, precision   8.0%
+  iptm >= 0.45 on ef2fast  : admits 150/150 designs, 12/12 binders kept, precision   8.0%
+  iptm >= 0.45 on ef2full  : admits 150/150 designs, 12/12 binders kept, precision   8.0%
+  iptm >= 0.45 on odde     : admits 148/150 designs, 12/12 binders kept, precision   8.1%
+  iptm >= 0.45 on of3      : admits  96/150 designs, 12/12 binders kept, precision  12.5%
+  iptm >= 0.45 on ptxv2    : admits 149/150 designs, 12/12 binders kept, precision   8.1%
+  iptm >= 0.45 on rf3      : admits 150/150 designs, 12/12 binders kept, precision   8.0%
+
+  plddt >= 70 on af3of3   : admits 140/150, 12/12 binders kept, lowest binder  89.9
+  plddt >= 70 on afm3     : admits 115/150, 12/12 binders kept, lowest binder  87.3
+  plddt >= 70 on boltz2   : admits 146/150, 11/12 binders kept, lowest binder  69.4
+  plddt >= 70 on chai1    : admits 148/150, 12/12 binders kept, lowest binder  71.9
+  plddt >= 70 on ef2fast  : admits 144/150, 11/12 binders kept, lowest binder  55.3
+  plddt >= 70 on ef2full  : admits 148/150, 12/12 binders kept, lowest binder  81.3
+  plddt >= 70 on odde     : admits 150/150, 12/12 binders kept, lowest binder  92.3
+  plddt >= 70 on of3      : admits 136/150, 12/12 binders kept, lowest binder  88.5
+  plddt >= 70 on ptxv2    : admits 150/150, 12/12 binders kept, lowest binder  91.3
+  plddt >= 70 on rf3      : admits 150/150, 12/12 binders kept, lowest binder  78.7
+
+==============================================================================
+4. OUR 35 DESIGNS vs 150 THAT WERE ACTUALLY ASSAYED
+==============================================================================
+  Comparison model: boltz2, 1 binder : 3 protomers -- our construct and our oracle.
+  CAVEAT: their co-folding config is not byte-identical to our re-prediction (seeds, MSA,
+  templates), so read this as an order-of-magnitude placement, not a matched measurement.
+
+  iptm         theirs n=150  min 0.755  median 0.945  max 0.973
+               OURS   n= 35  min 0.111  median 0.156  max 0.312
+               our best (0.312) vs their WORST (0.755): BELOW the floor of the real field
+
+  plddt_binder theirs n=150  min 68.9   median 85.3   max 93.0   (0-100)
+               OURS   n= 35  min 32.1   median 47.0   max 68.8   (rescaled)
+               clearing the 70 protocol floor: theirs 146/150, OURS 0/35

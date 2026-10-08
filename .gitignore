@@ -16,3 +16,8 @@ __pycache__/
 # FoldSeek binary + databases (large, re-downloadable)
 tools/foldseek/
 tools/fsdb/
+
+# Anthropic campaign raw downloads (11 MB); bin/fetch-anthropic-campaign.sh re-fetches.
+# The DERIVED tnfa_*.tsv slices are committed so the calibration reproduces offline.
+reference/anthropic-campaign/design_summary.csv
+reference/anthropic-campaign/cofold_predictions.parquet
