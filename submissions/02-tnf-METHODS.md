@@ -245,6 +245,56 @@ affinity or of pH selectivity.
 
 ---
 
+### 4.5 All of the above, recalibrated against 150 measured designs on this target
+
+Added 2026-10-07. `arms-backlog.md` recorded a per-target positive control as a **blocking
+dependency** for validating any instrument. It was public throughout. Anthropic's released campaign
+data (`huggingface.co/datasets/Anthropic/claude-protein-binder-design`, CC BY 4.0, ungated) carries
+**150 de novo TNF-α designs assayed against the same construct as this challenge, Acro TNA-H4211**:
+12 measured binders, 138 measured non-binders, each with co-folding metrics from ten models.
+Fetched by `bin/fetch-anthropic-campaign.sh`; calibrated by `analysis/02-tnf/calibrate_external.py`,
+which carries a self-test and two mutation tests. Full output, all 160 model × stoichiometry ×
+metric cells, in `analysis/02-tnf/external_calibration_results.txt`.
+
+Design-level AUC, binder vs non-binder, at **1 binder : 3 protomers** — the construct we submit.
+Seeds are collapsed per design by median before ranking, because they are replicates of one design
+and raw-seed ranking would inflate n tenfold.
+
+| model | `ipsae_min` | `pae_interface_min` | `plddt_binder` |
+|---|---|---|---|
+| rf3 | 0.951 | **0.960** | 0.701 |
+| of3 | 0.908 | 0.943 | 0.766 |
+| af3of3 | 0.877 | 0.944 | 0.762 |
+| **ef2full — our arm** | 0.822 | **0.901** | 0.579 |
+| **boltz2 — our design oracle** | **0.781** | 0.820 | 0.568 |
+| **ef2fast — our other arm** | 0.692 | 0.745 | 0.471 |
+
+The top cells reach **p = 0.00005** by permutation on the labels (n = 20000) against a Bonferroni
+bar of 0.00031 for the 160 cells scanned.
+
+**Three conclusions, two of which change what we ship.**
+
+**(a) `ipSAE` is a ranker for binding, and `plddt_binder` is not.** The three most anti-correlated
+cells of all 160 are `plddt_binder` (AUC 0.413–0.471). This **confirms** §4's reading rather than
+reversing it: ipSAE separates binder from non-binder and carries no affinity information among
+binders. The retirement in §4 was measured on an affinity ladder — a different task, still retired
+for that task.
+
+**(b) We rank on `pae_interface_min` from ESMFold2-Full**, with `ipSAE_min` reported alongside, because
+on our own arm it is the better discriminator (0.901 vs 0.822) on external labelled data rather than
+on our own designs. Implemented in `bin/pae_interface.py` as a **sibling** of `ipsae_min.py` rather
+than an edit to it, because that module is pinned by 12 fixtures and a fail-closed suite. Validated
+on those fixtures: barnase/barstar reads **0.332, best of 12**; the shuffled negative **19.137,
+worst of 12**; and the renumbered and chain-swapped variants return **0.332 identically**, so the
+metric is invariant to the chain relabelling this project has repeatedly been bitten by.
+⚠️ **Values for our own 35 designs do not exist** — producing them needs an ESMFold2 run that has
+not been made. The switch is declared and plumbed, not yet measured on our set.
+
+**(c) ESMFold2-Full and ESMFold2-Fast are not interchangeable.** `arms-backlog.md` called their
+agreement to four decimal places *"a symptom rather than a virtue"*. On external labels they split
+**0.822 versus 0.692**. The complaint was right and was measuring the wrong thing. **Fast is retired
+for this target.**
+
 ## 5. What the surviving instrument can do
 
 `ipSAE_min` reads a labelled negative correctly. Adalimumab is TNF-α-specific and does not
@@ -794,6 +844,41 @@ binding only.
 
 ---
 
+### 8.5 Two filters re-scored against measured outcomes
+
+**The 0.45 interface bar is inert, not strict.** Against the 150 assayed designs it admits **150 of
+150** on 8 of the 10 co-folding models — every measured non-binder included — for a precision of
+**8.0%**, which is exactly the base rate. It retained 12 of 12 binders only because it rejects
+nothing. **It is therefore not a filter and is not described as one.** It survives solely as the
+threshold below which we withdraw a geometry verdict to `n/a` (D-P2-1), which is a reporting rule.
+
+**The filter that does work is monomer foldability, and this work never applied it.**
+`reference/anthropic-binder-design-protocol.md:100` specifies a default floor of **0.70 mean pLDDT
+on the binder alone**, to be run *before any co-folding spend*. We applied the 0.45 bar twenty-one
+times and this floor zero times.
+
+| `plddt_binder`, Boltz-2, 1 binder : 3 protomers | 150 assayed designs | our 35 |
+|---|---|---|
+| minimum | **68.9** | 32.1 |
+| median | 85.3 | 47.0 |
+| maximum | 93.0 | **68.8** |
+| clearing the 0.70 floor | **146 / 150** | **0 / 35** |
+
+**Our best design sits one-tenth of a point below the worst of 150 designs that were synthesised and
+assayed.** Two caveats, stated rather than buried: one measured binder reads 69.4, so 0.70 is not an
+absolute wall; and their co-folding configuration is not byte-identical to our re-prediction, so this
+is order-of-magnitude placement rather than a matched measurement — though the gap is roughly three
+times any plausible configuration difference. The floor is now declared and reported by
+`analysis/02-tnf/design_inventory.py`, which refuses to export if `plddt_binder_repred` mixes the
+0–1 and 0–100 scales across runs.
+
+**Pre-submission screen.** `adaptyvbio/binder-prescreen`, the sequence-based screen that replaced the
+novelty gate for TNF-α on 2026-10-08, run on all 35 on 2026-10-07: **35/35 pass**, whole-sequence
+similarity to the 4,964-entry known-anti-TNF corpus **0.000 for every design**, binding-region
+identity at most **0.260** (median 0.229). The public prior-art arm was not run — it requires the
+10.2 M-sequence patent database — so this is the TNF-specific arm, which is the arm the submission
+gate uses.
+
 ## 9. Controls
 
 *Design fixed; results pending generation — and their value is now conditional, see below.*
@@ -1026,6 +1111,29 @@ kind of finding to accept without checking, because it agrees with a decision al
 one arrived on a morning when the method had just failed, and it was welcome. The surviving claim is
 weaker than the one first written, and the target corroboration of §1, which is clean, was never in
 doubt either way.
+
+**Two correct decisions left one design oracle, and it was the one we had excluded.** On 2026-09-18
+Boltz-2 failed this project's own validation gate as a ranking arm: with a staged target MSA a
+shuffled negative scored **0.7326 against the true binder's 0.6463**, and the recorded diagnosis was
+that Boltz needs alignment context on both chains to judge an interface, *which de novo binder design
+can never supply*. Verdict: exclude Boltz. On 2026-09-29 a frozen decision forbade designing on the
+ranking instrument, to keep the ranking question answerable in December. Both decisions were correct.
+But the third permitted predictor emits no PAE, so the two together left **exactly one permitted
+design oracle: the excluded one.** Twenty-one trajectories descended its gradient, and the external
+calibration in §4.5 puts it last among credible models at AUC 0.781. **The project had a rule for
+this** — an arm that fails its gate is excluded for that target — **and applied it to ranking but not
+to generation, because the rule governed what a design objective may not use and never what it must
+pass.** This is recorded as the leading explanation for the flat interface term, displacing the
+term-interaction account in §6.3, which is retained as a contributing factor but no longer the
+headline; it never explained why the monomer leg, which carries no interface or pH term, also folded
+nothing.
+
+**A number corrected in one document was still wrong in another, for the second time.** §11 corrected
+a +20% effect size to **+31%** on 2026-10-07 at 7:35 AM, and the public methodology box was updated
+the same morning — in one of its two prose fields. The other field still read 20% at 11:30 PM that
+night. The lesson recorded the first time was *"a number fixed in one document is not fixed"*; the
+recurrence shows that lesson was recorded and not operationalised. There is still no check that greps
+every published surface for a corrected figure.
 
 ## 12. The inverted-objective pilot
 
@@ -1385,3 +1493,29 @@ those are marked.
     `CITATION.cff` and `README.md`, +21/−0, no Python — and the install is now pinned to
     `b94b9d4eb9907a700a6d78ed2d29d3704c5df46c`. **The absence of a confound here was established after
     the fact, not guaranteed by the setup**, and nothing in the test suite would have caught it.
+
+49. **The generator was never validated on this target and the calibration that would have shown it
+    existed throughout.** §4.5 measures our design oracle at AUC 0.781 against 0.908 and 0.951 for
+    two alternatives, on 150 assayed designs released months before this challenge. We built four
+    ranking instruments and validated none of our generation path.
+
+50. **No design in this submission clears the monomer-foldability floor in the organisers' own
+    protocol.** 0 of 35 at 0.70; our best is 68.9 vs their lowest assayed value of 68.8. We report
+    this rather than relaxing the floor, and it is the strongest single reason to expect these designs
+    not to bind.
+
+51. **The ranker we declare is not the ranker we measured our designs with.** §4.5 selects
+    `pae_interface_min` on ESMFold2-Full on external labels, but no ESMFold2 prediction of our own 35
+    exists, so the submitted order still derives from Boltz-2 quantities. The switch is declared,
+    plumbed and self-tested; it is not yet applied.
+
+52. **The calibration in §4.5 is not blind.** Medians for several models were inspected before AUC was
+    chosen as the statistic. The guard is completeness — all 160 cells are printed, so no subset can
+    be selected quietly — and permutation p values are computed only for the top cells. Single cells
+    should be read as descriptive.
+
+53. **A length hypothesis was raised and retracted within one evening.** The argument that 76–84 aa is
+    too small for this surface class was retracted when the released data showed all twelve measured
+    binders at 80 or 83 aa against a 60–115 range tested. It is recorded because the retraction was
+    driven by measured outcomes overruling an a priori geometric argument, which is the direction this
+    project has had to correct in most often.

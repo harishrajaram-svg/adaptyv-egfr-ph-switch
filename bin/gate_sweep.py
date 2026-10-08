@@ -48,6 +48,12 @@ GATES = [
     # wrong, and no check recomputed it. This one does, and refuses the old claim's return.
     ('check_species_map',        [PY, 'bin/check_species_map.py'], None),
     ('check_discards',           [PY, 'bin/check_discards.py'], None),
+    # "A number fixed in one document is not fixed" was recorded as a lesson three times --
+    # a +20% corrected in METHODS and not the box, then in one of the box's two prose fields
+    # and not the other, then a limitation count that moved 48 -> 53 while two documents still
+    # said 48. Writing the lesson down did not work. This gate is the operationalisation; it
+    # exempts historical records ("43 -> 48") so the project never rewrites its own record.
+    ('check_published_counts',   [PY, 'bin/check_published_counts.py'], None),
     ('instrument_v2 --self-test',[PY, 'bin/instrument_v2.py', '--self-test'], None),
     ('control_family_balance',   [PY, 'bin/control_family_balance.py'], None),
     ('run_fixtures --check',     [PY, 'run_fixtures.py', '--check'], 'outbox/ipsae-fixtures'),

@@ -21,3 +21,12 @@ tools/fsdb/
 # The DERIVED tnfa_*.tsv slices are committed so the calibration reproduces offline.
 reference/anthropic-campaign/design_summary.csv
 reference/anthropic-campaign/cofold_predictions.parquet
+
+# The organisers' pre-submission screen, cloned 2026-10-07 (156 MB incl. its own venv and
+# reference set). Not vendored: it is their tool, it changes under us, and the verdict we
+# rely on is the committed report in outbox/prescreen-*/. Recreate with:
+#   git clone --depth 1 https://github.com/adaptyvbio/binder-prescreen tools/binder-prescreen
+#   cd tools/binder-prescreen && uv venv && uv pip install -e .   # plus: brew install mmseqs2
+tools/binder-prescreen/
+# mmseqs intermediates from that run; report.csv / report.json are the artifacts.
+outbox/prescreen-*/work/

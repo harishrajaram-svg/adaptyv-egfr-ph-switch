@@ -1,0 +1,2178 @@
+{
+ "results": {
+  "p2trimer02_L76_s0": {
+   "id": "p2trimer02_L76_s0",
+   "sequence": "GPKHIITVVFGFTFTDGDHPYMIHHGHHHEEIENLNLPGHHYKVKHVSSLVASSDNDENGHRRVFVFVHVEFTDDN",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1429,
+     "monobody": 0.1702,
+     "darpin": 0.3333
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "GPKHIITVVFGFTFTDGDHPYMIHHGHHHEEIENLNLPGHHYKVKHVSSLVASSDNDENGHRRVFVFVHVEFTDDN",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2211,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04932|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AGJ48823",
+     "region_reference_seq": "DLPQLGDLAVSEVGWDGLRLNWTAADNAYEHFVIQVQEVNKVEAAQNLTLPGSLRAVDIPGLEAATPYRVSIYGVIRGYRTPVLSAEASTAKEPE",
+     "region_query_seq": "GPKHIITVVFGFTFTDGDHPYMIHHGHHHEEIENLNLPGHHYKVKHVSSLVASSDNDENGHRRVFVFVHVEFTDDN",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2trimer02_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2free-smoke01_L76_s0": {
+   "id": "p2free-smoke01_L76_s0",
+   "sequence": "KPQVSSLHDDHHTQPNPIINYAQPVGSHGEDEEMEEHPGKDEEKVSKSSMHHSHDNEDQGRQRDIVIHKVFWIHDN",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1795,
+     "monobody": 0.2041,
+     "darpin": 0.1864
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "KPQVSSLHDDHHTQPNPIINYAQPVGSHGEDEEMEEHPGKDEEKVSKSSMHHSHDNEDQGRQRDIVIHKVFWIHDN",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2128,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03252|designed_other|tested_non_binder|Proteinbase|proteinbase:silver-swan-oak",
+     "region_reference_seq": "SEKVKQALDILEKTLKELEKTKDPQKMQEIIDRALKEIEEIIETLSEEELVELLNKAEELFDKFARTITDSLVREALSGFYLRFLGVIGKHLSK",
+     "region_query_seq": "KPQVSSLHDDHHTQPNPIINYAQPVGSHGEDEEMEEHPGKDEEKVSKSSMHHSHDNEDQGRQRDIVIHKVFWIHDN",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2free-smoke01_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2grad-n-s_L84_s1": {
+   "id": "p2grad-n-s_L84_s1",
+   "sequence": "HHHYGPSNPGDSTLPIPNTWGQENVPVPVVDYDKWQGHNWTVSLKWNPSTPKNQKNRKIPPGSSKSATITNSYYGGKWSWKRTY",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2619,
+     "monobody": 0.2273,
+     "darpin": 0.1912
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "HHHYGPSNPGDSTLPIPNTWGQENVPVPVVDYDKWQGHNWTVSLKWNPSTPKNQKNRKIPPGSSKSATITNSYYGGKWSWKRTY",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2357,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04951|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AAR40261",
+     "region_reference_seq": "NCVKDTYPSGHKCCRECQPGHGMVSRCDHTRDTVCHPCEPGFYNEAVNYDTCKQCTQCNHRSGSELKQNCTPTEDTVCQCRPGTQPRQDSSHKLGVDCVPCPPGHFSPGSNQACKPWTNCTLSGKQIRHPASNSLDTVCE",
+     "region_query_seq": "HHHYGPSNPGDSTLPIPNTWGQENVPVPVVDYDKWQGHNWTVSLKWNPSTPKNQKNRKIPPGSSKSATITNSYYGGKWSWKRTY",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2grad-n-s_L84_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2grad-n-p_L76_s0": {
+   "id": "p2grad-n-p_L76_s0",
+   "sequence": "TSPSALKKEATPPAGEGTWKVAIPESYMHGGHLHAIKNDAKTKKKHNIPIVNSDSDNTIKPKQPEDAFEYEAVLLD",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2727,
+     "monobody": 0.2353,
+     "darpin": 0.25
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "TSPSALKKEATPPAGEGTWKVAIPESYMHGGHLHAIKNDAKTKKKHNIPIVNSDSDNTIKPKQPEDAFEYEAVLLD",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.25,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03258|designed_other|tested_non_binder|Proteinbase|proteinbase:ivory-moth-willow",
+     "region_reference_seq": "AVQEAAKLLNEAIENLKKALEVLEKNGGDPDTIGLLSRAIHLLEGAITYLLDGDYETALKLLKEAEKLLEEALKKVTHPEAKEYIEKALEKIKEAIKLLE",
+     "region_query_seq": "TSPSALKKEATPPAGEGTWKVAIPESYMHGGHLHAIKNDAKTKKKHNIPIVNSDSDNTIKPKQPEDAFEYEAVLLD",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2grad-n-p_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2probe-d_L84_s1": {
+   "id": "p2probe-d_L84_s1",
+   "sequence": "PVESGEEPEKGPPEVEDRKLVNPDPNNEGKYEEYDQSESRNQFKQEEAKAPHAETQESMEEKPKHLKANDAKASSPQNWEEMPD",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.3333,
+     "monobody": 0.0943,
+     "darpin": 0.2466
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "PVESGEEPEKGPPEVEDRKLVNPDPNNEGKYEEYDQSESRNQFKQEEAKAPHAETQESMEEKPKHLKANDAKASSPQNWEEMPD",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2292,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03254|designed_other|tested_non_binder|Proteinbase|proteinbase:steady-lynx-quartz",
+     "region_reference_seq": "EFEERLLEELYQYLLELGFPEEFAKELVEAIRAGDFERLRKLLLEAGFPEGVANDIVELARQLVEALAAGDKESAEGALGALRVALSGAYTERLSR",
+     "region_query_seq": "PVESGEEPEKGPPEVEDRKLVNPDPNNEGKYEEYDQSESRNQFKQEEAKAPHAETQESMEEKPKHLKANDAKASSPQNWEEMPD",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2probe-d_L84_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2probe2-f_L76_s1": {
+   "id": "p2probe2-f_L76_s1",
+   "sequence": "GPEKFPPKVNVYEYNPEEMKQLEEHQTGDVPKAYIPAELPESEKEDYEWIKKHLEAHSKKLKFGSGPDDEEKKKKP",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.3111,
+     "monobody": 0.2273,
+     "darpin": 0.3279
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "GPEKFPPKVNVYEYNPEEMKQLEEHQTGDVPKAYIPAELPESEKEDYEWIKKHLEAHSKKLKFGSGPDDEEKKKKP",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.25,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03258|designed_other|tested_non_binder|Proteinbase|proteinbase:ivory-moth-willow",
+     "region_reference_seq": "AVQEAAKLLNEAIENLKKALEVLEKNGGDPDTIGLLSRAIHLLEGAITYLLDGDYETALKLLKEAEKLLEEALKKVTHPEAKEYIEKALEKIKEAIKLLE",
+     "region_query_seq": "GPEKFPPKVNVYEYNPEEMKQLEEHQTGDVPKAYIPAELPESEKEDYEWIKKHLEAHSKKLKFGSGPDDEEKKKKP",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2probe2-f_L76_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2grad-n-q_L76_s1": {
+   "id": "p2grad-n-q_L76_s1",
+   "sequence": "EPTVTPTPPGQTLQLPAGVPIGKHNVHWWYQVNHDAWFFVSKGPFSGTITYKESETVEKVFYQVNEYESYGQTHSS",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.0952,
+     "monobody": 0.2182,
+     "darpin": 0.2344
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "EPTVTPTPPGQTLQLPAGVPIGKHNVHWWYQVNHDAWFFVSKGPFSGTITYKESETVEKVFYQVNEYESYGQTHSS",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2561,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03245|miniprotein|tested_non_binder|Proteinbase|proteinbase:violet-swan-ash",
+     "region_reference_seq": "TKTITVEPGMTLEQLRERIRKALEELGVKPGDIVKITITNPEGTGTETIKVSSIEELVNEIVALVFAAGLPEGMKVTLTKLS",
+     "region_query_seq": "EPTVTPTPPGQTLQLPAGVPIGKHNVHWWYQVNHDAWFFVSKGPFSGTITYKESETVEKVFYQVNEYESYGQTHSS",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2grad-n-q_L76_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2smoke01_L76_s0": {
+   "id": "p2smoke01_L76_s0",
+   "sequence": "GKRPEWQVLWPDTKAPEPEGDVKAWIHPPMEPGPDDHNGHGKVHGYVGAWFGQTPIEQKAHWSVWVAHFSEHTQNH",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1333,
+     "monobody": 0.1667,
+     "darpin": 0.3235
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "GKRPEWQVLWPDTKAPEPEGDVKAWIHPPMEPGPDDHNGHGKVHGYVGAWFGQTPIEQKAHWSVWVAHFSEHTQNH",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2237,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04926|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AQN12376",
+     "region_reference_seq": "MKYLLPTAAAGLLLLAAQPAMGPAAAQVQLQESGTQVTVSSEQKLISEEDLNGAAHHHHHH",
+     "region_query_seq": "GKRPEWQVLWPDTKAPEPEGDVKAWIHPPMEPGPDDHNGHGKVHGYVGAWFGQTPIEQKAHWSVWVAHFSEHTQNH",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2smoke01_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2deep-q_L76_s1": {
+   "id": "p2deep-q_L76_s1",
+   "sequence": "GQHTHQQDYNREADMSYQHMSDEQYWKAYAKQLEKKKAWYQKNAPPGSHNLQQLASNEKLLTESFQDGDKLVKSNN",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2273,
+     "monobody": 0.1304,
+     "darpin": 0.2419
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "GQHTHQQDYNREADMSYQHMSDEQYWKAYAKQLEKKKAWYQKNAPPGSHNLQQLASNEKLLTESFQDGDKLVKSNN",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2237,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04921|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:ABW63875",
+     "region_reference_seq": "QGKYIHPQNNSISCTKSHKGTYLYNDCPGPGQDTDCRECESGSFTASENNK",
+     "region_query_seq": "GQHTHQQDYNREADMSYQHMSDEQYWKAYAKQLEKKKAWYQKNAPPGSHNLQQLASNEKLLTESFQDGDKLVKSNN",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2deep-q_L76_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2probe-c_L84_s0": {
+   "id": "p2probe-c_L84_s0",
+   "sequence": "DPPEAPHEGMYVDHIPLEQPGDMPDHMKMGAKVEANNKNEGNGPYVEYLVVWHSGHNFVVPYNPMSKMFLHGIDKNGKPKPEQK",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1778,
+     "monobody": 0.2241,
+     "darpin": 0.3333
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "DPPEAPHEGMYVDHIPLEQPGDMPDHMKMGAKVEANNKNEGNGPYVEYLVVWHSGHNFVVPYNPMSKMFLHGIDKNGKPKPEQK",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2185,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04936|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AAR40258",
+     "region_reference_seq": "QNLEGLHHDGQFCHKPCPPGERKARDCTVNGDEPDCVPCQEGKEYTDKAHFSSKCRRCRLCDEGHGLEVEINCTRTQNTKCRCKPNFFCNSTVCEHCDPCTKCEHGIIKECTLTSNTKC",
+     "region_query_seq": "DPPEAPHEGMYVDHIPLEQPGDMPDHMKMGAKVEANNKNEGNGPYVEYLVVWHSGHNFVVPYNPMSKMFLHGIDKNGKPKPEQK",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2probe-c_L84_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2species02_L76_s0": {
+   "id": "p2species02_L76_s0",
+   "sequence": "KPQSPGTDINPLVWLDDTAPLLDAWMQDPALGRKKPKLDPEGEKKSRSSKHTYHPMPDRGALRNGHRHPYSENEDA",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1111,
+     "monobody": 0.1957,
+     "darpin": 0.2581
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "KPQSPGTDINPLVWLDDTAPLLDAWMQDPALGRKKPKLDPEGEKKSRSSKHTYHPMPDRGALRNGHRHPYSENEDA",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2368,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04926|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AQN12376",
+     "region_reference_seq": "MKYLLPTAAAGLLLLAAQPAMGPAAAQVQLQESGTQVTVSSEQKLISEEDLNGAAHHHHHH",
+     "region_query_seq": "KPQSPGTDINPLVWLDDTAPLLDAWMQDPALGRKKPKLDPEGEKKSRSSKHTYHPMPDRGALRNGHRHPYSENEDA",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2species02_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2probe-a_L76_s0": {
+   "id": "p2probe-a_L76_s0",
+   "sequence": "KAKKKWVRVTHPNGWDMPIVPLDEEIKPGEVYRVYRSYGQVYIAAVEPPKKETLKNPPYPHGFQKWTEPVEIVAEQ",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1591,
+     "monobody": 0.2222,
+     "darpin": 0.2535
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "KAKKKWVRVTHPNGWDMPIVPLDEEIKPGEVYRVYRSYGQVYIAAVEPPKKETLKNPPYPHGFQKWTEPVEIVAEQ",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.25,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03258|designed_other|tested_non_binder|Proteinbase|proteinbase:ivory-moth-willow",
+     "region_reference_seq": "AVQEAAKLLNEAIENLKKALEVLEKNGGDPDTIGLLSRAIHLLEGAITYLLDGDYETALKLLKEAEKLLEEALKKVTHPEAKEYIEKALEKIKEAIKLLE",
+     "region_query_seq": "KAKKKWVRVTHPNGWDMPIVPLDEEIKPGEVYRVYRSYGQVYIAAVEPPKKETLKNPPYPHGFQKWTEPVEIVAEQ",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2probe-a_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2reg1-r1-p_L76_s0": {
+   "id": "p2reg1-r1-p_L76_s0",
+   "sequence": "TAAVADPDYKYDNAYIDEIAEKETKHKQKFADKIEFLTKPPLPTKPESLTSTKHSYQETVHQRALPLWEKDKKHNS",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2927,
+     "monobody": 0.1538,
+     "darpin": 0.2388
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "TAAVADPDYKYDNAYIDEIAEKETKHKQKFADKIEFLTKPPLPTKPESLTSTKHSYQETVHQRALPLWEKDKKHNS",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.234,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03252|designed_other|tested_non_binder|Proteinbase|proteinbase:silver-swan-oak",
+     "region_reference_seq": "SEKVKQALDILEKTLKELEKTKDPQKMQEIIDRALKEIEEIIETLSEEELVELLNKAEELFDKFARTITDSLVREALSGFYLRFLGVIGKHLSK",
+     "region_query_seq": "TAAVADPDYKYDNAYIDEIAEKETKHKQKFADKIEFLTKPPLPTKPESLTSTKHSYQETVHQRALPLWEKDKKHNS",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2reg1-r1-p_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2probe2-e_L76_s0": {
+   "id": "p2probe2-e_L76_s0",
+   "sequence": "LAVEINSPEYIDFGQVFFGMHPDSDEHPVFVHIQKGHGDHVIDIHTVEDHETEKPVKAPWYIDGTQPFYEPIFAGR",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1364,
+     "monobody": 0.1786,
+     "darpin": 0.194
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "LAVEINSPEYIDFGQVFFGMHPDSDEHPVFVHIQKGHGDHVIDIHTVEDHETEKPVKAPWYIDGTQPFYEPIFAGR",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2444,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03250|miniprotein|tested_non_binder|Proteinbase|proteinbase:rough-hawk-dust",
+     "region_reference_seq": "AKILSYEIKVDGKTVTVTITCADEDSANEAAVELYEHIDKLVREEGIEVLGVEIRVDGTTVTITVTTSSVEDAKKVAEALDKFIEELKAK",
+     "region_query_seq": "LAVEINSPEYIDFGQVFFGMHPDSDEHPVFVHIQKGHGDHVIDIHTVEDHETEKPVKAPWYIDGTQPFYEPIFAGR",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2probe2-e_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2reg1-smokeR1_L76_s0": {
+   "id": "p2reg1-smokeR1_L76_s0",
+   "sequence": "RNPLKPKNPRGKKKSNVKVQHTWVYQAGEHGAGPSVDEHDGSINLWDEHDKSVYVIYLWTMTSQSKNPPEVVGKVA",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1628,
+     "monobody": 0.1455,
+     "darpin": 0.2903
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "RNPLKPKNPRGKKKSNVKVQHTWVYQAGEHGAGPSVDEHDGSINLWDEHDKSVYVIYLWTMTSQSKNPPEVVGKVA",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2258,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04953|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:QFN55357",
+     "region_reference_seq": "MTPGKTSLVSLLLLLSLEAIVKAGITIPRNPGCPNSEDKNFPRTVMVNLNIHNRNTNTNPKRSSDYYNRSTSPWNLHRNEDPERYPSVIWEAKCRHLGCINADGNVDYHMNSVPIQQEILVLRREPPHCPNSFRLEKILVSVGCTCVTPIVHHVA",
+     "region_query_seq": "RNPLKPKNPRGKKKSNVKVQHTWVYQAGEHGAGPSVDEHDGSINLWDEHDKSVYVIYLWTMTSQSKNPPEVVGKVA",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2reg1-smokeR1_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2deep-r_L84_s0": {
+   "id": "p2deep-r_L84_s0",
+   "sequence": "YVWIKHPTIKVKTESGEHEKVEITEPEKKVEGNTKDGKIQFVSQHAFAAIQFALANQIESVVANNADHPGYGDLWINIVKEPKP",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.3429,
+     "monobody": 0.186,
+     "darpin": 0.2687
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "YVWIKHPTIKVKTESGEHEKVEITEPEKKVEGNTKDGKIQFVSQHAFAAIQFALANQIESVVANNADHPGYGDLWINIVKEPKP",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2236,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03265|receptor_derived|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AAE84393",
+     "region_reference_seq": "DSVCPQGKYIHPQNNSICCTKCHKGTYLYNDCPGPGQDTDCRECESGSFTASENHLRHCLSCSKCRKEMGQVEISSCTVDRDTVCGCRKNQYRHYWSENLFQCFNCSLCLNGTVHLSCQEKQNTVCTCHAGFFLRENECVSCSNCKKSLECTKLCLPQIEN",
+     "region_query_seq": "YVWIKHPTIKVKTESGEHEKVEITEPEKKVEGNTKDGKIQFVSQHAFAAIQFALANQIESVVANNADHPGYGDLWINIVKEPKP",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2deep-r_L84_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2deep-p_L76_s0": {
+   "id": "p2deep-p_L76_s0",
+   "sequence": "KPPPHTPTDEVEPTKQPPTFWTAHLNHNDGKLRYNYTNSTKHKWGWYKFILNDEKFQEIDAHSPEHPPKENEQHGN",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1556,
+     "monobody": 0.2045,
+     "darpin": 0.2742
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "KPPPHTPTDEVEPTKQPPTFWTAHLNHNDGKLRYNYTNSTKHKWGWYKFILNDEKFQEIDAHSPEHPPKENEQHGN",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2185,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04936|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AAR40258",
+     "region_reference_seq": "QNLEGLHHDGQFCHKPCPPGERKARDCTVNGDEPDCVPCQEGKEYTDKAHFSSKCRRCRLCDEGHGLEVEINCTRTQNTKCRCKPNFFCNSTVCEHCDPCTKCEHGIIKECTLTSNTKC",
+     "region_query_seq": "KPPPHTPTDEVEPTKQPPTFWTAHLNHNDGKLRYNYTNSTKHKWGWYKFILNDEKFQEIDAHSPEHPPKENEQHGN",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2deep-p_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2reg1-r1-s_L84_s1": {
+   "id": "p2reg1-r1-s_L84_s1",
+   "sequence": "KTNTKPNTIHIRPGETVRPWSPAWGRTVTETLNPPGVTKTIWFPAKINRSVWRWVKVNGKIIKKIDFKIINNTNKTFKVTYTPS",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.175,
+     "monobody": 0.14,
+     "darpin": 0.2432
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "KTNTKPNTIHIRPGETVRPWSPAWGRTVTETLNPPGVTKTIWFPAKINRSVWRWVKVNGKIIKKIDFKIINNTNKTFKVTYTPS",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2211,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04933|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AGJ48816",
+     "region_reference_seq": "TYLPAPEGLKFKSIKETSVEVEWDPLDIAFETWEIIFRNMNKEDEGEITKSLRRPETSYRQTGLAPGQEYEISLHIVKNNTRGPGLKRVTTTRLD",
+     "region_query_seq": "KTNTKPNTIHIRPGETVRPWSPAWGRTVTETLNPPGVTKTIWFPAKINRSVWRWVKVNGKIIKKIDFKIINNTNKTFKVTYTPS",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2reg1-r1-s_L84_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2dry04_L84_s1": {
+   "id": "p2dry04_L84_s1",
+   "sequence": "HVSKGTPSPGQADRQTQGHIYPPVWDPETGKFYFWDPSTNDPSKYGFHGPNPANQTAEHLRAVANWAAAKYFPWMGYGPDFWWL",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2857,
+     "monobody": 0.1429,
+     "darpin": 0.2113
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "HVSKGTPSPGQADRQTQGHIYPPVWDPETGKFYFWDPSTNDPSKYGFHGPNPANQTAEHLRAVANWAAAKYFPWMGYGPDFWWL",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2313,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03260|scaffold_other|confirmed_binder|RCSB_PDB|3L9J_1",
+     "region_reference_seq": "LQTVCLKGTKHMKCFLAFTQTKTFHEASEDCISRGGTLSTPQTGSENDALYEYLRQSVGNEAEIWLGLNKRWSRYFWVDMTGTRIAYKNWEHSSDAQPDPSNWENCAVLSGAANGKWFGKRCRDQLPYICQFGI",
+     "region_query_seq": "HVSKGTPSPGQADRQTQGHIYPPVWDPETGKFYFWDPSTNDPSKYGFHGPNPANQTAEHLRAVANWAAAKYFPWMGYGPDFWWL",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2dry04_L84_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2dry04_L76_s0": {
+   "id": "p2dry04_L76_s0",
+   "sequence": "PQASTTMNWLLQPLIVEDPDKNIAPKEASQSMPDDSPPTPPHASDGKYDDSGNDIGEAHKQHRQPPHKAHLKVYSS",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.3571,
+     "monobody": 0.1395,
+     "darpin": 0.2857
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "PQASTTMNWLLQPLIVEDPDKNIAPKEASQSMPDDSPPTPPHASDGKYDDSGNDIGEAHKQHRQPPHKAHLKVYSS",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2237,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04925|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AAR40250",
+     "region_reference_seq": "AQVFTTHQICNVVAIPGNASMDAVCTSTSPTVDFALPVGLICNVVAIPGNASMDAVCT",
+     "region_query_seq": "PQASTTMNWLLQPLIVEDPDKNIAPKEASQSMPDDSPPTPPHASDGKYDDSGNDIGEAHKQHRQPPHKAHLKVYSS",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2dry04_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2reg1-r1-q_L76_s1": {
+   "id": "p2reg1-r1-q_L76_s1",
+   "sequence": "MGSVKYEYTNLGKPNKKSFEITPGEEWVWIDPRGGTLGFLDPEWNPHNRWKTVPKEERQKFLENSDAAQYYHKNYP",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1667,
+     "monobody": 0.1702,
+     "darpin": 0.254
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "MGSVKYEYTNLGKPNKKSFEITPGEEWVWIDPRGGTLGFLDPEWNPHNRWKTVPKEERQKFLENSDAAQYYHKNYP",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2273,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03231|monobody|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AGJ48817",
+     "region_reference_seq": "DAPSQIEVKDVTDTTALITWFKPLAEIDGIELTYGIKDVPGDRTTIDLTEDENQYSIGNLKPDTEYEVSLISRRGDMSSNPAKETFTT",
+     "region_query_seq": "MGSVKYEYTNLGKPNKKSFEITPGEEWVWIDPRGGTLGFLDPEWNPHNRWKTVPKEERQKFLENSDAAQYYHKNYP",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2reg1-r1-q_L76_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2deep-s_L84_s1": {
+   "id": "p2deep-s_L84_s1",
+   "sequence": "MWIHIFPKFTANEPKQKAGPEGVTIQNYNGKPTLEFQFRRPNWVRHTVTIANPPKPHPWGPWEEIPGVEFITWHPPFIVVYLES",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2273,
+     "monobody": 0.28,
+     "darpin": 0.2083
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "MWIHIFPKFTANEPKQKAGPEGVTIQNYNGKPTLEFQFRRPNWVRHTVTIANPPKPHPWGPWEEIPGVEFITWHPPFIVVYLES",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2211,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03253|designed_other|tested_non_binder|Proteinbase|proteinbase:vast-swan-oak",
+     "region_reference_seq": "EEIKKLLDEGLERLRELLLRAGVPEKVVQEIIDEIRERLEAAIDNKDPELVLREAKVVAENVISILLDLGVPLEVAEEVRNLILELGEKIAKMLE",
+     "region_query_seq": "MWIHIFPKFTANEPKQKAGPEGVTIQNYNGKPTLEFQFRRPNWVRHTVTIANPPKPHPWGPWEEIPGVEFITWHPPFIVVYLES",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2deep-s_L84_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2grad-smokeA_L76_s0": {
+   "id": "p2grad-smokeA_L76_s0",
+   "sequence": "NPEAAQQQERDRYFLKVDMQKDQARAQWQQANKLEQEPGSDDEEAHQLTQQSNIPKAGIVSQRKWWARKYRSQVHI",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1395,
+     "monobody": 0.1951,
+     "darpin": 0.2459
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "NPEAAQQQERDRYFLKVDMQKDQARAQWQQANKLEQEPGSDDEEAHQLTQQSNIPKAGIVSQRKWWARKYRSQVHI",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2396,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03254|designed_other|tested_non_binder|Proteinbase|proteinbase:steady-lynx-quartz",
+     "region_reference_seq": "EFEERLLEELYQYLLELGFPEEFAKELVEAIRAGDFERLRKLLLEAGFPEGVANDIVELARQLVEALAAGDKESAEGALGALRVALSGAYTERLSR",
+     "region_query_seq": "NPEAAQQQERDRYFLKVDMQKDQARAQWQQANKLEQEPGSDDEEAHQLTQQSNIPKAGIVSQRKWWARKYRSQVHI",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2grad-smokeA_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2probe2-g_L84_s0": {
+   "id": "p2probe2-g_L84_s0",
+   "sequence": "KPPKVSSNPKQEHHDKPKFEWWPETGKAYAVWQMENMYGMGDLDEVEEYWKGYNVPEYSGVKVTAVWDIPEEEVKKHHKKPVKK",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2564,
+     "monobody": 0.26,
+     "darpin": 0.2778
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "KPPKVSSNPKQEHHDKPKFEWWPETGKAYAVWQMENMYGMGDLDEVEEYWKGYNVPEYSGVKVTAVWDIPEEEVKKHHKKPVKK",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.21,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03258|designed_other|tested_non_binder|Proteinbase|proteinbase:ivory-moth-willow",
+     "region_reference_seq": "AVQEAAKLLNEAIENLKKALEVLEKNGGDPDTIGLLSRAIHLLEGAITYLLDGDYETALKLLKEAEKLLEEALKKVTHPEAKEYIEKALEKIKEAIKLLE",
+     "region_query_seq": "KPPKVSSNPKQEHHDKPKFEWWPETGKAYAVWQMENMYGMGDLDEVEEYWKGYNVPEYSGVKVTAVWDIPEEEVKKHHKKPVKK",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2probe2-g_L84_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2grad-n-r_L84_s0": {
+   "id": "p2grad-n-r_L84_s0",
+   "sequence": "MSINTSAVESIEKKLKEMLSHWSEKQKPKLVEVSVIPVAVSPENDNDVDVTVKLKFKYGPPQNFEQGPGAPLEKLKEAIRDFWG",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2,
+     "monobody": 0.1667,
+     "darpin": 0.2388
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "MSINTSAVESIEKKLKEMLSHWSEKQKPKLVEVSVIPVAVSPENDNDVDVTVKLKFKYGPPQNFEQGPGAPLEKLKEAIRDFWG",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.25,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04924|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AQN56954",
+     "region_reference_seq": "MSCGGSLRECELYVQKHNIQALLKDSIVQLCTARPERPMAFLREYFERLEKEEAK",
+     "region_query_seq": "MSINTSAVESIEKKLKEMLSHWSEKQKPKLVEVSVIPVAVSPENDNDVDVTVKLKFKYGPPQNFEQGPGAPLEKLKEAIRDFWG",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2grad-n-r_L84_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2free-q_L76_s1": {
+   "id": "p2free-q_L76_s1",
+   "sequence": "LPNFGQQSSKEPSEKKSIPSNPRLWKEVHEIVTPEEAHILINEDGSNLPQGGGTNNIENGEEPDPDKIERILEMHE",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2286,
+     "monobody": 0.2308,
+     "darpin": 0.2951
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "LPNFGQQSSKEPSEKKSIPSNPRLWKEVHEIVTPEEAHILINEDGSNLPQGGGTNNIENGEEPDPDKIERILEMHE",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.253,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03246|miniprotein|tested_non_binder|Proteinbase|proteinbase:misty-gecko-clay",
+     "region_reference_seq": "KLINEIIDLIEETLQKAPLVGSEKNGALGYKLGEEIVEEFKDKLDKTTQDLIVRLLGGAGQVLSEETIRELAEKIRELIEKNG",
+     "region_query_seq": "LPNFGQQSSKEPSEKKSIPSNPRLWKEVHEIVTPEEAHILINEDGSNLPQGGGTNNIENGEEPDPDKIERILEMHE",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2free-q_L76_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2free-p_L76_s0": {
+   "id": "p2free-p_L76_s0",
+   "sequence": "HWVFAIKNNGSNRIQVSWFVMLNYTVAHKEVSKQNMSQLEIKALDPNHHWRMGMDKENPPIDEMGDGIVFLGRVAF",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1111,
+     "monobody": 0.1224,
+     "darpin": 0.2239
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "HWVFAIKNNGSNRIQVSWFVMLNYTVAHKEVSKQNMSQLEIKALDPNHHWRMGMDKENPPIDEMGDGIVFLGRVAF",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2105,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04923|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AQN56957",
+     "region_reference_seq": "SLKGCELYVQLHGIQQVLKDCIVHLCISKPERPMKFLREHFEKLEKEENRQILA",
+     "region_query_seq": "HWVFAIKNNGSNRIQVSWFVMLNYTVAHKEVSKQNMSQLEIKALDPNHHWRMGMDKENPPIDEMGDGIVFLGRVAF",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2free-p_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2reg1-r1-r_L84_s0": {
+   "id": "p2reg1-r1-r_L84_s0",
+   "sequence": "MKKPFTLTWYKRHYNFPYKQKKRNAGGQGPDELLNKFKPKGGMKGGAQHQTPGSDWIHDPNLKAGYRYKYTLLEVAASQGKHIK",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1951,
+     "monobody": 0.234,
+     "darpin": 0.2778
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "MKKPFTLTWYKRHYNFPYKQKKRNAGGQGPDELLNKFKPKGGMKGGAQHQTPGSDWIHDPNLKAGYRYKYTLLEVAASQGKHIK",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2262,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04924|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AQN56954",
+     "region_reference_seq": "MSCGGSLRECELYVQKHNIQALLKDSIVQLCTARPERPMAFLREYFERLEKEEAK",
+     "region_query_seq": "MKKPFTLTWYKRHYNFPYKQKKRNAGGQGPDELLNKFKPKGGMKGGAQHQTPGSDWIHDPNLKAGYRYKYTLLEVAASQGKHIK",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2reg1-r1-r_L84_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2free-s_L84_s1": {
+   "id": "p2free-s_L84_s1",
+   "sequence": "NTVFSFKATLLYNDPGNNNDPPMGEVFLGVMNGDHVVKVFAKAHLDGQQSFHLNPESVDLKLFHFGFDTSGKETTIMIYVHGHL",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2444,
+     "monobody": 0.1636,
+     "darpin": 0.3043
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "NTVFSFKATLLYNDPGNNNDPPMGEVFLGVMNGDHVVKVFAKAHLDGQQSFHLNPESVDLKLFHFGFDTSGKETTIMIYVHGHL",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2201,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04955|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AHL59155",
+     "region_reference_seq": "SGGGSGSGDFDYEKMANANKGAMTENADENALQSDAKGKLDSVATDYGAAIDGFIGDVSGLANGNGATGDFAGSSNSQMAQVGDGDNSPLMNNFRQYLPSLPQSVECRPFVFSAGKPYEFSIDCDKINLFRGVFAFLLYVATFMYVFSTFANILRNKES",
+     "region_query_seq": "NTVFSFKATLLYNDPGNNNDPPMGEVFLGVMNGDHVVKVFAKAHLDGQQSFHLNPESVDLKLFHFGFDTSGKETTIMIYVHGHL",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2free-s_L84_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2free-r_L84_s0": {
+   "id": "p2free-r_L84_s0",
+   "sequence": "MVTFSNVSIKVSGQPDTPVWPISWEWIHVQPGQTGLQTWQYNNGTTYTVDVKKTDDIYEVYLYDPKTLYEPDGGTWMPVTPKSK",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2,
+     "monobody": 0.2182,
+     "darpin": 0.2162
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "MVTFSNVSIKVSGQPDTPVWPISWEWIHVQPGQTGLQTWQYNNGTTYTVDVKKTDDIYEVYLYDPKTLYEPDGGTWMPVTPKSK",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2344,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04949|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AMF20269",
+     "region_reference_seq": "METGLRWLLLVAVLKGVQCQSVEESGGRLVTPGTPLTLTCTVSGFSLSHYAMGWVRQAPGKGLEWIGIISSNGVTYYATWASGRFTISKTSTTVDLKITSPTTEDTATYFCARGDDTSIIYYIYAFDL",
+     "region_query_seq": "MVTFSNVSIKVSGQPDTPVWPISWEWIHVQPGQTGLQTWQYNNGTTYTVDVKKTDDIYEVYLYDPKTLYEPDGGTWMPVTPKSK",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2free-r_L84_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2trimer03_L76_s0": {
+   "id": "p2trimer03_L76_s0",
+   "sequence": "KPKYLITWGAQSGNSEPPPIHAARAKDLAESIEQLLKTGVKWGPSSQSLQVTFHVEGPTGEQWTKRAKYSIPDVTG",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.1556,
+     "monobody": 0.3478,
+     "darpin": 0.2576
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "KPKYLITWGAQSGNSEPPPIHAARAKDLAESIEQLLKTGVKWGPSSQSLQVTFHVEGPTGEQWTKRAKYSIPDVTG",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2368,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04921|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:ABW63875",
+     "region_reference_seq": "QGKYIHPQNNSISCTKSHKGTYLYNDCPGPGQDTDCRECESGSFTASENNK",
+     "region_query_seq": "KPKYLITWGAQSGNSEPPPIHAARAKDLAESIEQLLKTGVKWGPSSQSLQVTFHVEGPTGEQWTKRAKYSIPDVTG",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2trimer03_L76_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2probe2-h_L84_s1": {
+   "id": "p2probe2-h_L84_s1",
+   "sequence": "SRIRPTQGAGTPPKLRWKKQHSILEITVLHGGKKATSNFWVDYGIYFVWVKTPKDGQTSTDPVVVGRVTMADGDWAFDYADPKN",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2444,
+     "monobody": 0.2791,
+     "darpin": 0.3472
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "SRIRPTQGAGTPPKLRWKKQHSILEITVLHGGKKATSNFWVDYGIYFVWVKTPKDGQTSTDPVVVGRVTMADGDWAFDYADPKN",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2381,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04921|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:ABW63875",
+     "region_reference_seq": "QGKYIHPQNNSISCTKSHKGTYLYNDCPGPGQDTDCRECESGSFTASENNK",
+     "region_query_seq": "SRIRPTQGAGTPPKLRWKKQHSILEITVLHGGKKATSNFWVDYGIYFVWVKTPKDGQTSTDPVVVGRVTMADGDWAFDYADPKN",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2probe2-h_L84_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2dry04_L76_s1": {
+   "id": "p2dry04_L76_s1",
+   "sequence": "QDHDYVKFAMEYIDPFEALTIHNLQNMLQEFHNKLVYWVPIHRKWMARGMHEARKGGPDPPEWKIEDDPPQHWKPG",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2889,
+     "monobody": 0.1667,
+     "darpin": 0.2609
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "QDHDYVKFAMEYIDPFEALTIHNLQNMLQEFHNKLVYWVPIHRKWMARGMHEARKGGPDPPEWKIEDDPPQHWKPG",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2313,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03260|scaffold_other|confirmed_binder|RCSB_PDB|3L9J_1",
+     "region_reference_seq": "LQTVCLKGTKHMKCFLAFTQTKTFHEASEDCISRGGTLSTPQTGSENDALYEYLRQSVGNEAEIWLGLNKRWSRYFWVDMTGTRIAYKNWEHSSDAQPDPSNWENCAVLSGAANGKWFGKRCRDQLPYICQFGI",
+     "region_query_seq": "QDHDYVKFAMEYIDPFEALTIHNLQNMLQEFHNKLVYWVPIHRKWMARGMHEARKGGPDPPEWKIEDDPPQHWKPG",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2dry04_L76_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2probe-b_L76_s1": {
+   "id": "p2probe-b_L76_s1",
+   "sequence": "MHKYPKLGDGKNGKFFQDEKFNKLVWSLVKKAAERVGISHEETIEDFLKLFKKEAPKFKTREYWEQQLRKWIHWSY",
+   "length": 76,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2051,
+     "monobody": 0.1667,
+     "darpin": 0.3088
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "MHKYPKLGDGKNGKFFQDEKFNKLVWSLVKKAAERVGISHEETIEDFLKLFKKEAPKFKTREYWEQQLRKWIHWSY",
+   "n_chains": 1,
+   "chain_lengths": [
+    76
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.26,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB03258|designed_other|tested_non_binder|Proteinbase|proteinbase:ivory-moth-willow",
+     "region_reference_seq": "AVQEAAKLLNEAIENLKKALEVLEKNGGDPDTIGLLSRAIHLLEGAITYLLDGDYETALKLLKEAEKLLEEALKKVTHPEAKEYIEKALEKIKEAIKLLE",
+     "region_query_seq": "MHKYPKLGDGKNGKFFQDEKFNKLVWSLVKKAAERVGISHEETIEDFLKLFKKEAPKFKTREYWEQQLRKWIHWSY",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2probe-b_L76_s1",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  },
+  "p2dry04_L84_s0": {
+   "id": "p2dry04_L84_s0",
+   "sequence": "HHWIAGKPLKEDPHGEDMGKDKGGGKPTTEEQATYLTNWASKHLEDPNQPDFEAAKQSMTAYNFFDPYFDKMPKSSNWEDKTHN",
+   "length": 84,
+   "category": "miniprotein",
+   "region_kind": "whole",
+   "category_confidence": 1.0,
+   "category_evidence": {
+    "framework_identity": {
+     "affibody": 0.2619,
+     "monobody": 0.2653,
+     "darpin": 0.3623
+    },
+    "gate": 0.85,
+    "min_length": {
+     "affibody": 34,
+     "monobody": 56,
+     "darpin": 94
+    },
+    "antibody_numbering": "no_valid_domain",
+    "antibody_reject": null
+   },
+   "focus_chain": "W",
+   "focus_region": "HHWIAGKPLKEDPHGEDMGKDKGGGKPTTEEQATYLTNWASKHLEDPNQPDFEAAKQSMTAYNFFDPYFDKMPKSSNWEDKTHN",
+   "n_chains": 1,
+   "chain_lengths": [
+    84
+   ],
+   "declared_class": null,
+   "declared_class_match": null,
+   "prior_art": {},
+   "target": {
+    "whole": null,
+    "region": {
+     "region_identity": 0.2262,
+     "region_compared": true,
+     "region_exact": false,
+     "region_reference": "TNFB04922|other|disclosed_binder_claim|USPTO_patent_sequences|USPTO:AQN56956",
+     "region_reference_seq": "SLRECELYVQKHNIQALLKDVSIVQLCTARPERPMAFLREYFEKLEKEEAK",
+     "region_query_seq": "HHWIAGKPLKEDPHGEDMGKDKGGGKPTTEEQATYLTNWASKHLEDPNQPDFEAAKQSMTAYNFFDPYFDKMPKSSNWEDKTHN",
+     "region_chain": "W",
+     "region_label": "cdr3",
+     "binder_status": null,
+     "named_agent": null,
+     "citation": null,
+     "supporting_exact_regions": 0,
+     "per_region": {}
+    },
+    "substring": null
+   },
+   "batch": {
+    "cluster_representative": "p2dry04_L84_s0",
+    "cluster_size": 1
+   },
+   "verdict": "pass",
+   "flags": [
+    "pass"
+   ],
+   "reasons": {},
+   "context": {}
+  }
+ },
+ "dropped": [],
+ "timing": {
+  "classify_regions": 0.16,
+  "reference_annotation": 0.0,
+  "target_whole": 0.78,
+  "target_region": 2.56,
+  "target_substring": 0.01,
+  "batch_cluster": 1.15
+ },
+ "config": {
+  "known_sequence": 0.95,
+  "near_known_sequence": 0.8,
+  "tnf_known_identity": 0.9,
+  "tnf_known_coverage": 0.8,
+  "tnf_known": 0.9,
+  "tnf_homolog": 0.7,
+  "region_match": 0.8,
+  "region_min_length": 5,
+  "prior_art_region_known": 0.9,
+  "prior_art_top_hits": 3,
+  "batch_cluster_identity": 0.95,
+  "batch_cluster_coverage": 0.8,
+  "db_root": null,
+  "mmseqs_bin": "mmseqs",
+  "threads": 0,
+  "include_patent_arm": true,
+  "allow_missing_arms": false,
+  "target_name": "TNF-alpha",
+  "target_fasta": null,
+  "target_metadata": null,
+  "target_cdr_csv": null,
+  "extras": {}
+ },
+ "target": {
+  "name": "TNF-alpha",
+  "fasta": "/Users/harish/code/adaptyv-2026/tools/binder-prescreen/prescreen/data/tnfa_binders.fasta",
+  "references": 4964,
+  "checksum": "6abb43afc8d91a07"
+ }
+}
