@@ -992,6 +992,43 @@ median is +0.320, about 0.4 SDs — still noise.** The result is entirely in the
 Genie 3's own record predicts: its 8 measured binders are variants of **one** backbone found in 23
 samples.
 
+#### 6.10c The best margin replicates on seeds it was not selected on
+
+§4.6 established that a single-seed margin carries ~0.858 of noise and that a **best-of-48** under
+pure noise reaches 1.91 on average. +6.027 was therefore exactly the shape of a selection
+artefact, so the top 8 designs and their nulls were re-folded at **five seeds, 1–5 — deliberately
+excluding seed 42**, the draw the selection was made on. 80 folds, ~$2.72. This is an independent
+replication, not five draws containing the chosen one.
+
+| design | seed 42 | 5-seed median | change | design SD across seeds |
+|---|--:|--:|--:|--:|
+| **`tnfa_corrected_22_s1`** | +6.027 | **+6.287** | +0.260 | 0.370 |
+| `tnfa_corrected_3_s1` | +4.776 | +5.565 | +0.789 | 0.715 |
+| `tnfa_corrected_43_s1` | +4.711 | +5.355 | +0.644 | **2.446** |
+| `tnfa_corrected_30_s1` | +5.814 | +4.786 | −1.028 | 0.351 |
+| `tnfa_corrected_11_s1` | +3.584 | +3.747 | +0.163 | 0.530 |
+| `tnfa_corrected_18_s1` | +3.865 | +2.762 | −1.103 | 0.185 |
+| `tnfa_corrected_48_s1` | +3.527 | +1.173 | −2.353 | 0.201 |
+| `tnfa_corrected_45_s2` | +3.425 | **−0.649** | **−4.074** | 0.264 |
+
+**The top of the distribution is real.** Best margin 6.027 → **6.287**, slightly *up*, and the
+pre-registered 5.64 bar still clears. Median across the eight barely moves, 4.288 → 4.267.
+
+**The ranking within the distribution is not.** `_45_s2` fell 4.07 and now scores **worse than its
+own scramble**; `_48_s1` fell 2.35. Two of eight collapsed, three improved, three held. So a
+best-of-N selected on single seeds identifies a real tail while getting the order inside it wrong.
+
+**Two designs where the margin means less than its digits suggest.** `_43_s1` has a design-side SD
+of **2.446** across seeds — four times the 0.607 §4.6 quotes as typical, so that one design is
+wildly seed-dependent. `_48_s1`'s *null* has an SD of **1.963**, so its instability comes from the
+reference rather than the design. Neither is visible in a single-seed number.
+
+**Consequence for nomination, and it is a hard one.** The final 20 cannot be chosen from
+single-seed margins. Doing so would have shipped `_45_s2`, which looked mid-pack at one seed and
+is below its own null at five. Any design put forward must carry a multi-seed margin.
+
+---
+
 #### 6.10a The constraint was aimed at the wrong residues, and the data says so
 
 §6.8 offered a hypothesis: acid-rich interfaces protonate at pH 6.0, lose their mutual repulsion
@@ -1867,3 +1904,11 @@ those are marked.
     was redundant where it worked and misaimed where it mattered: the offending acids are buried by
     binding rather than sitting at the interface. The histidine spacing rule also cut mechanism
     density from 6 forced positions per design to 3. Recorded as an attempted and ineffective fix.
+
+56. **Single-seed margins get the ranking wrong even when the tail is real.** §6.10c. Re-folding
+    the top 8 at five seeds that exclude the selected one left the best margin intact
+    (6.027 → 6.287, bar still cleared) while two of eight collapsed — one from +3.425 to −0.649,
+    below its own scramble. One design's margin varies with SD 2.446 across seeds and another's
+    instability comes from its null at SD 1.963, neither visible at n=1. Only the top 8 of 48
+    carry multi-seed margins; the other 40 are single draws and their order should not be
+    trusted.
