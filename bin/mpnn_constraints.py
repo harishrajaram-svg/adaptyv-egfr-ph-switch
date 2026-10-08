@@ -236,7 +236,21 @@ def selftest():
         assert "A" in loaded["x"] and "A" in loaded["y"]
     # MUTATION: superposition must remove a rigid-body move entirely. Without it this reads
     # the frame offset -- which is what the first version of this function did.
-    import numpy as np, tempfile as _tf
+    #
+    # numpy is the ONLY non-stdlib import in this file and it is needed solely for the Kabsch
+    # SVD. A clean clone's system python3 does not have it, and this selftest used to die on a
+    # bare traceback there (found 2026-10-08 by running the suite in a fresh checkout). It now
+    # says what is missing and how to get it, and reports a SKIP rather than a pass, so an
+    # unrun test can never be mistaken for a green one.
+    try:
+        import numpy as np
+    except ImportError:
+        print("  SKIP  the superposition mutation test needs numpy, which this interpreter")
+        print("        lacks. Run it with the project venv: .venv/bin/python "
+              "bin/mpnn_constraints.py --selftest")
+        print("\nself-tests passed: 8 of 9 (1 SKIPPED -- numpy absent)")
+        return 0
+    import tempfile as _tf
     pts = np.array([[0.,0.,0.],[3.8,0,0],[7.0,2.1,0],[9.1,5.0,1.2],[11.0,8.0,2.0]])
     th = 0.7
     R = np.array([[math.cos(th),-math.sin(th),0],[math.sin(th),math.cos(th),0],[0,0,1]])

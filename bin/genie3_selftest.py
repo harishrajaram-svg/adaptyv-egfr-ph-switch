@@ -29,8 +29,19 @@ BUILDER = Path("bin/build_genie3_problem.py")
 
 def main():
     if not MOD.exists():
-        print(f"FAIL  {MOD} not found (run from the repo root)", file=sys.stderr)
-        return 1
+        # biomodals/ IS GITIGNORED. The wrapper is tracked only as patches/modal_genie3.patch,
+        # so in a fresh clone this file has nothing to check. The old message said "run from
+        # the repo root", which sent a reader looking for the wrong problem (found 2026-10-08
+        # running the suite in a clean checkout).
+        patch = Path("patches/modal_genie3.patch")
+        print(f"SKIP  {MOD} is absent. biomodals/ is gitignored by design; the wrapper is",
+              file=sys.stderr)
+        print(f"      tracked as {patch}" + (" (present)" if patch.exists() else " (MISSING)"),
+              file=sys.stderr)
+        print(f"      Recreate it with:  mkdir -p biomodals && "
+              f"git apply --directory=biomodals {patch}", file=sys.stderr)
+        print(f"      This is a SKIP, not a pass: nothing was verified.", file=sys.stderr)
+        return 0 if patch.exists() else 1
     src = MOD.read_text()
     lines = src.splitlines()
 
