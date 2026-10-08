@@ -1,14 +1,14 @@
 # HANDOFF — Anthropic × Adaptyv 2026, Track 3 (all challenges)
-# Updated 2026-10-07 9:25 PM EDT. Covers BOTH challenges; problem 1 is closed and archived below.
+# Updated 2026-10-08 9:20 AM EDT. Covers BOTH challenges; problem 1 is closed and archived below.
 
 **Read order on a cold start:** this file → `projects/anthropic-adaptyv-2026/ROADMAP.md` (the live
-plan) → `challenges/02-tnf-alpha.md` §1–§47. Then nothing else unless a link below says so.
+plan) → `challenges/02-tnf-alpha.md` §1–§48. Then nothing else unless a link below says so.
 
 ---
 
-## 🟢 NOTHING RUNNING as of 2026-10-07 9:25 PM. Nothing spending. The design search is CLOSED.
+## 🟢 NOTHING RUNNING as of 2026-10-08 9:20 AM. Nothing spending. The design search is CLOSED.
 
-`modal app list` is empty. **Two pre-registered arms ran today and both returned nulls**, and both
+`modal app list` is empty. **Two pre-registered arms ran on 10-07 and both returned nulls**, and both
 carried hard stops written before the run. Those stops are honoured: **no further design arms.**
 
 | arm | what it varied | pre-registered bar | result |
@@ -18,7 +18,8 @@ carried hard stops written before the run. Those stops are honoured: **no furthe
 
 **Twenty-one trajectories now, six conditions, two structurally unrelated epitopes.** The interface
 term improved in none of them. Best `iptm_repred` anywhere is **0.2468** (arm A) against the **0.45**
-gate we set before any number existed. 0 of 25 designs clear it.
+gate we set before any number existed. 0 of 35 designs clear it (the 10-07 export
+of `design_inventory.py --export` regenerated 25 -> 35).
 
 **What survives as the explanation:** term interaction across 20 weighted terms on three legs.
 Condition 3 is direct evidence — tripling the interface weights made results *worse*. Testing it
@@ -48,13 +49,14 @@ Offline tool: **`github.com/adaptyvbio/binder-prescreen`** — *"so that you can
 **Consequence:** problem 1's novelty roulette (opposite verdicts on byte-identical sequences, cost us
 a backbone family and the only two-site mechanism) **cannot recur**. Submit the best 20 by our own
 ranking. ⚠️ Novelty has not vanished — it moves post-submission and **feeds selection**, so keep
-reporting our levels honestly. **Run `binder-prescreen` on all 25 before uploading.**
+reporting our levels honestly. **`binder-prescreen` was run on all 35 on 10-07; re-run it on
+the final 20 before uploading.**
 
 **2. Fewer than 20 designs is explicitly fine.** Tudor, 2026-10-02:
 > "It's ok if you want to submit less than 20 … **we will not pick just 1-2** (so a bit more to give
 > some statistical power)."
 So padding to 20 buys nothing. Relevant because **§9 already says a matched histidine-removal
-control is uninformative when the parent does not bind** — 0 of 25 bind, so the 4 control slots are
+control is uninformative when the parent does not bind** — 0 of 35 bind, so the 4 control slots are
 better spent or left empty.
 
 **3. Upload early, then "designate".** Théo: *"There is an option on Proteinbase to 'designate' the
@@ -144,6 +146,76 @@ cap that is **~0.8 expected switches**. The best computational pH-**6.0** result
 
 ---
 
+## 🔴 2026-10-08 — THE RANKER WAS NEVER TESTED AGAINST A NULL OF THE RIGHT SIZE, AND NOW IT IS
+
+Two folds, ~$0.35, `analysis/02-tnf/SIZEMATCHED-NULL-2f.md`. Apps `ap-snCV8ziLzEWYsls08s9Vh2`,
+`ap-ihYnoYl5TTQ2UhM8vJA4Kp`.
+
+The control band folded on 10-07 (`p2_control_band_2026-10-08.tsv`) shuffles the 164-residue TNFR2
+ectodomain, so all five controls score at 302,382 cross-chain residue pairs. The designs are 76 or
+84 residues — 219,486 / 227,022 pairs. `pae_interface_mean` averages over those pairs, so that band
+was **never a yardstick for the designs**. Mine: I recommended that run without checking
+size-matching first.
+
+| null | binder | pae_if_min | pae_if_mean | pairs |
+|---|---|---|---|---|
+| `neg_shuffled_L76_1` | 76 | 0.854 | **14.248** | 219,486 |
+| `neg_shuffled_L84_1` | 84 | 0.855 | **14.996** | 227,022 |
+
+| | n | design mean | median | null mean | beat it |
+|---|---|---|---|---|---|
+| L76 | 21 | 11.218–16.586 | 14.047 | 14.248 | 15/21 |
+| L84 | 14 | 13.945–15.434 | 14.648 | 14.996 | 10/14 |
+
+**25 of 35 beat their size-matched null on the mean** (one-sided binomial p = 0.0083), and **the
+same 25 beat it on the min** — so at this configuration the two metrics rank the designs
+identically, which is the part of item 2d that was answerable without an MSA path.
+
+**Above chance, and almost nothing biologically.** TNFR2 scores 7.713 where its own shuffles score
+~18.99 — a margin of 11.28. Best L76 design: 3.03 below its null, **27%** of that margin. Best L84:
+1.05, **9%**. Median design: 0.20 / 0.35, **2–3%**. The median design is not distinguishable from a
+shuffle of its own length and composition. §48 reached the same verdict from Anthropic's 150
+measured designs; this reaches it from controls folded on our own configuration.
+
+⚠️ Caveats, stated in the file: one draw per length (n=1, no interval), and the 27% assumes the
+null-relative gap cancels the size offset to first order rather than exactly. **2d is not closed** —
+`pae_interface_min` was selected at AUC 0.901 on the MSA-fed arm and our configuration has none.
+
+### The liability screen fired, and it is near-binding on the submission
+
+`bin/express_qc_p2.py` (thresholds declared before any problem-2 design existed) on all 35.
+`analysis/02-tnf/p2_liability_screen_2026-10-08.txt` + `p2_liability_2026-10-08.tsv`.
+
+| flag | hits |
+|---|---|
+| pI **inside** the assayed 6.0–7.4 | **13/35** |
+| pI within 0.5 of an assay pH | 5/35 |
+| near-neutral net charge at an assay pH | 15/35 |
+| **any pH/charge flag** | **20/35** |
+| no flag of any kind | 7/35 |
+| composition / homopolymer / GRAVY / free Cys | 0/35 |
+
+pI range 4.49–11.21, median 6.43. L76: 10/21 inside the range; L84: 3/14.
+
+The hazard was predictable from the assay alone and is written into the tool's docstring: problem 2
+is measured at **two** pH values and the mechanism is installed with **histidines**, whose pKa sits
+between them by construction. The better the mechanism is installed, the likelier the binder's pI
+lands inside its own measurement window.
+
+**Consequence for nomination: 20 slots, and only 15 of 35 are clean on both pH and charge.**
+Liability can no longer be a tiebreak — it has to be a term in the ranking, or five slots go to
+designs sitting at their solubility minimum during the measurement that decides them. Problem 1 lost
+a VHH to exactly this (pI 6.38, assay 6.5) and the QC in place then had no pI term at all.
+
+### Timing fact worth keeping
+The first fold took ~19 minutes, the second ~4. The difference is a **cold model fetch**: the
+container downloaded 11 weight files (1:44) then loaded for 117 s before folding. `score-esmfold2.sh`
+sizes `MODAL_TIMEOUT` from the **fold** only, so its 5-minute estimate is blind to the fetch. The
+timeout is a ceiling and Modal bills actual use, so nothing was lost — but do not read the estimate
+as wall-clock on a cold image.
+
+---
+
 ## 🔬 THE CALIBRATION WAS TOO GENEROUS, AND THIS IS STILL OWED IN THE WRITE-UP
 
 We have been quoting the organisers' own **12/150 = 8%** on TNF-α as our calibration, in METHODS
@@ -171,7 +243,10 @@ runs at 8% on the organisers' own instrumentation.
 | ROADMAP: methodology *"linked to a public Collection"* | conditional — *may* be public *if* selected | — |
 | novelty gate = *"3 of 4 checks"* | a **4-level scale, bar at Level ≥ 3** | — |
 
-**Gate count is now 22** (`check_species_map` added); the methodology box says 22 of 22.
+**`bin/gate_sweep.py` now runs 23 gates** (`check_species_map` and `check_published_counts` added
+since the 21 of 10-06). The methodology box no longer states a gate count at all, which is why
+`check_published_counts.py` audits every surface that does -- it was extended on 10-08 to cover
+gate counts after this file and ROADMAP.md were both found still saying 22.
 ⚠️ I briefly wrote "15 of 15" into that box from a bad regex — fixed, but re-read it before upload.
 
 ---
@@ -185,7 +260,11 @@ bash    bin/check-pins.sh                         Mosaic revision pin, wrapper A
 python3 analysis/02-tnf/loss_traj.py LOG --block 13   the trajectory read; the ONLY decisive statistic
 bash    bin/probe-grad-noise.sh  <tag> <L> <seed>     arm A (GRAD_SAMPLES/MOMENTUM_SOFT env)
 bash    bin/probe-region1.sh     <tag> <L> <seed>     the Region I arm
-python3 bin/gate_sweep.py                         all 22 gates
+python3 bin/gate_sweep.py                         all 23 gates
+python3 bin/express_qc_p2.py <designs.csv>        liability screen (pI at BOTH assay pH values)
+python3 bin/build_sizematched_null.py <design> <out.faa>   a null at a design's own length
+python3 bin/pae_interface.py --dir <run>          pae_if_min / pae_if_mean / n_pairs
+python3 bin/check_published_counts.py             limitation AND gate counts, every surface
 ```
 
 **Launcher guards, learned the hard way today:** a tag containing whitespace is refused, length and
@@ -198,27 +277,43 @@ identical `L=76 seed=0` runs. Also: **every TNF launcher must name `--epitope` o
 
 ## 📋 WHAT IS LEFT — all writing, except the upload
 
-1. **METHODS:** fold in arm A (§6.6) and Region I (new §6.7) with both hard stops recorded as
+1. **Three documents now overstate the ranker**, listed in `analysis/02-tnf/CONFIG-COMPARABILITY-2d.md`:
+   METHODS §4.5, limitation 51, and the box's FIELD 2 point 4 each present `pae_interface_min` as
+   selected at AUC 0.901, which was measured on the MSA-fed arm. 2f adds the finding that at **our**
+   configuration the min and the mean rank the 35 identically, so the claim to make is "either metric,
+   same order, margin 2–3% of a real binder's" — not an AUC we did not measure here.
+2. **METHODS:** fold in arm A (§6.6) and Region I (new §6.7) with both hard stops recorded as
    honoured; qualify §6.5's 8% per the section above; add the pH-6.0 ceiling with citations
    (Ahn *et al.* bioRxiv 2025.09.29.678932; Schröter 2014 doi:10.4161/19420862.2014.985993); state
    that **no structure predictor represents the pH-6.0 state**; note our **2** His-cation contacts sit
    at the published floor where working designs had **8 and 11**; record Germinal as an attempted,
-   failed arm.
-2. **Sweep older prose for reader-addressed imperatives** — disqualification risk, not style.
-3. **Three stale claims:** `submission-basis-p2.md:48` says `molecule_class: protein` (code is
+   failed arm; add the size-matched null band and the liability screen.
+3. **Sweep older prose for reader-addressed imperatives** — disqualification risk, not style.
+4. **Three stale claims:** `submission-basis-p2.md:48` says `molecule_class: protein` (code is
    already correct); `setup-checklist.md:24` still says avoid PyRosetta; problem 1's METHODS §27 owes
    the PyRosetta correction with today's date.
-4. **Run `binder-prescreen`** on all 25 sequences.
-5. **Nominate ≤20, rank, upload early, designate.** ⬅ **Harish's**
-6. Optional, $0, still unasked under his own name: **does a large K_D shift with binding at both pH
+5. **Nominate ≤20 + ranking rationale.** The screen changed what this is: **only 15 of 35 clear
+   both the pH and charge flags**, so liability is a ranking term, not a tiebreak. Needs the item-1
+   decision first.
+6. **Re-run `binder-prescreen`** on the final 20 (10-07's pass was on all 35).
+7. **Upload early, designate, attach methods, finalise.** ⬅ **Harish's**
+8. **Send the reviewer their 4 artifacts.** ⬅ **Harish's** — critical path, see the note below.
+9. Optional, $0, still unasked under his own name: **does a large K_D shift with binding at both pH
    values qualify, or must binding be undetectable at 6.0?** It decides whether any single-site
    design counts. Two other teams asked; never answered.
+10. Open and undecided: **a Modal cap.** October billed **$590.71 with no credit balance**, while
+    project documents still record $168.44 from 10-04 — stale by ~$420. Yesterday and today added
+    ~$2. Nothing is running, but no cap exists.
 
----
+**⚠️ ROUTE SCIENTIFIC JUDGEMENT TO THE REVIEWER, NOT TO CLAUDE.** Across 2026-10-07/08 more than six of my
+responses were stopped mid-generation by a safety classifier, every one of them on explanatory prose
+about this project, while every tool call, file write, commit and GPU run completed. Execution here
+is reliable; reasoning delivered in prose is not. That makes item 8 critical path rather than
+courtesy. Artifacts and tables have gone through consistently — prefer them.
 
 ## 🧭 THE PLAN LIVES IN `ROADMAP.md` IN THE OTHER REPO
 
-`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (updated 2026-10-07 9:25 PM).
+`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (updated 2026-10-08 9:20 AM).
 Everything below this line is problem 1, closed and archived.
 
 ---
