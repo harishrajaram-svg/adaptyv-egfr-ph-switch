@@ -27,6 +27,11 @@ D3   = {24:'H358',36:'H370',49:'H383',84:'H418',99:'H433'}
 ECD  = {23:'H47',121:'H145',159:'H183',209:'H233',280:'H304',334:'H358',346:'H370',
         359:'H383',394:'H418',409:'H433',483:'H507',535:'H559',560:'H584',566:'H590',
         591:'H615',594:'H618',597:'H621'}
+# PROBLEM 2, registered 2026-10-08. Mature TNF-alpha 6-157, the gated canonical trimer; each
+# of the three protomers carries the same three histidines. H73 is the one BinderBench names as
+# a hotspot for this target, and it sits at the INTER-PROTOMER seam -- which is why the free leg
+# must delete only the binder and keep the sibling protomers. See ph_gate_multisite.orient_multi.
+TNF  = {15:'H15', 73:'H73', 78:'H78'}
 
 def link(free, bound, ph_lo=None, ph_hi=None):
     """Thermodynamic linkage ratio K(ph_lo)/K(ph_hi).
@@ -66,6 +71,7 @@ def family(B):
     if hs==tuple(sorted(CROP)): return CROP
     if hs==tuple(sorted(D3)):   return D3
     if hs==tuple(sorted(ECD)):  return ECD
+    if hs==tuple(sorted(TNF)):  return TNF
     return None
 
 def orient(model):

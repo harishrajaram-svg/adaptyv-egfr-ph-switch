@@ -105,6 +105,38 @@ def set_problem(n):
     ONE_PROTON_BOUND = 10 ** (PH_HI - PH_LO)
 
 
+def orient_multi(model):
+    """(target_chains, binder_chain, names) -- generalised from the two-chain case.
+
+    ph_gate_all.orient() tries chain 'B' then 'A' and returns ONE target chain. That is right
+    for problem 1, where the complex is target + binder. Problem 2's target is a HOMOTRIMER, so
+    the complex is three target protomers plus a binder, and the single-target assumption breaks
+    in a way that matters: the old free-target leg deleted every chain that was not the chosen
+    target, which on a trimer removes the two SIBLING PROTOMERS along with the binder. H73 sits
+    at the inter-protomer seam -- it is the residue BinderBench names as a hotspot for this
+    target -- so deleting a sibling would hand it a free pKa from a monomer that does not exist
+    in the assay. The free leg must remove the BINDER and nothing else.
+
+    Identification is by fingerprint, never by chain order or count: every chain whose histidine
+    tuple matches a registered family is a target protomer, and the one remaining chain is the
+    binder. Refuses anything that is not N target chains plus exactly one binder.
+    """
+    chains = list(model)
+    matched, names = [], None
+    for c in chains:
+        f = family(c)
+        if f is not None:
+            matched.append(c.name)
+            names = f
+    others = [c.name for c in chains if c.name not in matched]
+    if names is None:
+        return None, None, None, 'target family unrecognised'
+    if len(others) != 1:
+        return None, None, None, (f'{len(matched)} target chain(s) {matched} and '
+                                  f'{len(others)} non-target {others}; need exactly one binder')
+    return sorted(matched), others[0], names, None
+
+
 def _link(free, bound):
     """The ONLY linkage path in this file. Always carries this module's pH pair."""
     return link(free, bound, PH_LO, PH_HI)
@@ -178,26 +210,32 @@ def score_pose(cif):
     try:
         st = gemmi.read_structure(cif); st.setup_entities()
         st.remove_ligands_and_waters(); st.setup_entities()
-        tgt, names = orient(st[0])
-        if names is None:
-            return {'file': os.path.basename(cif), 'error': 'target family unrecognised'}
-        chains = [c.name for c in st[0]]
-        if len(chains) != 2:
-            return {'file': os.path.basename(cif),
-                    'error': f'{len(chains)} chains; multi-site composition needs exactly 2'}
-        bnd = [c for c in chains if c != tgt][0]
+        tgts, bnd, names, why = orient_multi(st[0])
+        if why:
+            return {'file': os.path.basename(cif), 'error': why}
 
         with tempfile.TemporaryDirectory() as wd:
-            bound_t = propka_his_and_acids(st, wd, 'cpx_t', tgt)
+            # BOUND legs: the intact complex, read per chain.
+            bound_t = {}
+            for c in tgts:
+                for k, v in propka_his_and_acids(st, wd, f'cpx_t_{c}', c).items():
+                    bound_t[(c,) + k] = v
             bound_b = propka_his_and_acids(st, wd, 'cpx_b', bnd)
-            # free TARGET: delete the binder in place
+
+            # FREE TARGET: delete the BINDER ONLY. On a homotrimer the sibling protomers stay,
+            # because they are present in the assay and H73 titrates against them.
             a = gemmi.read_structure(cif); a.setup_entities()
             a.remove_ligands_and_waters(); a.setup_entities()
             for i in range(len(a[0]) - 1, -1, -1):
-                if a[0][i].name != tgt: del a[0][i]
+                if a[0][i].name == bnd: del a[0][i]
             a.setup_entities()
-            free_t = propka_his_and_acids(a, wd, 'apo_t', tgt)
-            # free BINDER: delete the target in place -- the mirror image
+            assert len([c.name for c in a[0]]) == len(tgts), 'free-target leg lost a protomer'
+            free_t = {}
+            for c in tgts:
+                for k, v in propka_his_and_acids(a, wd, f'apo_t_{c}', c).items():
+                    free_t[(c,) + k] = v
+
+            # FREE BINDER: delete every target chain -- the mirror image.
             b = gemmi.read_structure(cif); b.setup_entities()
             b.remove_ligands_and_waters(); b.setup_entities()
             for i in range(len(b[0]) - 1, -1, -1):
@@ -228,7 +266,7 @@ def score_pose(cif):
         # indistinguishable from an absent one, and makes the product's site count a lie.
         sites, unassessed = {}, {}
 
-        def add(partner, label, rn, num, f, bo):
+        def add(partner, label, rn, num, f, bo, chain):
             if f is None or bo is None:
                 unassessed[f'{partner}:{label}'] = dict(
                     partner=partner, resname=rn, resnum=num,
@@ -238,18 +276,27 @@ def score_pose(cif):
                             'no free-leg pKa' if f is None else 'no bound-leg pKa'))
                 return
             sites[f'{partner}:{label}'] = dict(partner=partner, resname=rn, resnum=num,
+                                               chain=chain,
                                                free=round(f, 2), bound=round(bo, 2),
                                                ratio=round(_link(f, bo), 4))
 
-        # TARGET: histidines first, named from the construct's fingerprint, then its acids
-        for num, nm in names.items():
-            add('target', nm, 'HIS', num, free_t.get(('HIS', num)), bound_t.get(('HIS', num)))
-        for (rn, num) in sorted(set(free_t) | set(bound_t)):
-            if rn == 'HIS' and num in names: continue          # already added under its name
-            add('target', f'{rn}{num}', rn, num, free_t.get((rn, num)), bound_t.get((rn, num)))
+        # TARGET: histidines first, named from the construct's fingerprint, then its acids.
+        # With more than one protomer the chain goes INTO the label, or A73 and B73 would
+        # collide in the dict and one of them would silently vanish from the product.
+        multi = len(tgts) > 1
+        for c in tgts:
+            pre = f'{c}/' if multi else ''
+            for num, nm in names.items():
+                add('target', f'{pre}{nm}', 'HIS', num,
+                    free_t.get((c, 'HIS', num)), bound_t.get((c, 'HIS', num)), c)
+            for (cc, rn, num) in sorted(k for k in set(free_t) | set(bound_t) if k[0] == c):
+                if rn == 'HIS' and num in names: continue      # already added under its name
+                add('target', f'{pre}{rn}{num}', rn, num,
+                    free_t.get((c, rn, num)), bound_t.get((c, rn, num)), c)
         # BINDER: every titratable residue, not a curated list
         for (rn, num) in sorted(set(free_b) | set(bound_b)):
-            add('binder', f'{rn}{num}', rn, num, free_b.get((rn, num)), bound_b.get((rn, num)))
+            add('binder', f'{rn}{num}', rn, num,
+                free_b.get((rn, num)), bound_b.get((rn, num)), bnd)
 
         if not sites:
             return {'file': os.path.basename(cif), 'error': 'no titratable site measured',
@@ -262,9 +309,15 @@ def score_pose(cif):
             v['plausible_window'] = [lo_p, hi_p]
             v['implausible'] = (v['implied_pka_bound'] is None or
                                 not (lo_p <= v['implied_pka_bound'] <= hi_p))
-            other = bnd if v['partner'] == 'target' else tgt
-            mine = tgt if v['partner'] == 'target' else bnd
-            d = cross_partner_distance(st[0], mine, v['resnum'], v['resname'], other)
+            # The other side may be SEVERAL chains: a binder histidine's nearest counter-charge
+            # can sit on any protomer of a homotrimer, and taking only one would under-report
+            # the partner and flag a real site `no_partner`.
+            mine = v['chain']
+            others = [bnd] if v['partner'] == 'target' else list(tgts)
+            ds = [cross_partner_distance(st[0], mine, v['resnum'], v['resname'], o)
+                  for o in others]
+            ds = [x for x in ds if x is not None]
+            d = min(ds) if ds else None
             v['partner_dist'] = d
             v['no_partner'] = (d is None or d > PARTNER_CUT)
             v['moved'] = abs(v['ratio'] - 1.0) >= NOISE
@@ -283,7 +336,7 @@ def score_pose(cif):
         ceiling = ONE_PROTON_BOUND ** max(k_moved, 1)
         verdict = 'IMPOSSIBLE' if prod > ceiling * 1.001 else 'ok'
         contributing = {k: v for k, v in sites.items() if v['moved']}
-        return dict(file=os.path.basename(cif)[:-4], path=cif, target_chain=tgt, binder_chain=bnd,
+        return dict(file=os.path.basename(cif)[:-4], path=cif, target_chain='+'.join(tgts), binder_chain=bnd,
                     product=round(prod, 4),
                     product_his_only=round(prod_his, 4),
                     product_helpful_only_DO_NOT_USE=round(math.prod(helpful) if helpful else 1.0, 4),
@@ -394,6 +447,43 @@ def selftest():
             if re.search(r'(?<![_\w])link\(', l) and 'def _link' not in l
             and 'PH_LO, PH_HI)' not in l and not l.strip().startswith('#')]
     assert not bare, f'bare link( outside _link: {bare}'
+    # --- orientation on N chains, 2026-10-08 ---
+    # Stubs, because the only thing family() touches is residue names and numbers.
+    class _R:
+        def __init__(s, n, i): s.name, s.seqid = n, type('S', (), {'num': i})()
+    class _C:
+        def __init__(s, nm, hs): s.name, s._r = nm, [_R('HIS', i) for i in hs]
+        def __iter__(s): return iter(s._r)
+    from ph_gate_all import TNF, CROP
+    tnf_hs, crop_hs = sorted(TNF), sorted(CROP)
+    # problem 2: three protomers plus one binder
+    tg, bd, nm, why = orient_multi([_C('A', tnf_hs), _C('B', tnf_hs),
+                                    _C('C', tnf_hs), _C('D', [5, 40])])
+    assert why is None and tg == ['A', 'B', 'C'] and bd == 'D' and nm is TNF, (tg, bd, why)
+    # problem 1: one target plus one binder -- the case that must not change
+    tg1, bd1, nm1, why1 = orient_multi([_C('A', [7]), _C('B', crop_hs)])
+    assert why1 is None and tg1 == ['B'] and bd1 == 'A' and nm1 is CROP, (tg1, bd1, why1)
+    # and with the chain order reversed, because this project's poses do both
+    tg2, bd2, _, why2 = orient_multi([_C('A', crop_hs), _C('B', [7])])
+    assert why2 is None and tg2 == ['A'] and bd2 == 'B', (tg2, bd2, why2)
+    # MUTATION: no recognised family must REFUSE, not guess a target
+    assert orient_multi([_C('A', [1, 2]), _C('B', [3, 4])])[3] == 'target family unrecognised'
+    # MUTATION: two non-target chains must refuse -- a second binder, or a stray chain, would
+    # otherwise be silently treated as part of the target side
+    why3 = orient_multi([_C('A', tnf_hs), _C('B', [5]), _C('C', [6])])[3]
+    assert 'need exactly one binder' in why3, why3
+    # MUTATION: zero non-target chains (apo target alone) must refuse too
+    assert 'need exactly one binder' in orient_multi([_C('A', tnf_hs)])[3]
+    # MUTATION: the free-TARGET leg must delete the binder ONLY. Deleting every non-target
+    # chain -- what the two-chain code did -- removes the sibling protomers, and H73 sits at
+    # the inter-protomer seam, so its free pKa would come from a monomer that never exists.
+    src = open(os.path.abspath(__file__)).read()
+    assert "if a[0][i].name == bnd: del a[0][i]" in src, 'free-target leg deletes by binder name'
+    assert "free-target leg lost a protomer" in src, 'the protomer count is not asserted'
+    assert "if b[0][i].name != bnd: del b[0][i]" in src, 'free-binder leg must keep only binder'
+    print(f'  orientation: 3 protomers + binder -> {tg}/{bd}; 1+1 still {tg1}/{bd1} either order')
+    print(f'  MUTATION: unrecognised family, 2 binders and 0 binders all refuse')
+    print(f'  MUTATION: free-target leg deletes the binder only, protomer count asserted')
     print(f'  pH pair + direction: P1 {PROBLEMS[1][0]}/{PROBLEMS[1][1]} wants ratio > 1, '
           f'P2 {PROBLEMS[2][0]}/{PROBLEMS[2][1]} wants ratio < 1')
     print(f'  one-proton ceiling moves with the pair: 7.943x (P1) / 25.119x (P2)')

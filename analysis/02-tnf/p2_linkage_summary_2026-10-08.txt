@@ -1,0 +1,33 @@
+Problem 2 pH linkage, direction-aware, 2026-10-08
+bin/ph_gate_multisite.py --problem 2 --dir runs/p2-esmfold2-out
+ratio = K(6.0)/K(7.4).  Problem 2 binds at 7.4 and must be silent at 6.0,
+so acid must WEAKEN binding: ratio < 1 helps, ratio > 1 is the wrong brief.
+
+moving sites, all 35 poses      219
+  pointing the RIGHT way        80  (37%)
+  pointing the WRONG way        139  (63%)
+  no counter-charge within 6A   167  (76%)  <- desolvation, not mechanism
+  that are histidines           89  (41%)
+
+all-site product   min 0.326   median 2.779   max 1406.8
+designs with >=1 right-way site                32/35
+designs whose WHOLE product points right (<1)  11/35
+
+best ten by product (lower is better for problem 2):
+  p2deep-q_L76_s1_seed42_sample_1                   0.326x  6/68 moved  ok
+  p2free-r_L84_s0_seed42_sample_10                  0.350x  4/64 moved  ok
+  p2deep-r_L84_s0_seed42_sample_2                   0.540x  3/68 moved  ok
+  p2smoke01_L76_s0_seed42_sample_31                 0.610x  10/70 moved  ok
+  p2probe2-h_L84_s1_seed42_sample_25                0.629x  4/63 moved  ok
+  p2probe-b_L76_s1_seed42_sample_19                 0.634x  4/68 moved  ok
+  p2probe-a_L76_s0_seed42_sample_18                 0.713x  4/66 moved  ok
+  p2probe2-e_L76_s0_seed42_sample_22                0.721x  8/74 moved  ok
+  p2reg1-r1-s_L84_s1_seed42_sample_29               0.740x  1/57 moved  ok
+  p2trimer03_L76_s0_seed42_sample_34                0.795x  2/63 moved  ok
+
+CAVEATS
+  1. Computed on ESMFold2 poses whose interfaces sit 2-3% above a size-matched
+     shuffled null, so these are linkages on structures of uncertain reality.
+  2. 76% of movers have no counter-charge within 6A -- the desolvation signature
+     this project named on H370. A shift with no partner is not a mechanism.
+  3. PROPKA on a buried histidine is its hardest case (PREREGISTRATION.md:210).

@@ -1,0 +1,17 @@
+metric	value	note
+n_shapes	50	cond_strategy extended
+per_sample_s	39.9	vs 35.5 at hotspot
+peak_device_gb	3.39	A100-40GB; memory never a constraint
+cost_usd	1.16	$0.023 per shape
+iface_pairs_median	42	CA-CB <8A; hotspot phase0 gave 21 and 9
+iface_binder_res_median	19	hotspot phase0 gave 9 and 4
+spanning_2plus_protomers	50/50	
+iface_positions_median	26	mpnn_constraints.py, range 18-34
+cation_reachable_median	5.5	range 1-9; 48/50 have >=3
+cation_reachable_max	9	working designs had 8-11 His-cation contacts
+seed_seqs	100	2 per backbone, CA-only vanilla ProteinMPNN, local CPU
+monomer_fold_s	3.3	ESMFold2, 83-mer, GPU
+monomer_clear_0.70	98/100	49/50 backbones
+monomer_plddt_median	0.824	min 0.656 max 0.897
+monomer_plddt_ge_0.85	28/100	
+mosaic_comparison	0/35	best 0.688; their worst assayed design 0.689

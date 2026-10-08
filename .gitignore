@@ -50,3 +50,9 @@ runs/genie3-mono-out/
 # tools/ProteinMPNN: re-clone with
 #   git clone https://github.com/dauparas/ProteinMPNN.git tools/ProteinMPNN
 #   cd tools/ProteinMPNN && git checkout 8907e66 && python3 -m venv .venv && .venv/bin/pip install torch numpy
+tools/pyrosetta/
+runs/g50mono-in/
+runs/g50mono-out/
+# tools/pyrosetta: the official installer exits silently; install from the wheel url directly
+#   python3 -m venv tools/pyrosetta/.venv && tools/pyrosetta/.venv/bin/pip install \
+#     https://west.rosettacommons.org/pyrosetta/release/release/PyRosetta4.Release.python39.m1.cxx11thread.serialization.wheel/pyrosetta-0-cp39-cp39-macosx_12_0_arm64.whl
