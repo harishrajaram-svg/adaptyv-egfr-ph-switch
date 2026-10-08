@@ -1,0 +1,9 @@
+design	plddt	ptm	n_tokens	clears_0.70
+tnfa_corrected_0_s1	0.8441	0.8032	83	1
+tnfa_corrected_0_s2	0.8475	0.8330	83	1
+tnfa_corrected_0_s3	0.7853	0.7047	83	1
+tnfa_corrected_0_s4	0.8678	0.8628	83	1
+tnfa_corrected_1_s1	0.8071	0.7588	83	1
+tnfa_corrected_1_s2	0.8329	0.7921	83	1
+tnfa_corrected_1_s3	0.7945	0.7378	83	1
+tnfa_corrected_1_s4	0.8299	0.7970	83	1

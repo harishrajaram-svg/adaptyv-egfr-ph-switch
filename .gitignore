@@ -44,3 +44,9 @@ runs/p2-esmfold2-null76-in/
 runs/p2-esmfold2-null84-in/
 runs/genie3-in/
 runs/genie3-out/
+tools/ProteinMPNN/
+runs/genie3-mono-in/
+runs/genie3-mono-out/
+# tools/ProteinMPNN: re-clone with
+#   git clone https://github.com/dauparas/ProteinMPNN.git tools/ProteinMPNN
+#   cd tools/ProteinMPNN && git checkout 8907e66 && python3 -m venv .venv && .venv/bin/pip install torch numpy
