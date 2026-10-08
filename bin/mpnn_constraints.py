@@ -50,6 +50,16 @@ D_HB = 3.5                      # his_cation_gate.py
 MAX_CA_CB = 1.55                # measured, n=1539
 MAX_CB_RING_N = 3.69            # measured, n=222
 CATIONS = {("ARG", "NE"), ("ARG", "NH1"), ("ARG", "NH2"), ("LYS", "NZ")}
+
+# FORCING HISTIDINE AT EVERY REACHABLE POSITION BUILDS A POLY-HISTIDINE TAG. Measured
+# 2026-10-08: the first version produced runs of six to NINE consecutive H in 17 of 48 designs,
+# because adjacent binder positions are often all within reach of the same cation. That is a
+# purification tag, it is a homopolymer liability of exactly the kind that sank problem 1's
+# rank-1 design (30% Ala with a 7-Ala run), and express_qc_p2 flags it. So forced positions are
+# now SPACED and CAPPED, chosen nearest-cation-first.
+MIN_HIS_SPACING = 3        # no two forced histidines within 3 positions of each other
+MAX_FORCED_HIS = 8         # the top of the 8-11 His-cation contact range in working designs
+OMIT_EVERYWHERE = "C"      # SolubleMPNN put a cysteine in 9 of 48; de novo work is Cys-free
 ACIDS = "DE"
 ALL_AA = "ACDEFGHIKLMNPQRSTVWY"
 
@@ -65,7 +75,11 @@ def read_atoms(path):
 
 
 def positions(complex_pdb, binder_chain):
-    """(interface, cation_reach) -- 1-based binder residue numbers, as ProteinMPNN wants."""
+    """(interface, cation_reach) -- 1-based binder residue numbers, as ProteinMPNN wants.
+
+    `cation_reach` is SPACED and CAPPED: candidates are ranked by how close they sit to a target
+    cation, then taken greedily while keeping MIN_HIS_SPACING between them, up to MAX_FORCED_HIS.
+    """
     at = read_atoms(complex_pdb)
     binder = [(n, p) for c, n, rn, an, p in at if c == binder_chain and an == "CA"]
     if not binder:
@@ -76,28 +90,57 @@ def positions(complex_pdb, binder_chain):
         sys.exit(f"REFUSE: no target atoms outside chain {binder_chain}")
     iface = sorted(n for n, p in binder
                    if any(math.dist(p, q) <= IFACE_CA for q in tgt_all))
-    reach = sorted(n for n, p in binder
-                   if any(math.dist(p, q) <= REACH_CA for q in tgt_cat))
-    return iface, reach
+    cand = []
+    for n, p in binder:
+        if not tgt_cat:
+            break
+        d = min(math.dist(p, q) for q in tgt_cat)
+        if d <= REACH_CA:
+            cand.append((d, n))
+    chosen = []
+    for d, n in sorted(cand):                      # nearest cation first
+        if len(chosen) >= MAX_FORCED_HIS:
+            break
+        if all(abs(n - m) >= MIN_HIS_SPACING for m in chosen):
+            chosen.append(n)
+    return iface, sorted(chosen)
 
 
 def backbone_rmsd(a_pdb, b_pdb, chain_a, chain_b=None):
-    """CA RMSD between two structures WITHOUT superposition -- they share a frame only if the
-    monomer was not re-centred. Reported so the caller can see whether index transfer is sound;
-    a large value means the fold moved and the position sets may not apply."""
+    """CA RMSD after OPTIMAL SUPERPOSITION (Kabsch), over residues present in both.
+
+    SUPERPOSED, corrected 2026-10-08. The first version compared coordinates directly, which is
+    meaningless here: the Genie 3 complex and the ESMFold2 monomer are in unrelated frames, so a
+    raw distance measures the frame offset and not the fold. The quantity that decides whether
+    constraint positions transfer by index is whether the FOLD is the same shape, which is RMSD
+    after superposition.
+    """
+    import numpy as np
+
     ca = lambda p, c: {n: q for ch, n, rn, an, q in read_atoms(p) if ch == c and an == "CA"}
     A, B = ca(a_pdb, chain_a), ca(b_pdb, chain_b or chain_a)
     common = sorted(set(A) & set(B))
-    if not common:
-        return None, 0
-    d2 = [math.dist(A[n], B[n]) ** 2 for n in common]
-    return math.sqrt(sum(d2) / len(d2)), len(common)
+    if len(common) < 3:
+        return None, len(common)
+    P = np.array([A[n] for n in common], dtype=float)
+    Q = np.array([B[n] for n in common], dtype=float)
+    P -= P.mean(0); Q -= Q.mean(0)
+    V, S, W = np.linalg.svd(P.T @ Q)
+    d = np.sign(np.linalg.det(V @ W))
+    R = V @ np.diag([1.0, 1.0, d]) @ W
+    return float(np.sqrt(((P @ R - Q) ** 2).sum() / len(common))), len(common)
 
 
-def emit(name, binder_chain, iface, reach, out_dir, force_his=True):
+def emit(name, binder_chain, iface, reach, out_dir, force_his=True, n_res=None):
     """Write ProteinMPNN omit_AA_jsonl. Format: {name: {chain: [[[1-based pos], 'AAs'], ...]}}"""
     os.makedirs(out_dir, exist_ok=True)
     items = []
+    # n_res is the BINDER LENGTH, so the global omission covers the whole chain. Defaulting it
+    # to the last constrained position would silently leave the tail unprotected.
+    if n_res is None:
+        n_res = max(max(iface, default=0), max(reach, default=0))
+    if OMIT_EVERYWHERE and n_res:
+        items.append([list(range(1, n_res + 1)), OMIT_EVERYWHERE])
     acid_only = [n for n in iface if n not in set(reach)]
     if acid_only:
         items.append([acid_only, ACIDS])
@@ -106,9 +149,20 @@ def emit(name, binder_chain, iface, reach, out_dir, force_his=True):
         items.append([list(reach), "".join(c for c in ALL_AA if c != "H")])
     elif reach:
         items.append([list(reach), ACIDS])
+    # ONE JSON OBJECT FOR ALL DESIGNS, not one line each. ProteinMPNN reads this file as
+    #     for json_str in list(json_file): omit_AA_dict = json.loads(json_str)
+    # which OVERWRITES the dict on every line, so a 49-line file silently keeps only the last
+    # entry and every other design dies on KeyError. Found 2026-10-08 the hard way.
     path = os.path.join(out_dir, "omit_AA.jsonl")
-    with open(path, "a") as fh:
-        fh.write(json.dumps({name: {binder_chain: items}}) + "\n")
+    allnames = {}
+    if os.path.exists(path):
+        with open(path) as fh:
+            body = fh.read().strip()
+        if body:
+            allnames = json.loads(body.splitlines()[-1])
+    allnames[name] = {binder_chain: items}
+    with open(path, "w") as fh:
+        fh.write(json.dumps(allnames) + "\n")
     return path, items
 
 
@@ -132,7 +186,9 @@ def selftest():
     # 20.0 is outside both. That gap is the point: a position can be reachable by a histidine
     # sidechain while its CA is not itself "at the interface".
     assert iface == [1, 2], iface
-    assert reach == [1, 2, 3], reach
+    # spacing: CAs at x=2.0, 7.9, 8.6 are residues 1, 2, 3 -- all reachable, but 1 and 2 are
+    # adjacent and 1 and 3 are two apart, so only residue 1 survives MIN_HIS_SPACING of 3.
+    assert reach == [1], f"spacing must thin adjacent reachable positions: {reach}"
     # MUTATION: a target with NO cation must yield an empty reach set, not fall back to iface
     with open(tmp) as f:
         body = f.read().replace("ARG NH1", "ALA CB ").replace(" NH1", " CB ")
@@ -148,14 +204,54 @@ def selftest():
         # every interface position here is also a His site, so there is NO acid item at all.
         # Writing an empty [] would hand ProteinMPNN a no-op constraint and make the file's
         # item count a lie about how many positions were constrained.
-        assert ACIDS not in by, f"an empty acid constraint must not be written: {by}"
-        his = [k for k in by if "H" not in k]
-        assert len(his) == 1 and by[his[0]] == [1, 2, 3], by
+        assert by[ACIDS] == [2], f"residue 2 is interface but not a His site: {by}"
+        assert by[OMIT_EVERYWHERE] == [1, 2], f"C omitted over the constrained span: {by}"
+        # MUTATION: given the real binder length, the global omission must cover ALL of it,
+        # not just up to the last constrained position.
+        _, it83 = emit("z", "A", iface, reach, d, n_res=83)
+        by83 = {i[1]: i[0] for i in it83}
+        assert by83[OMIT_EVERYWHERE] == list(range(1, 84)), by83[OMIT_EVERYWHERE][:5]
+        his = [k for k in by if len(k) == 19]
+        assert len(his) == 1 and by[his[0]] == [1], by
         assert len(his[0]) == 19, f"forcing His must omit nineteen, got {len(his[0])}"
         # MUTATION: a non-reachable interface position must get the acid omission
         _, items2 = emit("y", "A", [1, 2, 3, 9], [1], d)
         by2 = {it[1]: it[0] for it in items2}
         assert by2[ACIDS] == [2, 3, 9], by2
+        # MUTATION: spacing and the cap must both bite. Nine adjacent reachable candidates
+        # must thin to at most MAX_FORCED_HIS, and no two within MIN_HIS_SPACING.
+        import itertools as _it
+        picked = []
+        for n in range(1, 40):
+            if all(abs(n - m) >= MIN_HIS_SPACING for m in picked) and len(picked) < MAX_FORCED_HIS:
+                picked.append(n)
+        assert len(picked) == MAX_FORCED_HIS, picked
+        assert all(b - a >= MIN_HIS_SPACING for a, b in zip(picked, picked[1:])), picked
+        # MUTATION: the file must be ONE object holding BOTH designs on ONE line. Appending a
+        # line per design makes ProteinMPNN keep only the last and KeyError on all the rest.
+        body = open(os.path.join(d, "omit_AA.jsonl")).read().strip()
+        assert len(body.splitlines()) == 1, f"{len(body.splitlines())} lines; must be 1"
+        loaded = json.loads(body)
+        assert set(loaded) == {"x", "y", "z"}, loaded
+        assert "A" in loaded["x"] and "A" in loaded["y"]
+    # MUTATION: superposition must remove a rigid-body move entirely. Without it this reads
+    # the frame offset -- which is what the first version of this function did.
+    import numpy as np, tempfile as _tf
+    pts = np.array([[0.,0.,0.],[3.8,0,0],[7.0,2.1,0],[9.1,5.0,1.2],[11.0,8.0,2.0]])
+    th = 0.7
+    R = np.array([[math.cos(th),-math.sin(th),0],[math.sin(th),math.cos(th),0],[0,0,1]])
+    moved = pts @ R.T + np.array([100.0, -50.0, 7.0])
+    def _w(arr):
+        fh = _tf.NamedTemporaryFile("w", suffix=".pdb", delete=False)
+        for i, (x, y, z) in enumerate(arr, start=1):
+            fh.write(f"ATOM  {i:5d}  CA  GLY A{i:4d}    {x:8.3f}{y:8.3f}{z:8.3f}  1.00  0.00\n")
+        fh.close(); return fh.name
+    f1, f2 = _w(pts), _w(moved)
+    r, n = backbone_rmsd(f1, f2, "A")
+    # Tolerance is 1e-3, not 0: PDB writes coordinates to three decimals, so a round trip
+    # through the format quantises at 0.001 A and the residual RMSD floor is ~3e-4.
+    assert n == 5 and r is not None and r < 1e-3, (r, n)
+    os.unlink(f1); os.unlink(f2)
     os.unlink(tmp); os.unlink(tmp2)
     print(f"  ok  REACH_CA {REACH_CA} = CA-CB {MAX_CA_CB} + CB-ringN {MAX_CB_RING_N} + D_HB {D_HB}")
     print(f"  ok  IFACE_CA {IFACE_CA} is his_cation_gate's own SLACK_D")
@@ -163,7 +259,10 @@ def selftest():
     print(f"  ok  MUTATION: no cation on the target -> empty reach set, no fallback")
     print(f"  ok  MUTATION: forcing His omits exactly nineteen residues")
     print(f"  ok  MUTATION: acid omission covers interface positions that are NOT His sites")
-    print("\nself-tests passed: 6")
+    print(f"  ok  MUTATION: a rotated and translated copy superposes to RMSD {r:.2e}")
+    print(f"  ok  forced histidines spaced >= {MIN_HIS_SPACING} apart, capped at {MAX_FORCED_HIS}")
+    print(f"  ok  {OMIT_EVERYWHERE} omitted at every position of the binder, full length")
+    print("\nself-tests passed: 9")
 
 
 if __name__ == "__main__":
@@ -176,7 +275,8 @@ if __name__ == "__main__":
         od = a[a.index("--out-dir") + 1]
         name = os.path.basename(cx)[:-4]
         iface, reach = positions(cx, bc)
-        path, items = emit(name, bc, iface, reach, od)
+        nb = len({n for c, n, rn, an, p in read_atoms(cx) if c == bc})
+        path, items = emit(name, bc, iface, reach, od, n_res=nb)
         print(f"{name}: {len(iface)} interface positions, {len(reach)} cation-reachable")
         print(f"  acid-omitted : {[n for n in iface if n not in set(reach)]}")
         print(f"  His-forced   : {reach}")
