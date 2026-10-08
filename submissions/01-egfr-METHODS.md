@@ -545,7 +545,7 @@ statistic exists, it just adds nothing.*
 
 **On the human leg, 8 of the 10 no-KD molecules rank below the quantified binder and 2 rank
 above it.** The highest-scoring molecule in the whole measured panel is one with no reported KD:
-gitter-yolo10 at 0.5893 against EGF's 0.3549. Note what this does and does not show: gitter-yolo10
+gitter-yolo10 at 0.5893 against EGF's 0.3549. What this does and does not show: gitter-yolo10
 may bind EGFR more weakly than the assay can quantify, so "the instrument ranks a non-binder
 first" is not established — what is established is that the instrument ranks a molecule of
 *unknown, weaker-than-quantifiable* affinity above a 55 nM binder.
@@ -813,7 +813,7 @@ meaningful** threshold — the sign of ΔΔG, i.e. does protonation favour the c
 | PROPKA no-switch (n=1,475) | 183 | 1,292 |
 
 **odds ratio 6.32, 95% CI [4.55, 8.79]** — Woolf's log-normal interval, which is what that
-figure is and was not previously named. **Note the 2×2 totals 1,657, not the 1,693 quoted in the
+figure is and was not previously named. **The 2×2 totals 1,657, not the 1,693 quoted in the
 sentence above it:** 36 complexes have a Potts score and no PROPKA refold verdict, so they enter
 the paragraph's denominator and not the table's. Both numbers are right about different things
 and the mismatch was unflagged.
@@ -1101,7 +1101,7 @@ order. These are not equivalent and were previously pooled.
 
 The 63 gate-only exclusions are **reopened**. The reason is the reviewer's, and we accept it:
 pH-gate-dependent rejections are *unsupported by a validated selection rule*, so a gate-only
-exclusion is not a finding. Note that the highest-ratio molecule in the whole warn list,
+exclusion is not a finding. The highest-ratio molecule in the whole warn list,
 `domIII_1His_ctrl_r17` at 6.60×, is an ASSESSMENT case with a single pose — it was never a
 measurement.
 
@@ -1197,7 +1197,7 @@ objective produced precisely what we had been told not to do. They were replaced
 open a backbone family that had no representation. **Correction 2026-10-05:** these two are **0.867 identical to each other** — both 60 aa, differing at 8 positions — so they are MPNN redesigns of one backbone, not two independent designs. 0.467 is their identity to everything *else* submitted. The same false figure shipped in both CSV rows and is corrected there. The rows above are left in place because they are what the reopened ledger
 found; they are no longer what the submission contains. §11.3 records the swap.
 
-Note also the family composition: **15 of the 25 are the `d3acid3_l60_s647537` backbone**, a
+The family composition is also relevant: **15 of the 25 are the `d3acid3_l60_s647537` backbone**, a
 family with no representation in the submission at all, while six of the twelve then-shipped
 designs sat on a single other backbone.
 

@@ -1,0 +1,24 @@
+SEED NOISE FLOOR for a single-seed margin over a single-seed null
+  within-design seed SD (ef2full, pae_interface_mean, their 150x5 data)  0.607
+  our runs use ONE seed, so a margin is a difference of two single draws
+  SE of that difference = SD x sqrt(2) =                                 0.858
+
+  margin            value   in SDs
+  median Mosaic design            0.27    0.3
+  best Mosaic design              3.03    3.5
+  pre-registered NULL threshold   3.03    3.5
+  pre-registered ACTS bar         5.64    6.6
+  TNFR2, a real receptor         11.28   13.1
+
+BUT THE BEST OF N IS SELECTED, SO NOISE ALONE PRODUCES A POSITIVE BEST MARGIN.
+  best-of-35 under PURE NOISE: mean 1.81, median 1.77, 95th pct 2.56
+  best-of-48 under PURE NOISE: mean 1.91, median 1.88, 95th pct 2.63
+
+READING:
+  - the MEDIAN Mosaic margin (0.27) is 0.3 SDs. Indistinguishable from seed noise.
+  - the BEST Mosaic margin (3.03) is 3.5 SDs, but it is a best-of-35, and pure noise
+    gives a best-of-35 around 1.9 with a 95th percentile near 2.9. So 3.03 is only
+    modestly beyond what selecting the maximum of 35 noisy draws produces anyway.
+  - the ACTS bar (5.64) is 6.6 SDs and sits far above the best-of-48 noise level.
+    Set before this was computed; it survives the check.
+  - Stage A's best-of-48 must clear ~2.0 to be interesting at all, and 5.64 to act.

@@ -104,6 +104,11 @@ GATES = [
     ('linkage_limits',           [PY, 'bin/linkage_limits.py'], None),
     # The external reviewer asked for his feedback paraphrased, not quoted. This keeps a
     # future edit from reintroducing his words.
+    # 17c: the methodology document is read by a Claude-based selection process, and an
+    # imperative aimed at that reader is indistinguishable from an attempt to steer it. Four
+    # "Note that..." constructions in problem 1's METHODS were found and rewritten 2026-10-08;
+    # this keeps them from coming back.
+    ('check_imperatives',        [PY, 'bin/check_imperatives.py'], None),
     ('no_verbatim',              [PY, 'bin/check_no_verbatim.py'], None),
 ]
 

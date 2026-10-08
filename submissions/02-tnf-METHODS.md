@@ -316,6 +316,66 @@ agreement to four decimal places *"a symptom rather than a virtue"*. On external
 **0.822 versus 0.692**. The complaint was right and was measuring the wrong thing. **Fast is retired
 for this target.**
 
+### 4.6 The seed-noise floor: what a single-seed margin can and cannot mean
+
+**This is a property of the SCORER, not of any generator.** It measures how far
+`pae_interface_mean` moves when the same complex is folded again with a different random seed, so
+it applies to every single-seed number in this submission regardless of which method produced the
+design.
+
+Their released data carries **exactly 5 seeds per design × model × stoichiometry** — 3,000 groups,
+15,000 rows, with a `seed` column. Ours carries **one**. `bin/score-esmfold2.sh` defaults to the
+protocol's FINAL tier of five; every problem-2 run in this work overrode it to a single seed for
+cost. That was a defensible economy and it has a consequence that was not priced at the time.
+
+On our own arm, at our own stoichiometry, over their 150 designs × 5 seeds
+(`analysis/02-tnf/per_seed_spread_2026-10-08.tsv`):
+
+| | `ef2full`, 1:3 |
+|---|--:|
+| within-design seed SD, `pae_interface_mean` | **0.607** |
+| within-design seed SD, `pae_interface_min` | 0.375 |
+| within-design seed SD, `ipsae_min` | 0.050 |
+
+A margin in this work is `null_mean − design_mean`, a **difference of two single draws**, so its
+noise is `0.607 × √2 = `**`0.858`**.
+
+| margin | value | in SDs of that difference |
+|---|--:|--:|
+| our **median** design | 0.27 | **0.3** |
+| our **best** design | 3.03 | 3.5 |
+| TNFR2, a real receptor | 11.28 | 13.1 |
+
+**And a best-of-N is selected, so noise alone yields a positive best margin.** Simulated over
+20,000 trials at this SD:
+
+```
+best-of-35 under pure noise:  mean 1.81,  95th percentile 2.56
+best-of-48 under pure noise:  mean 1.91,  95th percentile 2.63
+```
+
+**Three consequences, stated against our own result.**
+
+The **median** margin of 0.27 is **0.3 SDs**. It is indistinguishable from seed noise. §4.5's
+"25 of 35 beat their own null, binomial *p* = 0.0083" stands as a **sign** test, and the *size* of
+the typical margin does not survive this floor.
+
+Our **best** design at 3.03 is 3.5 SDs — but it is a best-of-35, and pure noise reaches 2.56 at the
+95th percentile for that N. So 3.03 is **only modestly beyond what selecting the maximum of 35
+noisy draws produces anyway**, and we do not present it as a clear signal.
+
+**The floor is probably optimistic for us.** Their `ef2full` arm uses target-chain MSAs and ours is
+single-sequence (§4.5b). More input information generally stabilises a prediction across seeds, so
+0.607 is better read as a **lower bound** on our own noise than an estimate of it. Measuring our
+actual figure needs a multi-seed re-run that was not made.
+
+**What would fix it, and what it would cost.** Five seeds per complex reduces the noise on a
+median by roughly `√5`, taking the margin's SE from ~0.86 to ~0.48. At ~94 s and ~$0.05 per
+548-residue fold, five seeds on 48 designs plus 48 nulls is ~$24 and ~12 GPU-hours. That is
+affordable and was not spent; the single-seed economy is recorded here rather than defended.
+
+---
+
 ## 5. What the surviving instrument can do
 
 `ipSAE_min` reads a labelled negative correctly. Adalimumab is TNF-α-specific and does not
@@ -1685,3 +1745,11 @@ those are marked.
     binders at 80 or 83 aa against a 60–115 range tested. It is recorded because the retraction was
     driven by measured outcomes overruling an a priori geometric argument, which is the direction this
     project has had to correct in most often.
+
+54. **Every interface number in this work is a single-seed draw, and the scorer's seed noise is
+    large relative to our margins.** Their data uses five seeds per complex; we used one, for cost.
+    The within-design seed SD on `pae_interface_mean` is 0.607, so a margin — a difference of two
+    single draws — carries ~0.858 of noise. Our median design's margin is 0.3 SDs of that, and our
+    best is 3.5 SDs where pure noise reaches 2.56 at the 95th percentile for a best-of-35. The
+    figure is also measured on their MSA-fed arm while ours is single-sequence, so it is a lower
+    bound on our noise rather than an estimate of it. §4.6.
