@@ -38,3 +38,7 @@ runs/p2-esmfold2-smoke/
 runs/p2-esmfold2-out/
 runs/p2-esmfold2-ctrl-out/
 runs/p2-esmfold2-smoke-out/
+runs/p2-esmfold2-null76-out/
+runs/p2-esmfold2-null84-out/
+runs/p2-esmfold2-null76-in/
+runs/p2-esmfold2-null84-in/

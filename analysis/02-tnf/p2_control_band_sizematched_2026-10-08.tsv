@@ -1,0 +1,3 @@
+complex	role	binder_len	pae_if_min	pae_if_mean	n_pairs
+neg_shuffled_L76_1	negative	76	0.854	14.248	219486
+neg_shuffled_L84_1	negative	84	0.855	14.996	227022
