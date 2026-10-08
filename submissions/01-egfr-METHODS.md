@@ -2001,6 +2001,14 @@ from their own campaign on licence grounds; FreeBindCraft was named as the subst
 never actually substituted**. The BindCraft pool supplies **11 of the 16 submitted designs**, so
 this is not a stray dependency.
 
+🔶 **Addendum 2026-10-08.** On 2026-10-06 an organiser addressed this in #design-methods: *"I
+believe PyRosetta is fine for non-commercial use. The license rule on our end is just for you to
+make sure you are adhering to the relevant licenses."* That removes the **competition's**
+objection and returns licence compliance to us. It does **not** resolve the sentence above — the
+paragraph's claim is that the free terms do not describe this entry, and that determination is
+still ours to make, not the organisers'. We record the clarification and leave the conclusion
+standing rather than reading a permission into it that was not given.
+
 The honest statement: every other tool listed above is open-source and commercially usable, and
 **the BindCraft arm carries an unresolved PyRosetta licence question**. Recorded here rather than
 corrected silently, per the project's own rule that a reader who finds an undisclosed error

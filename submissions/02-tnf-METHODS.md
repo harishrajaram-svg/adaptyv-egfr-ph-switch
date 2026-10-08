@@ -280,15 +280,36 @@ reversing it: ipSAE separates binder from non-binder and carries no affinity inf
 binders. The retirement in §4 was measured on an affinity ladder — a different task, still retired
 for that task.
 
-**(b) We rank on `pae_interface_min` from ESMFold2-Full**, with `ipSAE_min` reported alongside, because
-on our own arm it is the better discriminator (0.901 vs 0.822) on external labelled data rather than
-on our own designs. Implemented in `bin/pae_interface.py` as a **sibling** of `ipsae_min.py` rather
-than an edit to it, because that module is pinned by 12 fixtures and a fail-closed suite. Validated
-on those fixtures: barnase/barstar reads **0.332, best of 12**; the shuffled negative **19.137,
-worst of 12**; and the renumbered and chain-swapped variants return **0.332 identically**, so the
-metric is invariant to the chain relabelling this project has repeatedly been bitten by.
-⚠️ **Values for our own 35 designs do not exist** — producing them needs an ESMFold2 run that has
-not been made. The switch is declared and plumbed, not yet measured on our set.
+**(b) We rank on an ESMFold2-Full interface-PAE term**, with `ipSAE_min` reported alongside.
+Implemented in `bin/pae_interface.py` as a **sibling** of `ipsae_min.py` rather than an edit to it,
+because that module is pinned by 12 fixtures and a fail-closed suite. Validated on those fixtures:
+barnase/barstar reads **0.332, best of 12**; the shuffled negative **19.137, worst of 12**; and the
+renumbered and chain-swapped variants return **0.332 identically**, so the metric is invariant to
+the chain relabelling this project has repeatedly been bitten by.
+
+⚠️ **The 0.901 that selected `pae_interface_min` was measured on a configuration we never ran, and
+we no longer rest the choice on it.** The calibration's `ef2full` arm uses **target-chain MSAs**
+(`msa_max_seq=2048`, protocol line 111). Our run is **single-sequence on both chains**: `grep -ci
+msa` returns **0** in both the wrapper and its tracked patch. The AUC separating 0.901 from
+`ipsae_min`'s 0.822 is therefore not transferable to our numbers, and
+`analysis/02-tnf/CONFIG-COMPARABILITY-2d.md` records that gap rather than papering over it.
+
+**What replaced it.** All 35 designs were scored on our own configuration, and each was compared to
+a **size-matched shuffled null** at its own cross-chain pair count — the earlier control band paired
+a 164-residue receptor against the trimer (302,382 pairs) while the designs sit at 219,486/227,022,
+so it was never a yardstick (`analysis/02-tnf/SIZEMATCHED-NULL-2f.md`):
+
+| | n | design `pae_if_mean` | median | own-length null | beat it |
+|---|--:|---|--:|--:|--:|
+| L76 | 21 | 11.218–16.586 | 14.047 | 14.248 | 15/21 |
+| L84 | 14 | 13.945–15.434 | 14.648 | 14.996 | 10/14 |
+
+**25 of 35 beat their own-length null** (one-sided binomial *p* = 0.0083), and **the same 25 beat it
+on the min**, so at our configuration the two metrics order the set identically and the choice
+between them no longer carries weight. The margin is what matters: TNFR2 scores 7.713 where its own
+shuffles score ~18.99, a margin of **11.28**. Our best design clears its null by **3.03 (27%)**, our
+best L84 by 1.05 (9%), and the median by **0.20–0.35 (2–3%)**. Statistically above chance;
+biologically almost nothing.
 
 **(c) ESMFold2-Full and ESMFold2-Fast are not interchangeable.** `arms-backlog.md` called their
 agreement to four decimal places *"a symptom rather than a virtue"*. On external labels they split
@@ -681,6 +702,16 @@ this work in every row.
 | the challenge organisers' own TNF-α campaign | **12 of 150 = 8.0%**, best apparent K_D 0.70 nM |
 | ArcRefine | 6 of 10 optimized vs 1 of 10 unoptimized, n = 10, selection-confounded (below) |
 
+⚠️ **8.0% is a ONE-OBJECTIVE ceiling, not our calibration.** We have quoted it as the benchmark in
+earlier drafts of this section, of limitation 19 and of the public methodology box. Their campaign
+required **binding only**. Their protocol states the goals as *"1) high-affinity binders zero-shot
+and 2) high overall hit rate"*, contains **no pH requirement at any point**, and makes cross-species
+*"a secondary objective pursued only without compromising affinity or hit rate."* We are asked for
+**three things at once**, and the added one has no computational precedent at pH 6.0 (§6.8). So the
+honest framing of our negative result is not "we fell short of 8%" but "this is the
+three-objective version of a task whose one-objective version runs at 8% on the organisers' own
+instrumentation." Their generator breakdown is the sharper comparison, and it is in §6.9.
+
 **AlphaProteo's published reason for failing is a description of the epitope this work chose.** It
 names *"a flat, highly polar binding site at an interface between 2 subunits in a homotrimer."* That
 is the protomer-spanning surface of §2, and it is the most direct explanation available for an
@@ -751,7 +782,17 @@ where the external method carries 8 on one leg at an ipTM weight of 0.025. A nul
 exonerate the loss, and a rise would not prove noise was the only problem. AlphaProteo's diagnosis
 of this epitope (§6.5) is optimizer-independent and survives either result.
 
-**Status at the time of writing: built, selftested, mutation-tested, not launched.** The default
+**Status: RAN 2026-10-07, and returned a null.** Four trajectories, matched to condition 2 with the
+estimator as the only variable. Four-run mean rise in `iptm_repred` across the soft phase:
+**+0.0078 ± 0.0124**, against a pre-registered bar of ≥ +0.12 to act and < +0.02 to call it null.
+**Cause 2 — gradient noise — is eliminated.** Endpoint medians were the project's best anywhere
+(median 0.2159, max 0.2468) **on a null trajectory**, which is precisely the trap §6.3 names; they
+are reported and not acted on.
+
+**The hard stop written before the run is honoured.** §6.6 said a null "ends the search — it is not
+grounds for a seventh condition." No seventh condition was run on this estimator.
+
+**Status of the implementation: built, selftested, mutation-tested.** The default
 path is unchanged — `grad_samples 1` and momentum 0.9/0.5 reproduce every earlier run — so nothing
 already reported is affected. Guards added with it, because the free-footprint path taught that an
 unexecuted path is probably broken: the selftest asserts momentum is not a literal again, that the
@@ -760,6 +801,127 @@ multisample path stays gated on `grad_samples > 1`, that **every keyword passed 
 20 minutes into a billed run), that the monomer leg is not routed through it, that the run banner
 states the estimator, and that **every flag in every probe launcher exists on the entrypoint**. Each
 guard was mutation-tested in the direction it is meant to catch.
+
+---
+
+### 6.7 The epitope probe: the last testable variable, also null
+
+Five conditions and the free-footprint probe had all used the **same epitope**. Three independent
+sources said the epitope was the likeliest remaining cause: AlphaProteo's own diagnosis of this
+target (§6.5), a reviewer's reading that *"it probably comes down to the epitope"*, and Glogl *et
+al.* measuring that this surface class is hard. So the epitope became the variable.
+
+**Region I** — a concave hydrophobic site **15.42 Å** from the receptor site, structurally
+unrelated to it, where a published campaign reported 0.55 nM. Positional 69/70/92 on one protomer
+plus 109/110 on the adjacent one = mature 74/75/97 + 114/115, with a **2.97 Å seam** between 92.B
+and 110.C, so it genuinely spans two protomers as the challenge recommends. Matched to condition 2
+with the epitope as the only variable, including keeping the **old** estimator, because arm A had
+already returned a null and changing two things at once wastes the run.
+
+**Bar pre-registered before the run**, same statistic and tool: four-run mean rise in
+`iptm_repred`, `loss_traj.py --block 13`, ≥ +0.12 to act, < +0.02 null. The R108 null distribution
+at that point was seventeen trajectories: +0.004 ± 0.013 (free footprint), +0.008 ± 0.012 (arm A),
+and twelve flat tuning trajectories.
+
+**Result: −0.0092 ± 0.0126. Null.** The interface term did not improve, and it moved *down*.
+
+**The hard stop is honoured.** The launcher's own header recorded *"this is the last arm."* It was.
+**Twenty-one trajectories, six conditions, two structurally unrelated epitopes.** The interface
+term improved in none of them.
+
+🔶 **Independent corroboration arriving after the fact, 2026-10-08.** Genie 3's published
+BinderBench ships a TNF-α problem whose hotspot is mature **113 + 73 across two protomers**, tagged
+to AlphaProteo. Mapped into its numbering, **four of Region I's five residues land in or adjacent to
+its own `common` interface set, one exactly**. So the epitope §6.7 tested is the surface a published
+campaign independently selected for this target. That makes §6.7's null likelier to be a
+**generator** failure than an **epitope** failure — which is the conclusion §48 of the challenge
+notes reaches from a different direction entirely.
+
+---
+
+### 6.8 No computational precedent exists for the pH leg, and no predictor represents it
+
+The three objectives are not equally supported by prior work, and this section states the gap
+rather than leaving it implied.
+
+**No structure predictor used anywhere in this submission represents the pH-6.0 state.** Boltz-2,
+ESMFold2, OpenFold3 and Protenix take a sequence, and optionally a structure or alignments. **None
+takes a pH or a protonation state.** Every interface number we report is therefore computed on a
+pose generated with no notion of pH, and the pH objective is a **design-time geometric bet** rather
+than an optimised quantity. No amount of co-folding changes this.
+
+**What the two closest prior works actually give us.** Ahn *et al.* (bioRxiv 2025.09.29.678932)
+supply the geometric criterion we implement — a histidine within hydrogen-bonding distance of a
+cationic partner across the interface — and Schröter *et al.* 2014
+(doi:10.4161/19420862.2014.985993) supply the antibody-side precedent for pH-dependent binding.
+Neither releases code, and neither reports a de novo design at pH 6.0.
+
+**Our own His-cation contact count sits at the published floor.** Two. Working designs in the
+released data carried **8 and 11**. That is the single most direct statement available about
+whether the installed mechanism is dense enough to act, and it is unflattering.
+
+**A direction-aware linkage measurement, added 2026-10-08, and it is worse than the count.** With
+the TNF-α target registered in `bin/ph_gate_multisite.py --problem 2`, all 35 designs were scored
+for thermodynamic linkage, `ratio = K(6.0)/K(7.4)`. Problem 2 binds at 7.4 and must be silent at
+6.0, so **acid must weaken binding: ratio < 1**:
+
+| | |
+|---|--:|
+| moving sites across 35 poses | 219 |
+| pointing the **right** way | 80 — **37%** |
+| pointing the **wrong** way | 139 — **63%** |
+| **no counter-charge within 6 Å** | **167 — 76%** |
+| that are histidines | 89 — 41% |
+
+All-site product: min 0.326, median **2.779**, max 1406.8. Only **11 of 35** point the right way as
+whole molecules. **The median design binds ~2.8× tighter at pH 6.0 — a reverse switch, gripping
+hardest where it is meant to let go.** And 76% of the movement comes from sites with nothing to push
+against, the desolvation signature this project named on H370; without that guard, 219 moving sites
+would have read as a working mechanism.
+
+**A hypothesis, offered as one.** These designs are acid-rich, and both generators available to us
+produce acid-rich sequences. An interface carrying carboxylates on both sides is mildly
+self-repelling at pH 7.4; protonate the acids at 6.0, the repulsion eases, and the complex
+*tightens*. If that is what is happening, the composition has been building an inverted switch by
+accident, and histidine placement cannot fix it while the acids dominate. We have not tested this
+and do not claim it.
+
+**Caveat on the whole section.** These linkages are computed on poses whose interfaces clear a
+size-matched shuffled null by 2–3% of a real receptor's margin (§4.5). The direction of the finding
+is worth something; the magnitudes are not.
+
+---
+
+### 6.9 Germinal: an attempted arm that never ran
+
+Recorded because an attempted-and-failed arm is part of the method. Germinal was wrapped
+(`patches/modal_germinal.patch`) and never produced a design — the wrapper required a vendor
+dependency that 404s, patched around, and the arm still did not execute. It contributed **nothing**
+to this submission and is listed so the generator inventory is complete rather than flattering.
+
+**What the released data says about generator choice, which is the comparison §6.5 should have
+drawn.** On the organisers' own 150 measured TNF-α designs:
+
+| generator | binders / tested | rate |
+|---|--:|--:|
+| **Genie3** | **8 / 23** | **34.8%** |
+| PXDesign | 4 / 57 | 7.0% |
+| RFdiffusion3 | 0 / 40 | 0% |
+| RFdiffusion | 0 / 20 | 0% |
+| BoltzGen | 0 / 8 | 0% |
+| FreeBindCraft | 0 / 2 | 0% |
+
+Fisher exact, two-sided, Genie3 against all others pooled: **p = 0.00003**. Genie3 is also the
+**only** generator in that set that produced mouse cross-reactivity (3 of its 8). And **all 12
+binders used SolubleMPNN**; ProteinMPNN and Caliby produced zero. Two caveats that matter: the 8
+are variants of **one** backbone found in 23 samples (pairwise identity 0.58–0.81 inside a set
+spanning 0.02–0.90), so this is one lucky discovery rather than eight independent ones; and the
+0/2 for FreeBindCraft is **almost no evidence** — a true 7% rate yields 0/2 about 86% of the time,
+whereas 0/40 and 0/20 are genuinely informative.
+
+**We used neither Genie3 nor SolubleMPNN for the designs in this submission.** That is the single
+largest identifiable gap between this method and the one that worked on this target, and it was
+visible in data published before our search closed.
 
 ---
 
@@ -1500,14 +1662,18 @@ those are marked.
     ranking instruments and validated none of our generation path.
 
 50. **No design in this submission clears the monomer-foldability floor in the organisers' own
-    protocol.** 0 of 35 at 0.70; our best is 68.9 vs their lowest assayed value of 68.8. We report
+    protocol.** 0 of 35 at 0.70; **our best is 68.8 against their lowest *assayed* value of 68.9** — the two
+    figures were printed the wrong way round in an earlier draft of this limitation. We report
     this rather than relaxing the floor, and it is the strongest single reason to expect these designs
     not to bind.
 
-51. **The ranker we declare is not the ranker we measured our designs with.** §4.5 selects
-    `pae_interface_min` on ESMFold2-Full on external labels, but no ESMFold2 prediction of our own 35
-    exists, so the submitted order still derives from Boltz-2 quantities. The switch is declared,
-    plumbed and self-tested; it is not yet applied.
+51. **The AUC that chose our ranker was measured on a configuration we never ran.** The
+    calibration's `ef2full` arm uses target-chain MSAs; our run is single-sequence on both chains,
+    with `grep -ci msa` returning 0 in the wrapper and its patch. So 0.901 does not transfer, and
+    §4.5(b) no longer rests on it. What we have instead is measured on our own configuration: all
+    35 designs scored, each against a shuffled null at its own length, with the min and the mean
+    ordering the set identically. An earlier version of this limitation said no ESMFold2 prediction
+    of our 35 existed; that was true when written and is no longer.
 
 52. **The calibration in §4.5 is not blind.** Medians for several models were inspected before AUC was
     chosen as the statistic. The guard is completeness — all 160 cells are printed, so no subset can
