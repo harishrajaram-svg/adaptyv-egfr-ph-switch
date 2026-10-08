@@ -992,43 +992,6 @@ median is +0.320, about 0.4 SDs — still noise.** The result is entirely in the
 Genie 3's own record predicts: its 8 measured binders are variants of **one** backbone found in 23
 samples.
 
-#### 6.10c The best margin replicates on seeds it was not selected on
-
-§4.6 established that a single-seed margin carries ~0.858 of noise and that a **best-of-48** under
-pure noise reaches 1.91 on average. +6.027 was therefore exactly the shape of a selection
-artefact, so the top 8 designs and their nulls were re-folded at **five seeds, 1–5 — deliberately
-excluding seed 42**, the draw the selection was made on. 80 folds, ~$2.72. This is an independent
-replication, not five draws containing the chosen one.
-
-| design | seed 42 | 5-seed median | change | design SD across seeds |
-|---|--:|--:|--:|--:|
-| **`tnfa_corrected_22_s1`** | +6.027 | **+6.287** | +0.260 | 0.370 |
-| `tnfa_corrected_3_s1` | +4.776 | +5.565 | +0.789 | 0.715 |
-| `tnfa_corrected_43_s1` | +4.711 | +5.355 | +0.644 | **2.446** |
-| `tnfa_corrected_30_s1` | +5.814 | +4.786 | −1.028 | 0.351 |
-| `tnfa_corrected_11_s1` | +3.584 | +3.747 | +0.163 | 0.530 |
-| `tnfa_corrected_18_s1` | +3.865 | +2.762 | −1.103 | 0.185 |
-| `tnfa_corrected_48_s1` | +3.527 | +1.173 | −2.353 | 0.201 |
-| `tnfa_corrected_45_s2` | +3.425 | **−0.649** | **−4.074** | 0.264 |
-
-**The top of the distribution is real.** Best margin 6.027 → **6.287**, slightly *up*, and the
-pre-registered 5.64 bar still clears. Median across the eight barely moves, 4.288 → 4.267.
-
-**The ranking within the distribution is not.** `_45_s2` fell 4.07 and now scores **worse than its
-own scramble**; `_48_s1` fell 2.35. Two of eight collapsed, three improved, three held. So a
-best-of-N selected on single seeds identifies a real tail while getting the order inside it wrong.
-
-**Two designs where the margin means less than its digits suggest.** `_43_s1` has a design-side SD
-of **2.446** across seeds — four times the 0.607 §4.6 quotes as typical, so that one design is
-wildly seed-dependent. `_48_s1`'s *null* has an SD of **1.963**, so its instability comes from the
-reference rather than the design. Neither is visible in a single-seed number.
-
-**Consequence for nomination, and it is a hard one.** The final 20 cannot be chosen from
-single-seed margins. Doing so would have shipped `_45_s2`, which looked mid-pack at one seed and
-is below its own null at five. Any design put forward must carry a multi-seed margin.
-
----
-
 #### 6.10a The constraint was aimed at the wrong residues, and the data says so
 
 §6.8 offered a hypothesis: acid-rich interfaces protonate at pH 6.0, lose their mutual repulsion
@@ -1093,6 +1056,82 @@ the loss is large. That targets the desolvation mechanism instead of proxying it
 implemented and not tested**, and it is recorded as the next thing to try rather than as a result.
 
 ---
+
+#### 6.10c The best margin replicates on seeds it was not selected on
+
+§4.6 established that a single-seed margin carries ~0.858 of noise and that a **best-of-48** under
+pure noise reaches 1.91 on average. +6.027 was therefore exactly the shape of a selection
+artefact, so the top 8 designs and their nulls were re-folded at **five seeds, 1–5 — deliberately
+excluding seed 42**, the draw the selection was made on. 80 folds, ~$2.72. This is an independent
+replication, not five draws containing the chosen one.
+
+| design | seed 42 | 5-seed median | change | design SD across seeds |
+|---|--:|--:|--:|--:|
+| **`tnfa_corrected_22_s1`** | +6.027 | **+6.287** | +0.260 | 0.370 |
+| `tnfa_corrected_3_s1` | +4.776 | +5.565 | +0.789 | 0.715 |
+| `tnfa_corrected_43_s1` | +4.711 | +5.355 | +0.644 | **2.446** |
+| `tnfa_corrected_30_s1` | +5.814 | +4.786 | −1.028 | 0.351 |
+| `tnfa_corrected_11_s1` | +3.584 | +3.747 | +0.163 | 0.530 |
+| `tnfa_corrected_18_s1` | +3.865 | +2.762 | −1.103 | 0.185 |
+| `tnfa_corrected_48_s1` | +3.527 | +1.173 | −2.353 | 0.201 |
+| `tnfa_corrected_45_s2` | +3.425 | **−0.649** | **−4.074** | 0.264 |
+
+**The top of the distribution is real.** Best margin 6.027 → **6.287**, slightly *up*, and the
+pre-registered 5.64 bar still clears. Median across the eight barely moves, 4.288 → 4.267.
+
+**The ranking within the distribution is not.** `_45_s2` fell 4.07 and now scores **worse than its
+own scramble**; `_48_s1` fell 2.35. Two of eight collapsed, three improved, three held. So a
+best-of-N selected on single seeds identifies a real tail while getting the order inside it wrong.
+
+**Two designs where the margin means less than its digits suggest.** `_43_s1` has a design-side SD
+of **2.446** across seeds — four times the 0.607 §4.6 quotes as typical, so that one design is
+wildly seed-dependent. `_48_s1`'s *null* has an SD of **1.963**, so its instability comes from the
+reference rather than the design. Neither is visible in a single-seed number.
+
+**Consequence for nomination, and it is a hard one.** The final 20 cannot be chosen from
+single-seed margins. Doing so would have shipped `_45_s2`, which looked mid-pack at one seed and
+is below its own null at five. Any design put forward must carry a multi-seed margin.
+
+---
+
+#### 6.10d Objective 3 was never designed for, and the two species do not track
+
+Mouse cross-reactivity is one of the three objectives. The Genie 3 problem definition conditioned
+on **human hotspots only**; mouse entered no objective at any stage. 48 designs were folded
+against a mouse TNF-α **dimer** with their own shuffled nulls in the same construct, 96 folds, ~$3.
+
+| | mouse | human |
+|---|--:|--:|
+| min | −6.220 | −1.732 |
+| **median** | **−1.264** | +0.320 |
+| max | +5.209 | +6.027 |
+| **beat their own null** | **10/48** | 32/48 |
+
+**The median design scores worse than its own scramble against mouse.** And the species are close
+to independent: **r = +0.122**, with only **9 of 48** positive in both. The best mouse design,
+`_8_s1`, is *negative* on human (+5.209 / −0.464); the best human design, `_22_s1`, is not in the
+mouse top six.
+
+That is the worst available structure for a two-species brief — selecting on one buys nothing on
+the other. It is the expected result of never putting mouse in the loop, and is reported as such
+rather than as a property of the generator. Genie 3 produced mouse cross-reactivity in 3 of its 8
+binders in the released campaign, so the capability exists; we did not ask for it.
+
+**Construct, stated.** Mouse is a **dimer** (2 × 156 + 83 = 395 residues, 100,464 cross-chain
+pairs) against human's trimer (554 residues, 226,080 pairs), because a mouse trimer exceeds the
+card at ~976 tokens (§6.6). Only the **margins** are comparable across species, each taken against
+a null in its own construct; the raw means are not. §7's adalimumab control puts a real binder's
+dimer-versus-trimer penalty at about **14%**, which does not account for a median crossing zero.
+
+**Single-seed caveat applies in full.** §6.10c showed two of eight human margins moving by more
+than 2 units on replication. No mouse margin has been replicated.
+
+**One design is not bad at anything.** `tnfa_corrected_30_s1`: human **+5.814**, mouse **+1.991**,
+third on pH linkage at 0.149. The only design in this work positive on all three objectives, and
+the only reason to rank it above `_22_s1` despite a lower human margin.
+
+---
+
 
 ### 6.9 Germinal: an attempted arm that never ran
 
@@ -1912,3 +1951,11 @@ those are marked.
     instability comes from its null at SD 1.963, neither visible at n=1. Only the top 8 of 48
     carry multi-seed margins; the other 40 are single draws and their order should not be
     trusted.
+
+57. **Objective 3 has near-chance transfer, because nothing was designed for it.** §6.10d. The
+    Genie 3 problem conditioned on human hotspots only. Against mouse the median design scores
+    **worse than its own scramble** (−1.264) and only 10 of 48 beat their mouse null, against 32
+    of 48 on human. Human and mouse margins correlate at **r = +0.122**, with only 9 of 48
+    positive in both, so selecting on one objective buys nothing on the other. Mouse used a dimer
+    construct against human's trimer, so only margins are comparable, and no mouse margin has
+    been replicated across seeds.
