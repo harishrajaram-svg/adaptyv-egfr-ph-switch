@@ -1,177 +1,225 @@
 # HANDOFF — Anthropic × Adaptyv 2026, Track 3 (all challenges)
-# Updated 2026-10-07 9:25 AM EDT. Covers BOTH challenges; problem 1 is closed and archived below.
+# Updated 2026-10-07 9:25 PM EDT. Covers BOTH challenges; problem 1 is closed and archived below.
 
-**Problem 2 is the live work. Due Mon Oct 12, 7:59 AM EDT.** 20 slots, Track 3.
+**Read order on a cold start:** this file → `projects/anthropic-adaptyv-2026/ROADMAP.md` (the live
+plan) → `challenges/02-tnf-alpha.md` §1–§47. Then nothing else unless a link below says so.
 
-**Problem 1 is CLOSED** — submitted, 16 designs, deadline Wed Oct 7 07:59 EDT now passed. Nothing
-in this file is a problem-1 action any more; its history is kept below because the lessons carry
-forward (`lessons-problem-1.md`), not because anything is pending. **The repo is still named
-`adaptyv-egfr-ph-switch` after problem 1**, which is worth renaming or noting before submission,
-since the methods document links it.
+---
 
-## 🟢 NOTHING RUNNING as of 2026-10-07 10:55 AM — the search is finished, `C+` is applied
+## 🟢 NOTHING RUNNING as of 2026-10-07 9:25 PM. Nothing spending. The design search is CLOSED.
 
-All 16 trajectories complete, `modal app list` empty, ~$36 spent, **the $49 wave unspent.**
+`modal app list` is empty. **Two pre-registered arms ran today and both returned nulls**, and both
+carried hard stops written before the run. Those stops are honoured: **no further design arms.**
 
-**Result: the free footprint changed nothing.** Four-run rise +0.004 ± 0.013 over 75 soft steps —
-flat, like the other twelve. Endpoints worse: mean 0.168 pinned → 0.135 free. **Cause 1 of
-METHODS §6.3 is eliminated**; causes 2 and 3 survive and neither is testable in the remaining time.
+| arm | what it varied | pre-registered bar | result |
+|---|---|---|---|
+| **A** (§45) | the gradient estimator — 4-sample averaging, momentum 0.9 → 0.0 | ≥ +0.12 acts, < +0.02 null | **+0.0078 ± 0.0124 → NULL** |
+| **Region I** (§47) | the **epitope** — a second site 15.42 Å away | same bar | **−0.0092 ± 0.0126 → NULL** |
 
-```
-cd ~/code/adaptyv-2026
-python3 analysis/02-tnf/score_free_probe.py        # the full reading, verdict included
-python3 analysis/02-tnf/design_inventory.py        # what is shippable: 25 seqs, 0 clear the gate
-python3 bin/check_p2_stats.py                      # every methods figure, recomputed
-```
+**Twenty-one trajectories now, six conditions, two structurally unrelated epitopes.** The interface
+term improved in none of them. Best `iptm_repred` anywhere is **0.2468** (arm A) against the **0.45**
+gate we set before any number existed. 0 of 25 designs clear it.
 
-**Five conditions tried. Best anywhere 0.200 against a 0.45 bar, from the second thing tried.**
+**What survives as the explanation:** term interaction across 20 weighted terms on three legs.
+Condition 3 is direct evidence — tripling the interface weights made results *worse*. Testing it
+means stripping terms, and the terms *are* objectives 1 and 2, so the suspect cannot be fixed
+without abandoning the brief.
 
-| # | condition | steps | median | max |
-|---|---|---|---|---|
-| 1 | baseline | 50 | 0.136 | 0.156 |
-| 2 | **pH weight down** | 50 | **0.179** | **0.200** |
-| 3 | binding weights up | 50 | 0.156 | 0.197 |
-| 4 | step budget up | 200 | 0.163 | 0.189 |
-| 5 | free footprint | 100 | 0.134 | 0.137 |
+**Spend:** ~$36 before today, ~$9 arm A, ~$9 Region I, ~$3 lost to two launch mistakes of mine.
+**The $49 wave money is unspent and now has nothing to buy.**
 
-**Keep this finding:** the pinned epitope was *load-bearing for the pH objective*, not an obstacle.
-Freeing it pushed the median nearest-histidine distance from 22.8 Å to 34.8 Å. The anchor is one
-pinned point on a 456-residue surface and the epitope term was the only thing holding the binder
-near it.
+### Arm A's endpoints were the project's best, and that is a trap, not a lead
+Median 0.2159, max 0.2468 — above every other condition. **On a null trajectory.** §6.3 is why
+endpoints are secondary: an endpoint cannot tell a badly-tuned method from one that is not
+optimising. Do not reopen arm A on the strength of its endpoints.
 
-### 🎯 Blocked on one decision: ROADMAP item 10
+---
 
-**Recommended: plan C**, the methods-first submission — 20 of 25 real sequences in two footprint
-families, plus the measured negative result. The organisers confirmed on Oct 6 that *"Claude will
-review what you share and use it for selection"* and that the methodology text is linked to a
-public Proteinbase Collection.
+## 📌 THE SUBMISSION IS PLAN C, AND THREE THINGS CHANGED TODAY THAT MAKE IT EASIER
 
-**The alternative has been read in full and is not recommended.** See
-`projects/anthropic-adaptyv-2026/arcrefine-evaluation.md` — do not re-derive it. It **needs a parent
-that already binds** and 0 of our 25 clear the gate (its own inputs were pre-filtered to Boltz-2
-ipSAE > 0.4); its loss has **no histidine term**, so as shipped it deletes our pH mechanism; and its
-6/10 vs 1/10 is a hit-rate delta between independently selected pools, not a rescue rate. **`C+`
-— folding its corroboration and an unrelated dependency-pin fix into the methods — is DONE as of
-10:55 AM.** What is left of item 10: **ship plan C now, or spend ~$11 on the warm-start probe (W)
-first.** Recommendation: ship C.
+**1. 🟢 THE NOVELTY GATE STOPS BEING A SUBMISSION FILTER — portal switches 2026-10-08.**
+Simon (Adaptyv), 2026-10-07 6:46 PM:
+> "switching to a **sequence based presubmission screening, which will flag only submitted sequences
+> with resemblance to known TNFa binders** … **Novelty will still be computed but only after
+> submission** together with other metrics on Proteinbase."
 
-### Organiser facts confirmed 2026-10-06, worth not re-deriving
+Offline tool: **`github.com/adaptyvbio/binder-prescreen`** — *"so that you can check your submissions
+(or have Claude check them) before you submit."* Sequence-based, no structure needed.
+**Consequence:** problem 1's novelty roulette (opposite verdicts on byte-identical sequences, cost us
+a backbone family and the only two-site mechanism) **cannot recur**. Submit the best 20 by our own
+ranking. ⚠️ Novelty has not vanished — it moves post-submission and **feeds selection**, so keep
+reporting our levels honestly. **Run `binder-prescreen` on all 25 before uploading.**
 
-- The assayed target is **Asp143**, UniProt **P01375**, reagent **AcroBiosystems TNA-H4211**. Our
-  target already carried Asp143 — confirmed, not corrected.
-- The novelty gate is **"at least 3 of 4 checks"**, and the organisers are reviewing whether to
-  relax it to 2 of 4. Watch before item 13.
-- Ingmar's seven TNF-α questions (Oct 6, 11:09 AM) still have **zero replies**, including whether
-  selection models against the full trimer or a single chain, and whether the trimer stays intact
-  at pH 6.0. **Our §7 and §9 contingencies stand.**
+**2. Fewer than 20 designs is explicitly fine.** Tudor, 2026-10-02:
+> "It's ok if you want to submit less than 20 … **we will not pick just 1-2** (so a bit more to give
+> some statistical power)."
+So padding to 20 buys nothing. Relevant because **§9 already says a matched histidine-removal
+control is uninformative when the parent does not bind** — 0 of 25 bind, so the 4 control slots are
+better spent or left empty.
 
-### Recovery, if ever needed
+**3. Upload early, then "designate".** Théo: *"There is an option on Proteinbase to 'designate' the
+submission that will be taken into account when you've made multiple ones."* Multiple submissions are
+retained. An early upload is free insurance; it does not burn the 24 h cooldown.
 
-```
-mkdir -p /tmp/rec && cd /tmp/rec
-modal volume get mosaic-weights runs/p2free-p     # destination must be the CWD; an argument raises Errno 21
-```
+**Deadline, reconciled — no runway was lost:** **Sun Oct 11 23:59 AoE = Mon Oct 12 7:59 AM EDT.**
+AoE is UTC−12, so the two readings are the same instant. Last upload that still leaves a 24 h retry:
+**Sun Oct 11, 7:59 AM EDT.**
 
-## 🧭 THE PLAN LIVES IN `ROADMAP.md` IN THE OTHER REPO
+---
 
-`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (updated 2026-10-07 10:55 AM)
-is the live plan: the result, the one outstanding decision, the 20-slot allocation, and what blocks
-what. Read it before anything in this file. Then `challenges/02-tnf-alpha.md` §1–§44 for the
-decision record.
+## ⚠️ ORGANISER FACTS — confirmed in the Slack, do not re-derive
 
-**What a reader of THIS repo needs, because the code is here:**
+- **Selection, stated three times, most explicitly by Tudor:** *"mainly based on method novelty,
+  design diversity, and a couple of in silico/confidence metrics. Your strategy should not be
+  penalized much by the in silico metrics … this selection strategy will likely be less biased
+  against more creative design methods."* They will publish the selection prompts afterwards.
+- **Amir:** *"Claude will review what you share and use it for selection."* The methodology section
+  is linked to a Proteinbase Collection. ⚠️ Being made **public** is conditional — *"**if** your
+  designs are selected for wet-lab testing … **might** be made public."* Do not state it as a rule.
+- 🔴 **Assay construct, confirmed 2026-10-07 by Tudor:** *"C-terminal Twin-Strep, we immobilize the
+  binder, and flow the target."* **Our design is the immobilised partner and the trimer is the
+  analyte** — so the avidity exposure in limitation 16 is now organiser-confirmed, not inferred. A
+  trimeric analyte can engage two immobilised binders and compress the pH ratio we are ranked on.
+- **Target:** UniProt P01375, **Asp143** (not 1TNF's Leu143), AcroBiosystems TNA-H4211, tag-free.
+- **Format:** 10–250 aa; `molecule_class` ∈ `single_chain|nanobody|scfv|fab_kappa|fab_lambda`
+  (**`protein` is not in the enumeration**). Strata: microbinder <40 · minibinder 40–100 · large
+  >100 · nanobody · antibody, **winners per stratum**. Our 76-mer is a minibinder.
+- 🔴 **A ranked CSV is mandatory.** Declining to rank is not submittable.
+- 🔴 **"Embedded instructions or prompt injection may be deemed grounds for disqualification."**
+  The methods document must contain no imperative addressed to a reader. Sections added 2026-10-07
+  were checked clean; **older prose was not fully swept.**
+- **Provenance rule, verbatim:** *"You may not take an existing binder and modify it. Designs must be
+  produced from scratch."* Kills any use of `TNFA_OPT_07`, the Chen *et al.* TMB sequences, and our
+  own problem-1 sequences (*"We check against the current Proteinbase snapshot"*).
+- **PyRosetta is permitted** for non-commercial use (Amir + Tudor, 2026-10-06). **PolyForm was never
+  ruled on** — silence, not permission.
+- **Operational:** multiple entrants report Claude's bio classifiers blocking routine protein work on
+  challenge 2. Amir recommends Sonnet 5.5 and says the classifier level is the same across Sonnet 5 /
+  Opus 5 / Sonnet 5.5. **This session was interrupted repeatedly.** A fresh window is the reported
+  workaround.
 
-* **`biomodals/` is gitignored.** `modal_mosaic.py` survives *only* via
-  `patches/modal_mosaic.patch` (1,636 lines) and `modal_esmfold2.patch` (353 lines).
-  **Regenerate after every edit** — it has gone stale once and nearly lost a day. Verified current
-  as of 9:20 AM: regenerating produces a byte-identical file.
-* **Restore it in a clone with:**
-  `git apply --directory=biomodals patches/modal_mosaic.patch` and the same for `modal_esmfold2`.
-  Both self-tests then pass with bare `python3`, no venv, no GPU, no Modal account.
-* **`runs/` is gitignored too.** The 25 candidate sequences are committed separately as
-  `outbox/02-tnf-candidates.faa` and `.tsv`, with each sequence's condition, score and histidine
-  distance in its own FASTA header. Nothing else in git holds them.
-* **Every tool carries a `--selftest`** and all eleven pass. The launchers refuse to start if the
-  wrapper self-test fails.
+---
+
+## 🔭 GENERATION PATHWAYS — researched 2026-10-07 evening, NONE LAUNCHED
+
+Three agents surveyed this. **No pathway is recommended without an explicit decision**, because the
+§45/§47 hard stops say the design search is closed and reopening it is a judgement call, not a
+tooling one. Recorded so a fresh window does not re-derive it.
+
+| pathway | status | cost | verdict |
+|---|---|---|---|
+| **BindCraft2** `github.com/PacesaLab/BindCraft2` | created 2026-09-13, **pushed 2026-10-07** | ~$2–7 | **Best capability fit, zero published yield** |
+| **Cao scaffolds → BoltzGen inverse-folding** | our harness already wired | ~$8–16 | Nearly zero setup; His pins at generation |
+| **Genie 3** `aqlaboratory/genie3`, Apache-2.0 | public weights | cheap | **8 of the organisers' 12 TNF-α binders are variants of ONE Genie 3 backbone** |
+| **Proton-PottsMPNN** | MIT, weights in repo | ~$0 (CPU) | The only model taking protonation state as **input** |
+| **Germinal** | 🔴 **TRIED HERE 2026-10-02 AND FAILED** | ~$80 for 20 | **Out** |
+| BoltzGen `nanobody-anything` | — | — | Externally measured **zero on TNF-α, both arms** |
+| RFantibody · RIFdock · Chai-2 · Latent-X · IgDesign | — | — | No wrapper / 100k CPU-h / not available / needs a parent |
+
+**Germinal is out on measured grounds, not theory.** `runs/egfr-d3-scfv/`: four attempts on
+2026-10-02, **zero designs**, abandoned in 52 min with a `STOPPED_germinal_boxed_out` tombstone.
+Failures: `No module named 'yaml'` · return code 1 · `No module named 'pkg_resources'` ·
+`ValueError: Unrecognized amino acid token: A` inside vendored `colabdesign/iglm/model.py`. Three
+never reached the design stage. Also ~$80 for 20 designs (over budget), hard-requires PyRosetta, and
+**§26 measured that our ranking instrument substantially fails on nanobody format** while a ranked
+CSV is mandatory.
+
+**BindCraft2, what is actually verified:** ships `scaffolds/{VHH,scFv,Fab,ARP}.cif`;
+`examples/pdl1_vhh.json` does fixed-scaffold CDR-only design with variable CDR lengths,
+`min_scaffold_sequence_retained_final: 1.0` and `max_off_paratope_contact_final: 0.0`;
+`pdl1_crossreactive_detarget.json` carries **two orthologs as a native joint objective** plus
+negative design; `pdl1_homotrimer.json` exists. License is source-available, free for any purpose
+except hosted resale, **no PyRosetta**. 🔴 **Unverified: yield. No paper, no wet-lab numbers.** pH is
+not an input. VRAM ≈ 2.0 × (3.4 GB + 38 kB·N²) → full trimer + 100 aa ≈ 30 GB → **one worker on an
+L40S; truncate to a protomer pair or an epitope shell.**
+
+🔴 **RULES TRAP:** BindCraft and BoltzGen both ship **adalimumab** and **golimumab** Fab scaffolds.
+Both are anti-TNF-α drugs. Using either as a framework against TNF-α is *"taking an existing binder
+and modifying it."* The `nanobody_scaffolds/` set is clean. **Check every scaffold against the
+target.**
+
+**Honest expectations if any of this ever runs.** The Baker pH paper's TNF-α row: **72 designs → 48
+retained binding → 3 pH-sensitive**, best 79× weaker and that at **pH 5.4**, not 6.0. At a 20-design
+cap that is **~0.8 expected switches**. The best computational pH-**6.0** result anywhere is **>2×**.
+
+---
+
+## 🔬 THE CALIBRATION WAS TOO GENEROUS, AND THIS IS STILL OWED IN THE WRITE-UP
+
+We have been quoting the organisers' own **12/150 = 8%** on TNF-α as our calibration, in METHODS
+§6.5, limitation 19 and the public methodology box. **Their campaign required only binding.** Their
+protocol (`reference/anthropic-binder-design-protocol.md`, TNF-α is target #10) states the goals as
+*"1) high-affinity binders zero-shot and 2) high overall hit rate"*, contains **no pH requirement at
+all**, and makes cross-species *"a secondary objective pursued only without compromising affinity or
+hit rate."*
+
+**So 8% is the one-objective ceiling, not our calibration.** We are asked for three things at once,
+and the added one has no computational precedent at pH 6.0. All three places need qualifying —
+it reframes our negative result as the three-objective version of a task whose one-objective version
+runs at 8% on the organisers' own instrumentation.
+
+---
+
+## ✅ CORRECTIONS SHIPPED 2026-10-07 — all guarded, do not reintroduce
+
+| what was wrong | now | guard |
+|---|---|---|
+| Mosaic installed from an **unpinned** git URL all campaign | pinned `b94b9d4eb99…`, in the wrapper **and** the tracked patch | `bin/check-pins.sh`, mutation-tested |
+| METHODS §2: positional 68 *"deleted in mouse"*, with an argument built on it | it is **H→Y**; the single gap is at **mature 71 (Ser)**, not an epitope position | `bin/check_species_map.py`, 6 mutations |
+| *"an L40S cannot hold three protomers"* | human trimer = 456 res / **532 tokens, 21.7 s/step, runs**. The **dual-species** graph with a mouse trimer (~976 tokens) is what OOMs | stated in §6.6 |
+| methodology box: `+20%` effect size | **`+31%`** — §11 fixed it at 7:35 AM and it was never carried across | — |
+| ROADMAP: methodology *"linked to a public Collection"* | conditional — *may* be public *if* selected | — |
+| novelty gate = *"3 of 4 checks"* | a **4-level scale, bar at Level ≥ 3** | — |
+
+**Gate count is now 22** (`check_species_map` added); the methodology box says 22 of 22.
+⚠️ I briefly wrote "15 of 15" into that box from a bad regex — fixed, but re-read it before upload.
+
+---
 
 ## 🔧 TOOLING ADDED 2026-10-07 — one command each
 
 ```
-python3 analysis/02-tnf/score_free_probe.py    the free-footprint reading, verdict included
-python3 analysis/02-tnf/design_inventory.py    what is shippable, counted from the run tables
-python3 analysis/02-tnf/loss_traj.py <logs>    block-averaged trajectory, the decisive reading
-python3 bin/check_p2_stats.py                  recompute every METHODS figure from designs.tsv
-python3 bin/check_no_verbatim.py               reviewer anonymity across the published tree
-bin/probe-free-footprint.sh <tag> <len> <seed> the free-footprint launcher, reasoning in its header
+python3 bin/check_species_map.py                  mouse mapping + gap + Region I, from sequence
+python3 analysis/02-tnf/region1_verify.py         Region I by motif, in all three numbering schemes
+bash    bin/check-pins.sh                         Mosaic revision pin, wrapper AND patch
+python3 analysis/02-tnf/loss_traj.py LOG --block 13   the trajectory read; the ONLY decisive statistic
+bash    bin/probe-grad-noise.sh  <tag> <L> <seed>     arm A (GRAD_SAMPLES/MOMENTUM_SOFT env)
+bash    bin/probe-region1.sh     <tag> <L> <seed>     the Region I arm
+python3 bin/gate_sweep.py                         all 22 gates
 ```
 
-`check_p2_stats.py` exists because two cells in METHODS §6.2 reported a row value where a median
-belonged. It has since caught the same error class twice more, including one committed hours after
-the entry describing it was written. **Run it before any edit to §6 or §10 ships.**
+**Launcher guards, learned the hard way today:** a tag containing whitespace is refused, length and
+seed must be digits, and every launcher echoes its resolved config **before** launching. This exists
+because `set -- $a` in a **zsh** loop does not word-split, so four runs silently became four
+identical `L=76 seed=0` runs. Also: **every TNF launcher must name `--epitope` on both legs** —
+`DEFAULT_EPITOPE` is problem 1's **EGFR** site and inheriting it designs against the wrong protein.
 
-## ⚠️ ORGANISER FACTS — confirmed in the Slack, do not re-derive
+---
 
-Harish **is** a member of `#anthropic_adaptyv_competition` (`C0C4VEG57HU`) and the other four
-Proteinbase channels. Organisers: Tudor-Stefan Cotet, Simon Dürr, Théo Jalabert, and Amir
-Shanehsazzadeh (Anthropic).
+## 📋 WHAT IS LEFT — all writing, except the upload
 
-**Problem 2, confirmed 2026-10-06/07:**
-* **The assayed target is Asp143**, UniProt **P01375**, reagent **AcroBiosystems TNA-H4211**. Our
-  target already carried Asp143 — organiser confirmation of a prior decision, not a correction.
-* **Selection reads the methodology text.** Amir, 10-06: *"Claude will review what you share and
-  use it for selection."* Tudor added that the section is **linked to a public Proteinbase
-  Collection** — so it is published, which is why the reviewer-anonymity check matters and why the
-  document carries no reader-directed imperatives.
-* **The novelty gate is "at least 3 of 4 checks"**, and the organisers are reviewing whether to
-  relax it to 2 of 4. Watch before the novelty step.
-* **Model refusals are hitting other entrants** on protein-design tasks. Amir: Sonnet 5, Opus 5 and
-  Sonnet 5.5 carry the same classifiers, and he recommends Sonnet 5.5. We have not been blocked.
+1. **METHODS:** fold in arm A (§6.6) and Region I (new §6.7) with both hard stops recorded as
+   honoured; qualify §6.5's 8% per the section above; add the pH-6.0 ceiling with citations
+   (Ahn *et al.* bioRxiv 2025.09.29.678932; Schröter 2014 doi:10.4161/19420862.2014.985993); state
+   that **no structure predictor represents the pH-6.0 state**; note our **2** His-cation contacts sit
+   at the published floor where working designs had **8 and 11**; record Germinal as an attempted,
+   failed arm.
+2. **Sweep older prose for reader-addressed imperatives** — disqualification risk, not style.
+3. **Three stale claims:** `submission-basis-p2.md:48` says `molecule_class: protein` (code is
+   already correct); `setup-checklist.md:24` still says avoid PyRosetta; problem 1's METHODS §27 owes
+   the PyRosetta correction with today's date.
+4. **Run `binder-prescreen`** on all 25 sequences.
+5. **Nominate ≤20, rank, upload early, designate.** ⬅ **Harish's**
+6. Optional, $0, still unasked under his own name: **does a large K_D shift with binding at both pH
+   values qualify, or must binding be undetectable at 6.0?** It decides whether any single-site
+   design counts. Two other teams asked; never answered.
 
-**Still unanswered, and our contingencies depend on it.** A competitor posted seven TNF-α questions
-on 10-06 at 11:09 AM with **zero replies**, two of which are ours: whether the selection step models
-against the full trimer or a single chain, and whether the trimer stays intact at pH 6.0.
-**METHODS §7 and §9 carry the contingencies; they stand.** Also open: the exact mouse TNF-α
-sequence and vendor, and whether the expression system and C-terminal tag match challenge 1.
+---
 
-## 🔭 THE ALTERNATIVE, READ AND CLOSED — do not re-derive
+## 🧭 THE PLAN LIVES IN `ROADMAP.md` IN THE OTHER REPO
 
-**Full memo: `projects/anthropic-adaptyv-2026/arcrefine-evaluation.md`.** Four premises an earlier
-version of this file carried were wrong: the cost is **$2.59/design**, not $677 for a campaign; the
-mechanism is **MIT upstream Mosaic**, not PolyForm (Boyd's own stateful-loss code, deleted as dead
-code in April 2026); the licence question **was answered 2026-10-06**; and the data is fully released.
-
-**Why it is still not recommended.** It **needs a parent that already binds and does not claim to
-rescue non-binders** — the arms are explicitly *"not matched experimental parent–child pairs"*, and
-its 60 starting designs were pre-filtered to Boltz-2 **ipSAE > 0.4** while **0 of our 25 clear
-0.45**. Its loss carries **no histidine term**: every sequence in both its TNF-α examples has zero
-histidines, with alanine at 29–34%. Run as shipped it would delete the pH mechanism.
-
-**What was worth taking, and was taken (`C+`, done 10:55 AM, $0).** Our **target** is corroborated
-outright (both canonical, both **Asp143**); our **epitope** partially, with a measured-non-binder
-counterexample on the same surface; **8%** (the organisers' own 12/150) replaces 60% as the honest
-calibration; and AlphaProteo's published reason for 0-of-54 — *"a flat, highly polar binding site at
-an interface between 2 subunits in a homotrimer"* — is the **best available explanation for sixteen
-flat trajectories.** All folded into METHODS §1, §2, §6.5, §11, §13.
-
-**One open axis it exposed, stated so nobody claims otherwise:** all sixteen trajectories held the
-gradient estimator and initialization constant, so **optimizer space is unsearched** — weights,
-steps and footprint were the three axes we varied. That is what the ~$11 W probe would test, and
-the recommendation is still to skip it.
-
-## 📛 THE REPO WAS RENAMED 2026-10-07 — and problem 1's artifacts deliberately were not updated
-
-`adaptyv-egfr-ph-switch` → **`anthropic-adaptyv-2026`**, because it now covers both challenges and
-the methods documents link it publicly. GitHub serves a **301 redirect** from the old URL
-(verified: resolves 200), so nothing that references the old name is broken.
-
-🔴 **Four files still carry the old name on purpose. Do not "fix" them.**
-`submissions/01-egfr.csv`, `submissions/01-egfr-METHODS.md`, `bin/emit_submission_csv.py` and
-`outbox/PREREGISTRATION.md`. The first two are **submitted artifacts** and the third's job is to
-**reproduce the submitted CSV byte-identically** — a claim published in problem 1's methods and in
-problem 2's methodology box. Changing the URL in the emitter would break that claim, because the
-submitted CSV contains the old string in all 16 assessment fields. Re-verified after the rename:
-the emitter still reproduces the submitted file byte-identically. The pre-registration is
-immutable by definition.
+`~/code/context-directory/projects/anthropic-adaptyv-2026/ROADMAP.md` (updated 2026-10-07 9:25 PM).
+Everything below this line is problem 1, closed and archived.
 
 ---
 
