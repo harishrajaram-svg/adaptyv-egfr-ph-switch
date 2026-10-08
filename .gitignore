@@ -30,3 +30,11 @@ reference/anthropic-campaign/cofold_predictions.parquet
 tools/binder-prescreen/
 # mmseqs intermediates from that run; report.csv / report.json are the artifacts.
 outbox/prescreen-*/work/
+# ESMFold2 scoring inputs/outputs for problem 2 (regenerable: bin/build_p2_complexes.py,
+# then bin/score-esmfold2.sh; the .cif/PAE trees run to hundreds of MB).
+runs/p2-esmfold2-in/
+runs/p2-esmfold2-ctrl-in/
+runs/p2-esmfold2-smoke/
+runs/p2-esmfold2-out/
+runs/p2-esmfold2-ctrl-out/
+runs/p2-esmfold2-smoke-out/
