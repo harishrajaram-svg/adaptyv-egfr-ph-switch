@@ -1,0 +1,248 @@
+--- /dev/null	2026-10-08 10:13:09
++++ modal_genie3.py	2026-10-08 10:11:50
+@@ -0,0 +1,245 @@
++# /// script
++# requires-python = ">=3.12"
++# dependencies = [
++#     "modal>=1.0",
++# ]
++# ///
++"""Genie 3 (AlQuraishi lab) binder-design GENERATION on Modal.
++
++https://github.com/aqlaboratory/genie3   weights: https://huggingface.co/yeqinglin/genie3
++
++GENERATION ONLY. `genie3 run` is generate + evaluate; the evaluation stage pulls ColabFold and
++queries the ColabFold MSA server. We run `genie3 generate` alone and rank with this project's own
++stack (ESMFold2 + ipSAE + pae_interface), so no ColabFold and no MSA server. That is safe because
++generation never reads the MSA: `grep -c msa` is 0 in both
++genie3/generation/data/sample_dataset/target.py and .../feature_pipeline/target.py.
++
++ARCHITECTURAL LIMITS, read from genie3/generation/config/common.py:
++    max_n_token = 2048   our trimer + an 83-mer binder is ~550, comfortable
++    max_n_chain = 4      our complex is EXACTLY 4 (three protomers + binder) -- at the ceiling
++
++PHASE 0's ONLY JOB is to measure two numbers that exist nowhere in the repo or the paper:
++seconds per sample and peak CUDA memory at a 4-chain, ~550-token target. Both are printed and
++returned. Nothing about binding is claimed by this wrapper.
++
++```
++python3 bin/build_genie3_problem.py runs/genie3-in/problems/tnfa_corrected.json 83
++bash bin/design-genie3.sh phase0 2 hotspot
++```
++"""
++
++import os
++from pathlib import Path
++
++from modal import App, Image, Volume
++
++GPU = os.environ.get("MODAL_GPU", "A100-40GB")
++TIMEOUT = int(os.environ.get("MODAL_TIMEOUT", 30))
++
++# PINNED. Mosaic ran unpinned for a whole campaign and the reproducibility claim in METHODS 13
++# was wider than the evidence (bin/check-pins.sh exists because of it). Do not loosen this.
++GENIE3_GIT_REF = "d77ae5ac04212ff1e8b29b585859a3244c614804"   # main, 2026-05-10
++GENIE3_HF_REPO = "yeqinglin/genie3"
++GENIE3_HF_REVISION = os.environ.get("GENIE3_HF_REVISION", "main")
++WEIGHTS = "/weights"          # pretrained/v1/{checkpoints/step=600000.ckpt,config.yaml}
++
++
++def _download_weights():
++    """347 MB checkpoint, baked at build time so no run pays for it."""
++    from huggingface_hub import snapshot_download
++
++    Path(WEIGHTS).mkdir(parents=True, exist_ok=True)
++    snapshot_download(
++        repo_id=GENIE3_HF_REPO,
++        revision=GENIE3_HF_REVISION,
++        local_dir=WEIGHTS,
++        allow_patterns=["pretrained/v1/*"],
++    )
++    ckpt = Path(WEIGHTS) / "pretrained/v1/checkpoints/step=600000.ckpt"
++    if not ckpt.exists():
++        raise SystemExit(f"weights missing after download: {ckpt}")
++    print(f"[genie3] baked {ckpt} ({ckpt.stat().st_size / 1e6:.0f} MB)")
++
++
++image = (
++    Image.from_registry("nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04", add_python="3.12")
++    .apt_install("git", "wget")
++    .env({"CUDA_HOME": "/usr/local/cuda", "HF_HOME": "/hf"})
++    .uv_pip_install(
++        f"genie3 @ git+https://github.com/aqlaboratory/genie3.git@{GENIE3_GIT_REF}",
++        "huggingface_hub",
++    )
++    .run_function(_download_weights)
++)
++
++# Same durability lesson as modal_esmfold2.py: output written only as a return value is lost to a
++# timeout, a crash or a dead local client, and --detach does not help because the local entrypoint
++# writes the files. Each sample is committed to this Volume as it lands.
++#     modal volume ls genie3-runs
++#     mkdir -p runs/<dest> && cd runs/<dest> && modal volume get genie3-runs <run_name>
++runs_vol = Volume.from_name("genie3-runs", create_if_missing=True)
++
++app = App("genie3", image=image)
++
++
++@app.function(timeout=TIMEOUT * 60, gpu=GPU, volumes={"/runs": runs_vol})
++def generate(
++    problem_json: str,
++    target_pdb: str,
++    n_sample: int = 2,
++    cond_strategy: str = "hotspot",
++    run_name: str = "",
++) -> list[tuple[str, bytes]]:
++    """Run `genie3 generate` and return (relative_path, bytes) for every generated file."""
++    import json
++    import subprocess
++    import time
++
++    work = Path("/tmp/g3")
++    (work / "problems").mkdir(parents=True, exist_ok=True)
++    out = work / "out"
++
++    # The problem JSON carries an absolute target path from the local machine; rewrite it to the
++    # copy we stage here. Refusing instead of guessing, because a silently wrong target is the
++    # single failure this arm cannot afford (1TNF's Leu143).
++    info = json.loads(problem_json)
++    tgt = work / "target.pdb"
++    tgt.write_text(target_pdb)
++    info["target_pdb_filepath"] = str(tgt)
++    if cond_strategy not in info["target_interface_residues"]:
++        raise SystemExit(f"cond_strategy {cond_strategy!r} not in the problem; "
++                         f"have {sorted(info['target_interface_residues'])}")
++    key = info["key"]
++    (work / "problems" / f"{key}.json").write_text(json.dumps(info))
++
++    # Re-verify the sentinel INSIDE the container. The guard in bin/build_genie3_problem.py runs
++    # on the laptop; this one runs where the GPU is, on the bytes actually being folded.
++    for line in target_pdb.splitlines():
++        if line.startswith("ATOM") and int(line[22:26]) == 143:
++            aa = line[17:20].strip()
++            if aa != "ASP":
++                raise SystemExit(f"REFUSING: residue 143 is {aa}, not ASP -- this is 1TNF's "
++                                 f"D143L. Do not generate against it.")
++            break
++
++    cfg = work / "experiment.yaml"
++    cfg.write_text(f"""experiment:
++  name: {key}
++
++paths:
++  rootdir: {out}
++  dataset: {work}
++
++generation:
++  base:
++    checkpoint: {WEIGHTS}/pretrained/v1/checkpoints/step=600000.ckpt
++    config: {WEIGHTS}/pretrained/v1/config.yaml
++  dataset:
++    source: target
++    selections: {key}
++    n_sample: {n_sample}
++    cond_strategy: {cond_strategy}
++  sampler:
++    sampler:
++      direction_scale: 0.0
++""")
++    print(f"[genie3] {cfg.read_text()}")
++
++    # MEASURING MEMORY ACROSS A SUBPROCESS. torch.cuda.max_memory_allocated() reads THIS
++    # process's allocator. genie3 runs in a child, so the parent never allocates and the gauge
++    # read 0.00 GB on 2026-10-08's phase-0 run -- an instrumentation failure reported as a
++    # measurement. Poll the DEVICE instead, which sees whichever process is using it.
++    import threading
++
++    peak_mb = [0.0]
++    stop = threading.Event()
++
++    def _poll():
++        while not stop.is_set():
++            try:
++                q = subprocess.run(
++                    ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
++                    capture_output=True, text=True, timeout=5)
++                for line in q.stdout.split():
++                    peak_mb[0] = max(peak_mb[0], float(line))
++            except Exception:
++                pass                      # a failed poll must never kill the run
++            stop.wait(2.0)
++
++    watcher = threading.Thread(target=_poll, daemon=True)
++    watcher.start()
++    t0 = time.time()
++    r = subprocess.run(["genie3", "generate", "-c", str(cfg), "--num-devices", "1", "--verbose"],
++                       cwd=work, capture_output=True, text=True)
++    elapsed = time.time() - t0
++    stop.set()
++    watcher.join(timeout=10)
++    peak_gb = peak_mb[0] / 1024.0
++    if peak_gb <= 0:
++        print("[genie3] WARNING: device memory polling returned nothing; peak is UNMEASURED, "
++              "not zero. Do not report it as a measurement.")
++    print(r.stdout[-6000:])
++    if r.returncode != 0:
++        print("--- stderr ---")
++        print(r.stderr[-6000:])
++
++    files = [p for p in out.rglob("*") if p.is_file()] if out.exists() else []
++    pdbs = [p for p in files if p.suffix == ".pdb"]
++    print(f"\n[genie3] PHASE 0 MEASUREMENT")
++    print(f"[genie3]   exit code      {r.returncode}")
++    print(f"[genie3]   wall clock     {elapsed:.1f}s for n_sample={n_sample}")
++    print(f"[genie3]   per sample     {elapsed / max(n_sample, 1):.1f}s")
++    print(f"[genie3]   peak device mem {peak_gb:.2f} GB  (GPU {GPU}, nvidia-smi polled)")
++    print(f"[genie3]   files written  {len(files)} ({len(pdbs)} pdb)")
++
++    payload = []
++    for p in files:
++        rel = p.relative_to(out)
++        payload.append((str(rel), p.read_bytes()))
++        if run_name:
++            dest = Path("/runs") / run_name / rel
++            dest.parent.mkdir(parents=True, exist_ok=True)
++            dest.write_bytes(p.read_bytes())
++            runs_vol.commit()
++    payload.append(("PHASE0.txt", (
++        f"exit_code\t{r.returncode}\nn_sample\t{n_sample}\ncond_strategy\t{cond_strategy}\n"
++        f"wall_s\t{elapsed:.1f}\nper_sample_s\t{elapsed / max(n_sample, 1):.1f}\n"
++        f"peak_device_gb\t{peak_gb:.2f}\ngpu\t{GPU}\nn_files\t{len(files)}\nn_pdb\t{len(pdbs)}\n"
++        f"genie3_ref\t{GENIE3_GIT_REF}\n").encode()))
++    if r.returncode != 0:
++        payload.append(("stderr.txt", r.stderr.encode()))
++        payload.append(("stdout.txt", r.stdout.encode()))
++    return payload
++
++
++@app.local_entrypoint()
++def main(
++    problem: str,
++    n_sample: int = 2,
++    cond_strategy: str = "hotspot",
++    out_dir: str = "./out/genie3",
++    run_name: str | None = None,
++):
++    import json
++    from datetime import datetime
++
++    info = json.loads(Path(problem).read_text())
++    target = Path(info["target_pdb_filepath"])
++    if not target.exists():
++        raise SystemExit(f"target not found: {target}")
++
++    tag = run_name or datetime.now().strftime("%y%m%d%H%M")
++    outputs = generate.remote(
++        problem_json=Path(problem).read_text(),
++        target_pdb=target.read_text(),
++        n_sample=n_sample,
++        cond_strategy=cond_strategy,
++        run_name=tag,
++    )
++    dest = Path(out_dir) / tag
++    for rel, data in outputs:
++        p = dest / rel
++        p.parent.mkdir(parents=True, exist_ok=True)
++        p.write_bytes(data)
++    print(f"Results saved to: {dest}")
++    print((dest / "PHASE0.txt").read_text())

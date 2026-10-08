@@ -1,0 +1,13 @@
+metric	value	source
+n_token	548	genie3 DDIMSampler log
+n_chains	4	3 protomers + binder, max_n_chain is 4
+binder_len	83	all 8 measured Genie3 TNF-a binders were 83 aa
+per_sample_s	35.49	genie3 generation_stats/main_rank_0.json
+batch_s_total	70.98	genie3, n_sample=2
+wall_s	92.9	wrapper, includes staging
+step_s	0.345	DDIM _step model runtime, batch_size=1, n_token=548
+gpu	A100-40GB	$2.10/h
+cost_per_sample_usd	0.0207	35.49s at $2.10/h
+peak_device_gb	UNMEASURED	instrument read the parent process; fixed, not re-run
+exit_code	0	
+samples	2	2 pdb written
