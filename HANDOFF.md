@@ -243,7 +243,7 @@ runs at 8% on the organisers' own instrumentation.
 | ROADMAP: methodology *"linked to a public Collection"* | conditional — *may* be public *if* selected | — |
 | novelty gate = *"3 of 4 checks"* | a **4-level scale, bar at Level ≥ 3** | — |
 
-**`bin/gate_sweep.py` now runs 23 gates** (`check_species_map` and `check_published_counts` added
+**`bin/gate_sweep.py` now runs 24 gates** (`check_species_map` and `check_published_counts` added
 since the 21 of 10-06). The methodology box no longer states a gate count at all, which is why
 `check_published_counts.py` audits every surface that does -- it was extended on 10-08 to cover
 gate counts after this file and ROADMAP.md were both found still saying 22.
@@ -260,7 +260,7 @@ bash    bin/check-pins.sh                         Mosaic revision pin, wrapper A
 python3 analysis/02-tnf/loss_traj.py LOG --block 13   the trajectory read; the ONLY decisive statistic
 bash    bin/probe-grad-noise.sh  <tag> <L> <seed>     arm A (GRAD_SAMPLES/MOMENTUM_SOFT env)
 bash    bin/probe-region1.sh     <tag> <L> <seed>     the Region I arm
-python3 bin/gate_sweep.py                         all 23 gates
+python3 bin/gate_sweep.py                         all 24 gates
 python3 bin/express_qc_p2.py <designs.csv>        liability screen (pI at BOTH assay pH values)
 python3 bin/build_sizematched_null.py <design> <out.faa>   a null at a design's own length
 python3 bin/pae_interface.py --dir <run>          pae_if_min / pae_if_mean / n_pairs

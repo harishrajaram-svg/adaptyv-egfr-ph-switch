@@ -109,6 +109,25 @@ def live_text(text):
     return text[:cut]
 
 
+def limitation_order(text):
+    """[] if section 14's numbered items run 1..N in order, else the offending jumps.
+
+    WHY. Twice on 2026-10-08 a new limitation was inserted BEFORE the one it should follow,
+    leaving the list reading 52, 54, 53. count_limitations takes the MAX, so the count stayed
+    right and the gate stayed green while the document was visibly out of order. A reader who
+    cites "limitation 54" would land on the wrong item.
+    """
+    i = text.find("## 14. Limitations")
+    if i < 0:
+        return ["section 14 not found"]
+    rest = text[i + 1:]
+    j = rest.find("\n## ")
+    sec = rest[:j] if j >= 0 else rest
+    nums = [int(m.group(1)) for m in re.finditer(r"^(\d{1,3})\.\s+\*\*", sec, re.M)]
+    bad = [f"{a} then {b}" for a, b in zip(nums, nums[1:]) if b != a + 1]
+    return bad
+
+
 def live_claims(text, pattern=CLAIM):
     """[(lineno, claimed_int)] for live claims only; history (a transition arrow) is exempt."""
     out = []
@@ -153,6 +172,11 @@ def check():
     gates = count_gates()
     if gates is None:
         print("FAIL  could not count gate_sweep.py's GATES list"); return 1
+    order = limitation_order(open(METHODS).read())
+    if order:
+        print(f"FAIL  section 14's limitations are out of order: {'; '.join(order)}")
+        return 1
+    print("section 14's limitations run 1..N in order")
     bad = _audit("section 14 has N numbered limitations, N =", lim, CLAIM)
     print()
     bad += _audit("gate_sweep.py runs N gates, N =", gates, GATE_CLAIM)
@@ -198,6 +222,13 @@ def selftest():
     assert count_gates(tmp) is None
     os.unlink(tmp)
     assert count_gates("/nonexistent/gate_sweep.py") is None
+    # MUTATION 7: an out-of-order list must be caught even though the MAX is still correct.
+    # This is the error made twice on 2026-10-08.
+    good = "## 14. Limitations\n\n1. **a** x\n2. **b** y\n3. **c** z\n\n## 15. Next\n"
+    assert limitation_order(good) == [], limitation_order(good)
+    swapped = "## 14. Limitations\n\n1. **a** x\n3. **c** z\n2. **b** y\n\n## 15. Next\n"
+    assert limitation_order(swapped), "a 1,3,2 list must be refused"
+    assert count_limitations(swapped) == 3, "and the MAX alone would not have caught it"
     # the three accepted phrasings
     assert live_claims("all 23 gates\n", GATE_CLAIM) == [(1, 23)]
     assert live_claims("53 limitations, 23 green gates, and a fresh clone\n", GATE_CLAIM) == [(1, 23)]
@@ -220,6 +251,7 @@ def selftest():
     assert live_claims("item 10 gates the upload\n", GATE_CLAIM) == []
     # ...but the noun reading still has to be caught
     assert live_claims("10 gates, all green\n", GATE_CLAIM) == [(1, 10)]
+    print("  ok  MUTATION: a 1,3,2 limitation list is refused though its MAX is still 3")
     print("check_published_counts.py --selftest PASS")
     return 0
 

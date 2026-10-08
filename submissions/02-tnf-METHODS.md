@@ -952,6 +952,111 @@ is worth something; the magnitudes are not.
 
 ---
 
+### 6.10 The Genie 3 arm, and a constraint that was aimed at the wrong residues
+
+Built and run 2026-10-08, after the generator comparison in §6.9 made the gap plain. Five stages,
+every rate measured rather than estimated:
+
+| stage | tool | measured |
+|---|---|---|
+| backbone | Genie 3 `generate`, `extended` conditioning | 39.9 s, 3.39 GB, $0.023 per shape |
+| seed sequence | CA-only ProteinMPNN, local CPU | 0.2 s, free |
+| fold alone + 0.70 floor | ESMFold2 | 3.3 s per 83-mer |
+| real sequence | **SolubleMPNN** with per-position constraints | free |
+| co-fold + rank | ESMFold2 against the trimer | ~58 s per 554-residue complex |
+
+**The target guard, which was not optional.** Genie 3's own BinderBench ships a TNF-α problem, but
+its target is 1TNF — **Leu143 where the assay construct has Asp143**, and in BinderBench's own
+numbering that residue sits **inside** its `common` interface set. `bin/build_genie3_problem.py`
+refuses that target and was proven red against the shipped file; the wrapper re-checks Asp143
+inside the container on the bytes being folded. An entrant reported the same mismatch in the
+competition channel on 2026-10-05, having lost designs to it and recovered by redesigning against
+the canonical sequence.
+
+**What the backbones gave us.** 50 shapes, all 50 spanning two protomers, median 42 cross-chain
+contact pairs against 21 and 9 for the looser 2-residue conditioning. **98 of 100 seed sequences
+clear the 0.70 monomer floor, against 0 of 35 for the Mosaic designs** (§8.5). That filter
+eliminates this project's entire earlier campaign and almost nothing here.
+
+**Binding, against each design's own scramble.** 48 designs co-folded, each paired with a
+composition-matched shuffle of **its own sequence at its own length**, 96 folds:
+
+| | |
+|---|--:|
+| margin = null_mean − design_mean | min −1.732, median **+0.320**, max **+6.027** |
+| beat their own null | 32/48 |
+| pre-registered bar (`28a3aaa`, before any sequence existed) | ACTS ≥ 5.64 — **met by two designs** |
+
+The best is 7.0 SDs of the seed noise in §4.6, against a pure-noise best-of-48 of 1.91. **The
+median is +0.320, about 0.4 SDs — still noise.** The result is entirely in the tail, which is what
+Genie 3's own record predicts: its 8 measured binders are variants of **one** backbone found in 23
+samples.
+
+#### 6.10a The constraint was aimed at the wrong residues, and the data says so
+
+§6.8 offered a hypothesis: acid-rich interfaces protonate at pH 6.0, lose their mutual repulsion
+and bind *tighter*, building an inverted switch by accident. `bin/mpnn_constraints.py` acted on it
+— omit ASP and GLU at binder positions within 8.0 Å of the target, force HIS where a histidine
+could reach a target cation (8.74 Å, derived from 1539 CA–CB bonds and 222 histidines in this
+project's own output). Verified on the 48: **0 acid violations, 0 histidine violations, 0
+cysteines, no homopolymer run of 6 or more.**
+
+**It changed almost nothing.** Linkage re-run on the 48 against the 35:
+
+| | Mosaic 35 | Genie 48 |
+|---|--:|--:|
+| moving sites | 219 | 229 |
+| right direction | 37% | 38% |
+| no counter-charge within 6 Å | 76% | 69% |
+| median all-site product | 2.779 | 2.023 |
+| whole molecule right (< 1) | 11/35 | 17/48 |
+
+**Splitting the movers by residue type explains why, and it is the useful part of this section:**
+
+| | right-direction rate, Mosaic | right-direction rate, Genie |
+|---|--:|--:|
+| **histidines** | **88%** (78/89) | **91%** (80/88) |
+| **acids and everything else** | **2%** (2/130) | **4%** (6/141) |
+
+So the hypothesis **survives on the residue and fails on the location**. Acids are what drag the
+product the wrong way — 128 of 130 wrong before any constraint. But the acids doing it are **not at
+the interface**: 69% of movers have no counter-charge within 6 Å, which is the desolvation
+signature — residues the binding event buries away from water, anywhere on the chain. The
+constraint used interface *proximity* as a proxy for a *burial-on-binding* mechanism, and the proxy
+does not hold.
+
+**The histidine constraint was redundant**, and not free. 88% of Mosaic's histidines already pointed
+the right way with no constraint at all. Spacing the forced positions to avoid poly-histidine runs
+cut the median from 6 per design to 3, so the constraint bought nothing and cost mechanism density.
+
+**What the tail did do.** Best all-site product improved **0.326 → 0.074**, a 4.4× gain — 13.5×
+weaker binding at pH 6.0 for the best design. One design, `tnfa_corrected_30_s1`, is third-best on
+linkage (0.149) **and** second-best on binding margin (+5.814); it is the only design in this work
+strong on both objectives.
+
+#### 6.10b The constraint we would use instead, and why it is not simply "fewer acids"
+
+The naive correction is to cut acid content globally. The measured reason not to:
+
+```
+the 48 final sequences:  D+E content median 19%
+                         pI median 7.00
+                         12 of 48 already inside the assayed 6.0-7.4 window
+```
+
+**The acids are what hold pI below the assay window.** §8.5's trap is that a design whose pI falls
+between 6.0 and 7.4 sits at its solubility minimum during its own measurement, and aggregation at
+6.0 reads as *"no detectable binding at pH 6.0"* — the success criterion itself. Stripping acids to
+fix the linkage pushes pI up into that window. The two constraints pull against each other.
+
+So the correction we would make is **not** fewer acids but **acids away from positions that get
+buried on binding** — computable from what Genie 3 already emits, by comparing each binder
+residue's solvent exposure in the isolated chain against the complex and omitting ASP and GLU where
+the loss is large. That targets the desolvation mechanism instead of proxying it. It is **not
+implemented and not tested**, and it is recorded as the next thing to try rather than as a result.
+
+---
+
 ### 6.9 Germinal: an attempted arm that never ran
 
 Recorded because an attempted-and-failed arm is part of the method. Germinal was wrapped
@@ -1753,3 +1858,12 @@ those are marked.
     best is 3.5 SDs where pure noise reaches 2.56 at the 95th percentile for a best-of-35. The
     figure is also measured on their MSA-fed arm while ours is single-sequence, so it is a lower
     bound on our noise rather than an estimate of it. §4.6.
+
+
+55. **The pH constraint we built was aimed at the wrong residues and changed almost nothing.**
+    §6.10a. Omitting acids at interface positions and forcing histidines at cation-reachable ones
+    moved the right-direction rate from 37% to 38%. Split by residue type, histidines were already
+    88% correct before any constraint and acids are 2–4% correct in both arms, so the intervention
+    was redundant where it worked and misaimed where it mattered: the offending acids are buried by
+    binding rather than sitting at the interface. The histidine spacing rule also cut mechanism
+    density from 6 forced positions per design to 3. Recorded as an attempted and ineffective fix.
